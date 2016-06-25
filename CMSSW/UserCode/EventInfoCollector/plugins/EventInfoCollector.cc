@@ -90,13 +90,13 @@ EventInfoCollector::beginJob()
     }
     if (_pileupSummaryInfoInputTag.label().size()>0)
     {
-        _nInteractions0 = fs->make<TH1F>("nInteractions0","nInteractions0",101,-0.5,100.5);
-        _nInteractions1 = fs->make<TH1F>("nInteractions1","nInteractions1",101,-0.5,100.5);
-        _nInteractions2 = fs->make<TH1F>("nInteractions2","nInteractions2",101,-0.5,100.5);
-	//true interactions are floats!
-        _nTrueInteractions0 = fs->make<TH1F>("nTrueInteractions0","nTrueInteractions0",505,-0.5,100.5);
-        _nTrueInteractions1 = fs->make<TH1F>("nTrueInteractions1","nTrueInteractions1",505,-0.5,100.5);
-        _nTrueInteractions2 = fs->make<TH1F>("nTrueInteractions2","nTrueInteractions2",505,-0.5,100.5);
+        _nInteractions0 = fs->make<TH1F>("nInteractions0","nInteractions0",101,0.0,100.0);
+        _nInteractions1 = fs->make<TH1F>("nInteractions1","nInteractions1",101,0.0,100.0);
+        _nInteractions2 = fs->make<TH1F>("nInteractions2","nInteractions2",101,0.0,100.0);
+        //true interactions are floats!
+        _nTrueInteractions0 = fs->make<TH1F>("nTrueInteractions0","nTrueInteractions0",505,0.0,100.0);
+        _nTrueInteractions1 = fs->make<TH1F>("nTrueInteractions1","nTrueInteractions1",505,0.0,100.0);
+        _nTrueInteractions2 = fs->make<TH1F>("nTrueInteractions2","nTrueInteractions2",505,0.0,100.0);
     }
 }
 

@@ -24,6 +24,7 @@ class PileUpReweighting:
         
         std::string _mcFile;
         std::string _mcHistName;
+        int64_t _rebinMC;
         
         std::vector<std::string> _dataFiles;
         std::string _dataHistName;
@@ -33,13 +34,15 @@ class PileUpReweighting:
     public:
     
         PileUpReweighting():
-            Module()
+            Module(),
+            _rebinMC(1)
         {
             addSink("input", "input");
             _outputSource = addSource("output","output");
             
             addOption("mc histogram file","file containing the number of PU interactions in MC",_mcFile,pxl::OptionDescription::USAGE_FILE_OPEN);
             addOption("mc histogram name","",_mcHistName);
+            addOption("mc rebin","",_rebinMC);
             
             addOption("data histogram files","files containing the number of PU interactions in data",_dataFiles,pxl::OptionDescription::USAGE_FILE_OPEN);
             addOption("data histogram name","",_dataHistName);
@@ -77,6 +80,7 @@ class PileUpReweighting:
         {
             getOption("mc histogram file",_mcFile);
             getOption("mc histogram name",_mcHistName);
+            getOption("mc rebin",_rebinMC);
             
             getOption("data histogram files",_dataFiles);
             getOption("data histogram name",_dataHistName);
@@ -89,17 +93,13 @@ class PileUpReweighting:
                 throw std::runtime_error(getName()+": Failed to retrieve MC PU histogram from file '"+_mcFile+"' with name '"+_mcHistName+"'");
             }
             histMC->SetDirectory(0);
+            histMC->Rebin(_rebinMC);
             histMC->Scale(1.0/histMC->Integral());
             
             for (unsigned int idataFile = 0; idataFile < _dataFiles.size(); ++idataFile)
             {
-                const int pos = _dataFiles[idataFile].find_last_of('/')+1;
-                const int end = _dataFiles[idataFile].find_first_of('.',pos+1);
-                std::string puName = std::string(_dataFiles[idataFile],pos,end-pos);
-                _reweightingHists.push_back(std::make_pair(puName,TH1F((std::string("reweightingHist")+std::to_string(idataFile)+std::to_string(std::rand())).c_str(),";N true interactions; weight",52,0,52)));
+
                 
-                TH1F& weightHist = _reweightingHists.back().second;
-                weightHist.SetDirectory(0);
                 
                 TFile dataFile(_dataFiles[idataFile].c_str());
                 TH1* histData = dynamic_cast<TH1*>(dataFile.Get(_dataHistName.c_str()));
@@ -110,7 +110,46 @@ class PileUpReweighting:
                 histData->SetDirectory(0);
                 histData->Scale(1.0/histData->Integral());
                 
-                for (unsigned int ibin = 0; ibin < std::min({histData->GetNbinsX(),histMC->GetNbinsX(),weightHist.GetNbinsX()}); ++ibin)
+                
+                
+                
+                
+                //range checking
+                if (std::fabs(histMC->GetXaxis()->GetXmin()-histData->GetXaxis()->GetXmin())>0.0001)
+                {
+                    throw std::runtime_error(getName()+": PU MC/data histograms have different xmin: '"+_dataFiles[idataFile]+"' with name '"+_dataHistName+"'");
+                }
+                
+                if (std::fabs(histMC->GetXaxis()->GetXmax()-histData->GetXaxis()->GetXmax())>0.0001)
+                {
+                    throw std::runtime_error(getName()+": PU MC/data histograms have different xmax: '"+_dataFiles[idataFile]+"' with name '"+_dataHistName+"'");
+                }
+                
+                if (histMC->GetNbinsX()<histData->GetNbinsX())
+                {
+                    throw std::runtime_error(getName()+": PU MC histogram has less bins than data. Adjust the rebinning if any applied!");
+                }
+                
+                const int pos = _dataFiles[idataFile].find_last_of('/')+1;
+                const int end = _dataFiles[idataFile].find_first_of('.',pos+1);
+                std::string puName = std::string(_dataFiles[idataFile],pos,end-pos);
+                _reweightingHists.push_back(
+                    std::make_pair(
+                        puName,
+                        TH1F(
+                            (std::string("reweightingHist")+std::to_string(idataFile)+std::to_string(std::rand())).c_str(),
+                            ";N true interactions; weight",
+                            histMC->GetNbinsX(),
+                            histMC->GetXaxis()->GetXmin(),
+                            histMC->GetXaxis()->GetXmax()
+                        )
+                    )
+                );
+                TH1F& weightHist = _reweightingHists.back().second;
+                weightHist.SetDirectory(0);
+                
+                
+                for (unsigned int ibin = 0; ibin < histMC->GetNbinsX(); ++ibin)
                 {
                     const double binCenter = weightHist.GetBinCenter(ibin+1);
                     
@@ -125,19 +164,17 @@ class PileUpReweighting:
                     }
                 }
                 
+                if (std::fabs(weightHist.GetMean()-1.0)>0.001)
+                {
+                    throw std::runtime_error(getName()+": PU weight mean not == 1! Found: "+std::to_string(weightHist.GetMean()));
+                }   
+                
                 dataFile.Close();
             }
             
             mcFile.Close();
             
-            /*
-            for (unsigned int ihist = 0; ihist < _reweightingHists.size(); ++ihist)
-            {
-                TCanvas cv("cv","",800,600);
-                _reweightingHists[ihist].second.Draw();
-                cv.Print((_reweightingHists[ihist].first+".pdf").c_str());
-            }
-            */
+            
             
         }
 
