@@ -10,7 +10,7 @@ from optparse import OptionParser
 parser = OptionParser()
 (options, args) = parser.parse_args()
 
-baseFolder = "/storage/data/cms/store/user/mkomm/DX_13"
+baseFolder = "/storage/data/cms/store/user/mkomm/SSX"
 print "looking for files: ",baseFolder+"/*"+args[0]+"*"
 
 rootFiles = {}
