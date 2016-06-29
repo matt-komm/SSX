@@ -46,21 +46,21 @@ if __name__=="__main__":
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = 'EDM2PXLIO/analysis16.py'
     config.JobType.pyCfgParams = []
-    config.JobType.outputFiles = ["output.pxlio","info.root"]
-    #config.JobType.outputFiles = ["output.pxlio"]
+    #config.JobType.outputFiles = ["output.pxlio","info.root"]
+    config.JobType.outputFiles = ["output.pxlio"]
     config.JobType.inputFiles=[
-        #"Fall15_25nsV2_DATA.db",
-        #"Fall15_25nsV2_MC.db"
+        "Spring16_25nsV3_DATA.db",
+        "Spring16_25nsV3_MC.db"
         #"Summer15_50nsV4_UncertaintySources_AK4PFchs.txt"
     ]
-    config.JobType.maxJobRuntimeMin=800
+    config.JobType.maxJobRuntimeMin=360 #=6h
 
     config.Data.inputDBS = 'global'
-    config.Data.splitting = 'FileBased'
-    #config.Data.splitting = 'LumiBased'
-    #config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions15/13TeV/Reprocessing/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON.txt'
+    #config.Data.splitting = 'FileBased'
+    config.Data.splitting = 'LumiBased'
+    config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-275125_13TeV_PromptReco_Collisions16_JSON.txt'
     #config.Data.runRange='254833-254833'
-    config.Data.unitsPerJob = 5
+    config.Data.unitsPerJob = 60
     #config.Data.ignoreLocality = True #use to circumvent crab/dbs bug with open data blocks (while its being writing)
     config.Data.allowNonValidInputDataset = True #allows to use nonvalid sets
 
@@ -70,8 +70,16 @@ if __name__=="__main__":
 
 
     config.Site.storageSite = "T2_BE_UCL"
-    #config.Site.whitelist = ['T2_CH_CERN','T2_DE_DESY','T2_BE_IIHE','T2_BE_UCL','T2_IT_Legnaro','T2_IT_Rome', 'T2_US_UCSD']
-    
+    '''
+    config.Site.whitelist = [
+        'T2_BE_UCL','T2_BE_IIHE' #BE
+        'T2_DE_DESY', #DE
+        'T2_CH_CERN',
+        'T2_IT_Legnaro','T2_IT_Rome', #IT
+        'T2_ES_CIEMAT', #ES
+        'T2_US_UCSD','T2_US_Wisconsin', #US
+    ]
+    '''
 
     mc80Xv2 = [
         '/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v2/MINIAODSIM',
@@ -90,14 +98,14 @@ if __name__=="__main__":
         '/SingleMuon/Run2016B-PromptReco-v2/MINIAOD'
     ]
     
-    dataset=datasets76DR25nsMINIAODv2[int(args[0])]
-    #dataset=data80X[int(args[0])]
-    processName = dataset.split("/")[1]
-    #processName = dataset.split("/")[1]+"_"+dataset.split("/")[2]
+    #dataset=mc80Xv2[int(args[0])]
+    dataset=data80X[int(args[0])]
+    #processName = dataset.split("/")[1]
+    processName = dataset.split("/")[1]+"_"+dataset.split("/")[2]
     if dataset.split("/")[2].find("_ext")!=-1:
         processName+="_ext"
 
-    jobName = processName+'_v160620'
+    jobName = processName+'_v160627'
     
     print "submitting... ",jobName
     #status(os.path.join(os.getcwd(),"crab",jobName,"crab_"+config.General.requestName))
@@ -106,8 +114,8 @@ if __name__=="__main__":
     
         config.General.workArea = "crab/"+jobName
         config.Data.inputDataset=dataset
-        config.JobType.pyCfgParams=['processName='+processName]
-        #config.JobType.pyCfgParams=['processName='+processName,'isData=True','onlyFiltered=True']
+        #config.JobType.pyCfgParams=['processName='+processName,'noGen=True','noLHE=True']
+        config.JobType.pyCfgParams=['processName='+processName,'isData=True','onlyFiltered=True']
         config.Data.outLFNDirBase='/store/user/mkomm/'+config.General.requestName+"/"+jobName
         submit(config)
     else:

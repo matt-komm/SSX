@@ -2,6 +2,6 @@
 for i in `find . -name "*$1*"`;
     do
     echo $i
-    crab resubmit $i/crab_DX_13 
+    crab status $i/crab_SSX 
     #python crab/main.py $i
     done

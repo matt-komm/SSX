@@ -17,7 +17,7 @@
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "TH1F.h"
-
+#include "TH3F.h"
 
 class EventInfoCollector:
     public edm::EDAnalyzer
@@ -30,10 +30,11 @@ class EventInfoCollector:
         TH1F* _nInteractions0;
         TH1F* _nInteractions1;
         TH1F* _nInteractions2;
-        
+
         TH1F* _nTrueInteractions0;
         TH1F* _nTrueInteractions1;
         TH1F* _nTrueInteractions2;
+
     
         edm::InputTag _genEventInfoProductInputTag;
         edm::EDGetTokenT<GenEventInfoProduct> _genEventInfoProductToken;
@@ -90,13 +91,16 @@ EventInfoCollector::beginJob()
     }
     if (_pileupSummaryInfoInputTag.label().size()>0)
     {
-        _nInteractions0 = fs->make<TH1F>("nInteractions0","nInteractions0",101,0.0,100.0);
-        _nInteractions1 = fs->make<TH1F>("nInteractions1","nInteractions1",101,0.0,100.0);
-        _nInteractions2 = fs->make<TH1F>("nInteractions2","nInteractions2",101,0.0,100.0);
-        //true interactions are floats!
-        _nTrueInteractions0 = fs->make<TH1F>("nTrueInteractions0","nTrueInteractions0",505,0.0,100.0);
-        _nTrueInteractions1 = fs->make<TH1F>("nTrueInteractions1","nTrueInteractions1",505,0.0,100.0);
-        _nTrueInteractions2 = fs->make<TH1F>("nTrueInteractions2","nTrueInteractions2",505,0.0,100.0);
+        _nInteractions0 = fs->make<TH1F>("nInteractions0","nInteractions0",100,0,100);
+        _nInteractions1 = fs->make<TH1F>("nInteractions1","nInteractions1",100,0,100);
+        _nInteractions2 = fs->make<TH1F>("nInteractions2","nInteractions2",100,0,100);
+        
+	    
+	    //true interactions are floats!
+        _nTrueInteractions0 = fs->make<TH1F>("nTrueInteractions0","nTrueInteractions0",2000,0,100);
+        _nTrueInteractions1 = fs->make<TH1F>("nTrueInteractions1","nTrueInteractions1",2000,0,100);
+        _nTrueInteractions2 = fs->make<TH1F>("nTrueInteractions2","nTrueInteractions2",2000,0,100);
+        
     }
 }
 
@@ -115,22 +119,37 @@ EventInfoCollector::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         edm::Handle<std::vector<PileupSummaryInfo>> pileupSummaryInfoCollection;
         iEvent.getByToken(_pileupSummaryInfoToken, pileupSummaryInfoCollection);
         
+        
+        float nInt0 = 0.0;
+        float nInt1 = 0.0;
+        float nInt2 = 0.0;
+        
+        float nIntTrue0 = 0.0;
+        float nIntTrue1 = 0.0;
+        float nIntTrue2 = 0.0;
+        
         for (unsigned int i = 0; i < pileupSummaryInfoCollection->size(); ++i)
         {
             if ((*pileupSummaryInfoCollection)[i].getBunchCrossing()==-1)
             {
-                _nInteractions0->Fill((*pileupSummaryInfoCollection)[i].getPU_NumInteractions());
-                _nTrueInteractions0->Fill((*pileupSummaryInfoCollection)[i].getTrueNumInteractions());
+                nInt0=(*pileupSummaryInfoCollection)[i].getPU_NumInteractions();
+                _nInteractions0->Fill(nInt0);
+                nIntTrue0=(*pileupSummaryInfoCollection)[i].getTrueNumInteractions();
+                _nTrueInteractions0->Fill(nIntTrue0);
             }
             else if ((*pileupSummaryInfoCollection)[i].getBunchCrossing()==0)
             {
-                _nInteractions1->Fill((*pileupSummaryInfoCollection)[i].getPU_NumInteractions());
-                _nTrueInteractions1->Fill((*pileupSummaryInfoCollection)[i].getTrueNumInteractions());
+                nInt1=(*pileupSummaryInfoCollection)[i].getPU_NumInteractions();
+                _nInteractions1->Fill(nInt1);
+                nIntTrue1=(*pileupSummaryInfoCollection)[i].getTrueNumInteractions();
+                _nTrueInteractions1->Fill(nIntTrue1);
             }
             else if ((*pileupSummaryInfoCollection)[i].getBunchCrossing()==1)
             {
-                _nInteractions2->Fill((*pileupSummaryInfoCollection)[i].getPU_NumInteractions());
-                _nTrueInteractions2->Fill((*pileupSummaryInfoCollection)[i].getTrueNumInteractions());
+                nInt2=(*pileupSummaryInfoCollection)[i].getPU_NumInteractions();
+                _nInteractions2->Fill(nInt2);
+                nIntTrue2=(*pileupSummaryInfoCollection)[i].getTrueNumInteractions();
+                _nTrueInteractions2->Fill(nIntTrue2);
             }
         }
     }
