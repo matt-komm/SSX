@@ -1,0 +1,10 @@
+<lcgdict>
+  <class name="plt::Jet">
+  </class>
+  <class name="edm::Wrapper<plt::Jet>">
+  </class>
+  <class name="std::vector<plt::Jet>">
+  </class>
+  <class name="edm::Wrapper<std::vector<plt::Jet>>">
+  </class>
+</lcgdict>

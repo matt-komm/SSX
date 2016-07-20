@@ -1,0 +1,23 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="CommonTools/UtilAlgos"/>
+<use name="FWCore/ServiceRegistry"/>
+<use name="SimGeneral/HepPDTRecord"/>
+<use name="SimDataFormats/GeneratorProducts"/>
+<use name="DataFormats/HepMCCandidate"/>
+<use name="UserCode/ParticleLevelTools"/>
+<use name="fastjet"/>
+<library   file="PackedGenParticleProjection.cc" name="PackedGenParticleProjectionPlugin">
+    <flags   EDM_PLUGIN="1"/>
+</library>
+<library   file="PackedGenParticleSelector.cc" name="PackedGenParticleSelectorPlugin">
+    <flags   EDM_PLUGIN="1"/>
+</library>
+<library   file="BHadronSelector.cc" name="BHadronSelectorPlugin">
+    <flags   EDM_PLUGIN="1"/>
+</library>
+<library   file="JetClustering.cc" name="JetClusteringPlugin">
+    <flags   EDM_PLUGIN="1"/>
+</library>
