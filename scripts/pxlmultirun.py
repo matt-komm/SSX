@@ -280,15 +280,12 @@ else
     echo "Everything seems to be properly mounted."
 fi
 source /home/fynu/mkomm/.bashrc
-cd /home/fynu/mkomm/Diff13
+cd /home/fynu/mkomm/SSX
 source setVars.sh
 export HOME=/home/fynu/mkomm
 cd $_CONDOR_SCRATCH_DIR
 env
 pwd
-echo "ls: `ls -l`"
-echo "ls stageout: `ls -l /storage/data/cms/store/user/mkomm/DX_13`"
-echo "ls storage: `ls -l /nfs/user/mkomm/ST13/selection25ns`"
 which pxlrun
 echo "executing: "$@
 pxlrun -v $@

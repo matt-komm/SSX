@@ -26,11 +26,27 @@ const std::unordered_map<std::string,FileInfo> eventWeights80Xv1 = {
     },
     {"QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8",
         {
-            //total=21862712.0 eff=21862712.0 - 0 = 21862712.0
-            21862712.0,
+            //total=22093630.0 eff=22093630.0 - 0 = 22093630.0
+            22093630.0,
             866600000 * 0.00044
         }
     },
+    
+    {"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
+        {
+            //total=19825855.0 eff=19825855.0 - 0 = 19825855.0
+            19825855.0,
+            80.95
+        }
+    },
+    {"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
+        {
+            //total=32243692.0 eff=32243692.0 - 0 = 32243692.0
+            32243692.0,
+            136.02
+        }
+    },
+    
     {"ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
         {
             //total=985000.0 eff=985000.0 - 0 = 985000.0
@@ -59,6 +75,14 @@ const std::unordered_map<std::string,FileInfo> eventWeights80Xv1 = {
         {
             //total=9908534.0 eff=8341457.0 - 1567077.0 = 6774380.0
             6774380.0,
+            20508.9*3
+        }
+    },
+    
+    {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        {
+            //total=28210360.0 eff=28210360.0 - .0 = 28210360.0
+            28210360.0,
             20508.9*3
         }
     }
