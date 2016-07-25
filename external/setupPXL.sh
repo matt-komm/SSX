@@ -42,6 +42,7 @@ execute mkdir build
 cd build
 
 execute $CMAKEBASEDIR/bin/cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$PXLBASEDIR \
     -DSWIG_DIR=$SWIGBASEDIR \
     -DSWIG_EXECUTABLE=$SWIGBASEDIR/bin/swig \
