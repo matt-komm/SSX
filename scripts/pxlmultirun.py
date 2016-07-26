@@ -146,7 +146,7 @@ def findMatches(path,regex):
                     #for i in range(dirlevel):
                     #   print " + ",
                     #print f
-                    matches.append(os.path.join(root,f))
+                    matches.append(os.path.join(root,f).replace("//","/"))
         for i in range(dirlevel-1):
             print " + ", 
         print len(matches)

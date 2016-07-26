@@ -184,11 +184,13 @@ class MuonVeto:
 
                         if (looseMuons.size()==0)
                         {
+                            eventView->setUserRecord("passMuVeto",true);
                             _outputVetoSource->setTargets(event);
                             return _outputVetoSource->processTargets();
                         }
                         else
                         {
+                            eventView->setUserRecord("passMuVeto",false);
                             for (unsigned int i=0; i < looseMuons.size(); ++i)
                             {
                                 looseMuons[i]->setName(_looseMuonName);

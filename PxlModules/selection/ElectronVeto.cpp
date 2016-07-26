@@ -173,11 +173,13 @@ class ElectronVeto:
 
                         if (looseElectrons.size()==0)
                         {
+                            eventView->setUserRecord("passEleVeto",true);
                             _outputVetoSource->setTargets(event);
                             return _outputVetoSource->processTargets();
                         }
                         else
                         {
+                            eventView->setUserRecord("passEleVeto",false);
                             for (unsigned int i=0; i < looseElectrons.size(); ++i)
                             {
                                 looseElectrons[i]->setName(_looseElectronName);
