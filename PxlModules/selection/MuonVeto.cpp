@@ -149,9 +149,11 @@ class MuonVeto:
                     std::vector<pxl::Particle*> looseMuons;
                     std::vector<pxl::Particle*> otherMuons;
                     
+                    pxl::EventView* eventView = nullptr;
+                    
                     for (unsigned ieventView=0; ieventView<eventViews.size();++ieventView)
                     {
-                        pxl::EventView* eventView = eventViews[ieventView];
+                        eventView = eventViews[ieventView];
                         if (eventView->getName()==_inputEventViewName)
                         {
                             std::vector<pxl::Particle*> particles;
@@ -173,7 +175,11 @@ class MuonVeto:
                                     }
                                 }
                             }
+                            break;
                         }
+                    }
+                    if (eventView)
+                    {
                         if (_cleanEvent)
                         {
                             for (unsigned int iparticle = 0; iparticle < otherMuons.size(); ++iparticle)
@@ -198,6 +204,10 @@ class MuonVeto:
                             _outputOtherSource->setTargets(event);
                             return _outputOtherSource->processTargets();
                         }
+                    }
+                    else
+                    {
+                        throw std::runtime_error("No eventview with name '"+_inputEventViewName+"' found!");
                     }
                 }
             }
