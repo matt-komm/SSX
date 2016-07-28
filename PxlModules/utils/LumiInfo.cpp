@@ -10,6 +10,7 @@
 #include <tuple>
 #include <iomanip>
 #include <fstream>
+#include <ctime>
 
 static pxl::Logger logger("LumiInfo");
 
@@ -104,9 +105,21 @@ class LumiInfo:
             }
             
             std::tm timeStruct = {};
+            
+            unsigned int month,day,year,hour,minute,sec;
+            sscanf (splitLine[2].c_str(),"%02i/%02i/%02i %02i:%02i:%02i",&month,&day,&year,&hour,&minute,&sec);
+            timeStruct.tm_mon=month-1;
+            timeStruct.tm_mday=day-1;
+            timeStruct.tm_year=(year+2000)-1900;
+            timeStruct.tm_hour=hour;
+            timeStruct.tm_min=minute;
+            timeStruct.tm_sec=sec;
+            /*
             std::stringstream ss;
             ss << splitLine[2];
             ss >> std::get_time(&timeStruct, "%m/%d/%y %H:%M:%S");
+            
+            */
             mktime(&timeStruct);
             
             info.weekDay = timeStruct.tm_wday;

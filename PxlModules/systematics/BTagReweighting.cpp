@@ -26,13 +26,13 @@ class BTagReweighting:
         
         
         BTagCalibration _btagCalib;
-        BTagCalibrationReader _readerNominal_mujets;
-        BTagCalibrationReader _readerUp_mujets;
-        BTagCalibrationReader _readerDown_mujets;
+        BTagCalibrationReader _readerNominal_ttbar;
+        BTagCalibrationReader _readerUp_ttbar;
+        BTagCalibrationReader _readerDown_ttbar;
         
-        BTagCalibrationReader _readerNominal_comb;
-        BTagCalibrationReader _readerUp_comb;
-        BTagCalibrationReader _readerDown_comb;
+        BTagCalibrationReader _readerNominal_inc;
+        BTagCalibrationReader _readerUp_inc;
+        BTagCalibrationReader _readerDown_inc;
         
         std::shared_ptr<TH2F> mcEff_b;
         std::shared_ptr<TH2F> mcEff_c;
@@ -57,10 +57,10 @@ class BTagReweighting:
     public:
         BTagReweighting():
             Module(),               
-            _bTaggingAlgorithmName("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
+            _bTaggingAlgorithmName("pfCombinedMVAV2BJetTags"),
             _eventViewName("Reconstructed"),
             _jetNames({"SelectedBJet","SelectedJet"}),
-            _wp(0.935)
+            _wp(0.875)
         {
             addSink("input", "input");
             _outputSource = addSource("output","output");
@@ -129,15 +129,15 @@ class BTagReweighting:
             
             TFile mcEffFile(_mcFile.c_str());
             
-            TH2F* hist_b = dynamic_cast<TH2F*>(mcEffFile.Get("b"));
+            TH2F* hist_b = dynamic_cast<TH2F*>(mcEffFile.Get("b__tight"));
             hist_b->SetDirectory(0);
             mcEff_b.reset(hist_b);
             
-            TH2F* hist_c = dynamic_cast<TH2F*>(mcEffFile.Get("c"));
+            TH2F* hist_c = dynamic_cast<TH2F*>(mcEffFile.Get("c__tight"));
             hist_c->SetDirectory(0);
             mcEff_c.reset(hist_c);
             
-            TH2F* hist_other = dynamic_cast<TH2F*>(mcEffFile.Get("other"));
+            TH2F* hist_other = dynamic_cast<TH2F*>(mcEffFile.Get("other__tight"));
             hist_other->SetDirectory(0);
             mcEff_other.reset(hist_other);
             
@@ -145,23 +145,23 @@ class BTagReweighting:
 
             
             _btagCalib=BTagCalibration("csvv1", _sfFile);
-            _readerNominal_mujets = BTagCalibrationReader(
+            _readerNominal_ttbar = BTagCalibrationReader(
                 &_btagCalib,               // calibration instance
                 BTagEntry::OP_TIGHT,  // operating point
-                "mujets",               // measurement type
+                "ttbar",               // measurement type
                 "central"             // systematics type
             );           
-            _readerUp_mujets = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "mujets", "up");  // sys up
-            _readerDown_mujets = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "mujets", "down");  // sys down
+            _readerUp_ttbar = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "ttbar", "up");  // sys up
+            _readerDown_ttbar = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "ttbar", "down");  // sys down
                         
-            _readerNominal_comb = BTagCalibrationReader(
+            _readerNominal_inc = BTagCalibrationReader(
                 &_btagCalib,               // calibration instance
                 BTagEntry::OP_TIGHT,  // operating point
                 "incl",               // measurement type
                 "central"             // systematics type
             );           
-            _readerUp_comb = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "incl", "up");  // sys up
-            _readerDown_comb = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "incl", "down");  // sys down
+            _readerUp_inc = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "incl", "up");  // sys up
+            _readerDown_inc = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "incl", "down");  // sys down
    
                         
                         
@@ -219,9 +219,9 @@ class BTagReweighting:
                         pt = MaxBJetPt; 
                         doubleUncertainty = true;
                     }
-                    jet_scalefactor = _readerNominal_mujets.eval(flavor, eta, pt); 
-                    jet_scalefactor_up = _readerUp_mujets.eval(flavor, eta, pt); 
-                    jet_scalefactor_down = _readerDown_mujets.eval(flavor, eta, pt);   
+                    jet_scalefactor = _readerNominal_ttbar.eval(flavor, eta, pt); 
+                    jet_scalefactor_up = _readerUp_ttbar.eval(flavor, eta, pt); 
+                    jet_scalefactor_down = _readerDown_ttbar.eval(flavor, eta, pt);   
                 } 
                 else if (jet.flavor==4)
                 {
@@ -231,9 +231,9 @@ class BTagReweighting:
                         pt = MaxBJetPt; 
                         doubleUncertainty = true;
                     }
-                    jet_scalefactor = _readerNominal_mujets.eval(flavor, eta, pt); 
-                    jet_scalefactor_up = _readerUp_mujets.eval(flavor, eta, pt); 
-                    jet_scalefactor_down = _readerDown_mujets.eval(flavor, eta, pt); 
+                    jet_scalefactor = _readerNominal_ttbar.eval(flavor, eta, pt); 
+                    jet_scalefactor_up = _readerUp_ttbar.eval(flavor, eta, pt); 
+                    jet_scalefactor_down = _readerDown_ttbar.eval(flavor, eta, pt); 
                 } 
                 else
                 {
@@ -243,9 +243,9 @@ class BTagReweighting:
                         pt = MaxLJetPt; 
                         doubleUncertainty = true;
                     }
-                    jet_scalefactor = _readerNominal_comb.eval(flavor, eta, pt); 
-                    jet_scalefactor_up = _readerUp_comb.eval(flavor, eta, pt); 
-                    jet_scalefactor_down = _readerDown_comb.eval(flavor, eta, pt);   
+                    jet_scalefactor = _readerNominal_inc.eval(flavor, eta, pt); 
+                    jet_scalefactor_up = _readerUp_inc.eval(flavor, eta, pt); 
+                    jet_scalefactor_down = _readerDown_inc.eval(flavor, eta, pt);   
                 }
 
                 if (doubleUncertainty)

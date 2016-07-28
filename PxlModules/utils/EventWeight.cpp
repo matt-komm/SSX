@@ -79,7 +79,7 @@ const std::unordered_map<std::string,FileInfo> eventWeights80Xv1 = {
         }
     },
     
-    {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+    {"WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
         {
             //total=28210360.0 eff=28210360.0 - .0 = 28210360.0
             28210360.0,
