@@ -21,3 +21,6 @@
 <library   file="JetClustering.cc" name="JetClusteringPlugin">
     <flags   EDM_PLUGIN="1"/>
 </library>
+<library   file="METProducer.cc" name="METProducerPlugin">
+    <flags   EDM_PLUGIN="1"/>
+</library>

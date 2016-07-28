@@ -14,6 +14,20 @@ class Jet
 {
     public:
         typedef math::XYZTLorentzVector LorentzVector;
+        
+        struct Constituent
+        {
+            const LorentzVector p4;
+            const int charge;
+            const int pdgId; 
+            
+            Constituent(const reco::Candidate& candidate):
+                p4(candidate.p4()),
+                charge(candidate.charge()),
+                pdgId(candidate.pdgId())
+            {
+            }
+        };
 
     protected:
         LorentzVector _lorentzVector;
@@ -25,6 +39,8 @@ class Jet
         LorentzVector _tauEnergy;
         LorentzVector _photonEnergy;
         LorentzVector _neutrinoEnergy;
+        
+        std::vector<Constituent> _constituents;
         
         std::unordered_map<std::string,unsigned int> _ghostTags;
         
@@ -70,6 +86,8 @@ class Jet
         {
             return _charge;
         }
+       
+        double jetCharge(double exp=1.0) const;
         
         inline double electronFraction() const
         {

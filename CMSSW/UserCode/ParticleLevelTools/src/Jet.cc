@@ -1,5 +1,6 @@
 #include "UserCode/ParticleLevelTools/interface/Jet.h"
 
+
 namespace plt
 {
 
@@ -12,6 +13,16 @@ Jet::Jet():
     _photonEnergy(0,0,0,0),
     _neutrinoEnergy(0,0,0,0)
 {
+}
+
+double Jet::jetCharge(double exp) const
+{
+    double jetCharge = 0.0;
+    for (const Constituent& obj: _constituents)
+    {
+        jetCharge+=std::pow(obj.p4.pt(),exp)*obj.charge;
+    }
+    return jetCharge/std::pow(_lorentzVector.pt(),exp);
 }
 
 void Jet::addConstituent(const reco::Candidate& candidate)
@@ -40,6 +51,7 @@ void Jet::addConstituent(const reco::Candidate& candidate)
     
     _lorentzVector+=candidate.p4();
     _charge+=candidate.charge();
+    _constituents.emplace_back(candidate);
 }
 
 }
