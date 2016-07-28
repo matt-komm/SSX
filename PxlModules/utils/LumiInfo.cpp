@@ -226,15 +226,26 @@ class LumiInfo:
                         unsigned int lumiBlock = event->getUserRecord("LuminosityBlock").asUInt32();
                         
                         auto findRun = _infoByRunLumi.find(runNumber);
-                        if (findRun==_infoByRunLumi.cend()) throw std::runtime_error("Run info not found: "+std::to_string(runNumber));
-                        auto findLumi = findRun->second.find(lumiBlock);
-                        if (findLumi==findRun->second.cend()) throw std::runtime_error("Lumi "+std::to_string(lumiBlock)+" info not found for run "+std::to_string(runNumber));
-                        event->setUserRecord("Fill",findLumi->second.fillNumber);
-                        event->setUserRecord("recLumi",findLumi->second.recordedLumi);
-                        event->setUserRecord("avgPU",findLumi->second.avgPu);
-                        event->setUserRecord("Week",findLumi->second.week);
-                        event->setUserRecord("Day",findLumi->second.weekDay);
-                        //event->setUserRecord("fill",findLumi->second.fillNumber);
+                        if (findRun==_infoByRunLumi.cend())
+                        {
+                            logger(pxl::LOG_LEVEL_INFO ,"Run info not found: "+std::to_string(runNumber));
+                        }
+                        else
+                        {
+                            auto findLumi = findRun->second.find(lumiBlock);
+                            if (findLumi==findRun->second.cend())
+                            {
+                                logger(pxl::LOG_LEVEL_INFO ,"Lumi "+std::to_string(lumiBlock)+" info not found for run "+std::to_string(runNumber));
+                            }
+                            else
+                            {
+                                event->setUserRecord("Fill",findLumi->second.fillNumber);
+                                event->setUserRecord("recLumi",findLumi->second.recordedLumi);
+                                event->setUserRecord("avgPU",findLumi->second.avgPu);
+                                event->setUserRecord("Week",findLumi->second.week);
+                                event->setUserRecord("Day",findLumi->second.weekDay);
+                            }
+                        }
                     }
                     _outputSource->setTargets(event);
                     return _outputSource->processTargets();
