@@ -220,10 +220,17 @@ class LumiInfo:
                 pxl::Event *event  = dynamic_cast<pxl::Event*>(sink->get());
                 if (event)
                 {
+                    
                     if (event->getUserRecord("isRealData").asBool())
                     {
                         unsigned int runNumber = event->getUserRecord("Run").asUInt32();
                         unsigned int lumiBlock = event->getUserRecord("LuminosityBlock").asUInt32();
+                        
+                        unsigned int fillNumber = 0;
+                        float recLumi = 0.0;
+                        float avgPu = 0.0;
+                        unsigned char week = 0;
+                        unsigned char day = 0;
                         
                         auto findRun = _infoByRunLumi.find(runNumber);
                         if (findRun==_infoByRunLumi.cend())
@@ -239,14 +246,20 @@ class LumiInfo:
                             }
                             else
                             {
-                                event->setUserRecord("Fill",findLumi->second.fillNumber);
-                                event->setUserRecord("recLumi",findLumi->second.recordedLumi);
-                                event->setUserRecord("avgPU",findLumi->second.avgPu);
-                                event->setUserRecord("Week",findLumi->second.week);
-                                event->setUserRecord("Day",findLumi->second.weekDay);
+                                fillNumber = findLumi->second.fillNumber;
+                                recLumi = findLumi->second.recordedLumi;
+                                avgPu = findLumi->second.avgPu;
+                                week = findLumi->second.week;
+                                day = findLumi->second.weekDay;
                             }
                         }
+                        event->setUserRecord("Fill",fillNumber);
+                        event->setUserRecord("recLumi",recLumi);
+                        event->setUserRecord("avgPU",avgPu);
+                        event->setUserRecord("Week",week);
+                        event->setUserRecord("Day",day);
                     }
+                    
                     _outputSource->setTargets(event);
                     return _outputSource->processTargets();
                 }
