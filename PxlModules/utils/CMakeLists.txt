@@ -57,3 +57,10 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(SlimParticleLevelObjects MODULE SlimParticleLevelObjects.cpp)
+target_link_libraries(SlimParticleLevelObjects ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
+install(
+    TARGETS SlimParticleLevelObjects
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+

@@ -27,12 +27,11 @@ function execute
 
 cd $BASEDIR/external
 
-execute wget --no-check-certificate https://forge.physik.rwth-aachen.de/attachments/download/391/pxl-3.5.1.tar.gz
-execute tar -zxvf pxl-3.5.1.tar.gz
+execute git clone https://github.com/matt-komm/pxl-slim.git
 
-cd pxl-3.5.1
+cd pxl-slim
 
-PXLBASEDIR=$BASEDIR/external/pxl-3.5.1/release
+PXLBASEDIR=$BASEDIR/external/pxl-slim/release
 addVar PXLBASEDIR $PXLBASEDIR
 addVar PATH $PXLBASEDIR/bin:"$"PATH
 addVar LD_LIBRARY_PATH $PXLBASEDIR/lib:"$"LD_LIBRARY_PATH
@@ -43,6 +42,7 @@ execute mkdir build
 cd build
 
 execute $CMAKEBASEDIR/bin/cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$PXLBASEDIR \
     -DSWIG_DIR=$SWIGBASEDIR \
     -DSWIG_EXECUTABLE=$SWIGBASEDIR/bin/swig \
