@@ -21,7 +21,7 @@ const std::unordered_map<std::string,FileInfo> eventWeights80Xv1 = {
         {
             //total=28696958.0 eff=23968195.0 - 4728763.0 = 19239432.0
             19239432,
-            2008.4*3
+            1921.8*3 
         }
     },
     {"QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8",

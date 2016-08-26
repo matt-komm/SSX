@@ -7,6 +7,7 @@
 
 #include <string>
 #include <random>
+#include <unordered_map>
 
 static pxl::Logger logger("Splitter");
 
@@ -19,24 +20,30 @@ class Splitter:
         pxl::Source* _outputVetoSource;
         
         double _percentage;
-        int64_t _maxEvents;
         bool _random;
+        
+        std::string _processNameField;
         
         unsigned int _passedEvents;
         unsigned int _selectedEvents;
+        
+        std::string _splitName;
         
         std::random_device _randomDevice;
         std::mt19937 _generator;
         std::uniform_real_distribution<> _uniformDist;
         
+        std::unordered_map<std::string,std::pair<int,int>> _splittingInfo;
+        
     public:
         Splitter():
             Module(),
             _percentage(0.5),
-            _maxEvents(-1),
             _random(true),
+            _processNameField("ProcessName"),
             _passedEvents(0),
             _selectedEvents(0),
+            _splitName("testing"),
             _generator(_randomDevice()),
             _uniformDist(0, 1)
             
@@ -45,9 +52,12 @@ class Splitter:
             _outputSource = addSource("output","output");
             _outputVetoSource = addSource("veto","veto");
             
+            addOption("process name field","",_processNameField);
+            
             addOption("percentage","percentage of events to select",_percentage);
-            addOption("max events","limit maximal total amount of selected events",_maxEvents);
             addOption("random","select events randomly",_random);
+            
+            addOption("split name","UR name to indicate if selected or not",_splitName);            
         }
 
         ~Splitter()
@@ -79,11 +89,12 @@ class Splitter:
 
         void beginJob() throw (std::runtime_error)
         {
+            getOption("process name field",_processNameField);
+        
             getOption("percentage",_percentage);
-            getOption("max events",_maxEvents);
             getOption("random",_random);
             
-
+            getOption("split name",_splitName);
         }
 
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)
@@ -92,44 +103,40 @@ class Splitter:
             {
                 pxl::Event *event  = dynamic_cast<pxl::Event*>(sink->get());
                 
-                _passedEvents+=1;
-                if ((_maxEvents>=0) and _selectedEvents>=_maxEvents)
+                const std::string processName = event->getUserRecord(_processNameField);
+                if (_splittingInfo.find(processName)==_splittingInfo.end())
                 {
-                    _outputVetoSource->setTargets(event);
-                    return _outputVetoSource->processTargets();
+                    _splittingInfo[processName] = std::make_pair<int,int>(0,0);
                 }
+                _splittingInfo[processName].first+=1;
                 
+                bool selected = false;
                 
                 if (_random)
                 {
-                    if (_uniformDist(_generator)<_percentage)
-                    {
-                        _outputSource->setTargets(event);
-                        return _outputSource->processTargets();
-                    }
-                    else
-                    {
-                        _outputVetoSource->setTargets(event);
-                        return _outputVetoSource->processTargets();
-                    }
+                    selected = _uniformDist(_generator)<_percentage;
                 }
                 
                 else
                 {
-                    double fraction = 1.0*_selectedEvents/_passedEvents;
-                    if (fraction<_percentage)
-                    {
-                        _selectedEvents+=1;
-                        _outputSource->setTargets(event);
-                        return _outputSource->processTargets();
-                    }
-                    else
-                    {
-                        _outputVetoSource->setTargets(event);
-                        return _outputVetoSource->processTargets();
-                    }
-                    
+                    double fraction = 1.0*_splittingInfo[processName].second/_splittingInfo[processName].first;
+                    selected = fraction<_percentage;
                 }
+                
+                if (selected)
+                {
+                    event->setUserRecord(_splitName,true);
+                    _splittingInfo[processName].second+=1;
+                    _outputSource->setTargets(event);
+                    return _outputSource->processTargets();
+                }
+                else
+                {
+                    event->setUserRecord(_splitName,false);
+                    _outputVetoSource->setTargets(event);
+                    return _outputVetoSource->processTargets();
+                }
+                
             }
             catch(std::exception &e)
             {
@@ -146,6 +153,10 @@ class Splitter:
 
         void shutdown() throw(std::runtime_error)
         {
+            for (auto it: _splittingInfo)
+            {
+                logger(pxl::LOG_LEVEL_INFO , "Split fraction for '",it.first,"': ",it.second.second/it.second.first, " (",it.second.first," events passed)");
+            }
         }
 
         void destroy() throw (std::runtime_error)
