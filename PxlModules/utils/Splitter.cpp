@@ -7,6 +7,7 @@
 
 #include <string>
 #include <random>
+#include <regex>
 #include <unordered_map>
 
 static pxl::Logger logger("Splitter");
@@ -19,7 +20,9 @@ class Splitter:
         pxl::Source* _outputSource;
         pxl::Source* _outputVetoSource;
         
-        double _percentage;
+        std::vector<std::string> _percentages;
+        std::vector<std::pair<std::regex,double>> _splits;
+        
         bool _random;
         
         std::string _processNameField;
@@ -38,8 +41,8 @@ class Splitter:
     public:
         Splitter():
             Module(),
-            _percentage(0.5),
-            _random(true),
+            _percentages({"[A-Za-z0-9_\\-]+=0.7"}),
+            _random(false),
             _processNameField("ProcessName"),
             _passedEvents(0),
             _selectedEvents(0),
@@ -54,7 +57,7 @@ class Splitter:
             
             addOption("process name field","",_processNameField);
             
-            addOption("percentage","percentage of events to select",_percentage);
+            addOption("percentages","percentage of events to select",_percentages);
             addOption("random","select events randomly",_random);
             
             addOption("split name","UR name to indicate if selected or not",_splitName);            
@@ -91,7 +94,20 @@ class Splitter:
         {
             getOption("process name field",_processNameField);
         
-            getOption("percentage",_percentage);
+            getOption("percentages",_percentages);
+            
+            for (auto it: _percentages)
+            {
+                int pos = it.find("=");
+                if (pos ==std::string::npos)
+                {
+                    throw std::runtime_error("Splitter percentage not found in '"+it+"'");
+                }
+                double percentage = std::atof(it.substr(pos+1).c_str());
+                std::regex regex(it.substr(0,pos));
+                _splits.emplace_back(regex,percentage);
+            }
+            
             getOption("random",_random);
             
             getOption("split name",_splitName);
@@ -111,16 +127,31 @@ class Splitter:
                 _splittingInfo[processName].first+=1;
                 
                 bool selected = false;
+                double percentage = -1.0;
+                
+                for (auto it: _splits)
+                {
+                    if (std::regex_match(processName,it.first))
+                    {
+                        percentage=it.second;
+                        break;
+                    }
+                }
+                if (percentage<0)
+                {
+                    throw std::runtime_error("Cannot find splitting percentage for process '"+processName+"'");
+                }
                 
                 if (_random)
                 {
-                    selected = _uniformDist(_generator)<_percentage;
+                    selected = _uniformDist(_generator)<percentage;
                 }
                 
                 else
                 {
+                    
                     double fraction = 1.0*_splittingInfo[processName].second/_splittingInfo[processName].first;
-                    selected = fraction<_percentage;
+                    selected = fraction<percentage;
                 }
                 
                 if (selected)
