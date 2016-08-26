@@ -157,6 +157,7 @@ class Splitter:
                 if (selected)
                 {
                     event->setUserRecord(_splitName,true);
+                    event->setUserRecord(_splitName+"_frac",percentage);
                     _splittingInfo[processName].second+=1;
                     _outputSource->setTargets(event);
                     return _outputSource->processTargets();
@@ -164,6 +165,7 @@ class Splitter:
                 else
                 {
                     event->setUserRecord(_splitName,false);
+                    event->setUserRecord(_splitName+"_frac",1.-percentage);
                     _outputVetoSource->setTargets(event);
                     return _outputVetoSource->processTargets();
                 }
