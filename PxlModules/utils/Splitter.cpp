@@ -24,6 +24,7 @@ class Splitter:
         std::vector<std::pair<std::regex,double>> _splits;
         
         bool _random;
+        bool _useExistingFlag;
         
         std::string _processNameField;
         
@@ -43,6 +44,7 @@ class Splitter:
             Module(),
             _percentages({"[A-Za-z0-9_\\-]+=0.7"}),
             _random(false),
+            _useExistingFlag(false),
             _processNameField("ProcessName"),
             _passedEvents(0),
             _selectedEvents(0),
@@ -59,6 +61,7 @@ class Splitter:
             
             addOption("percentages","percentage of events to select",_percentages);
             addOption("random","select events randomly",_random);
+            addOption("use existing flag","use flag from previous module",_useExistingFlag);
             
             addOption("split name","UR name to indicate if selected or not",_splitName);            
         }
@@ -109,7 +112,7 @@ class Splitter:
             }
             
             getOption("random",_random);
-            
+            getOption("use existing flag",_useExistingFlag);
             getOption("split name",_splitName);
         }
 
@@ -129,31 +132,46 @@ class Splitter:
                 bool selected = false;
                 double percentage = -1.0;
                 
-                for (auto it: _splits)
+                if (_useExistingFlag)
                 {
-                    if (std::regex_match(processName,it.first))
+                    if (not (event->hasUserRecord(_splitName) or event->hasUserRecord(_splitName+"_frac")))
                     {
-                        percentage=it.second;
-                        break;
+                        selected = true;
+                        percentage = 1.0;
+                    }
+                    else
+                    {
+                        selected = event->getUserRecord(_splitName).toBool();
+                        percentage = event->getUserRecord(_splitName+"_frac").toDouble();
                     }
                 }
-                if (percentage<0)
-                {
-                    throw std::runtime_error("Cannot find splitting percentage for process '"+processName+"'");
-                }
-                
-                if (_random)
-                {
-                    selected = _uniformDist(_generator)<percentage;
-                }
-                
                 else
                 {
+                    for (auto it: _splits)
+                    {
+                        if (std::regex_match(processName,it.first))
+                        {
+                            percentage=it.second;
+                            break;
+                        }
+                    }
+                    if (percentage<0)
+                    {
+                        throw std::runtime_error("Cannot find splitting percentage for process '"+processName+"'");
+                    }
                     
-                    double fraction = 1.0*_splittingInfo[processName].second/_splittingInfo[processName].first;
-                    selected = fraction<percentage;
+                    
+                    if (_random)
+                    {
+                        selected = _uniformDist(_generator)<percentage;
+                    }
+                    else
+                    {
+                        
+                        double fraction = 1.0*_splittingInfo[processName].second/_splittingInfo[processName].first;
+                        selected = fraction<percentage;
+                    }
                 }
-                
                 if (selected)
                 {
                     event->setUserRecord(_splitName,true);
