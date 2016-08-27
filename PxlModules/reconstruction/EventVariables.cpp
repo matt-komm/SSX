@@ -115,16 +115,29 @@ class EventVariables:
                             std::vector<pxl::Particle*> particles;
                             eventView->getObjectsOfType(particles);
                             
+                            std::vector<pxl::Particle*> selectedParticles;
                             std::vector<pxl::LorentzVector> eventShapeVectors;
-
+                            
                             for (unsigned int iparticle = 0; iparticle<particles.size(); ++iparticle)
                             {
                                 pxl::Particle* particle = particles[iparticle];
                                 if (_particlesForEventShape.find(particle->getName())!=_particlesForEventShape.end())
                                 {
+                                    selectedParticles.push_back(particle);
                                     eventShapeVectors.push_back(particle->getVector());
                                 }
                             }
+                            
+                            for (unsigned int iparticle = 0; iparticle<selectedParticles.size(); ++iparticle)
+                            {
+                                for (unsigned int jparticle = iparticle+1; jparticle<selectedParticles.size(); ++jparticle)
+                                {
+                                    selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dR",selectedParticles[iparticle]->getVector().deltaR(&selectedParticles[jparticle]->getVector()));
+                                    selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dEta",selectedParticles[iparticle]->getVector().deltaEta(&selectedParticles[jparticle]->getVector()));
+                                    selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dPhi",selectedParticles[iparticle]->getVector().deltaPhi(&selectedParticles[jparticle]->getVector()));
+                                }
+                            }
+                            
                             EventShapeVariables esv(eventShapeVectors);
                             eventView->setUserRecord(_prefix+"isotropy",esv.isotropy());
                             eventView->setUserRecord(_prefix+"circularity",esv.circularity());

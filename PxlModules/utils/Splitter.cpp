@@ -188,7 +188,7 @@ class Splitter:
         {
             for (auto it: _splittingInfo)
             {
-                logger(pxl::LOG_LEVEL_INFO , "Split fraction for '",it.first,"': ",it.second.second/it.second.first, " (",it.second.first," events passed)");
+                logger(pxl::LOG_LEVEL_INFO , "Split fraction for '",it.first,"': ",1.0*it.second.second/it.second.first, " (",it.second.first," events passed)");
             }
         }
 
