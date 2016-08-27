@@ -135,6 +135,7 @@ class EventVariables:
                                     selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dR",selectedParticles[iparticle]->getVector().deltaR(&selectedParticles[jparticle]->getVector()));
                                     selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dEta",selectedParticles[iparticle]->getVector().deltaEta(&selectedParticles[jparticle]->getVector()));
                                     selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dPhi",selectedParticles[iparticle]->getVector().deltaPhi(&selectedParticles[jparticle]->getVector()));
+                                    selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_ptR",selectedParticles[iparticle]->getPt()/(selectedParticles[jparticle]->getPt()+0.001));
                                 }
                             }
                             
