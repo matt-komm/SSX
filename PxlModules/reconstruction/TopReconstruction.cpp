@@ -468,6 +468,7 @@ class TopReconstruction:
             if (lightjet)
             {
                 lightjet->setName("LightJet");
+                eventView->setUserRecord("absLEta",std::fabs(lightjet->getEta()));
             }
             if (bjet)
             {
