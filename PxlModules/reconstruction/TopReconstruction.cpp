@@ -345,6 +345,8 @@ class TopReconstruction:
                 throw std::runtime_error("no neutrino found!");
             }
             
+            
+            
             if (njets==0)
             {
                 wboson = makeWboson(eventView,lepton,neutrino);

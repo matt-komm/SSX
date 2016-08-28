@@ -142,7 +142,7 @@ class Splitter:
                     else
                     {
                         selected = event->getUserRecord(_splitName).toBool();
-                        percentage = event->getUserRecord(_splitName+"_frac").toDouble();
+                        percentage = selected?event->getUserRecord(_splitName+"_frac").toDouble():1-event->getUserRecord(_splitName+"_frac").toDouble();
                     }
                 }
                 else

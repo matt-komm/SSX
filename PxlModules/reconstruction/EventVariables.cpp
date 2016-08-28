@@ -133,8 +133,8 @@ class EventVariables:
                                 for (unsigned int jparticle = iparticle+1; jparticle<selectedParticles.size(); ++jparticle)
                                 {
                                     selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dR",selectedParticles[iparticle]->getVector().deltaR(&selectedParticles[jparticle]->getVector()));
-                                    selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dEta",selectedParticles[iparticle]->getVector().deltaEta(&selectedParticles[jparticle]->getVector()));
-                                    selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dPhi",selectedParticles[iparticle]->getVector().deltaPhi(&selectedParticles[jparticle]->getVector()));
+                                    selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dEta",std::fabs(selectedParticles[iparticle]->getVector().deltaEta(&selectedParticles[jparticle]->getVector())));
+                                    selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_dPhi",std::fabs(selectedParticles[iparticle]->getVector().deltaPhi(&selectedParticles[jparticle]->getVector())));
                                     selectedParticles[iparticle]->setUserRecord(selectedParticles[jparticle]->getName()+"_ptR",selectedParticles[iparticle]->getPt()/(selectedParticles[jparticle]->getPt()+0.001));
                                 }
                             }
