@@ -21,7 +21,9 @@ class Splitter:
         pxl::Source* _outputVetoSource;
         
         std::vector<std::string> _percentages;
+        std::vector<std::string> _limits;
         std::vector<std::pair<std::regex,double>> _splits;
+        std::vector<std::pair<std::regex,int>> _splitLimits;
         
         bool _random;
         bool _useExistingFlag;
@@ -43,6 +45,7 @@ class Splitter:
         Splitter():
             Module(),
             _percentages({"[A-Za-z0-9_\\-]+=0.7"}),
+            _limits({"[A-Za-z0-9_\\-]+=-1"}),
             _random(false),
             _useExistingFlag(false),
             _processNameField("ProcessName"),
@@ -60,6 +63,7 @@ class Splitter:
             addOption("process name field","",_processNameField);
             
             addOption("percentages","percentage of events to select",_percentages);
+            addOption("limits","limit the events to split per process",_limits);
             addOption("random","select events randomly",_random);
             addOption("use existing flag","use flag from previous module",_useExistingFlag);
             
@@ -98,6 +102,7 @@ class Splitter:
             getOption("process name field",_processNameField);
         
             getOption("percentages",_percentages);
+            getOption("limits",_limits);
             
             for (auto it: _percentages)
             {
@@ -109,6 +114,18 @@ class Splitter:
                 double percentage = std::atof(it.substr(pos+1).c_str());
                 std::regex regex(it.substr(0,pos));
                 _splits.emplace_back(regex,percentage);
+            }
+            
+            for (auto it: _limits)
+            {
+                int pos = it.find("=");
+                if (pos ==std::string::npos)
+                {
+                    throw std::runtime_error("Splitter percentage not found in '"+it+"'");
+                }
+                int limit = std::atoi(it.substr(pos+1).c_str());
+                std::regex regex(it.substr(0,pos));
+                _splitLimits.emplace_back(regex,limit);
             }
             
             getOption("random",_random);
@@ -131,6 +148,7 @@ class Splitter:
                 
                 bool selected = false;
                 double percentage = -1.0;
+                int limit = -10;
                 
                 if (_useExistingFlag)
                 {
@@ -155,23 +173,40 @@ class Splitter:
                             break;
                         }
                     }
+                    for (auto it: _splitLimits)
+                    {
+                        if (std::regex_match(processName,it.first))
+                        {
+                            limit=it.second;
+                            break;
+                        }
+                    }
+                    
                     if (percentage<0)
                     {
                         throw std::runtime_error("Cannot find splitting percentage for process '"+processName+"'");
                     }
                     
-                    
-                    if (_random)
+                    if ((limit>0) and (limit<_splittingInfo[processName].first))
                     {
-                        selected = _uniformDist(_generator)<percentage;
+                        selected = true;
+                        percentage = 1.0;
                     }
                     else
                     {
-                        
-                        double fraction = 1.0*_splittingInfo[processName].second/_splittingInfo[processName].first;
-                        selected = fraction<percentage;
+                        if (_random)
+                        {
+                            selected = _uniformDist(_generator)<percentage;
+                        }
+                        else
+                        {
+                            double fraction = 1.0*_splittingInfo[processName].second/_splittingInfo[processName].first;
+                            selected = fraction<percentage;
+                        }
                     }
                 }
+                
+                
                 if (selected)
                 {
                     event->setUserRecord(_splitName,true);
