@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <regex>
 #include <fstream>
 #include <sstream>
 
@@ -24,8 +25,10 @@ class SlimParticleLevelObjects:
         std::string _eventViewName;
 
         std::vector<std::string> _leptonNames;
+        std::vector<std::regex> _leptonNamesRegex;
         int64_t _maxLeptons; 
         std::vector<std::string> _jetNames;
+        std::vector<std::regex> _jetNamesRegex;
         int64_t _maxJets;
         
         struct SortByPt
@@ -52,9 +55,18 @@ class SlimParticleLevelObjects:
             addOption("event view","",_eventViewName);
             
             addOption("lepton names","",_leptonNames);
+            for (auto name: _leptonNames)
+            {
+                _leptonNamesRegex.emplace_back(name);
+            }
             addOption("max leptons","",_maxLeptons);
             
             addOption("jet names","",_jetNames);
+            for (auto name: _jetNames)
+            {
+                _jetNamesRegex.emplace_back(name);
+            }
+            
             addOption("max jets","",_maxJets);
             
         }

@@ -23,3 +23,10 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(PartonLevelReconstruction MODULE PartonLevelReconstruction.cpp)
+target_link_libraries(PartonLevelReconstruction ${PXL_LIBRARIES})
+install(
+    TARGETS PartonLevelReconstruction
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+
