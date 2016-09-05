@@ -150,6 +150,27 @@ class PartonLevelReconstruction:
             }
         }
         
+        bool isInDecay(const pxl::Particle* mother, const pxl::Particle* decayee) const
+        {
+            if (mother->numberOfDaughters ()==0)
+            {
+                return false;
+            }
+            for (auto d: mother->getDaughters())
+            {
+                const pxl::Particle* daughter = dynamic_cast<const pxl::Particle*>(d);
+                if (daughter==decayee)
+                {
+                    return true;
+                }
+                else if (isInDecay(daughter,decayee))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)
         {
             pxl::Event *event  = dynamic_cast<pxl::Event *> (sink->get());
@@ -218,6 +239,20 @@ class PartonLevelReconstruction:
                                     bquarkCandidates.push_back(particle);
                                 }
                                 
+                                //Find l quarks --------------------------------------------------------
+                                //First copy flag is not always present
+                                if (std::fabs(particle->getPdgNumber())<5 and checkFlag(particle,FromHardProcess))
+                                {
+                                    if (_lastCopies and checkFlag(particle,IsLastCopy))
+                                    {
+                                        lquarkCandidates.push_back(particle);
+                                    }
+                                    else if (!_lastCopies and particle->numberOfMothers()==2)
+                                    {
+                                        lquarkCandidates.push_back(particle);
+                                    }
+                                }
+                                
                                 //Find leptons --------------------------------------------------------
                                 if (checkFlag(particle,FromHardProcess) and (std::fabs(particle->getPdgNumber())==11 or std::fabs(particle->getPdgNumber())==13))
                                 {
@@ -225,20 +260,17 @@ class PartonLevelReconstruction:
                                     if (checkFlag(particle,copyGenFlag) and checkFlag(particle,IsPrompt))
                                     {
                                         leptonCandidates.push_back(particle);
-                                        //particle->setName(particle->getName()+"_sel");
                                     }
                                     //deal with tau->lnu
                                     else if (_addTauDecays and checkFlag(particle,IsDirectPromptTauDecayProduct) and checkFlag(particle,copyGenFlag))
                                     {
                                         leptonCandidates.push_back(particle);
-                                        //particle->setName(particle->getName()+"_sel");
                                     }
                                 }
                                 //protect against tau->gamma,tau FSR
                                 else if (_addTau and checkFlag(particle,FromHardProcess) and std::fabs(particle->getPdgNumber())==15 and checkFlag(particle,IsPrompt) and checkFlag(particle,copyGenFlag))
                                 {
                                     leptonCandidates.push_back(particle);
-                                    //particle->setName(particle->getName()+"_sel");
                                 }
                                 
                                 
@@ -249,13 +281,11 @@ class PartonLevelReconstruction:
                                     if (checkFlag(particle,copyGenFlag) and checkFlag(particle,IsPrompt))
                                     {
                                         neutrinoCandidates.push_back(particle);
-                                        //particle->setName(particle->getName()+"_sel");
                                     }
 
                                     if (_addTauDecays and checkFlag(particle,IsDirectPromptTauDecayProduct) and checkFlag(particle,copyGenFlag))
                                     {
                                         additionalNeutrinoCandidates.push_back(particle);
-                                        //particle->setName(particle->getName()+"_add");
                                     }
                                 }
                             }
@@ -275,79 +305,90 @@ class PartonLevelReconstruction:
                                 throw std::runtime_error("no b quarks found in hard process");
                             }
                             
+                            for (pxl::Particle* p: bquarkCandidates)
+                            {
+                                if (isInDecay(top,p))
+                                {
+                                    if (bquark!=nullptr)
+                                    {
+                                        throw std::runtime_error("Multiple b quarks in hard process from top decay detected");
+                                    }
+                                    bquark = p;
+                                }
+                            }
+                            
+                            if (!bquark)
+                            {
+                                throw std::runtime_error("no b quark from top decay found");
+                            }
+                            
+                            if (lquarkCandidates.size()==0)
+                            {
+                                throw std::runtime_error("no light quarks found in hard process");
+                            }
+                            
+                            //take the hardest spectator jet not interacting to top (prevents initial states)
+                            for (pxl::Particle* p: lquarkCandidates)
+                            {
+                                if ((lquark==nullptr or p->getE()>lquark->getE()) and (!isInDecay(p,top)))
+                                {
+                                    lquark = p;
+                                }
+                            }
+                            
+                            if (!lquark)
+                            {
+                                throw std::runtime_error("no light quark detected");
+                            }
+                            
                             if (leptonCandidates.size()>1)
                             {
                                 throw std::runtime_error("Lepton ambiguity discovered");
                             }
-                            lepton = leptonCandidates.front();
+                            if (leptonCandidates.size()==1)
+                            {
+                                lepton = leptonCandidates.front();
+                            }
                             
                             if (neutrinoCandidates.size()>1)
                             {
                                 throw std::runtime_error("Neutrino ambiguity discovered");
                             }
-                            neutrino = neutrinoCandidates.front();
-                                        
-                            /*
-                            const pxl::Particle* currentTop = top;
-                            while (currentTop->numberOfDaughters()>0)
+                            if (neutrinoCandidates.size()==1)
                             {
-                                //just another copy before decaying
-                                if (currentTop->numberOfDaughters()==1 and std::fabs(((pxl::Particle*)currentTop->getDaughter())->getPdgNumber())==6)
-                                {
-                                    currentTop = (pxl::Particle*)currentTop->getDaughter();
-                                    continue;
-                                }
-                                if (currentTop->numberOfDaughters()>2)
-                                {
-                                    throw std::runtime_error("Unknown top decay into "+std::to_string(currentTop->numberOfDaughters())+" particles");
-                                }
+                                neutrino = neutrinoCandidates.front();
+                            }
+                            
+                            if (top and bquark and wboson and lepton and neutrino and lquark)
+                            {
+                                pxl::EventView* outputEV = event->create<pxl::EventView>();
+                                outputEV->setName(_outputEventViewName);
                                 
-                                std::vector<pxl::Particle*> topDaughters;
-                                std::transform(currentTop->getDaughters().begin(), currentTop->getDaughters().end(), std::back_inserter(topDaughters), [](pxl::Relative* r){return static_cast<pxl::Particle*>(r);});
-
-                                if (std::fabs(topDaughters[0]->getPdgNumber())==5 and std::fabs(topDaughters[1]->getPdgNumber())==24)
-                                {
-                                    bquark=topDaughters[0];
-                                    wboson=topDaughters[1];
-                                    break;
-                                }
-                                else if (std::fabs(topDaughters[1]->getPdgNumber())==5 and std::fabs(topDaughters[0]->getPdgNumber())==24)
-                                {
-                                    bquark=topDaughters[1];
-                                    wboson=topDaughters[0];
-                                    break;
-                                }
-                                else
-                                {
-                                    //can be a photon/gluon radiation so one daughter is a top quark again
-                                    if (std::fabs(topDaughters[0]->getPdgNumber())==6)
-                                    {
-                                        currentTop = topDaughters[0];
-                                        continue;
-                                    }
-                                    else if (std::fabs(topDaughters[1]->getPdgNumber())==6)
-                                    {
-                                        currentTop = topDaughters[1];
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        throw std::runtime_error("Strange top decay into pdgs: "+std::to_string(topDaughters[0]->getPdgNumber())+", "+std::to_string(topDaughters[1]->getPdgNumber()));
-                                    }
-                                }
+                                pxl::Particle* topClone = (pxl::Particle*)top->clone();
+                                outputEV->insertObject(topClone);
+                                
+                                pxl::Particle* bquarkClone = (pxl::Particle*)bquark->clone();
+                                outputEV->insertObject(bquarkClone);
+                                topClone->linkDaughter(bquarkClone);
+                                
+                                pxl::Particle* wbosonClone = (pxl::Particle*)wboson->clone();
+                                outputEV->insertObject(wbosonClone);
+                                topClone->linkDaughter(wbosonClone);
+                                
+                                pxl::Particle* leptonClone = (pxl::Particle*)lepton->clone();
+                                outputEV->insertObject(leptonClone);
+                                wbosonClone->linkDaughter(leptonClone);
+                                
+                                pxl::Particle* neutrinoClone = (pxl::Particle*)neutrino->clone();
+                                outputEV->insertObject(neutrinoClone);
+                                wbosonClone->linkDaughter(neutrinoClone);
+                                
+                                pxl::Particle* lquarkClone = (pxl::Particle*)lquark->clone();
+                                outputEV->insertObject(lquarkClone);
+                                
+                                
                             }
-                            if (!wboson)
-                            {
-                                throw std::runtime_error("W boson from top decay not found");
-                            }
-                            if (!bquark)
-                            {
-                                throw std::runtime_error("b quark from top decay not found");
-                            }
-                            */
-
-                            
-                            
+                                        
                             break; 
                         }
                     } //loop over event views
@@ -357,9 +398,11 @@ class PartonLevelReconstruction:
                         _outputHadronic->setTargets(event);
                         return _outputHadronic->processTargets();
                     }
+                    
+                    
+                    
                     _outputLeptonic->setTargets(event);
                     return _outputLeptonic->processTargets();
-                    
                 }
             }
             catch(std::exception &e)
