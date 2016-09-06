@@ -36,7 +36,6 @@ class Jet
     
         LorentzVector _electronEnergy;
         LorentzVector _muonEnergy;
-        LorentzVector _tauEnergy;
         LorentzVector _photonEnergy;
         LorentzVector _neutrinoEnergy;
         
@@ -99,11 +98,6 @@ class Jet
             return (_lorentzVector.px()*_muonEnergy.px()+_lorentzVector.py()*_muonEnergy.py()+_lorentzVector.pz()*_muonEnergy.pz())/_lorentzVector.P2();
         }
         
-        inline double tauFraction() const
-        {
-            return (_lorentzVector.px()*_tauEnergy.px()+_lorentzVector.py()*_tauEnergy.py()+_lorentzVector.pz()*_tauEnergy.pz())/_lorentzVector.P2();
-        }
-        
         inline double photonFraction() const
         {
             return (_lorentzVector.px()*_photonEnergy.px()+_lorentzVector.py()*_photonEnergy.py()+_lorentzVector.pz()*_photonEnergy.pz())/_lorentzVector.P2();
@@ -116,7 +110,7 @@ class Jet
         
         inline double hadronFraction() const
         {
-            LorentzVector hadronEnergy = _lorentzVector-_electronEnergy-_muonEnergy-_tauEnergy-_photonEnergy-_neutrinoEnergy;
+            LorentzVector hadronEnergy = _lorentzVector-_electronEnergy-_muonEnergy-_photonEnergy-_neutrinoEnergy;
             return (_lorentzVector.px()*hadronEnergy.px()+_lorentzVector.py()*hadronEnergy.py()+_lorentzVector.pz()*hadronEnergy.pz())/_lorentzVector.P2();
         }
 };

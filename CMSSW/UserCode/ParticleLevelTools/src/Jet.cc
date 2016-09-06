@@ -9,7 +9,6 @@ Jet::Jet():
     _charge(0),
     _electronEnergy(0,0,0,0),
     _muonEnergy(0,0,0,0),
-    _tauEnergy(0,0,0,0),
     _photonEnergy(0,0,0,0),
     _neutrinoEnergy(0,0,0,0)
 {
@@ -35,10 +34,6 @@ void Jet::addConstituent(const reco::Candidate& candidate)
     else if (absPdgId==13)
     {
         _muonEnergy+=candidate.p4();
-    }
-    else if (absPdgId==15)
-    {
-        _tauEnergy+=candidate.p4();
     }
     else if (absPdgId==22)
     {

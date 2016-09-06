@@ -46,8 +46,8 @@ if __name__=="__main__":
     config.JobType.pluginName = 'Analysis'
     config.JobType.psetName = 'EDM2PXLIO/analysis16.py'
     config.JobType.pyCfgParams = []
-    #config.JobType.outputFiles = ["output.pxlio","info.root"]
-    config.JobType.outputFiles = ["output.pxlio"]
+    config.JobType.outputFiles = ["output.pxlio","info.root"]
+    #config.JobType.outputFiles = ["output.pxlio"]
     config.JobType.inputFiles=[
         #"Spring16_25nsV3_DATA.db",
         #"Spring16_25nsV3_MC.db"
@@ -56,11 +56,11 @@ if __name__=="__main__":
     config.JobType.maxJobRuntimeMin=360 #=6h
 
     config.Data.inputDBS = 'global'
-    #config.Data.splitting = 'FileBased'
-    config.Data.splitting = 'LumiBased'
-    config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt' #ICHEP
+    config.Data.splitting = 'FileBased'
+    #config.Data.splitting = 'LumiBased'
+    #config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt' #ICHEP
     #config.Data.runRange='254833-254833'
-    config.Data.unitsPerJob = 75
+    config.Data.unitsPerJob = 5
     #config.Data.ignoreLocality = True #use to circumvent crab/dbs bug with open data blocks (while its being writing)
     config.Data.allowNonValidInputDataset = True #allows to use nonvalid sets
 
@@ -105,14 +105,14 @@ if __name__=="__main__":
         '/SingleMuon/Run2016E-PromptReco-v2/MINIAOD'
     ]
     
-    #dataset=mc80Xv2[int(args[0])]
-    dataset=data80X[int(args[0])]
-    #processName = dataset.split("/")[1]
-    processName = dataset.split("/")[1]+"_"+dataset.split("/")[2]
+    dataset=mc80Xv2[int(args[0])]
+    #dataset=data80X[int(args[0])]
+    processName = dataset.split("/")[1]
+    #processName = dataset.split("/")[1]+"_"+dataset.split("/")[2]
     if dataset.split("/")[2].find("_ext")!=-1:
         processName+="_ext"
 
-    jobName = processName+'_v160721'
+    jobName = processName+'_v160826'
     
     print "submitting... ",jobName
     #status(os.path.join(os.getcwd(),"crab",jobName,"crab_"+config.General.requestName))
@@ -122,8 +122,8 @@ if __name__=="__main__":
         config.General.workArea = "crab/"+jobName
         config.Data.inputDataset=dataset
         #config.JobType.pyCfgParams=['processName='+processName,'noGen=True','noLHE=True']
-        #config.JobType.pyCfgParams=['processName='+processName,'addPL=True','noLHE=True']
-        config.JobType.pyCfgParams=['processName='+processName,'isData=True','onlyFiltered=True']
+        config.JobType.pyCfgParams=['processName='+processName,'addPL=True','noLHE=False']
+        #config.JobType.pyCfgParams=['processName='+processName,'isData=True','onlyFiltered=True']
         config.Data.outLFNDirBase='/store/user/mkomm/'+config.General.requestName+"/"+jobName
         submit(config)
     else:
