@@ -345,6 +345,8 @@ class TopReconstruction:
                 throw std::runtime_error("no neutrino found!");
             }
             
+            
+            
             if (njets==0)
             {
                 wboson = makeWboson(eventView,lepton,neutrino);
@@ -458,6 +460,42 @@ class TopReconstruction:
                     category=C3J3T;
                 }
             }
+            else if (njets>=4)
+            {
+                if (nbjets==0)
+                {
+                    wboson = makeWboson(eventView,lepton,neutrino);
+                    lightjet=(pxl::Particle*)lightjets[0]->clone();
+                    bjet=(pxl::Particle*)lightjets.back()->clone();
+                    eventView->insertObject(lightjet);
+                    eventView->insertObject(bjet);
+                    top = makeTop(eventView,wboson,bjet);
+                    
+                    category=OTHER;
+                }
+                else if (nbjets==njets)
+                {
+                    wboson = makeWboson(eventView,lepton,neutrino);
+                    lightjet=(pxl::Particle*)bjets.back()->clone();
+                    bjet=(pxl::Particle*)bjets.front()->clone();
+                    eventView->insertObject(lightjet);
+                    eventView->insertObject(bjet);
+                    top = makeTop(eventView,wboson,bjet);
+                    
+                    category=OTHER;
+                }
+                else
+                {
+                    wboson = makeWboson(eventView,lepton,neutrino);
+                    lightjet=(pxl::Particle*)lightjets[0]->clone();
+                    bjet=(pxl::Particle*)bjets[0]->clone();
+                    eventView->insertObject(lightjet);
+                    eventView->insertObject(bjet);
+                    top = makeTop(eventView,wboson,bjet);
+                    
+                    category=OTHER;
+                }
+            }
             else
             {
                 return category;
@@ -466,6 +504,7 @@ class TopReconstruction:
             if (lightjet)
             {
                 lightjet->setName("LightJet");
+                eventView->setUserRecord("absLEta",std::fabs(lightjet->getEta()));
             }
             if (bjet)
             {

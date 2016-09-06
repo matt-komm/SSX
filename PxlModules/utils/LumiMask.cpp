@@ -26,6 +26,7 @@ class LumiMask:
         std::string _lumiField;
         std::string _runField;
         std::string _maskFileName;
+        std::string _maskFlag;
         
         std::unordered_map<unsigned int,std::unordered_set<unsigned int>> _mask;
         
@@ -33,7 +34,8 @@ class LumiMask:
         LumiMask():
             Module(),
             _lumiField("LuminosityBlock"),
-            _runField("Run")
+            _runField("Run"),
+            _maskFlag("")
         {
             addSink("input", "input");
             _outputSource = addSource("output","output");
@@ -42,6 +44,7 @@ class LumiMask:
             addOption("name of lumi field","",_lumiField);
             addOption("name of run field","",_runField);
             addOption("mask file","",_maskFileName,pxl::OptionDescription::USAGE_FILE_OPEN);
+            addOption("mask flag","optional",_maskFlag);
         }
 
         ~LumiMask()
@@ -76,6 +79,7 @@ class LumiMask:
             getOption("name of lumi field",_lumiField);
             getOption("name of run field",_runField);
             getOption("mask file",_maskFileName);
+            getOption("mask flag",_maskFlag);
             
             try
             {
@@ -143,13 +147,20 @@ class LumiMask:
 		                auto lumi = lumiSet->second.find(lumiNumber);
 		                if (lumi!=lumiSet->second.end())
 		                {
+		                    if (_maskFlag.size()>0)
+		                    {
+		                        event->setUserRecord(_maskFlag,true);
+		                    }
 		                    _outputSource->setTargets(event);
                             return _outputSource->processTargets();
 		                }
 		            }
+                    if (_maskFlag.size()>0)
+                    {
+                        event->setUserRecord(_maskFlag,false);
+                    }
                     _outputVetoSource->setTargets(event);
                     return _outputVetoSource->processTargets();
-                    
                 }
             }
             catch(std::exception &e)

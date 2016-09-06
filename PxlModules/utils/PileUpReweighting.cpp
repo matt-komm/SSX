@@ -96,29 +96,30 @@ class PileUpReweighting:
             {
                 throw std::runtime_error(getName()+": Failed to retrieve MC PU histogram from file '"+_mcFile+"' with name '"+_mcHistName+"'");
             }
+            if (histMC->GetEntries()<10)
+            {
+                throw std::runtime_error(getName()+": PU histogram from file '"+_mcFile+"' with name '"+_mcHistName+"' contains only "+std::to_string(histMC->GetEntries())+" entires.");
+            }
             histMC->SetDirectory(0);
             histMC->Rebin(_rebinMC);
-            histMC->Scale(1.0/histMC->Integral());
+            histMC->Scale(histMC->GetNbinsX()/histMC->Integral());
             
             _mean=std::vector<double>(_dataFiles.size(),0);
             
             for (unsigned int idataFile = 0; idataFile < _dataFiles.size(); ++idataFile)
             {
-
-                
-                
                 TFile dataFile(_dataFiles[idataFile].c_str());
                 TH1* histData = dynamic_cast<TH1*>(dataFile.Get(_dataHistName.c_str()));
                 if (not histData)
                 {
                     throw std::runtime_error(getName()+": Failed to retrieve data PU histogram from file '"+_dataFiles[idataFile]+"' with name '"+_dataHistName+"'");
                 }
+                if (histData->GetEntries()<10)
+                {
+                    throw std::runtime_error(getName()+": PU histogram from file '"+_dataFiles[idataFile]+"' with name '"+_dataHistName+"' contains only "+std::to_string(histData->GetEntries())+" entires.");
+                }
                 histData->SetDirectory(0);
-                histData->Scale(1.0/histData->Integral());
-                
-                
-                
-                
+                histData->Scale(histData->GetNbinsX()/histData->Integral());
                 
                 //range checking
                 if (std::fabs(histMC->GetXaxis()->GetXmin()-histData->GetXaxis()->GetXmin())>0.0001)
@@ -134,6 +135,11 @@ class PileUpReweighting:
                 if (histMC->GetNbinsX()<histData->GetNbinsX())
                 {
                     throw std::runtime_error(getName()+": PU MC histogram has less bins than data. Adjust the rebinning if any applied! MC="+std::to_string(histMC->GetNbinsX())+"; data="+std::to_string(histData->GetNbinsX()));
+                }
+                
+                if (histMC->GetNbinsX()%histData->GetNbinsX()!=0)
+                {
+                    logger(pxl::LOG_LEVEL_INFO, "Data histogram binning (",histData->GetNbinsX(),") is not a multiple of MC histogram binning (",histMC->GetNbinsX(),").");
                 }
                 
                 const int pos = _dataFiles[idataFile].find_last_of('/')+1;
@@ -155,7 +161,7 @@ class PileUpReweighting:
                 weightHist.SetDirectory(0);
                 
                 
-                for (unsigned int ibin = 0; ibin < histMC->GetNbinsX(); ++ibin)
+                for (unsigned int ibin = 0; ibin < weightHist.GetNbinsX(); ++ibin)
                 {
                     const double binCenter = weightHist.GetBinCenter(ibin+1);
                     
@@ -166,7 +172,7 @@ class PileUpReweighting:
                     //cut off events with too less statistics <0.01% or unphysical weights >10
                     if (puMC>0.0001 and (puData/puMC)<10)
                     {
-                        weightHist.SetBinContent(ibin+1,puData/puMC);
+                        weightHist.SetBinContent(weightHist.FindBin(binCenter),puData/puMC);
                     }
                 }
                 
@@ -232,7 +238,8 @@ class PileUpReweighting:
                             //sanity check
                             if (((_N%1000)==0) and (_N>=1000) and (_mean[ihist]/_N-1)*(_mean[ihist]/_N-1)>5./std::sqrt(_N))
                             {
-                                std::cout<<_N<<": "<<(_mean[ihist]/_N-1)*(_mean[ihist]/_N-1)<<">"<<5./std::sqrt(_N)<<std::endl;
+                                //std::cout<<_N<<": "<<(_mean[ihist]/_N-1)*(_mean[ihist]/_N-1)<<">"<<5./std::sqrt(_N)<<std::endl;
+                                logger(pxl::LOG_LEVEL_WARNING, "Mean PU weight not 1.0! weight="+std::to_string(_mean[ihist]/_N)+" after "+std::to_string(_N)+" events.");
                                 throw std::runtime_error("Mean PU weight not 1.0! weight="+std::to_string(_mean[ihist]/_N)+" after "+std::to_string(_N)+" events.");
                             }
                         }
@@ -264,7 +271,7 @@ class PileUpReweighting:
             logger(pxl::LOG_LEVEL_INFO , "PU reweighting summary !");
             for (unsigned int ihist = 0; ihist < _reweightingHists.size(); ++ihist)
             {
-                logger(pxl::LOG_LEVEL_INFO , "mean PU weight for histogram ",ihist," = ",_mean[ihist]/_N);
+                logger(pxl::LOG_LEVEL_INFO , "mean PU weight for histogram ",_reweightingHists[ihist].first," = ",_mean[ihist]/_N);
             }
         }
 

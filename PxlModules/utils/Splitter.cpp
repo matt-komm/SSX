@@ -7,6 +7,8 @@
 
 #include <string>
 #include <random>
+#include <regex>
+#include <unordered_map>
 
 static pxl::Logger logger("Splitter");
 
@@ -18,25 +20,38 @@ class Splitter:
         pxl::Source* _outputSource;
         pxl::Source* _outputVetoSource;
         
-        double _percentage;
-        int64_t _maxEvents;
+        std::vector<std::string> _percentages;
+        std::vector<std::string> _limits;
+        std::vector<std::pair<std::regex,double>> _splits;
+        std::vector<std::pair<std::regex,int>> _splitLimits;
+        
         bool _random;
+        bool _useExistingFlag;
+        
+        std::string _processNameField;
         
         unsigned int _passedEvents;
         unsigned int _selectedEvents;
+        
+        std::string _splitName;
         
         std::random_device _randomDevice;
         std::mt19937 _generator;
         std::uniform_real_distribution<> _uniformDist;
         
+        std::unordered_map<std::string,std::pair<int,int>> _splittingInfo;
+        
     public:
         Splitter():
             Module(),
-            _percentage(0.5),
-            _maxEvents(-1),
-            _random(true),
+            _percentages({"[A-Za-z0-9_\\-]+=0.7"}),
+            _limits({"[A-Za-z0-9_\\-]+=-1"}),
+            _random(false),
+            _useExistingFlag(false),
+            _processNameField("ProcessName"),
             _passedEvents(0),
             _selectedEvents(0),
+            _splitName("testing"),
             _generator(_randomDevice()),
             _uniformDist(0, 1)
             
@@ -45,9 +60,14 @@ class Splitter:
             _outputSource = addSource("output","output");
             _outputVetoSource = addSource("veto","veto");
             
-            addOption("percentage","percentage of events to select",_percentage);
-            addOption("max events","limit maximal total amount of selected events",_maxEvents);
+            addOption("process name field","",_processNameField);
+            
+            addOption("percentages","percentage of events to select",_percentages);
+            addOption("limits","limit the events to split per process",_limits);
             addOption("random","select events randomly",_random);
+            addOption("use existing flag","use flag from previous module",_useExistingFlag);
+            
+            addOption("split name","UR name to indicate if selected or not",_splitName);            
         }
 
         ~Splitter()
@@ -79,11 +99,38 @@ class Splitter:
 
         void beginJob() throw (std::runtime_error)
         {
-            getOption("percentage",_percentage);
-            getOption("max events",_maxEvents);
-            getOption("random",_random);
+            getOption("process name field",_processNameField);
+        
+            getOption("percentages",_percentages);
+            getOption("limits",_limits);
             
-
+            for (auto it: _percentages)
+            {
+                int pos = it.find("=");
+                if (pos ==std::string::npos)
+                {
+                    throw std::runtime_error("Splitter percentage not found in '"+it+"'");
+                }
+                double percentage = std::atof(it.substr(pos+1).c_str());
+                std::regex regex(it.substr(0,pos));
+                _splits.emplace_back(regex,percentage);
+            }
+            
+            for (auto it: _limits)
+            {
+                int pos = it.find("=");
+                if (pos ==std::string::npos)
+                {
+                    throw std::runtime_error("Splitter percentage not found in '"+it+"'");
+                }
+                int limit = std::atoi(it.substr(pos+1).c_str());
+                std::regex regex(it.substr(0,pos));
+                _splitLimits.emplace_back(regex,limit);
+            }
+            
+            getOption("random",_random);
+            getOption("use existing flag",_useExistingFlag);
+            getOption("split name",_splitName);
         }
 
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)
@@ -92,44 +139,90 @@ class Splitter:
             {
                 pxl::Event *event  = dynamic_cast<pxl::Event*>(sink->get());
                 
-                _passedEvents+=1;
-                if ((_maxEvents>=0) and _selectedEvents>=_maxEvents)
+                const std::string processName = event->getUserRecord(_processNameField);
+                if (_splittingInfo.find(processName)==_splittingInfo.end())
                 {
+                    _splittingInfo[processName] = std::make_pair<int,int>(0,0);
+                }
+                _splittingInfo[processName].first+=1;
+                
+                bool selected = false;
+                double percentage = -1.0;
+                int limit = -10;
+                
+                if (_useExistingFlag)
+                {
+                    if (not (event->hasUserRecord(_splitName) or event->hasUserRecord(_splitName+"_frac")))
+                    {
+                        selected = true;
+                        percentage = 1.0;
+                    }
+                    else
+                    {
+                        selected = event->getUserRecord(_splitName).toBool();
+                        percentage = selected?event->getUserRecord(_splitName+"_frac").toDouble():1-event->getUserRecord(_splitName+"_frac").toDouble();
+                    }
+                }
+                else
+                {
+                    for (auto it: _splits)
+                    {
+                        if (std::regex_match(processName,it.first))
+                        {
+                            percentage=it.second;
+                            break;
+                        }
+                    }
+                    for (auto it: _splitLimits)
+                    {
+                        if (std::regex_match(processName,it.first))
+                        {
+                            limit=it.second;
+                            break;
+                        }
+                    }
+                    
+                    if (percentage<0)
+                    {
+                        throw std::runtime_error("Cannot find splitting percentage for process '"+processName+"'");
+                    }
+                    
+                    if ((limit>0) and (limit<_splittingInfo[processName].first))
+                    {
+                        selected = true;
+                        percentage = 1.0;
+                    }
+                    else
+                    {
+                        if (_random)
+                        {
+                            selected = _uniformDist(_generator)<percentage;
+                        }
+                        else
+                        {
+                            double fraction = 1.0*_splittingInfo[processName].second/_splittingInfo[processName].first;
+                            selected = fraction<percentage;
+                        }
+                    }
+                }
+                
+                
+                if (selected)
+                {
+                    event->setUserRecord(_splitName,true);
+                    event->setUserRecord(_splitName+"_frac",percentage);
+                    _splittingInfo[processName].second+=1;
+                    _outputSource->setTargets(event);
+                    return _outputSource->processTargets();
+                }
+                else
+                {
+                    event->setUserRecord(_splitName,false);
+                    event->setUserRecord(_splitName+"_frac",1.-percentage);
                     _outputVetoSource->setTargets(event);
                     return _outputVetoSource->processTargets();
                 }
                 
-                
-                if (_random)
-                {
-                    if (_uniformDist(_generator)<_percentage)
-                    {
-                        _outputSource->setTargets(event);
-                        return _outputSource->processTargets();
-                    }
-                    else
-                    {
-                        _outputVetoSource->setTargets(event);
-                        return _outputVetoSource->processTargets();
-                    }
-                }
-                
-                else
-                {
-                    double fraction = 1.0*_selectedEvents/_passedEvents;
-                    if (fraction<_percentage)
-                    {
-                        _selectedEvents+=1;
-                        _outputSource->setTargets(event);
-                        return _outputSource->processTargets();
-                    }
-                    else
-                    {
-                        _outputVetoSource->setTargets(event);
-                        return _outputVetoSource->processTargets();
-                    }
-                    
-                }
             }
             catch(std::exception &e)
             {
@@ -146,6 +239,10 @@ class Splitter:
 
         void shutdown() throw(std::runtime_error)
         {
+            for (auto it: _splittingInfo)
+            {
+                logger(pxl::LOG_LEVEL_INFO , "Split fraction for '",it.first,"': ",1.0*it.second.second/it.second.first, " (",it.second.first," events passed)");
+            }
         }
 
         void destroy() throw (std::runtime_error)

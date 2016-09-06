@@ -64,3 +64,10 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(LumiInfo MODULE LumiInfo.cpp)
+target_link_libraries(LumiInfo ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
+install(
+    TARGETS LumiInfo
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+
