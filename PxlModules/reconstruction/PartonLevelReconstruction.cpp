@@ -24,6 +24,8 @@ class PartonLevelReconstruction:
         
         bool _lastCopies;
         
+        bool _sumAddNeutrinos;
+        
         enum GenFlag
         {
             IsPrompt=0, 
@@ -67,7 +69,8 @@ class PartonLevelReconstruction:
             _outputEventViewName("PartonLevel"),
             _addTau(true),
             _addTauDecays(false),
-            _lastCopies(false)
+            _lastCopies(false),
+            _sumAddNeutrinos(false)
         {
             addSink("input", "Input");
             _outputLeptonic = addSource("leptonic", "leptonic");
@@ -80,6 +83,8 @@ class PartonLevelReconstruction:
             addOption("add tau decays","allows promt mu/e from tau decays",_addTauDecays);
             
             addOption("last copies","consider last copy (first otherwise)",_lastCopies);
+            
+            addOption("sum add neutrinos","add additional neutrinos in tau decays together",_sumAddNeutrinos);
             
         }
         
@@ -121,6 +126,8 @@ class PartonLevelReconstruction:
             getOption("add tau decays",_addTauDecays);
             
             getOption("last copies",_lastCopies);
+            
+            getOption("sum add neutrinos",_sumAddNeutrinos);
         }
 
         void endJob()
@@ -189,6 +196,7 @@ class PartonLevelReconstruction:
                     pxl::Particle* lquark = nullptr;
                     
                     std::vector<pxl::Particle*> bquarkCandidates;
+                    std::vector<pxl::Particle*> additionalBquarkCandidates;
 
                     std::vector<pxl::Particle*> leptonCandidates;
                     std::vector<pxl::Particle*> neutrinoCandidates;
@@ -209,7 +217,7 @@ class PartonLevelReconstruction:
                             for (unsigned int iparticle = 0; iparticle< particles.size(); ++iparticle)
                             {
                                 pxl::Particle* particle = particles[iparticle];
-                                unpackFlags(particle);
+                                //unpackFlags(particle);
                                 
                                 //Find Top --------------------------------------------------------
                                 if (std::fabs(particle->getPdgNumber())==6 and checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag))
@@ -254,10 +262,10 @@ class PartonLevelReconstruction:
                                 }
                                 
                                 //Find leptons --------------------------------------------------------
-                                if (checkFlag(particle,FromHardProcess) and (std::fabs(particle->getPdgNumber())==11 or std::fabs(particle->getPdgNumber())==13))
+                                if (std::fabs(particle->getPdgNumber())==11 or std::fabs(particle->getPdgNumber())==13)
                                 {
                                     //deal with direct W->lnu
-                                    if (checkFlag(particle,copyGenFlag) and checkFlag(particle,IsPrompt))
+                                    if (checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag) and checkFlag(particle,IsPrompt))
                                     {
                                         leptonCandidates.push_back(particle);
                                     }
@@ -275,10 +283,10 @@ class PartonLevelReconstruction:
                                 
                                 
                                 //Find neutrinos --------------------------------------------------------
-                                if (checkFlag(particle,FromHardProcess) and (std::fabs(particle->getPdgNumber())==12 or std::fabs(particle->getPdgNumber())==14 or std::fabs(particle->getPdgNumber())==16))
+                                if (std::fabs(particle->getPdgNumber())==12 or std::fabs(particle->getPdgNumber())==14 or std::fabs(particle->getPdgNumber())==16)
                                 {
                                     //deal only with direct W->lnu, ignore subsequent neutrinos from tau decays
-                                    if (checkFlag(particle,copyGenFlag) and checkFlag(particle,IsPrompt))
+                                    if (checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag) and checkFlag(particle,IsPrompt))
                                     {
                                         neutrinoCandidates.push_back(particle);
                                     }
@@ -314,6 +322,10 @@ class PartonLevelReconstruction:
                                         throw std::runtime_error("Multiple b quarks in hard process from top decay detected");
                                     }
                                     bquark = p;
+                                }
+                                else
+                                {
+                                    additionalBquarkCandidates.push_back(p);
                                 }
                             }
                             
@@ -365,26 +377,49 @@ class PartonLevelReconstruction:
                                 outputEV->setName(_outputEventViewName);
                                 
                                 pxl::Particle* topClone = (pxl::Particle*)top->clone();
+                                topClone->setName("Top");
                                 outputEV->insertObject(topClone);
                                 
                                 pxl::Particle* bquarkClone = (pxl::Particle*)bquark->clone();
+                                bquarkClone->setName("bQuark");
                                 outputEV->insertObject(bquarkClone);
                                 topClone->linkDaughter(bquarkClone);
                                 
                                 pxl::Particle* wbosonClone = (pxl::Particle*)wboson->clone();
+                                wbosonClone->setName("W");
                                 outputEV->insertObject(wbosonClone);
                                 topClone->linkDaughter(wbosonClone);
                                 
                                 pxl::Particle* leptonClone = (pxl::Particle*)lepton->clone();
+                                leptonClone->setName("Lepton");
                                 outputEV->insertObject(leptonClone);
                                 wbosonClone->linkDaughter(leptonClone);
                                 
                                 pxl::Particle* neutrinoClone = (pxl::Particle*)neutrino->clone();
+                                neutrinoClone->setName("Neutrino");
                                 outputEV->insertObject(neutrinoClone);
                                 wbosonClone->linkDaughter(neutrinoClone);
                                 
+                                if (_sumAddNeutrinos)
+                                {
+                                    for (pxl::Particle* p: additionalNeutrinoCandidates)
+                                    {
+                                        neutrinoClone->addP4(p->getVector());
+                                    }
+                                }
+                                
                                 pxl::Particle* lquarkClone = (pxl::Particle*)lquark->clone();
+                                lquarkClone->setName("lQuark");
                                 outputEV->insertObject(lquarkClone);
+                                
+                                std::sort(additionalBquarkCandidates.begin(), additionalBquarkCandidates.end(), [](pxl::Particle* a, pxl::Particle* b) {return b->getPt()<a->getPt();});
+                                
+                                for (pxl::Particle* p: additionalBquarkCandidates)
+                                {
+                                    pxl::Particle* addBquarkClone = (pxl::Particle*)p->clone();
+                                    addBquarkClone->setName("bQuarkAdd");
+                                    outputEV->insertObject(addBquarkClone);
+                                }
                                 
                                 
                             }
@@ -393,7 +428,7 @@ class PartonLevelReconstruction:
                         }
                     } //loop over event views
 
-                    if (leptonCandidates.size()==0 and neutrinoCandidates.size()==0)
+                    if (leptonCandidates.size()==0 or neutrinoCandidates.size()==0)
                     {
                         _outputHadronic->setTargets(event);
                         return _outputHadronic->processTargets();
