@@ -5,6 +5,8 @@
 #include "pxl/modules/Module.hh"
 #include "pxl/modules/ModuleFactory.hh"
 
+#include "angles.h"
+
 #include <iostream>
 
 static pxl::Logger logger("PartonLevelReconstruction");
@@ -408,6 +410,12 @@ class PartonLevelReconstruction:
                                     }
                                 }
                                 
+                                pxl::Particle* met = (pxl::Particle*)neutrinoClone->clone();
+                                met->setName("MET");
+                                met->getVector().setPz(0);
+                                outputEV->insertObject(met);
+                                wbosonClone->linkDaughter(met);
+                                
                                 pxl::Particle* lquarkClone = (pxl::Particle*)lquark->clone();
                                 lquarkClone->setName("lQuark");
                                 outputEV->insertObject(lquarkClone);
@@ -421,6 +429,17 @@ class PartonLevelReconstruction:
                                     outputEV->insertObject(addBquarkClone);
                                 }
                                 
+                                outputEV->setUserRecord("mtw_beforePz",calculateMTW(lepton,met));
+                                
+                                calculateAngles(
+                                    outputEV, 
+                                    leptonClone, 
+                                    neutrinoClone, 
+                                    wbosonClone, 
+                                    bquarkClone, 
+                                    topClone, 
+                                    lquarkClone
+                                );
                                 
                             }
                                         

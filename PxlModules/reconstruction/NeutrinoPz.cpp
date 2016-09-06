@@ -6,6 +6,7 @@
 #include "pxl/modules/ModuleFactory.hh"
 
 #include "NeutrinoPzSolver.hpp"
+#include "angles.h"
 
 #include <iostream>
 
@@ -152,8 +153,8 @@ class NeutrinoPz:
                                 p1.getVector()+=lepton->getVector();
                                 p2.getVector()+=neutrino->getVector();
                                 p2.getVector()+=lepton->getVector();
-                                const double mtw_beforePz = sqrt((lepton->getPt()+met->getPt())*(lepton->getPt()+met->getPt())-(lepton->getPx()+met->getPx())*(lepton->getPx()+met->getPx())-(lepton->getPy()+met->getPy())*(lepton->getPy()+met->getPy()));
-                                const double mtw_afterPz = sqrt((lepton->getPt()+neutrino->getPt())*(lepton->getPt()+neutrino->getPt())-(lepton->getPx()+neutrino->getPx())*(lepton->getPx()+neutrino->getPx())-(lepton->getPy()+neutrino->getPy())*(lepton->getPy()+neutrino->getPy()));
+                                const double mtw_beforePz = calculateMTW(lepton,met);
+                                const double mtw_afterPz = calculateMTW(lepton,neutrino);
                                 outputEventView->setUserRecord("mtw_beforePz",mtw_beforePz);
                                 outputEventView->setUserRecord("mtw_afterPz",mtw_afterPz);
                             }
