@@ -20,6 +20,13 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(PLObjects MODULE PLObjects.cpp)
+target_link_libraries(PLObjects ${PXL_LIBRARIES})
+install(
+    TARGETS PLObjects
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+
 add_library(MuonVeto MODULE MuonVeto.cpp)
 target_link_libraries(MuonVeto ${PXL_LIBRARIES})
 install(

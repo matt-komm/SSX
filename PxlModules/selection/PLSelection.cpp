@@ -3,7 +3,7 @@
 #include <set>
 #include <sstream>
 #include <streambuf>
-
+#include <regex>
 
 #include "pxl/hep.hh"
 #include "pxl/core.hh"
@@ -21,9 +21,8 @@ class PLSelection:
 {
     private:
         pxl::Source* _selectedSource;
-        pxl::Source* _vetoSource;
 
-        std::string _inputEventViewName;
+        std::regex _inputEventViewName;
         std::string _inputName;
         std::string _outputName;
   
@@ -49,15 +48,15 @@ class PLSelection:
         int64_t _bHadronInstancesMin;
         int64_t _bHadronInstancesMax;
 
-        int64_t _num;
-        
+        int64_t _numMin;
+        int64_t _numMax;
+      
         bool _clean;
         
     public:
         PLSelection():
 
             Module(),
-            _inputEventViewName("ParticleLevel"),
             _inputName("Lepton"),
             _outputName("TightMuon"),
 
@@ -82,16 +81,16 @@ class PLSelection:
             _bHadronInstancesMin(0),
             _bHadronInstancesMax(100),
             
-            _num(1),
+            _numMin(1),
+            _numMax(1),
             
             _clean(false)
 
         {
             addSink("input", "input");
             _selectedSource = addSource("selected", "selected");
-            _vetoSource = addSource("veto", "veto");
 
-            addOption("input event view","",_inputEventViewName);
+            addOption("input event view","","PL[A-Za-z0-9_]+");
             addOption("input particle name","",_inputName);
             addOption("selected output particle name","",_outputName);
 
@@ -116,7 +115,8 @@ class PLSelection:
             addOption("min BHadron instances","",_bHadronInstancesMin);
             addOption("max BHadron instances","",_bHadronInstancesMax);
             
-            addOption("number","",_num);
+            addOption("min number","",_numMin);
+            addOption("max number","",_numMax);
             
             addOption("clear event","will copy all instances found otherwise for vetoing",_clean);
         }
@@ -150,7 +150,9 @@ class PLSelection:
 
         void beginJob() throw (std::runtime_error)
         {
-            getOption("input event view",_inputEventViewName);
+            std::string evname;
+            getOption("input event view",evname);
+            _inputEventViewName = evname;
             getOption("input particle name",_inputName);
             getOption("selected output particle name",_outputName);
 
@@ -175,7 +177,8 @@ class PLSelection:
             getOption("min BHadron instances",_bHadronInstancesMin);
             getOption("max BHadron instances",_bHadronInstancesMax);
             
-            getOption("number",_num);
+            getOption("min number",_numMin);
+            getOption("max number",_numMax);
             
             getOption("clear event",_clean);
         }
@@ -222,7 +225,7 @@ class PLSelection:
                 return false;
             }
 
-            const int bHadrons = particle->hasUserRecord("bHadrons")?particle->getUserRecord("bHadrons").toInt32():0;
+            const int bHadrons = particle->hasUserRecord("bHadrons")?particle->getUserRecord("bHadrons").toUInt32():0;
             {
                 if ((bHadrons<_bHadronInstancesMin) or (bHadrons>_bHadronInstancesMax))
                 {
@@ -242,19 +245,18 @@ class PLSelection:
                 {
                     std::vector<pxl::EventView*> eventViews;
                     event->getObjectsOfType(eventViews);
-                    
-                    pxl::EventView* inputEV = nullptr;
-                    
-                    std::vector<pxl::Particle*> particlesSelected;
-                    std::vector<pxl::Particle*> particlesUnselected;
 
                     for (unsigned ieventView=0; ieventView<eventViews.size();++ieventView)
                     {
-                        if (eventViews[ieventView]->getName()==_inputEventViewName)
+                        if (std::regex_match(eventViews[ieventView]->getName(),_inputEventViewName))
                         {
-                            inputEV = eventViews[ieventView];
+                            pxl::EventView* inputEV = eventViews[ieventView];
+                            
                             std::vector<pxl::Particle*> particles;
                             inputEV->getObjectsOfType(particles);
+                            
+                            std::vector<pxl::Particle*> particlesSelected;
+                            std::vector<pxl::Particle*> particlesUnselected;
 
                             for (unsigned iparticle=0; iparticle<particles.size();++iparticle)
                             {
@@ -272,36 +274,23 @@ class PLSelection:
                                     }
                                 }
                             }
-                            break;
+                            
+                            inputEV->setUserRecord("n"+_outputName,particlesSelected.size());
+                            
+                            for (auto p: particlesSelected)
+                            {
+                                p->setName(_outputName);
+                            }
+                            for (auto p: particlesUnselected)
+                            {
+                                inputEV->removeObject(p);
+                            }
                         }
                     }
-                    std::sort(particlesSelected.begin(),particlesSelected.end(),[](pxl::Particle* p1, pxl::Particle* p2){return p1->getPt()>p2->getPt();});
                     
+                    _selectedSource->setTargets(event);
+                    return _selectedSource->processTargets();
                     
-                    if (inputEV!=nullptr)
-                    {
-                        inputEV->setUserRecord("n"+_outputName,particlesSelected.size());
-                    }                    
-
-                    if (particlesSelected.size()==_num)
-                    {
-                        for (auto p: particlesSelected)
-                        {
-                            p->setName(_outputName);
-                        }
-                        for (auto p: particlesUnselected)
-                        {
-                            inputEV->removeObject(p);
-                        }
-
-                        _selectedSource->setTargets(event);
-                        return _selectedSource->processTargets();
-                    }
-                    else 
-                    {
-                        _vetoSource->setTargets(event);
-                        return _vetoSource->processTargets();
-                    }
                 }
             }
             catch(std::exception &e)
