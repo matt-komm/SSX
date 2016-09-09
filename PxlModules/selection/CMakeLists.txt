@@ -13,6 +13,13 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(PLSelection MODULE PLSelection.cpp)
+target_link_libraries(PLSelection ${PXL_LIBRARIES})
+install(
+    TARGETS PLSelection
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+
 add_library(MuonVeto MODULE MuonVeto.cpp)
 target_link_libraries(MuonVeto ${PXL_LIBRARIES})
 install(
@@ -50,4 +57,7 @@ install(
     TARGETS BTagSelection
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
+
+
+
 

@@ -57,8 +57,8 @@ class MuonSelection:
             _inputMuonName("Muon"),
             _tightMuonName("TightMuon"),
 
-            _pTMinTightMuon(22),
-            _etaMaxTightMuon(2.1),
+            _pTMinTightMuon(24),
+            _etaMaxTightMuon(2.4),
             _pfRelIsoCorDbTightMuon(0.06),
             _pfRelMidIsoCorDbTightMuon(0.12),
             
@@ -245,6 +245,8 @@ class MuonSelection:
                     std::sort(tightMidIsoMuons.begin(),tightMidIsoMuons.end(),MuonSelection::SortByPt());
                     std::sort(tightAntiIsoMuons.begin(),tightAntiIsoMuons.end(),MuonSelection::SortByPt());
                     
+                    //0=iso, 1=midiso, 2=looseiso, 3=other
+                    
                     //1 highly iso muon
                     if (tightIsoMuons.size()==_numMuons)// && tightIsoMoreMuons.size()==0)
                     {
@@ -274,7 +276,7 @@ class MuonSelection:
                     }
                     else
                     {
-                        eventView->setUserRecord("muoncat",-1);
+                        eventView->setUserRecord("muoncat",3);
                         _outputOtherSource->setTargets(event);
                         return _outputOtherSource->processTargets();
                     }
