@@ -24,11 +24,14 @@ class PLSelection:
 
         std::regex _inputEventViewName;
         std::string _inputName;
+        std::vector<std::string> _cleaningNames;
         std::string _outputName;
   
         
         double _pTMinTight;
         double _etaMaxTight;
+        
+        double _dRclean;
         
         double _muonFractionRangeMin;
         double _muonFractionRangeMax;
@@ -48,9 +51,6 @@ class PLSelection:
         int64_t _bHadronInstancesMin;
         int64_t _bHadronInstancesMax;
 
-        int64_t _numMin;
-        int64_t _numMax;
-      
         bool _clean;
         
     public:
@@ -62,6 +62,8 @@ class PLSelection:
 
             _pTMinTight(24),
             _etaMaxTight(2.4),
+            
+            _dRclean(0.3),
             
             _muonFractionRangeMin(0.5),
             _muonFractionRangeMax(1.0),
@@ -81,9 +83,6 @@ class PLSelection:
             _bHadronInstancesMin(0),
             _bHadronInstancesMax(100),
             
-            _numMin(1),
-            _numMax(1),
-            
             _clean(false)
 
         {
@@ -92,6 +91,8 @@ class PLSelection:
 
             addOption("input event view","","PL[A-Za-z0-9_]+");
             addOption("input particle name","",_inputName);
+            addOption("cleaning particle names","",_cleaningNames);
+            addOption("dR cleaning","",_dRclean);
             addOption("selected output particle name","",_outputName);
 
             addOption("Minimum pT","",_pTMinTight);
@@ -114,9 +115,6 @@ class PLSelection:
             
             addOption("min BHadron instances","",_bHadronInstancesMin);
             addOption("max BHadron instances","",_bHadronInstancesMax);
-            
-            addOption("min number","",_numMin);
-            addOption("max number","",_numMax);
             
             addOption("clear event","will copy all instances found otherwise for vetoing",_clean);
         }
@@ -154,6 +152,8 @@ class PLSelection:
             getOption("input event view",evname);
             _inputEventViewName = evname;
             getOption("input particle name",_inputName);
+            getOption("cleaning particle names",_cleaningNames);
+            getOption("dR cleaning",_dRclean);
             getOption("selected output particle name",_outputName);
 
             getOption("Minimum pT",_pTMinTight);
@@ -176,9 +176,6 @@ class PLSelection:
             
             getOption("min BHadron instances",_bHadronInstancesMin);
             getOption("max BHadron instances",_bHadronInstancesMax);
-            
-            getOption("min number",_numMin);
-            getOption("max number",_numMax);
             
             getOption("clear event",_clean);
         }
@@ -256,6 +253,7 @@ class PLSelection:
                             inputEV->getObjectsOfType(particles);
                             
                             std::vector<pxl::Particle*> particlesSelected;
+                            std::vector<pxl::Particle*> cleaningParticles;
                             std::vector<pxl::Particle*> particlesUnselected;
 
                             for (unsigned iparticle=0; iparticle<particles.size();++iparticle)
@@ -273,7 +271,36 @@ class PLSelection:
                                         particlesUnselected.push_back(particle);
                                     }
                                 }
+                                else if (std::find(_cleaningNames.begin(),_cleaningNames.end(),particle->getName())!=_cleaningNames.end())
+                                {
+                                    cleaningParticles.push_back(particle);
+                                }
                             }
+                            
+                            //make dR cleaning
+                            if (_dRclean>0.0)
+                            {
+                                for (auto it = particlesSelected.begin(); it!=particlesSelected.end();)
+                                {
+                                    bool cleaned = false;
+                                    for (auto cleanP: cleaningParticles)
+                                    {
+                                        if (cleanP->getVector().deltaR(&(*it)->getVector())<_dRclean)
+                                        {
+                                            particlesUnselected.push_back(*it);
+                                            particlesSelected.erase(it);
+                                            
+                                            cleaned = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!cleaned)
+                                    {
+                                        ++it;
+                                    }
+                                }
+                            }
+                            
                             
                             inputEV->setUserRecord("n"+_outputName,particlesSelected.size());
                             
