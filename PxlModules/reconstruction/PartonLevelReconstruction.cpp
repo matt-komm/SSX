@@ -205,6 +205,7 @@ class PartonLevelReconstruction:
                     std::vector<pxl::Particle*> additionalNeutrinoCandidates;
                     
                     std::vector<pxl::Particle*> lquarkCandidates;
+                    std::vector<pxl::Particle*> additionalLquarkCandidates;
                     
                     const GenFlag copyGenFlag = _lastCopies?IsLastCopy:IsFirstCopy;
                     
@@ -300,6 +301,10 @@ class PartonLevelReconstruction:
                                 }
                             }
                             
+                            std::sort(lquarkCandidates.begin(), lquarkCandidates.end(), [](pxl::Particle* a, pxl::Particle* b) {return b->getE()<a->getE();});
+                            std::sort(bquarkCandidates.begin(), bquarkCandidates.end(), [](pxl::Particle* a, pxl::Particle* b) {return b->getE()<a->getE();});
+                            
+                            
                             if (!top)
                             {
                                 throw std::runtime_error("No top quarks detected");
@@ -344,9 +349,13 @@ class PartonLevelReconstruction:
                             //take the hardest spectator jet not interacting to top (prevents initial states)
                             for (pxl::Particle* p: lquarkCandidates)
                             {
-                                if ((lquark==nullptr or p->getE()>lquark->getE()) and (!isInDecay(p,top)))
+                                if ((lquark==nullptr) and (!isInDecay(p,top)))
                                 {
                                     lquark = p;
+                                }
+                                else
+                                {
+                                    additionalLquarkCandidates.push_back(p);
                                 }
                             }
                             
@@ -420,7 +429,12 @@ class PartonLevelReconstruction:
                                 lquarkClone->setName("lQuark");
                                 outputEV->insertObject(lquarkClone);
                                 
-                                std::sort(additionalBquarkCandidates.begin(), additionalBquarkCandidates.end(), [](pxl::Particle* a, pxl::Particle* b) {return b->getPt()<a->getPt();});
+                                for (pxl::Particle* p: additionalLquarkCandidates)
+                                {
+                                    pxl::Particle* addLquarkClone = (pxl::Particle*)p->clone();
+                                    addLquarkClone->setName("lQuarkAdd");
+                                    outputEV->insertObject(addLquarkClone);
+                                }
                                 
                                 for (pxl::Particle* p: additionalBquarkCandidates)
                                 {

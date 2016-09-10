@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <unordered_map>
 
 static pxl::Logger logger("TopReconstruction");
 
@@ -52,16 +53,21 @@ class TopReconstruction:
 {
 
     private:
+    
         enum Category
         {
-            OTHER,
-            C0J,
-            C1J,
-            C2J0T,C2J1T,C2J2T,
-            C3J0T,C3J1T,C3J2T,C3J3T
+            OTHER=0,
+            C0J=1,
+            C1J=2,
+            C2J0T=3,C2J1T=4,C2J2T=5,
+            C3J0T=6,C3J1T=7,C3J2T=8,C3J3T=9
         };
+        
+        std::unordered_map<int,std::pair<std::string,bool>> _catToState;
     
-        std::map<Category,pxl::Source*> _outputSources;
+        pxl::Source* _outputSelected;
+        pxl::Source* _outputVeto;
+        pxl::Source* _outputNoLepton;
         
         std::string _inputEventViewNameLepton;
         std::string _leptonName;
@@ -98,19 +104,9 @@ class TopReconstruction:
             _topName("Top")
         {
             addSink("input", "input");
-            
-            _outputSources[OTHER] = addSource("other","other");
-            
-            _outputSources[C0J] = addSource("0j","0j");
-            _outputSources[C1J] = addSource("1j","1j");
-            
-            _outputSources[C2J0T] = addSource("2j0t","2j0t");
-            _outputSources[C2J1T] = addSource("2j1t","2j1t");
-            _outputSources[C2J2T] = addSource("2j2t","2j2t");
-            _outputSources[C3J0T] = addSource("3j0t","3j0t");
-            _outputSources[C3J1T] = addSource("3j1t","3j1t");
-            _outputSources[C3J2T] = addSource("3j2t","3j2t");
-            _outputSources[C3J3T] = addSource("3j3t","3j3t");
+            _outputSelected = addSource("output","output");
+            _outputVeto = addSource("veto","veto");
+            _outputNoLepton = addSource("noLepton","noLepton");
 
             addOption("input event view lepton","",_inputEventViewNameLepton);
             addOption("lepton","",_leptonName);
@@ -125,6 +121,27 @@ class TopReconstruction:
             addOption("output event view","",_outputEventViewName);
             addOption("W boson","",_wbosonName);
             addOption("top","",_topName);
+            
+            
+            _catToState[OTHER] = std::make_pair("other",true);
+            
+            _catToState[C0J] = std::make_pair("0j",true);
+            _catToState[C1J] = std::make_pair("1j",true);
+            
+            _catToState[C2J0T] = std::make_pair("2j0t",true);
+            _catToState[C2J1T] = std::make_pair("2j1t",true);
+            _catToState[C2J2T] = std::make_pair("2j2t",true);
+            
+            _catToState[C3J0T] = std::make_pair("3j0t",true);
+            _catToState[C3J1T] = std::make_pair("3j1t",true);
+            _catToState[C3J2T] = std::make_pair("3j2t",true);
+            _catToState[C3J3T] = std::make_pair("3j3t",true);
+            
+            
+            for (int i = 0; i < 10; ++i)
+            {
+                addOption(_catToState[i].first,"",_catToState[i].second);
+            }
         }
 
         ~TopReconstruction()
@@ -169,7 +186,11 @@ class TopReconstruction:
             getOption("output event view",_outputEventViewName);
             getOption("W boson",_wbosonName);
             getOption("top",_topName);
-
+            
+            for (int i = 0; i < 10; ++i)
+            {
+                getOption(_catToState[i].first,_catToState[i].second);
+            }
         }
         
         
@@ -308,167 +329,169 @@ class TopReconstruction:
             
             if (njets==0)
             {
-                wboson = makeWboson(eventView,lepton,neutrino);
                 category=C0J;
             }
             if (njets==1)
             {
-                wboson = makeWboson(eventView,lepton,neutrino);
                 if (nljets==1)
                 {
-                    bjet=(pxl::Particle*)lightjets[0]->clone();
+                    if (_outputEventViewName!=_inputEventViewNameJets)
+                    {
+                        bjet=(pxl::Particle*)lightjets[0]->clone();
+                    }
+                    else
+                    {
+                        bjet = lightjets[0];
+                    }
+                    lightjets.erase(lightjets.begin());
                     eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
                 }
                 else if (nbjets==1)
                 {
-                    bjet=(pxl::Particle*)bjets[0]->clone();
+                    if (_outputEventViewName!=_inputEventViewNameJets)
+                    {
+                        bjet=(pxl::Particle*)bjets[0]->clone();
+                    }
+                    else
+                    {
+                        bjet = bjets[0];
+                    }
+                    bjets.erase(bjets.begin());
                     eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
                 }
                 category=C1J;
             }
-            
-            else if (njets==2)
-            {   
-                if (nbjets==0)
-                {
-                    //take the most foward jet as the light jet
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    lightjet=(pxl::Particle*)lightjets[0]->clone();
-                    bjet=(pxl::Particle*)lightjets[1]->clone();
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=C2J0T;
-                }
-                else if (nbjets==1)
-                {
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    lightjet=(pxl::Particle*)lightjets[0]->clone();
-                    bjet=(pxl::Particle*)bjets[0]->clone();
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=C2J1T;
-                }
-                else if (nbjets==2)
-                {
-                    //take the jet with the higher pT as the one from the top
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    std::sort(bjets.begin(),bjets.end(),SortByPt());
-                    lightjet=(pxl::Particle*)bjets[1]->clone();
-                    bjet=(pxl::Particle*)bjets[0]->clone();
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=C2J2T;
-                }
-            }
-            else if (njets==3)
+            else if (njets>=2)
             {
                 if (nbjets==0)
                 {
-                    //take the most foward jet as the light jet and most central as b-jet
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    lightjet=(pxl::Particle*)lightjets[0]->clone();
-                    bjet=(pxl::Particle*)lightjets[2]->clone();
+                    if (_outputEventViewName!=_inputEventViewNameJets)
+                    {
+                        lightjet=(pxl::Particle*)lightjets[0]->clone();
+                        bjet=(pxl::Particle*)lightjets.back()->clone();
+                    }
+                    else
+                    {
+                        lightjet=lightjets[0];
+                        bjet=lightjets.back();
+                    }
+                    lightjets.erase(lightjets.begin());
+                    lightjets.pop_back();
                     eventView->insertObject(lightjet);
                     eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=C3J0T;
-                }
-                else if (nbjets==1)
-                {
-                    //take the most foward jet as the light jet
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    lightjet=(pxl::Particle*)lightjets[0]->clone();
-                    bjet=(pxl::Particle*)bjets[0]->clone();
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=C3J1T;
-                }
-                else if (nbjets==2)
-                {
-                    //take the jet with the higher pT as the one from the top
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    lightjet=(pxl::Particle*)lightjets[0]->clone();
-                    bjet=(pxl::Particle*)bjets[0]->clone();
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=C3J2T;
-                }
-                else if (nbjets==3)
-                {
-                    //take the jet with the higher pT as the one from the top and least pT as light jet
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    lightjet=(pxl::Particle*)bjets[2]->clone();
-                    bjet=(pxl::Particle*)bjets[0]->clone();
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=C3J3T;
-                }
-            }
-            else if (njets>=4)
-            {
-                if (nbjets==0)
-                {
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    lightjet=(pxl::Particle*)lightjets[0]->clone();
-                    bjet=(pxl::Particle*)lightjets.back()->clone();
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=OTHER;
                 }
                 else if (nbjets==njets)
                 {
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    lightjet=(pxl::Particle*)bjets.back()->clone();
-                    bjet=(pxl::Particle*)bjets.front()->clone();
+                    if (_outputEventViewName!=_inputEventViewNameJets)
+                    {
+                        lightjet=(pxl::Particle*)bjets.back()->clone();
+                        bjet=(pxl::Particle*)bjets.front()->clone();
+                    }
+                    else
+                    {
+                        lightjet=bjets.back();
+                        bjet=bjets.front();
+                    }
+                    bjets.pop_back();
+                    bjets.erase(bjets.begin());
                     eventView->insertObject(lightjet);
                     eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=OTHER;
                 }
                 else
                 {
-                    wboson = makeWboson(eventView,lepton,neutrino);
-                    lightjet=(pxl::Particle*)lightjets[0]->clone();
-                    bjet=(pxl::Particle*)bjets[0]->clone();
+                    if (_outputEventViewName!=_inputEventViewNameJets)
+                    {
+                        lightjet=(pxl::Particle*)lightjets[0]->clone();
+                        bjet=(pxl::Particle*)bjets[0]->clone();
+                    }
+                    else
+                    {
+                        lightjet=lightjets[0];
+                        bjet=bjets[0];
+                    }
+                    lightjets.erase(lightjets.begin());
+                    bjets.erase(bjets.begin());
                     eventView->insertObject(lightjet);
                     eventView->insertObject(bjet);
-                    top = makeTop(eventView,wboson,bjet);
-                    
-                    category=OTHER;
+                }
+
+                if (njets==2)
+                {
+                    if (nbjets==0) { category = C2J0T; }
+                    if (nbjets==1) { category = C2J1T; }
+                    if (nbjets==2) { category = C2J2T; }
+                }
+                else if (njets==3)
+                {
+                    if (nbjets==0) { category = C3J0T; }
+                    if (nbjets==1) { category = C3J1T; }
+                    if (nbjets==2) { category = C3J2T; }
+                    if (nbjets==2) { category = C3J3T; }
+                }   
+                else
+                {
+                    category = OTHER;
                 }
             }
-            else
-            {
-                return category;
-            }
+            
+            std::cout<<", j"<<njets<<"t"<<nbjets<<", J"<<lightjets.size()<<"T"<<bjets.size();
             
             if (lightjet)
             {
                 lightjet->setName("LightJet");
                 eventView->setUserRecord("absLEta",std::fabs(lightjet->getEta()));
             }
+            for (pxl::Particle* p: lightjets)
+            {
+                pxl::Particle* pClone = nullptr;
+                if (_outputEventViewName!=_inputEventViewNameJets)
+                {
+                    pClone = (pxl::Particle*)p->clone();
+                    eventView->insertObject(pClone);
+                }
+                else
+                {
+                    pClone = p;
+                }
+                pClone->setName("LightJetAdd");
+                
+            }
+            
             if (bjet)
             {
                 bjet->setName("BJet");
             }
+            for (pxl::Particle* p: bjets)
+            {
+                pxl::Particle* pClone = nullptr;
+                if (_outputEventViewName!=_inputEventViewNameJets)
+                {
+                    pClone = (pxl::Particle*)p->clone();
+                    eventView->insertObject(pClone);
+                }
+                else
+                {
+                    pClone = p;
+                }
+                pClone->setName("BJetAdd");
+                
+            }
+            
+            
+
+            
+            if (lepton and neutrino)
+            {
+                wboson = makeWboson(eventView,lepton,neutrino);
+                std::cout<<", make wboson";
+            }
+            
+            if (wboson and bjet)
+            {
+                top = makeTop(eventView,wboson,bjet);
+                std::cout<<", make top";
+            }
+            
             if (lepton and neutrino and wboson and bjet and top and lightjet)
             {
                 calculateAngles(eventView, lepton, neutrino, wboson, bjet, top, lightjet);
@@ -561,9 +584,24 @@ class TopReconstruction:
                         }
                     }
                     
+                    if (lepton==nullptr)
+                    {
+                        _outputNoLepton->setTargets(event);
+                        return _outputNoLepton->processTargets();
+                    }
+                    std::cout<<"has lepton";
                     Category category = reconstructEvent(outputEventView,lepton,neutrino,lightjets,bjets);
-                    _outputSources[category]->setTargets(event);
-                    return _outputSources[category]->processTargets();
+                    std::cout<<", "<<this->getName()<<": "<<_catToState[category].first<<std::endl;
+                    if (_catToState[category].second)
+                    {
+                        _outputSelected->setTargets(event);
+                        return _outputSelected->processTargets();
+                    }
+                    else
+                    {
+                        _outputVeto->setTargets(event);
+                        return _outputVeto->processTargets();
+                    }
 
                 }
             }

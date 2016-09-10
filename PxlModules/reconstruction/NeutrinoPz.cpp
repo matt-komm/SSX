@@ -137,7 +137,7 @@ class NeutrinoPz:
                                     lepton=particle;
                                 }
                             }
-                            if (met!=0 && lepton!=0)
+                            if (met!=nullptr && lepton!=nullptr)
                             {
                                 neutrino=outputEventView->create<pxl::Particle>();
                                 neutrino->setName(_neutrinoName);
@@ -147,12 +147,7 @@ class NeutrinoPz:
                                 math::XYZTLorentzVector nuVec = NuMomentum(lepton->getPx(), lepton->getPy(), lepton->getPz(), lepton->getPt(), lepton->getE(), met->getPx(),met->getPy() );
                                 //std::cout<<neutrino->getPt()-nuVec.Pt()<<std::endl;
                                 neutrino->setP4(nuVec.Px(),nuVec.Py(),nuVec.Pz(),nuVec.E());
-                                pxl::Particle p1;
-                                pxl::Particle p2;
-                                p1.getVector()+=met->getVector();
-                                p1.getVector()+=lepton->getVector();
-                                p2.getVector()+=neutrino->getVector();
-                                p2.getVector()+=lepton->getVector();
+
                                 const double mtw_beforePz = calculateMTW(lepton,met);
                                 const double mtw_afterPz = calculateMTW(lepton,neutrino);
                                 outputEventView->setUserRecord("mtw_beforePz",mtw_beforePz);
