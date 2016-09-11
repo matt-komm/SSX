@@ -434,8 +434,6 @@ class TopReconstruction:
                 }
             }
             
-            std::cout<<", j"<<njets<<"t"<<nbjets<<", J"<<lightjets.size()<<"T"<<bjets.size();
-            
             if (lightjet)
             {
                 lightjet->setName("LightJet");
@@ -483,13 +481,11 @@ class TopReconstruction:
             if (lepton and neutrino)
             {
                 wboson = makeWboson(eventView,lepton,neutrino);
-                std::cout<<", make wboson";
             }
             
             if (wboson and bjet)
             {
                 top = makeTop(eventView,wboson,bjet);
-                std::cout<<", make top";
             }
             
             if (lepton and neutrino and wboson and bjet and top and lightjet)
@@ -589,9 +585,7 @@ class TopReconstruction:
                         _outputNoLepton->setTargets(event);
                         return _outputNoLepton->processTargets();
                     }
-                    std::cout<<"has lepton";
                     Category category = reconstructEvent(outputEventView,lepton,neutrino,lightjets,bjets);
-                    std::cout<<", "<<this->getName()<<": "<<_catToState[category].first<<std::endl;
                     if (_catToState[category].second)
                     {
                         _outputSelected->setTargets(event);

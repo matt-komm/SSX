@@ -220,7 +220,7 @@ class PartonLevelReconstruction:
                             for (unsigned int iparticle = 0; iparticle< particles.size(); ++iparticle)
                             {
                                 pxl::Particle* particle = particles[iparticle];
-                                //unpackFlags(particle);
+                                unpackFlags(particle);
                                 
                                 //Find Top --------------------------------------------------------
                                 if (std::fabs(particle->getPdgNumber())==6 and checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag))
@@ -272,10 +272,18 @@ class PartonLevelReconstruction:
                                     {
                                         leptonCandidates.push_back(particle);
                                     }
-                                    //deal with tau->lnu
+                                    //deal with tau->lnu, tau mother needs to be from hard process not from FSR radiation
                                     else if (_addTauDecays and checkFlag(particle,IsDirectPromptTauDecayProduct) and checkFlag(particle,copyGenFlag))
                                     {
-                                        leptonCandidates.push_back(particle);
+                                        pxl::Particle* taumother = (pxl::Particle*)particle->getMother();
+                                        while (taumother and std::fabs(taumother->getPdgNumber())!=15)
+                                        {
+                                            taumother = (pxl::Particle*)particle->getMother();
+                                        }
+                                        if (checkFlag(taumother,FromHardProcess))
+                                        {
+                                            leptonCandidates.push_back(particle);
+                                        }
                                     }
                                 }
                                 //protect against tau->gamma,tau FSR
@@ -293,10 +301,19 @@ class PartonLevelReconstruction:
                                     {
                                         neutrinoCandidates.push_back(particle);
                                     }
-
+                                        
+                                    //deal with tau->lnu, tau mother needs to be from hard process not from FSR radiation
                                     if (_addTauDecays and checkFlag(particle,IsDirectPromptTauDecayProduct) and checkFlag(particle,copyGenFlag))
                                     {
-                                        additionalNeutrinoCandidates.push_back(particle);
+                                        pxl::Particle* taumother = (pxl::Particle*)particle->getMother();
+                                        while (taumother and std::fabs(taumother->getPdgNumber())!=15)
+                                        {
+                                            taumother = (pxl::Particle*)particle->getMother();
+                                        }
+                                        if (checkFlag(taumother,FromHardProcess))
+                                        {
+                                            additionalNeutrinoCandidates.push_back(particle);
+                                        }
                                     }
                                 }
                             }
@@ -322,7 +339,7 @@ class PartonLevelReconstruction:
                             
                             for (pxl::Particle* p: bquarkCandidates)
                             {
-                                if (isInDecay(top,p))
+                                if (isInDecay(top,p) and not isInDecay(wboson,p))
                                 {
                                     if (bquark!=nullptr)
                                     {
@@ -368,6 +385,7 @@ class PartonLevelReconstruction:
                             {
                                 throw std::runtime_error("Lepton ambiguity discovered");
                             }
+                            
                             if (leptonCandidates.size()==1)
                             {
                                 lepton = leptonCandidates.front();
