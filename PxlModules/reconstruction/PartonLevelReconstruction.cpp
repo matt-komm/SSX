@@ -390,6 +390,7 @@ class PartonLevelReconstruction:
                                 pxl::Particle* topClone = (pxl::Particle*)top->clone();
                                 topClone->setName("Top");
                                 outputEV->insertObject(topClone);
+                                topClone->setUserRecord("y",0.5*std::log((topClone->getE()+topClone->getPz())/(topClone->getE()-topClone->getPz())));
                                 
                                 pxl::Particle* bquarkClone = (pxl::Particle*)bquark->clone();
                                 bquarkClone->setName("bQuark");
