@@ -261,6 +261,10 @@ class MuonSelection:
                     //<N highly iso muon, rest intermediate iso muons
                     else if (tightIsoMuons.size()<_numMuons && (tightIsoMuons.size()+tightMidIsoMuons.size())==_numMuons)
                     {
+                        for (pxl::Particle* p: tightIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
                         for (pxl::Particle* p: tightMidIsoMuons)
                         {
                             p->setName(_tightMuonName);
@@ -272,6 +276,14 @@ class MuonSelection:
                     //<N highly iso muon, <N intermediate iso muons, rest non-iso muon
                     else if (tightIsoMuons.size()<_numMuons && tightMidIsoMuons.size()<_numMuons && (tightIsoMuons.size()+tightMidIsoMuons.size()+tightAntiIsoMuons.size())==_numMuons)
                     {
+                        for (pxl::Particle* p: tightIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
+                        for (pxl::Particle* p: tightMidIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
                         for (pxl::Particle* p: tightAntiIsoMuons)
                         {
                             p->setName(_tightMuonName);
