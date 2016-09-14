@@ -247,29 +247,47 @@ class MuonSelection:
                     
                     //0=iso, 1=midiso, 2=looseiso, 3=other
                     
-                    //1 highly iso muon
-                    if (tightIsoMuons.size()==_numMuons)// && tightIsoMoreMuons.size()==0)
+                    //N highly iso muon only
+                    if (tightIsoMuons.size()==_numMuons)
                     {
-                        pxl::Particle* tightMuon = tightIsoMuons.front();
-                        tightMuon->setName(_tightMuonName);
+                        for (pxl::Particle* p: tightIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
                         eventView->setUserRecord("muoncat",0);
                         _outputIsoSource->setTargets(event);
                         return _outputIsoSource->processTargets();
                     }
-                    //0 highly iso muon, 1 intermediate iso muons
-                    else if (tightIsoMuons.size()==0 && tightMidIsoMuons.size()==_numMuons)
+                    //<N highly iso muon, rest intermediate iso muons
+                    else if (tightIsoMuons.size()<_numMuons && (tightIsoMuons.size()+tightMidIsoMuons.size())==_numMuons)
                     {
-                        pxl::Particle* tightMuon = tightMidIsoMuons.front();
-                        tightMuon->setName(_tightMuonName);
+                        for (pxl::Particle* p: tightIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
+                        for (pxl::Particle* p: tightMidIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
                         eventView->setUserRecord("muoncat",1);
                         _outputMidIsoSource->setTargets(event);
                         return _outputMidIsoSource->processTargets();
                     }
-                    //0 highly iso muon, 0 intermediate iso muons, 1 non-iso muon
-                    else if (tightIsoMuons.size()==0 && tightMidIsoMuons.size()==0 && tightAntiIsoMuons.size()==_numMuons)
+                    //<N highly iso muon, <N intermediate iso muons, rest non-iso muon
+                    else if (tightIsoMuons.size()<_numMuons && tightMidIsoMuons.size()<_numMuons && (tightIsoMuons.size()+tightMidIsoMuons.size()+tightAntiIsoMuons.size())==_numMuons)
                     {
-                        pxl::Particle* tightMuon = tightAntiIsoMuons.front();
-                        tightMuon->setName(_tightMuonName);
+                        for (pxl::Particle* p: tightIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
+                        for (pxl::Particle* p: tightMidIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
+                        for (pxl::Particle* p: tightAntiIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
                         eventView->setUserRecord("muoncat",2);
                         _outputAntiIsoSource->setTargets(event);
                         return _outputAntiIsoSource->processTargets();
