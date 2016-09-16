@@ -220,7 +220,7 @@ class PartonLevelReconstruction:
                             for (unsigned int iparticle = 0; iparticle< particles.size(); ++iparticle)
                             {
                                 pxl::Particle* particle = particles[iparticle];
-                                unpackFlags(particle);
+                                //unpackFlags(particle);
                                 
                                 //Find Top --------------------------------------------------------
                                 if (std::fabs(particle->getPdgNumber())==6 and checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag))
@@ -407,26 +407,31 @@ class PartonLevelReconstruction:
                                 
                                 pxl::Particle* topClone = (pxl::Particle*)top->clone();
                                 topClone->setName("Top");
+                                topClone->setUserRecord("pdg",top->getPdgNumber());
                                 outputEV->insertObject(topClone);
                                 topClone->setUserRecord("y",0.5*std::log((topClone->getE()+topClone->getPz())/(topClone->getE()-topClone->getPz())));
                                 
                                 pxl::Particle* bquarkClone = (pxl::Particle*)bquark->clone();
                                 bquarkClone->setName("bQuark");
+                                bquarkClone->setUserRecord("pdg",bquark->getPdgNumber());
                                 outputEV->insertObject(bquarkClone);
                                 topClone->linkDaughter(bquarkClone);
                                 
                                 pxl::Particle* wbosonClone = (pxl::Particle*)wboson->clone();
                                 wbosonClone->setName("W");
+                                wbosonClone->setUserRecord("pdg",wboson->getPdgNumber());
                                 outputEV->insertObject(wbosonClone);
                                 topClone->linkDaughter(wbosonClone);
                                 
                                 pxl::Particle* leptonClone = (pxl::Particle*)lepton->clone();
                                 leptonClone->setName("Lepton");
+                                leptonClone->setUserRecord("pdg",lepton->getPdgNumber());
                                 outputEV->insertObject(leptonClone);
                                 wbosonClone->linkDaughter(leptonClone);
                                 
                                 pxl::Particle* neutrinoClone = (pxl::Particle*)neutrino->clone();
                                 neutrinoClone->setName("Neutrino");
+                                neutrinoClone->setUserRecord("pdg",neutrino->getPdgNumber());
                                 outputEV->insertObject(neutrinoClone);
                                 wbosonClone->linkDaughter(neutrinoClone);
                                 
@@ -446,12 +451,14 @@ class PartonLevelReconstruction:
                                 
                                 pxl::Particle* lquarkClone = (pxl::Particle*)lquark->clone();
                                 lquarkClone->setName("lQuark");
+                                lquarkClone->setUserRecord("pdg",lquark->getPdgNumber());
                                 outputEV->insertObject(lquarkClone);
                                 
                                 for (pxl::Particle* p: additionalLquarkCandidates)
                                 {
                                     pxl::Particle* addLquarkClone = (pxl::Particle*)p->clone();
                                     addLquarkClone->setName("lQuarkAdd");
+                                    addLquarkClone->setUserRecord("pdg",p->getPdgNumber());
                                     outputEV->insertObject(addLquarkClone);
                                 }
                                 
@@ -459,6 +466,7 @@ class PartonLevelReconstruction:
                                 {
                                     pxl::Particle* addBquarkClone = (pxl::Particle*)p->clone();
                                     addBquarkClone->setName("bQuarkAdd");
+                                    addBquarkClone->setUserRecord("pdg",p->getPdgNumber());
                                     outputEV->insertObject(addBquarkClone);
                                 }
                                 
