@@ -470,6 +470,9 @@ class PartonLevelReconstruction:
                                     outputEV->insertObject(addBquarkClone);
                                 }
                                 
+                                outputEV->setUserRecord("njets",2+additionalLquarkCandidates.size()+additionalBquarkCandidates.size());
+                                outputEV->setUserRecord("nbjets",1+additionalBquarkCandidates.size());
+                                
                                 outputEV->setUserRecord("mtw_beforePz",calculateMTW(lepton,met));
                                 
                                 calculateAngles(
