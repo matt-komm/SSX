@@ -192,31 +192,33 @@ class PLSelection:
                 return false;
             }
             
-            const float muonFraction = particle->getUserRecord("muonFraction").toFloat();
+            auto to_range = [](float x) {return std::min(std::max(x,0.0f),1.0f);};
+            
+            const float muonFraction = to_range(particle->getUserRecord("muonFraction").toFloat());
             if ((muonFraction<_muonFractionRangeMin) or (muonFraction>_muonFractionRangeMax))
             {
                 return false;
             }
             
-            const float electronFraction = particle->getUserRecord("electronFraction").toFloat();
+            const float electronFraction = to_range(particle->getUserRecord("electronFraction").toFloat());
             if ((electronFraction<_electronFractionRangeMin) or (electronFraction>_electronFractionRangeMax))
             {
                 return false;
             }
             
-            const float photonFraction = particle->getUserRecord("photonFraction").toFloat();
+            const float photonFraction = to_range(particle->getUserRecord("photonFraction").toFloat());
             if ((photonFraction<_photonFractionRangeMin) or (photonFraction>_photonFractionRangeMax))
             {
                 return false;
             }
         
-            const float hadronFraction = particle->getUserRecord("hadronFraction").toFloat();
+            const float hadronFraction = to_range(particle->getUserRecord("hadronFraction").toFloat());
             if ((hadronFraction<_hadronFractionRangeMin) or (hadronFraction>_hadronFractionRangeMax))
             {
                 return false;
             }
             
-            const float neutrinoFraction = particle->getUserRecord("neutrinoFraction").toFloat();
+            const float neutrinoFraction = to_range(particle->getUserRecord("neutrinoFraction").toFloat());
             if ((neutrinoFraction<_neutrinoFractionRangeMin) or (neutrinoFraction>_neutrinoFractionRangeMax))
             {
                 return false;

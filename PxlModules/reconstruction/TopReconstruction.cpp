@@ -212,6 +212,7 @@ class TopReconstruction:
             top->linkDaughter(p2);
             top->setP4FromDaughters();
             top->setUserRecord("y",0.5*std::log((top->getE()+top->getPz())/(top->getE()-top->getPz())));
+            
             return top;
         }
         
@@ -220,11 +221,7 @@ class TopReconstruction:
             pxl::Particle* cm = eventView->create<pxl::Particle>();
             cm->setName(name);
             //linking too much will crash the gui :-(
-            
-            float minCosTheta = 100;
-            float maxCosTheta = -100;
-            float minDY = 100;
-            float maxDY = -100;
+
             float minDEta = 100;
             float maxDEta = -100;
             float minDR = 100;
@@ -243,17 +240,7 @@ class TopReconstruction:
                     {
                         const pxl::Particle* p1 = particles[i];
                         const pxl::Particle* p2 = particles[j];
-                        
-                        const float cosTheta = angle(p1->getVector(),p2->getVector());
-                        minCosTheta=std::min(minCosTheta,cosTheta);
-                        maxCosTheta=std::max(maxCosTheta,cosTheta);
-                        
-                        const float y1 = 0.5*std::log((p1->getE()+p1->getPz())/(p1->getE()-p1->getPz()));
-                        const float y2 = 0.5*std::log((p2->getE()+p2->getPz())/(p2->getE()-p2->getPz()));
-                        const float deltaY = fabs(y1-y2);
-                        minDY=std::min(minDY,deltaY);
-                        maxDY=std::max(maxDY,deltaY);
-                        
+
                         const float deltaEta = fabs(p1->getEta()-p2->getEta());
                         minDEta=std::min(minDEta,deltaEta);
                         maxDEta=std::max(maxDEta,deltaEta);
@@ -267,32 +254,10 @@ class TopReconstruction:
                         maxDPhi=std::max(maxDPhi,deltaPhi);
                     }
                 }
-                /*
-                if (particles.size()>2)
-                {
-                    cm->setUserRecord("minCosTheta",minCosTheta);
-                    cm->setUserRecord("maxCosTheta",maxCosTheta);
-                    
-                    cm->setUserRecord("minDY",minDY);
-                    cm->setUserRecord("maxDY",maxDY);
-                    
-                    cm->setUserRecord("minDEta",minDEta);
-                    cm->setUserRecord("maxDEta",maxDEta);
-                    
-                    cm->setUserRecord("minDR",minDR);
-                    cm->setUserRecord("maxDR",maxDR);
-                    
-                    cm->setUserRecord("minDPhi",minDPhi);
-                    cm->setUserRecord("maxDPhi",maxDPhi);
-                }
-                */
 
-                //cm->setUserRecord("cosTheta",minCosTheta);
-                //cm->setUserRecord("dY",minDY);
-                cm->setUserRecord("DEta",minDEta);
-                cm->setUserRecord("DR",minDR);
-                cm->setUserRecord("DPhi",minDPhi);
-
+                cm->setUserRecord("dEta",minDEta);
+                cm->setUserRecord("dR",minDR);
+                cm->setUserRecord("dPhi",minDPhi);
             }
         
             return cm;
@@ -481,16 +446,27 @@ class TopReconstruction:
             if (lepton and neutrino)
             {
                 wboson = makeWboson(eventView,lepton,neutrino);
+                eventView->setUserRecord(lepton->getName()+"_"+neutrino->getName()+"_dPhi",std::fabs(lepton->getVector().deltaPhi(&neutrino->getVector())));
+                eventView->setUserRecord(lepton->getName()+"_"+neutrino->getName()+"_dEta",std::fabs(lepton->getVector().deltaEta(&neutrino->getVector())));
+                eventView->setUserRecord(lepton->getName()+"_"+neutrino->getName()+"_dR",lepton->getVector().deltaR(&neutrino->getVector()));
             }
             
-            if (wboson and bjet)
+            if (lepton and neutrino and wboson and bjet)
             {
                 top = makeTop(eventView,wboson,bjet);
+                
+                eventView->setUserRecord(lepton->getName()+"_"+bjet->getName()+"_dPhi",std::fabs(lepton->getVector().deltaPhi(&bjet->getVector())));
+                eventView->setUserRecord(lepton->getName()+"_"+bjet->getName()+"_dEta",std::fabs(lepton->getVector().deltaEta(&bjet->getVector())));
+                eventView->setUserRecord(lepton->getName()+"_"+bjet->getName()+"_dR",lepton->getVector().deltaR(&bjet->getVector()));
             }
             
             if (lepton and neutrino and wboson and bjet and top and lightjet)
             {
                 calculateAngles(eventView, lepton, neutrino, wboson, bjet, top, lightjet);
+                
+                eventView->setUserRecord(lepton->getName()+"_"+lightjet->getName()+"_dPhi",std::fabs(lepton->getVector().deltaPhi(&lightjet->getVector())));
+                eventView->setUserRecord(lepton->getName()+"_"+lightjet->getName()+"_dEta",std::fabs(lepton->getVector().deltaEta(&lightjet->getVector())));
+                eventView->setUserRecord(lepton->getName()+"_"+lightjet->getName()+"_dR",lepton->getVector().deltaR(&lightjet->getVector()));
             }
             if (bjet and lightjet)
             {
