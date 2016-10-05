@@ -25,8 +25,8 @@ void calculateAngles(pxl::EventView* eventView, pxl::Particle* lepton, pxl::Part
 {
     if (eventView && lepton && wboson && top)
     {
-        //w polarization - helicity basis
-        eventView->setUserRecord("cosTheta_wH",angleInRestFrame(lepton->getVector(),wboson->getBoostVector(),top->getVector(),wboson->getBoostVector()));
+        //w polarization - helicity basis (l in W system vs. W in top system)
+        eventView->setUserRecord("cosTheta_wH",angleInRestFrame(lepton->getVector(),wboson->getBoostVector(),wboson->getBoostVector(),top->getVector()));
     }
     if (eventView && lepton && wboson && top && lightjet)
     {

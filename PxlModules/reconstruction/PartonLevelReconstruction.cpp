@@ -280,7 +280,7 @@ class PartonLevelReconstruction:
                                         {
                                             taumother = (pxl::Particle*)particle->getMother();
                                         }
-                                        if (checkFlag(taumother,FromHardProcess))
+                                        if (taumother and checkFlag(taumother,FromHardProcess))
                                         {
                                             leptonCandidates.push_back(particle);
                                         }
@@ -310,7 +310,7 @@ class PartonLevelReconstruction:
                                         {
                                             taumother = (pxl::Particle*)particle->getMother();
                                         }
-                                        if (checkFlag(taumother,FromHardProcess))
+                                        if (taumother and checkFlag(taumother,FromHardProcess))
                                         {
                                             additionalNeutrinoCandidates.push_back(particle);
                                         }
@@ -341,10 +341,6 @@ class PartonLevelReconstruction:
                             {
                                 if (isInDecay(top,p) and not isInDecay(wboson,p))
                                 {
-                                    if (bquark!=nullptr)
-                                    {
-                                        throw std::runtime_error("Multiple b quarks in hard process from top decay detected");
-                                    }
                                     bquark = p;
                                 }
                                 else
@@ -363,6 +359,7 @@ class PartonLevelReconstruction:
                                 throw std::runtime_error("no light quarks found in hard process");
                             }
                             
+                            /*
                             //take the hardest spectator jet not interacting to top (prevents initial states)
                             for (pxl::Particle* p: lquarkCandidates)
                             {
@@ -374,8 +371,65 @@ class PartonLevelReconstruction:
                                 {
                                     additionalLquarkCandidates.push_back(p);
                                 }
+                            }*/
+                            
+                            double minPt = 100000.0;
+                            unsigned int lIndex = 0;
+                            for (unsigned int il = 0; il < lquarkCandidates.size(); ++il)
+                            {
+                                pxl::Particle* p = lquarkCandidates[il];
+                                if (!isInDecay(p,top))
+                                {
+                                    pxl::LorentzVector v = p->getVector();
+                                    v+=top->getVector();
+                                    if (v.getPt()<minPt)
+                                    {
+                                        minPt = v.getPt();
+                                        lIndex = il;
+                                    }
+                                }
+                            }
+                            for (unsigned int il = 0; il < lquarkCandidates.size(); ++il)
+                            {
+                                if (il == lIndex)
+                                {
+                                    lquark = lquarkCandidates[il];
+                                }
+                                else
+                                {
+                                    additionalLquarkCandidates.push_back(lquarkCandidates[il]);
+                                }
                             }
                             
+                            /*
+                            double maxMass = 0.0;
+                            unsigned int lIndex = 0;
+                            for (unsigned int il = 0; il < lquarkCandidates.size(); ++il)
+                            {
+                                pxl::Particle* p = lquarkCandidates[il];
+                                if (!isInDecay(p,top))
+                                {
+                                    pxl::LorentzVector v = p->getVector();
+                                    v+=top->getVector();
+                                    if (v.getMass()>maxMass)
+                                    {
+                                        maxMass = v.getMass();
+                                        lIndex = il;
+                                    }
+                                }
+                            }
+                            for (unsigned int il = 0; il < lquarkCandidates.size(); ++il)
+                            {
+                                if (il == lIndex)
+                                {
+                                    lquark = lquarkCandidates[il];
+                                }
+                                else
+                                {
+                                    additionalLquarkCandidates.push_back(lquarkCandidates[il]);
+                                }
+                            }
+                            */
                             if (!lquark)
                             {
                                 throw std::runtime_error("no light quark detected");
@@ -470,8 +524,8 @@ class PartonLevelReconstruction:
                                     outputEV->insertObject(addBquarkClone);
                                 }
                                 
-                                outputEV->setUserRecord("njets",2+additionalLquarkCandidates.size()+additionalBquarkCandidates.size());
-                                outputEV->setUserRecord("nbjets",1+additionalBquarkCandidates.size());
+                                outputEV->setUserRecord("njets",(int)(2+additionalLquarkCandidates.size()+additionalBquarkCandidates.size()));
+                                outputEV->setUserRecord("nbjets",(int)(1+additionalBquarkCandidates.size()));
                                 
                                 outputEV->setUserRecord("mtw_beforePz",calculateMTW(lepton,met));
                                 

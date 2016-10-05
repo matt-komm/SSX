@@ -302,7 +302,7 @@ class PLSelection:
                             }
                             
                             
-                            inputEV->setUserRecord("n"+_outputName,particlesSelected.size());
+                            inputEV->setUserRecord("n"+_outputName,(int)(particlesSelected.size()));
                             
                             for (auto p: particlesSelected)
                             {

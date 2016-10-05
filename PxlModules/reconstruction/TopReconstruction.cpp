@@ -580,7 +580,7 @@ class TopReconstruction:
                         }
                     }
                     
-                    if (lepton==nullptr)
+                    if (lepton==nullptr or neutrino==nullptr)
                     {
                         _outputNoLepton->setTargets(event);
                         return _outputNoLepton->processTargets();
