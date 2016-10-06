@@ -88,7 +88,9 @@ class PLObjects:
                 for (auto jetMode: {NONE,EXL,EXLN,EXLNN})
                 {
                     _setups.emplace_back(Setup(tauMode,jetMode),true);
-                    addOption(_setups.back().first.outName,"",_setups.back().second);
+                    bool enabled = true;
+                    addOption(_setups.back().first.outName,"",enabled);
+                    _setups.back().second = enabled;
                 }
             }
         }

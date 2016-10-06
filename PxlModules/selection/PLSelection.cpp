@@ -51,7 +51,7 @@ class PLSelection:
         int64_t _bHadronInstancesMin;
         int64_t _bHadronInstancesMax;
 
-        bool _clean;
+        bool _clear;
         
     public:
         PLSelection():
@@ -83,7 +83,7 @@ class PLSelection:
             _bHadronInstancesMin(0),
             _bHadronInstancesMax(100),
             
-            _clean(false)
+            _clear(false)
 
         {
             addSink("input", "input");
@@ -116,7 +116,7 @@ class PLSelection:
             addOption("min BHadron instances","",_bHadronInstancesMin);
             addOption("max BHadron instances","",_bHadronInstancesMax);
             
-            addOption("clear event","will copy all instances found otherwise for vetoing",_clean);
+            addOption("clear event","will copy all instances found otherwise for vetoing",_clear);
         }
 
         ~PLSelection()
@@ -177,7 +177,7 @@ class PLSelection:
             getOption("min BHadron instances",_bHadronInstancesMin);
             getOption("max BHadron instances",_bHadronInstancesMax);
             
-            getOption("clear event",_clean);
+            getOption("clear event",_clear);
         }
 
         bool passesTightCriteria(pxl::Particle* particle)
@@ -268,12 +268,12 @@ class PLSelection:
                                     {
                                         particlesSelected.push_back(particle);
                                     }
-                                    else if (_clean)
+                                    else if (_clear)
                                     {
                                         particlesUnselected.push_back(particle);
                                     }
                                 }
-                                else if (std::find(_cleaningNames.begin(),_cleaningNames.end(),particle->getName())!=_cleaningNames.end())
+                                else if (_dRclean>0.0 && std::find(_cleaningNames.begin(),_cleaningNames.end(),particle->getName())!=_cleaningNames.end())
                                 {
                                     cleaningParticles.push_back(particle);
                                 }
