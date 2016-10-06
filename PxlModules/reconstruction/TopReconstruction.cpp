@@ -211,7 +211,7 @@ class TopReconstruction:
             top->linkDaughter(p1);
             top->linkDaughter(p2);
             top->setP4FromDaughters();
-            top->setUserRecord("y",0.5*std::log((top->getE()+top->getPz())/(top->getE()-top->getPz())));
+            top->setUserRecord("Y",0.5*std::log((top->getE()+top->getPz())/(top->getE()-top->getPz())));
             
             return top;
         }
@@ -303,26 +303,28 @@ class TopReconstruction:
                     if (_outputEventViewName!=_inputEventViewNameJets)
                     {
                         bjet=(pxl::Particle*)lightjets[0]->clone();
+                        eventView->insertObject(bjet);
                     }
                     else
                     {
                         bjet = lightjets[0];
                     }
                     lightjets.erase(lightjets.begin());
-                    eventView->insertObject(bjet);
+                    
                 }
                 else if (nbjets==1)
                 {
                     if (_outputEventViewName!=_inputEventViewNameJets)
                     {
                         bjet=(pxl::Particle*)bjets[0]->clone();
+                        eventView->insertObject(bjet);
                     }
                     else
                     {
                         bjet = bjets[0];
                     }
                     bjets.erase(bjets.begin());
-                    eventView->insertObject(bjet);
+                    
                 }
                 category=C1J;
             }
@@ -334,6 +336,8 @@ class TopReconstruction:
                     {
                         lightjet=(pxl::Particle*)lightjets[0]->clone();
                         bjet=(pxl::Particle*)lightjets.back()->clone();
+                        eventView->insertObject(lightjet);
+                        eventView->insertObject(bjet);
                     }
                     else
                     {
@@ -342,8 +346,7 @@ class TopReconstruction:
                     }
                     lightjets.erase(lightjets.begin());
                     lightjets.pop_back();
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
+                    
                 }
                 else if (nbjets==njets)
                 {
@@ -351,6 +354,8 @@ class TopReconstruction:
                     {
                         lightjet=(pxl::Particle*)bjets.back()->clone();
                         bjet=(pxl::Particle*)bjets.front()->clone();
+                        eventView->insertObject(lightjet);
+                        eventView->insertObject(bjet);
                     }
                     else
                     {
@@ -359,8 +364,7 @@ class TopReconstruction:
                     }
                     bjets.pop_back();
                     bjets.erase(bjets.begin());
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
+                    
                 }
                 else
                 {
@@ -368,6 +372,8 @@ class TopReconstruction:
                     {
                         lightjet=(pxl::Particle*)lightjets[0]->clone();
                         bjet=(pxl::Particle*)bjets[0]->clone();
+                        eventView->insertObject(lightjet);
+                        eventView->insertObject(bjet);
                     }
                     else
                     {
@@ -376,8 +382,7 @@ class TopReconstruction:
                     }
                     lightjets.erase(lightjets.begin());
                     bjets.erase(bjets.begin());
-                    eventView->insertObject(lightjet);
-                    eventView->insertObject(bjet);
+                    
                 }
 
                 if (njets==2)
@@ -441,8 +446,6 @@ class TopReconstruction:
             }
             
             
-
-            
             if (lepton and neutrino)
             {
                 wboson = makeWboson(eventView,lepton,neutrino);
@@ -461,9 +464,7 @@ class TopReconstruction:
             }
             
             if (lepton and neutrino and wboson and bjet and top and lightjet)
-            {
-                calculateAngles(eventView, lepton, neutrino, wboson, bjet, top, lightjet);
-                
+            {   
                 eventView->setUserRecord(lepton->getName()+"_"+lightjet->getName()+"_dPhi",std::fabs(lepton->getVector().deltaPhi(&lightjet->getVector())));
                 eventView->setUserRecord(lepton->getName()+"_"+lightjet->getName()+"_dEta",std::fabs(lepton->getVector().deltaEta(&lightjet->getVector())));
                 eventView->setUserRecord(lepton->getName()+"_"+lightjet->getName()+"_dR",lepton->getVector().deltaR(&lightjet->getVector()));
@@ -473,6 +474,8 @@ class TopReconstruction:
                 makeCMSystem(eventView,"Dijet",{bjet,lightjet});
                 makeCMSystem(eventView,"Shat",{bjet,lightjet,lepton,neutrino});
             }
+            
+            calculateAngles(eventView, lepton, neutrino, wboson, bjet, top, lightjet);
             
             return category;
         }
