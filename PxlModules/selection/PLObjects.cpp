@@ -152,7 +152,7 @@ class PLObjects:
                             {
                                 if (not setup.second)
                                 {
-                                    //continue;
+                                    continue;
                                 }
                                 
                                 pxl::EventView* evClone = (pxl::EventView*)ev->clone();

@@ -268,9 +268,12 @@ class PLSelection:
                                     {
                                         particlesSelected.push_back(particle);
                                     }
-                                    else if (_clear)
+                                    else 
                                     {
-                                        particlesUnselected.push_back(particle);
+                                        if (_clear)
+                                        {
+                                            particlesUnselected.push_back(particle);
+                                        }
                                     }
                                 }
                                 else if (_dRclean>0.0 && std::find(_cleaningNames.begin(),_cleaningNames.end(),particle->getName())!=_cleaningNames.end())
