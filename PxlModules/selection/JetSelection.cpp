@@ -222,10 +222,20 @@ class JetSelection:
             {
                 pxl::Particle* selectedJet = *it;
                 double dRmin = 100.0;
+                double dRmax = 0.0;
+                
+                double dPhimin = 100.0;
+                double dPhimax = 0.0;
+                
+                double dEtamin = 100.0;
+                double dEtamax = 0.0;
+                
                 for (unsigned iparticle=0; iparticle<dRCleaningObjects.size();++iparticle)
                 {
                     pxl::Particle* dRCleanObj = dRCleaningObjects[iparticle];
-                    double dR = selectedJet->getVector().deltaR(&dRCleanObj->getVector());
+                    const double dR = selectedJet->getVector().deltaR(&dRCleanObj->getVector());
+                    const double dPhi = std::fabs(selectedJet->getVector().deltaPhi(&dRCleanObj->getVector()));
+                    const double dEta = std::fabs(selectedJet->getVector().deltaEta(&dRCleanObj->getVector()));
                     if ((!_dRInvert && dR<_dR) or (_dRInvert && dR>_dR))
                     {
                         eventView->removeObject(selectedJet);
@@ -236,11 +246,26 @@ class JetSelection:
                     else
                     {
                         dRmin=std::min(dR,dRmin);
+                        dRmax=std::max(dR,dRmax);
+                        
+                        dPhimin=std::min(dPhi,dPhimin);
+                        dPhimax=std::max(dPhi,dPhimax);
+                        
+                        dEtamin=std::min(dEta,dEtamin);
+                        dEtamax=std::max(dEta,dEtamax);
                     }
                 }
                 if (selectedJet)
                 {
                     selectedJet->setUserRecord("dRmin",float(dRmin));
+                    selectedJet->setUserRecord("dRmax",float(dRmax));
+                    
+                    selectedJet->setUserRecord("dPhimin",float(dPhimin));
+                    selectedJet->setUserRecord("dPhimax",float(dPhimax));
+                    
+                    selectedJet->setUserRecord("dEtamin",float(dEtamin));
+                    selectedJet->setUserRecord("dEtamax",float(dEtamax));
+                    
                     ++it;
                 }
             }

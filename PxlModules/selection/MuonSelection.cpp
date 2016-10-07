@@ -60,7 +60,7 @@ class MuonSelection:
             _pTMinTightMuon(24),
             _etaMaxTightMuon(2.4),
             _pfRelIsoCorDbTightMuon(0.06),
-            _pfRelMidIsoCorDbTightMuon(0.12),
+            _pfRelMidIsoCorDbTightMuon(0.15),
             
             _numMuons(1)
 

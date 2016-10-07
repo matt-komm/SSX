@@ -287,20 +287,48 @@ class PLSelection:
                             {
                                 for (auto it = particlesSelected.begin(); it!=particlesSelected.end();)
                                 {
-                                    bool cleaned = false;
+                                
+                                    pxl::Particle* selectedParticle = *it;
+                                    
+                                    double dRmin = 100.0;
+                                    double dRmax = 0.0;
+                                    
+                                    double dPhimin = 100.0;
+                                    double dPhimax = 0.0;
+                                    
+                                    double dEtamin = 100.0;
+                                    double dEtamax = 0.0;
+                                    
                                     for (auto cleanP: cleaningParticles)
                                     {
-                                        if (cleanP->getVector().deltaR(&(*it)->getVector())<_dRclean)
+                                        const double dR = selectedParticle->getVector().deltaR(&cleanP->getVector());
+                                        const double dPhi = std::fabs(selectedParticle->getVector().deltaPhi(&cleanP->getVector()));
+                                        const double dEta = std::fabs(selectedParticle->getVector().deltaEta(&cleanP->getVector()));
+                                        
+                                        if (dR<_dRclean)
                                         {
-                                            particlesUnselected.push_back(*it);
+                                            particlesUnselected.push_back(selectedParticle);
                                             particlesSelected.erase(it);
-                                            
-                                            cleaned = true;
+                                            selectedParticle = nullptr;
                                             break;
                                         }
+                                        else
+                                        {
+                                            
+                                        }
                                     }
-                                    if (!cleaned)
+                                    
+                                    if (selectedParticle)
                                     {
+                                        selectedParticle->setUserRecord("dRmin",float(dRmin));
+                                        selectedParticle->setUserRecord("dRmax",float(dRmax));
+                                        
+                                        selectedParticle->setUserRecord("dPhimin",float(dPhimin));
+                                        selectedParticle->setUserRecord("dPhimax",float(dPhimax));
+                                        
+                                        selectedParticle->setUserRecord("dEtamin",float(dEtamin));
+                                        selectedParticle->setUserRecord("dEtamax",float(dEtamax));
+                    
                                         ++it;
                                     }
                                 }
