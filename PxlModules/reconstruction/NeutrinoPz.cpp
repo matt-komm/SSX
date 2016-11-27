@@ -149,9 +149,9 @@ class NeutrinoPz:
                                 neutrino->setP4(nuVec.Px(),nuVec.Py(),nuVec.Pz(),nuVec.E());
 
                                 const double mtw_beforePz = calculateMTW(lepton,met);
-                                const double mtw_afterPz = calculateMTW(lepton,neutrino);
+                                
                                 outputEventView->setUserRecord("mtw_beforePz",mtw_beforePz);
-                                outputEventView->setUserRecord("mtw_afterPz",mtw_afterPz);
+                                
                             }
                             else if (!met)
                             {

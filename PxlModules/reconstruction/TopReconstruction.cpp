@@ -452,6 +452,9 @@ class TopReconstruction:
                 eventView->setUserRecord(lepton->getName()+"_"+neutrino->getName()+"_dPhi",std::fabs(lepton->getVector().deltaPhi(&neutrino->getVector())));
                 eventView->setUserRecord(lepton->getName()+"_"+neutrino->getName()+"_dEta",std::fabs(lepton->getVector().deltaEta(&neutrino->getVector())));
                 eventView->setUserRecord(lepton->getName()+"_"+neutrino->getName()+"_dR",lepton->getVector().deltaR(&neutrino->getVector()));
+            
+                const double mtw_afterPz = calculateMTW(lepton,neutrino);
+                eventView->setUserRecord("mtw_afterPz",mtw_afterPz);
             }
             
             if (lepton and neutrino and wboson and bjet)
