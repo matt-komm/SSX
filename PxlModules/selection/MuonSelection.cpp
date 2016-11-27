@@ -57,10 +57,10 @@ class MuonSelection:
             _inputMuonName("Muon"),
             _tightMuonName("TightMuon"),
 
-            _pTMinTightMuon(22),
-            _etaMaxTightMuon(2.1),
+            _pTMinTightMuon(24),
+            _etaMaxTightMuon(2.4),
             _pfRelIsoCorDbTightMuon(0.06),
-            _pfRelMidIsoCorDbTightMuon(0.12),
+            _pfRelMidIsoCorDbTightMuon(0.15),
             
             _numMuons(1)
 
@@ -245,36 +245,56 @@ class MuonSelection:
                     std::sort(tightMidIsoMuons.begin(),tightMidIsoMuons.end(),MuonSelection::SortByPt());
                     std::sort(tightAntiIsoMuons.begin(),tightAntiIsoMuons.end(),MuonSelection::SortByPt());
                     
-                    //1 highly iso muon
-                    if (tightIsoMuons.size()==_numMuons)// && tightIsoMoreMuons.size()==0)
+                    //0=iso, 1=midiso, 2=looseiso, 3=other
+                    
+                    //N highly iso muon only
+                    if (tightIsoMuons.size()==_numMuons)
                     {
-                        pxl::Particle* tightMuon = tightIsoMuons.front();
-                        tightMuon->setName(_tightMuonName);
+                        for (pxl::Particle* p: tightIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
                         eventView->setUserRecord("muoncat",0);
                         _outputIsoSource->setTargets(event);
                         return _outputIsoSource->processTargets();
                     }
-                    //0 highly iso muon, 1 intermediate iso muons
-                    else if (tightIsoMuons.size()==0 && tightMidIsoMuons.size()==_numMuons)
+                    //<N highly iso muon, rest intermediate iso muons
+                    else if (tightIsoMuons.size()<_numMuons && (tightIsoMuons.size()+tightMidIsoMuons.size())==_numMuons)
                     {
-                        pxl::Particle* tightMuon = tightMidIsoMuons.front();
-                        tightMuon->setName(_tightMuonName);
+                        for (pxl::Particle* p: tightIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
+                        for (pxl::Particle* p: tightMidIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
                         eventView->setUserRecord("muoncat",1);
                         _outputMidIsoSource->setTargets(event);
                         return _outputMidIsoSource->processTargets();
                     }
-                    //0 highly iso muon, 0 intermediate iso muons, 1 non-iso muon
-                    else if (tightIsoMuons.size()==0 && tightMidIsoMuons.size()==0 && tightAntiIsoMuons.size()==_numMuons)
+                    //<N highly iso muon, <N intermediate iso muons, rest non-iso muon
+                    else if (tightIsoMuons.size()<_numMuons && tightMidIsoMuons.size()<_numMuons && (tightIsoMuons.size()+tightMidIsoMuons.size()+tightAntiIsoMuons.size())==_numMuons)
                     {
-                        pxl::Particle* tightMuon = tightAntiIsoMuons.front();
-                        tightMuon->setName(_tightMuonName);
+                        for (pxl::Particle* p: tightIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
+                        for (pxl::Particle* p: tightMidIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
+                        for (pxl::Particle* p: tightAntiIsoMuons)
+                        {
+                            p->setName(_tightMuonName);
+                        }
                         eventView->setUserRecord("muoncat",2);
                         _outputAntiIsoSource->setTargets(event);
                         return _outputAntiIsoSource->processTargets();
                     }
                     else
                     {
-                        eventView->setUserRecord("muoncat",-1);
+                        eventView->setUserRecord("muoncat",3);
                         _outputOtherSource->setTargets(event);
                         return _outputOtherSource->processTargets();
                     }

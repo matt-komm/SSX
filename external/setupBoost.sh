@@ -27,12 +27,12 @@ function execute
 
 cd $BASEDIR/external
 
-execute wget --no-check-certificate http://downloads.sourceforge.net/project/boost/boost/1.52.0/boost_1_52_0.tar.gz
-execute tar -zxvf boost_1_52_0.tar.gz
+execute wget --no-check-certificate https://sourceforge.net/projects/boost/files/boost/1.62.0/boost_1_62_0.tar.gz
+execute tar -zxvf boost_1_62_0.tar.gz
 
-cd $BASEDIR/external/boost_1_52_0
+cd $BASEDIR/external/boost_1_62_0
 
-BOOSTBASEDIR=$BASEDIR/external/boost_1_52_0/release
+BOOSTBASEDIR=$BASEDIR/external/boost_1_62_0/release
 addVar BOOSTBASEDIR $BOOSTBASEDIR
 addVar BOOST_ROOT $BOOSTBASEDIR
 addVar BOOST_INCLUDEDIR $BOOSTBASEDIR/include

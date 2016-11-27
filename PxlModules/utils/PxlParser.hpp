@@ -10,20 +10,22 @@
 #include <map>
 #include <functional>
 #include <algorithm>
-
+#include <regex>
 
 
 template<class TREE>
 class SyntaxNode
 {
     private:
-        SyntaxNode<TREE>* _parent;
         std::vector<SyntaxNode<TREE>*> _children;
         const std::string _field;
+        const std::regex _regex;
+        SyntaxNode<TREE>* _parent;
     public:
 
         SyntaxNode(const std::string& field="", SyntaxNode<TREE>* parent=nullptr):
             _field(field),
+            _regex(field),
             _parent(parent)
         {
         }
@@ -92,30 +94,37 @@ class SyntaxNode
         {
             std::vector<pxl::EventView*> eventViews;
             event->getObjectsOfType(eventViews);
-            unsigned int multiplicity = 1;
+            std::unordered_map<std::string,unsigned int> multiplicity;
             for (pxl::EventView* eventView: eventViews)
             {
-                if (eventView->getName()==_field)
+                if (std::regex_match(eventView->getName(),_regex))
                 {
-                    evaluateChildren(eventView,tree,prefix+getField()+"_"+std::to_string(multiplicity)+"__");
-                    ++multiplicity;
+                    if (multiplicity.find(eventView->getName())==multiplicity.end())
+                    {
+                        multiplicity[eventView->getName()]=1;
+                    }
+                    evaluateChildren(eventView,tree,prefix+eventView->getName()+"_"+std::to_string(multiplicity[eventView->getName()])+"__");
+                    ++multiplicity[eventView->getName()];
                 }
             }
             parseUserRecords(&event->getUserRecords(),tree,prefix);
-
         }
         
         void evaluate(const pxl::EventView* eventView, TREE* tree, const std::string& prefix)
         {
             std::vector<pxl::Particle*> particles;
             eventView->getObjectsOfType(particles);
-            unsigned int multiplicity = 1;
+            std::unordered_map<std::string,unsigned int> multiplicity;
             for (pxl::Particle* particle: particles)
             {
-                if (particle->getName()==_field)
+                if (std::regex_match(particle->getName(),_regex))
                 {
-                    evaluateChildren(particle,tree,prefix+getField()+"_"+std::to_string(multiplicity)+"__");
-                    ++multiplicity;
+                    if (multiplicity.find(particle->getName())==multiplicity.end())
+                    {
+                        multiplicity[particle->getName()]=1;
+                    }
+                    evaluateChildren(particle,tree,prefix+particle->getName()+"_"+std::to_string(multiplicity[particle->getName()])+"__");
+                    ++multiplicity[particle->getName()];
                 }
             }
             parseUserRecords(&eventView->getUserRecords(),tree,prefix);

@@ -222,10 +222,15 @@ class JetSelection:
             {
                 pxl::Particle* selectedJet = *it;
                 double dRmin = 100.0;
+                double dPhimin = 100.0;
+                double dEtamin = 100.0;
+                
                 for (unsigned iparticle=0; iparticle<dRCleaningObjects.size();++iparticle)
                 {
                     pxl::Particle* dRCleanObj = dRCleaningObjects[iparticle];
-                    double dR = selectedJet->getVector().deltaR(&dRCleanObj->getVector());
+                    const double dR = selectedJet->getVector().deltaR(&dRCleanObj->getVector());
+                    const double dPhi = std::fabs(selectedJet->getVector().deltaPhi(&dRCleanObj->getVector()));
+                    const double dEta = std::fabs(selectedJet->getVector().deltaEta(&dRCleanObj->getVector()));
                     if ((!_dRInvert && dR<_dR) or (_dRInvert && dR>_dR))
                     {
                         eventView->removeObject(selectedJet);
@@ -236,11 +241,16 @@ class JetSelection:
                     else
                     {
                         dRmin=std::min(dR,dRmin);
+                        dPhimin=std::min(dPhi,dPhimin);
+                        dEtamin=std::min(dEta,dEtamin);
                     }
                 }
                 if (selectedJet)
                 {
-                    selectedJet->setUserRecord("dRmin",float(dRmin));
+                    selectedJet->setUserRecord("dRcleanMin",float(dRmin));
+                    selectedJet->setUserRecord("dPhicleanMin",float(dPhimin));
+                    selectedJet->setUserRecord("dEtacleanMin",float(dEtamin));
+                    
                     ++it;
                 }
             }

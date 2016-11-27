@@ -24,6 +24,13 @@ const std::unordered_map<std::string,FileInfo> eventWeights80Xv1 = {
             1921.8*3 
         }
     },
+    {"DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        {
+            //total=30915886.0 eff=26706311.0 - 4209575.0 = 22496736.0
+            22496736,
+            18610.0
+        }
+    },
     {"QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8",
         {
             //total=22093630.0 eff=22093630.0 - 0 = 22093630.0

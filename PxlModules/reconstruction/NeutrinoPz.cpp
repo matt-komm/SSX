@@ -6,6 +6,7 @@
 #include "pxl/modules/ModuleFactory.hh"
 
 #include "NeutrinoPzSolver.hpp"
+#include "angles.h"
 
 #include <iostream>
 
@@ -136,7 +137,7 @@ class NeutrinoPz:
                                     lepton=particle;
                                 }
                             }
-                            if (met!=0 && lepton!=0)
+                            if (met!=nullptr && lepton!=nullptr)
                             {
                                 neutrino=outputEventView->create<pxl::Particle>();
                                 neutrino->setName(_neutrinoName);
@@ -146,16 +147,11 @@ class NeutrinoPz:
                                 math::XYZTLorentzVector nuVec = NuMomentum(lepton->getPx(), lepton->getPy(), lepton->getPz(), lepton->getPt(), lepton->getE(), met->getPx(),met->getPy() );
                                 //std::cout<<neutrino->getPt()-nuVec.Pt()<<std::endl;
                                 neutrino->setP4(nuVec.Px(),nuVec.Py(),nuVec.Pz(),nuVec.E());
-                                pxl::Particle p1;
-                                pxl::Particle p2;
-                                p1.getVector()+=met->getVector();
-                                p1.getVector()+=lepton->getVector();
-                                p2.getVector()+=neutrino->getVector();
-                                p2.getVector()+=lepton->getVector();
-                                const double mtw_beforePz = sqrt((lepton->getPt()+met->getPt())*(lepton->getPt()+met->getPt())-(lepton->getPx()+met->getPx())*(lepton->getPx()+met->getPx())-(lepton->getPy()+met->getPy())*(lepton->getPy()+met->getPy()));
-                                const double mtw_afterPz = sqrt((lepton->getPt()+neutrino->getPt())*(lepton->getPt()+neutrino->getPt())-(lepton->getPx()+neutrino->getPx())*(lepton->getPx()+neutrino->getPx())-(lepton->getPy()+neutrino->getPy())*(lepton->getPy()+neutrino->getPy()));
+
+                                const double mtw_beforePz = calculateMTW(lepton,met);
+                                
                                 outputEventView->setUserRecord("mtw_beforePz",mtw_beforePz);
-                                outputEventView->setUserRecord("mtw_afterPz",mtw_afterPz);
+                                
                             }
                             else if (!met)
                             {
