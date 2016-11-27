@@ -45,16 +45,21 @@ class METProducer:
             
             std::unique_ptr<std::vector<pat::PackedGenParticle>> output(new std::vector<pat::PackedGenParticle>(1));
             
-            reco::Candidate::LorentzVector vector(0,0,0,0);
+            
+            double px = 0;
+            double py = 0;
+            double pz = 0;
             for (const pat::PackedGenParticle& genParticle: *genParticleCollection.product())
             {
                 if (_selector and not (*_selector)(genParticle))
                 {
                     continue;
                 }  
-                vector+=genParticle.p4();
+                px+=genParticle.px();
+                py+=genParticle.py();
+                pz+=genParticle.pz();
             }
-            
+            reco::Candidate::LorentzVector vector(px,py,pz,std::sqrt(px*px+py*py+pz*pz));
             (*output)[0].setP4(vector);
             
             edmEvent.put(std::move(output));

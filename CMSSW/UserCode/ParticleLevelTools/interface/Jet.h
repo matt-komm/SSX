@@ -111,7 +111,7 @@ class Jet
         inline double hadronFraction() const
         {
             LorentzVector hadronEnergy = _lorentzVector-_electronEnergy-_muonEnergy-_photonEnergy-_neutrinoEnergy;
-            return (_lorentzVector.px()*hadronEnergy.px()+_lorentzVector.py()*hadronEnergy.py()+_lorentzVector.pz()*hadronEnergy.pz())/_lorentzVector.P2();
+            return std::max(0.0,(_lorentzVector.px()*hadronEnergy.px()+_lorentzVector.py()*hadronEnergy.py()+_lorentzVector.pz()*hadronEnergy.pz())/_lorentzVector.P2());
         }
 };
 

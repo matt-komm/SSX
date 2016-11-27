@@ -60,7 +60,7 @@ if __name__=="__main__":
     #config.Data.splitting = 'LumiBased'
     #config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt' #ICHEP
     #config.Data.runRange='254833-254833'
-    config.Data.unitsPerJob = 5
+    config.Data.unitsPerJob = 4
     #config.Data.ignoreLocality = True #use to circumvent crab/dbs bug with open data blocks (while its being writing)
     config.Data.allowNonValidInputDataset = True #allows to use nonvalid sets
 
@@ -94,7 +94,8 @@ if __name__=="__main__":
         '/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
     
         '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
-     
+        '/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',
+        
         '/QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM',   
     ]
     
@@ -112,7 +113,7 @@ if __name__=="__main__":
     if dataset.split("/")[2].find("_ext")!=-1:
         processName+="_ext"
 
-    jobName = processName+'_v160826'
+    jobName = processName+'_v161117'
     
     print "submitting... ",jobName
     #status(os.path.join(os.getcwd(),"crab",jobName,"crab_"+config.General.requestName))
@@ -122,7 +123,7 @@ if __name__=="__main__":
         config.General.workArea = "crab/"+jobName
         config.Data.inputDataset=dataset
         #config.JobType.pyCfgParams=['processName='+processName,'noGen=True','noLHE=True']
-        config.JobType.pyCfgParams=['processName='+processName,'addPL=True','noLHE=False']
+        config.JobType.pyCfgParams=['processName='+processName,'addPL=True','noLHE=False','noFilter=True']
         #config.JobType.pyCfgParams=['processName='+processName,'isData=True','onlyFiltered=True']
         config.Data.outLFNDirBase='/store/user/mkomm/'+config.General.requestName+"/"+jobName
         submit(config)
