@@ -1,9 +1,18 @@
+#include <algorithm>
+#include <fstream>
+#include <set>
+#include <sstream>
+#include <streambuf>
+
+
 #include "pxl/hep.hh"
 #include "pxl/core.hh"
 #include "pxl/core/macros.hh"
 #include "pxl/core/PluginManager.hh"
 #include "pxl/modules/Module.hh"
 #include "pxl/modules/ModuleFactory.hh"
+
+#include "isolation.h"
 
 static pxl::Logger logger("ElectronSelection");
 
@@ -12,38 +21,64 @@ class ElectronSelection:
 {
     private:
         pxl::Source* _outputIsoSource;
-        //pxl::Source* _outputAntiIsoSource;
+        pxl::Source* _outputMidIsoSource;
+        pxl::Source* _outputAntiIsoSource;
         pxl::Source* _outputOtherSource;
-       
-        std::string _inputEventViewName; 
-        std::string _inputTightElectronName;
+
+        std::string _inputEventViewName;
+        std::string _inputElectronName;
         std::string _tightElectronName;
-        
+  
         /*Tight Electron Related Criteria*/
         double _pTMinTightElectron;  //Minimum transverse momentum
         double _etaMaxTightElectron; //Maximum pseudorapidity
+        double _pfRelRelIsoTightElectron; //relIso relative to tight WP
+        double _pfRelRelMidIsoTightElectron; //relIso relative to tight WP
 
+      
+        int64_t _numElectrons;
+        
+        
+        struct SortByPt
+        {
+            bool operator()(const pxl::Particle* p1, const pxl::Particle* p2) const
+            {
+                //sort descending
+                return p1->getPt()>p2->getPt();
+            }
+        };
     public:
         ElectronSelection():
+
             Module(),
             _inputEventViewName("Reconstructed"),
-            _inputTightElectronName("Electron"),
-            _tightElectronName("TightElectron"),
+            _inputElectronName("Electron"),
+            _tightElectronName("TightLepton"),
 
-            _pTMinTightElectron(35),
-            _etaMaxTightElectron(2.5)
+            _pTMinTightElectron(24),
+            _etaMaxTightElectron(2.4),
+            _pfRelRelIsoTightElectron(1.0),
+            _pfRelRelMidIsoTightElectron(2.0),
+            
+            _numElectrons(1)
+
         {
             addSink("input", "input");
-            _outputIsoSource = addSource("1 iso electron", "iso");
-            //_outputAntiIsoSource = addSource("1 anti-iso electron", "anti-iso");
+            _outputIsoSource = addSource("1 iso ele", "iso");
+            _outputMidIsoSource = addSource("1 mid-iso ele", "mid-iso");
+            _outputAntiIsoSource = addSource("1 anti-iso ele", "anti-iso");
             _outputOtherSource = addSource("other", "other");
 
             addOption("Event view","name of the event view where electrons are selected",_inputEventViewName);
-            addOption("Input electron name","name of particles to consider for selection",_inputTightElectronName);
+            addOption("Input electron name","name of particles to consider for selection",_inputElectronName);
             addOption("Name of selected tight electrons","",_tightElectronName);
 
             addOption("TightElectron Minimum pT","",_pTMinTightElectron);
-            addOption("TightElectron Maximum eta","",_etaMaxTightElectron);
+            addOption("TightElectron Maximum Eta","",_etaMaxTightElectron);
+            addOption("TightElectron Minimum Rel Relative Iso","",_pfRelRelIsoTightElectron);
+            addOption("TightElectron Minimum Rel Relative MidIso","",_pfRelRelMidIsoTightElectron);
+        
+            addOption("number of electrons","",_numElectrons);
         }
 
         ~ElectronSelection()
@@ -76,14 +111,19 @@ class ElectronSelection:
         void beginJob() throw (std::runtime_error)
         {
             getOption("Event view",_inputEventViewName);
-            getOption("Input electron name",_inputTightElectronName);
+            getOption("Input electron name",_inputElectronName);
             getOption("Name of selected tight electrons",_tightElectronName);
 
             getOption("TightElectron Minimum pT",_pTMinTightElectron);
-            getOption("TightElectron Maximum eta",_etaMaxTightElectron);
+            getOption("TightElectron Maximum Eta",_etaMaxTightElectron);
+            getOption("TightElectron Minimum Rel Relative Iso",_pfRelRelIsoTightElectron);
+            getOption("TightElectron Minimum Rel Relative MidIso",_pfRelRelMidIsoTightElectron);
+        
+            getOption("number of electrons",_numElectrons);
+
         }
 
-        bool passTightCriteria(pxl::Particle* particle)
+        bool passesTightCriteria(pxl::Particle* particle)
         {
             if (not (particle->getPt()>_pTMinTightElectron))
             {
@@ -93,18 +133,87 @@ class ElectronSelection:
             {
                 return false;
             }
-            if (not particle->getUserRecord("phys14eleIDTight"))
+            
+            if (std::fabs(particle->getUserRecord("superClusterEta").toFloat())<1.479)
             {
-                return false;
+                if (not (particle->getUserRecord("full5x5_sigmaIetaIeta").toFloat()<0.00998))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("deltaEtaSuperClusterTrackAtVtx").toFloat()<0.00308))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("deltaPhiSuperClusterTrackAtVtx").toFloat()<0.0816))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("hadronicOverEm").toFloat()<0.0414))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("ooEmooP").toFloat()<0.0129))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("numberOfMissingInnerHits").toInt32()<=1))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("passConversionVeto").toBool()==true))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("dxy").toFloat()<0.05))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("dz").toFloat()<0.10))
+                {
+                    return false;
+                }
             }
-            if (fabs(particle->getEta())>1.4442 && fabs(particle->getEta())<1.5660)
+            else
             {
-                return false;
+                if (not (particle->getUserRecord("full5x5_sigmaIetaIeta").toFloat()<0.0292))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("deltaEtaSuperClusterTrackAtVtx").toFloat()<0.00605))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("deltaPhiSuperClusterTrackAtVtx").toFloat()<0.0394))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("hadronicOverEm").toFloat()<0.0641))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("ooEmooP").toFloat()<0.0129))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("numberOfMissingInnerHits").toInt32()<=1))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("passConversionVeto").toBool()==true))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("dxy").toFloat()<0.10))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("dz").toFloat()<0.20))
+                {
+                    return false;
+                }
             }
-            if (not particle->getUserRecord("passConversionVeto"))
-            {
-                return false;
-            }
+            
+            
             return true;
         }
 
@@ -118,11 +227,15 @@ class ElectronSelection:
                     std::vector<pxl::EventView*> eventViews;
                     event->getObjectsOfType(eventViews);
                     
-                    std::vector<pxl::Particle*> tightElectrons;
+                    pxl::EventView* eventView = nullptr;
+                    
+                    std::vector<pxl::Particle*> tightIsoEles;
+                    std::vector<pxl::Particle*> tightMidIsoEles;
+                    std::vector<pxl::Particle*> tightAntiIsoEles;
 
                     for (unsigned ieventView=0; ieventView<eventViews.size();++ieventView)
                     {
-                        pxl::EventView* eventView = eventViews[ieventView];
+                        eventView = eventViews[ieventView];
                         if (eventView->getName()==_inputEventViewName)
                         {
                             std::vector<pxl::Particle*> particles;
@@ -132,28 +245,89 @@ class ElectronSelection:
                             {
                                 pxl::Particle* particle = particles[iparticle];
 
-                                if (particle->getName()==_inputTightElectronName)
+                                if (particle->getName()==_inputElectronName)
                                 {
-                                    if (passTightCriteria(particle))
+                                    const float relrelIso = pfRelRelElectronIso(particle,0.0588,0.0571);
+                                    particle->setUserRecord("relrelIso",relrelIso);
+                                    if (passesTightCriteria(particle))
                                     {
-                                        tightElectrons.push_back(particle);
+                                        if (relrelIso<_pfRelRelIsoTightElectron)
+                                        {
+                                            //highly isolated electrons
+                                            tightIsoEles.push_back(particle);
+                                        }
+                                        else if (relrelIso>_pfRelRelIsoTightElectron && relrelIso<_pfRelRelMidIsoTightElectron)
+                                        {
+                                            //intermediate isolated electrons
+                                            tightMidIsoEles.push_back(particle);
+                                        }
+                                        else
+                                        {
+                                            //non-isolated electrons
+                                            tightAntiIsoEles.push_back(particle);
+                                        }
                                     }
                                 }
                             }
+                            break;
                         }
+                    }
+                    std::sort(tightIsoEles.begin(),tightIsoEles.end(),ElectronSelection::SortByPt());
+                    std::sort(tightMidIsoEles.begin(),tightMidIsoEles.end(),ElectronSelection::SortByPt());
+                    std::sort(tightAntiIsoEles.begin(),tightAntiIsoEles.end(),ElectronSelection::SortByPt());
                     
-                        if (tightElectrons.size()==1)
+                    //0=iso, 1=midiso, 2=looseiso, 3=other
+                    
+                    //N highly iso ele only
+                    if (tightIsoEles.size()==_numElectrons)
+                    {
+                        for (pxl::Particle* p: tightIsoEles)
                         {
-                            tightElectrons.front()->setName(_tightElectronName);
-
-                            _outputIsoSource->setTargets(event);
-                            return _outputIsoSource->processTargets();
+                            p->setName(_tightElectronName);
                         }
-                        else
+                        eventView->setUserRecord("leptoncat",0);
+                        _outputIsoSource->setTargets(event);
+                        return _outputIsoSource->processTargets();
+                    }
+                    //<N highly iso ele, rest intermediate iso eles
+                    else if (tightIsoEles.size()<_numElectrons && (tightIsoEles.size()+tightMidIsoEles.size())==_numElectrons)
+                    {
+                        for (pxl::Particle* p: tightIsoEles)
                         {
-                            _outputOtherSource->setTargets(event);
-                            return _outputOtherSource->processTargets();
+                            p->setName(_tightElectronName);
                         }
+                        for (pxl::Particle* p: tightMidIsoEles)
+                        {
+                            p->setName(_tightElectronName);
+                        }
+                        eventView->setUserRecord("leptoncat",1);
+                        _outputMidIsoSource->setTargets(event);
+                        return _outputMidIsoSource->processTargets();
+                    }
+                    //<N highly iso ele, <N intermediate iso eles, rest non-iso ele
+                    else if (tightIsoEles.size()<_numElectrons && tightMidIsoEles.size()<_numElectrons && (tightIsoEles.size()+tightMidIsoEles.size()+tightAntiIsoEles.size())==_numElectrons)
+                    {
+                        for (pxl::Particle* p: tightIsoEles)
+                        {
+                            p->setName(_tightElectronName);
+                        }
+                        for (pxl::Particle* p: tightMidIsoEles)
+                        {
+                            p->setName(_tightElectronName);
+                        }
+                        for (pxl::Particle* p: tightAntiIsoEles)
+                        {
+                            p->setName(_tightElectronName);
+                        }
+                        eventView->setUserRecord("leptoncat",2);
+                        _outputAntiIsoSource->setTargets(event);
+                        return _outputAntiIsoSource->processTargets();
+                    }
+                    else
+                    {
+                        eventView->setUserRecord("leptoncat",3);
+                        _outputOtherSource->setTargets(event);
+                        return _outputOtherSource->processTargets();
                     }
                 }
             }
@@ -178,7 +352,9 @@ class ElectronSelection:
         {
             delete this;
         }
+
 };
 
 PXL_MODULE_INIT(ElectronSelection)
 PXL_PLUGIN_INIT
+

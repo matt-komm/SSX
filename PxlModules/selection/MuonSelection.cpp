@@ -12,7 +12,7 @@
 #include "pxl/modules/Module.hh"
 #include "pxl/modules/ModuleFactory.hh"
 
-#include "muonisolation.h"
+#include "isolation.h"
 
 static pxl::Logger logger("MuonSelection");
 
@@ -34,8 +34,8 @@ class MuonSelection:
         /*Tight Muon Related Criteria*/
         double _pTMinTightMuon;  //Minimum transverse momentum
         double _etaMaxTightMuon; //Maximum pseudorapidity
-        double _pfRelIsoCorDbTightMuon; //Muon Isolation:Relative(Rel) Isolation Correction (Cor) Delta beta (Db)
-        double _pfRelMidIsoCorDbTightMuon; //Muon Isolation:Relative(Rel) Isolation Correction (Cor) Delta beta (Db)
+        double _pfRelIsoTightMuon;
+        double _pfRelMidIsoTightMuon;
 
       
         int64_t _numMuons;
@@ -55,21 +55,14 @@ class MuonSelection:
             Module(),
             _inputEventViewName("Reconstructed"),
             _inputMuonName("Muon"),
-            _tightMuonName("TightMuon"),
+            _tightMuonName("TightLepton"),
 
             _pTMinTightMuon(24),
             _etaMaxTightMuon(2.4),
-            _pfRelIsoCorDbTightMuon(0.06),
-            _pfRelMidIsoCorDbTightMuon(0.15),
+            _pfRelIsoTightMuon(0.06),
+            _pfRelMidIsoTightMuon(0.15),
             
             _numMuons(1)
-
-
-        /*Initial Values for tight Muons taken TOP Muon Information for Analysis (Run2)
-          https://twiki.cern.ch/twiki/bin/view/CMS/TopMUO#Signal */
-
-        /*Initial Values for loose Muons taken from single t-quark cross section at 8 TeV
-          http://cms.cern.ch/iCMS/jsp/openfile.jsp?tp=draft&files=AN2013_032_v8.pdf */
 
         {
             addSink("input", "input");
@@ -84,8 +77,8 @@ class MuonSelection:
 
             addOption("TightMuon Minimum pT","",_pTMinTightMuon);
             addOption("TightMuon Maximum Eta","",_etaMaxTightMuon);
-            addOption("TightMuon Minimum Relative Iso DeltaBeta","",_pfRelIsoCorDbTightMuon);
-            addOption("TightMuon Minimum Relative MidIso DeltaBeta","",_pfRelMidIsoCorDbTightMuon);
+            addOption("TightMuon Minimum Relative Iso","",_pfRelIsoTightMuon);
+            addOption("TightMuon Minimum Relative MidIso","",_pfRelMidIsoTightMuon);
         
             addOption("number of muons","",_numMuons);
         }
@@ -125,64 +118,27 @@ class MuonSelection:
 
             getOption("TightMuon Minimum pT",_pTMinTightMuon);
             getOption("TightMuon Maximum Eta",_etaMaxTightMuon);
-            getOption("TightMuon Minimum Relative Iso DeltaBeta",_pfRelIsoCorDbTightMuon);
-            getOption("TightMuon Minimum Relative MidIso DeltaBeta",_pfRelMidIsoCorDbTightMuon);
+            getOption("TightMuon Minimum Relative Iso",_pfRelIsoTightMuon);
+            getOption("TightMuon Minimum Relative MidIso",_pfRelMidIsoTightMuon);
         
             getOption("number of muons",_numMuons);
         }
 
         bool passesTightCriteria(pxl::Particle* particle)
         {
-            if (not (particle->getPt()>_pTMinTightMuon)) {
+            if (not (particle->getPt()>_pTMinTightMuon))
+            {
                 return false;
             }
-            if (not (fabs(particle->getEta())<_etaMaxTightMuon)) {
+            if (not (fabs(particle->getEta())<_etaMaxTightMuon))
+            {
                 return false;
             }
             if (not particle->hasUserRecord("isTightMuon") || not particle->getUserRecord("isTightMuon"))
             {
                 return false;
             }
-            /*
-            if (not particle->getUserRecord("isGlobalMuon"))
-            {
-                return false;
-            }
-            if (not particle->getUserRecord("isPFMuon"))
-            {
-                return false;
-            }
-            if (not particle->getUserRecord("isTightMuon"))
-            {
-                return false;
-            }
-            if (not ((particle->getUserRecord("chi2").toFloat()/particle->getUserRecord("ndof").toInt32())<_normChi2TightMuon)) {
-                return false;
-            }
-            if (not (particle->getUserRecord("numberOfValidMuonHits").toInt32()>_numberOfValidMuonHitsTightMuon)) {
-                return false;
-            }
-            if (not (particle->getUserRecord("numberOfValidPixelHits").toInt32()>_numberOfValidPixelHitsTightMuon)) {
-                return false;
-            }
-            if (not (particle->getUserRecord("numberOfMatchedStations").toInt32()>_numberOfMatchedStationsTightMuon)) {
-                return false;
-            }
-            if (not (fabs(particle->getUserRecord("dxy").toFloat())<_dxyMaxTightMuon)) {
-                return false;
-            }
-            if (not (fabs(particle->getUserRecord("dz").toFloat())<_dzMaxTightMuon)) {
-                return false;
-            }
-            if (not (particle->getUserRecord("trackerLayersWithMeasurement").toFloat()>_trackerLayersWithMeasurementTightMuon))
-            {
-                return false;
-            }
-            if (not (pfRelIsoCorDb(particle)<_pfRelIsoCorDbTightMuon))
-            {
-                return false;
-            }
-            */
+            
             return true;
         }
 
@@ -216,16 +172,16 @@ class MuonSelection:
 
                                 if (particle->getName()==_inputMuonName)
                                 {
-                                    const float relIso = pfRelIsoCorrectedDeltaBetaR04(particle,0.5);
+                                    const float relIso = pfRelMuonIso(particle,0.5);
                                     particle->setUserRecord("relIso",relIso);
                                     if (passesTightCriteria(particle))
                                     {
-                                        if (relIso<_pfRelIsoCorDbTightMuon)
+                                        if (relIso<_pfRelIsoTightMuon)
                                         {
                                             //highly isolated muons
                                             tightIsoMuons.push_back(particle);
                                         }
-                                        else if (relIso>_pfRelIsoCorDbTightMuon && relIso<_pfRelMidIsoCorDbTightMuon)
+                                        else if (relIso>_pfRelIsoTightMuon && relIso<_pfRelMidIsoTightMuon)
                                         {
                                             //intermediate isolated muons
                                             tightMidIsoMuons.push_back(particle);
@@ -254,7 +210,7 @@ class MuonSelection:
                         {
                             p->setName(_tightMuonName);
                         }
-                        eventView->setUserRecord("muoncat",0);
+                        eventView->setUserRecord("leptoncat",0);
                         _outputIsoSource->setTargets(event);
                         return _outputIsoSource->processTargets();
                     }
@@ -269,7 +225,7 @@ class MuonSelection:
                         {
                             p->setName(_tightMuonName);
                         }
-                        eventView->setUserRecord("muoncat",1);
+                        eventView->setUserRecord("leptoncat",1);
                         _outputMidIsoSource->setTargets(event);
                         return _outputMidIsoSource->processTargets();
                     }
@@ -288,13 +244,13 @@ class MuonSelection:
                         {
                             p->setName(_tightMuonName);
                         }
-                        eventView->setUserRecord("muoncat",2);
+                        eventView->setUserRecord("leptoncat",2);
                         _outputAntiIsoSource->setTargets(event);
                         return _outputAntiIsoSource->processTargets();
                     }
                     else
                     {
-                        eventView->setUserRecord("muoncat",3);
+                        eventView->setUserRecord("leptoncat",3);
                         _outputOtherSource->setTargets(event);
                         return _outputOtherSource->processTargets();
                     }

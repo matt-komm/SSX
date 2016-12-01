@@ -12,7 +12,7 @@
 #include "pxl/modules/Module.hh"
 #include "pxl/modules/ModuleFactory.hh"
 
-#include "muonisolation.h"
+#include "isolation.h"
 
 static pxl::Logger logger("MuonVeto");
 
@@ -129,7 +129,7 @@ class MuonVeto:
             {
                 return false;
             }
-            if (not (pfRelIsoCorrectedDeltaBetaR04 (particle,_pfRelIsoCorDbBetaLooseMuon)<_pfRelIsoCorDbLooseMuon))
+            if (not (pfRelMuonIso(particle,_pfRelIsoCorDbBetaLooseMuon)<_pfRelIsoCorDbLooseMuon))
             {
                 return false;
             }
