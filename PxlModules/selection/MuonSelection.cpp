@@ -55,7 +55,7 @@ class MuonSelection:
             Module(),
             _inputEventViewName("Reconstructed"),
             _inputMuonName("Muon"),
-            _tightMuonName("TightMuon"),
+            _tightMuonName("TightLepton"),
 
             _pTMinTightMuon(24),
             _etaMaxTightMuon(2.4),
@@ -209,7 +209,7 @@ class MuonSelection:
                         {
                             p->setName(_tightMuonName);
                         }
-                        eventView->setUserRecord("leptoncat",0);
+                        eventView->setUserRecord("muoncat",0);
                         _outputIsoSource->setTargets(event);
                         return _outputIsoSource->processTargets();
                     }
@@ -224,7 +224,7 @@ class MuonSelection:
                         {
                             p->setName(_tightMuonName);
                         }
-                        eventView->setUserRecord("leptoncat",1);
+                        eventView->setUserRecord("muoncat",1);
                         _outputMidIsoSource->setTargets(event);
                         return _outputMidIsoSource->processTargets();
                     }
@@ -243,13 +243,13 @@ class MuonSelection:
                         {
                             p->setName(_tightMuonName);
                         }
-                        eventView->setUserRecord("leptoncat",2);
+                        eventView->setUserRecord("muoncat",2);
                         _outputAntiIsoSource->setTargets(event);
                         return _outputAntiIsoSource->processTargets();
                     }
                     else
                     {
-                        eventView->setUserRecord("leptoncat",3);
+                        eventView->setUserRecord("muoncat",3);
                         _outputOtherSource->setTargets(event);
                         return _outputOtherSource->processTargets();
                     }

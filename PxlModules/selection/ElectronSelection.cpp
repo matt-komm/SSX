@@ -285,7 +285,7 @@ class ElectronSelection:
                         {
                             p->setName(_tightElectronName);
                         }
-                        eventView->setUserRecord("leptoncat",0);
+                        eventView->setUserRecord("elecat",0);
                         _outputIsoSource->setTargets(event);
                         return _outputIsoSource->processTargets();
                     }
@@ -300,7 +300,7 @@ class ElectronSelection:
                         {
                             p->setName(_tightElectronName);
                         }
-                        eventView->setUserRecord("leptoncat",1);
+                        eventView->setUserRecord("elecat",1);
                         _outputMidIsoSource->setTargets(event);
                         return _outputMidIsoSource->processTargets();
                     }
@@ -319,13 +319,13 @@ class ElectronSelection:
                         {
                             p->setName(_tightElectronName);
                         }
-                        eventView->setUserRecord("leptoncat",2);
+                        eventView->setUserRecord("elecat",2);
                         _outputAntiIsoSource->setTargets(event);
                         return _outputAntiIsoSource->processTargets();
                     }
                     else
                     {
-                        eventView->setUserRecord("leptoncat",3);
+                        eventView->setUserRecord("elecat",3);
                         _outputOtherSource->setTargets(event);
                         return _outputOtherSource->processTargets();
                     }
