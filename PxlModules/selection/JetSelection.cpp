@@ -58,7 +58,7 @@ class JetSelection:
 
             _dRInvert(false),
             _dR(0.3),
-            _dRObjects({"TightMuon","TightElectron"})
+            _dRObjects({"TightLepton","TightMuon","TightElectron"})
             /*Initial Values taken from TOP JetMET Analysis (Run2) */
             /*https://twiki.cern.ch/twiki/bin/view/CMS/TopJME#General_Information */
         {
