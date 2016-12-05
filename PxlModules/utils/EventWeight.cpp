@@ -270,7 +270,7 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
 const std::unordered_map<std::string,const std::unordered_map<std::string,FileInfo>> _eventWeightsPerEra =
 {
     {"80Xv1",eventWeights80Xv1},
-    {"80XwithHLT",eventWeights80Xv1}
+    {"80XwithHLT",eventWeights80XwithHLT}
 };
 
 class EventWeight:
