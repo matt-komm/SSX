@@ -96,8 +96,8 @@ class TopReconstruction:
             _neutrinoName("Neutrino"),
             
             _inputEventViewNameJets("Reconstructed"),
-            _bJetNames({"SelectedBJet"}),
-            _lightJetNames({"SelectedJet","SelectedBMidJet","SelectedBLooseJet"}),
+            _bJetNames({"SelectedBJetTight"}),
+            _lightJetNames({"SelectedJet","SelectedBJetMed","SelectedBJetLoose"}),
             
             _outputEventViewName("SingleTop"),
             _wbosonName("W"),
