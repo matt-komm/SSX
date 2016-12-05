@@ -74,10 +74,61 @@ for folder in rootFiles.keys(): #this loop will not go over data
 if stopForError:
     print "EXIT due to file mismatch"
     sys.exit(-1)
+    
+    
+xsecDB = {
+    "DYJetsToLL_M-10to50":18610.0,
+    "DY1JetsToLL_M-10to50":725.0, #LO MadGraph from MCM
+    "DY2JetsToLL_M-10to50":394.5, #LO MadGraph from MCM
+    "DY3JetsToLL_M-10to50":96.47, #LO MadGraph from MCM
+    "DY4JetsToLL_M-10to50":34.84, #LO MadGraph from MCM
+    
+    "DYJetsToLL_M-50": 1921.8*3,
+    
+    "QCD_Pt-20toInf_MuEnrichedPt15": 866600000 * 0.00044,
+    
+    "QCD_Pt-15to20_MuEnrichedPt5":1273190000,  #LO MadGraph from MCM
+    "QCD_Pt-20to30_MuEnrichedPt5":558528000,  #LO MadGraph from MCM
+    "QCD_Pt-30to50_MuEnrichedPt5":139803000,  #LO MadGraph from MCM
+    "QCD_Pt-50to80_MuEnrichedPt5":19222500,  #LO MadGraph from MCM
+    "QCD_Pt-80to120_MuEnrichedPt5":2758420,  #LO MadGraph from MCM
+    "QCD_Pt-120to170_MuEnrichedPt5":469797,  #LO MadGraph from MCM
+    "QCD_Pt-170to300_MuEnrichedPt5":117989,  #LO MadGraph from MCM
+    "QCD_Pt-300to470_MuEnrichedPt5":7820.25,  #LO MadGraph from MCM
+    "QCD_Pt-470to600_MuEnrichedPt5":645.5,  #LO MadGraph from MCM
+    "QCD_Pt-600to800_MuEnrichedPt5":187.11,  #LO MadGraph from MCM
+    "QCD_Pt-800to1000_MuEnrichedPt5":32.35,  #LO MadGraph from MCM
+    "QCD_Pt-1000toInf_MuEnrichedPt5":10.43, #LO MadGraph from MCM
+     
+    "ST_t-channel_4f": 80.95+136.02,
+    "ST_t-channel_antitop_4f": 80.95,
+    "ST_t-channel_top_4f": 136.02,
+    
+    "ST_t-channel_5f": 80.95+136.02,
+    "ST_t-channel_antitop_5f": 80.95,
+    "ST_t-channel_top_5f": 136.02,
+    
+    "ST_tW_antitop": 35.6,
+    "ST_tW_top": 35.6,
+    
+    "WJetsToLNu":20508.9*3,
+    
+    "TT": 831.76,
+    "TTJets": 831.76,
+}
 
+def findXsec(name):
+    #find largest match
+    match = ""
+    for process in xsecDB.keys():
+        if (len(process)>len(match)) and (name.find(process)!=-1):
+            match = process
+    if len(match)==0:
+        return "? //WARNING, xsec not found"
+    return str(xsecDB[match])+" // xsec for process '"+match+"'"
 
 for folder in sorted(rootFiles.keys()):
-    print "reading ... ",folder
+    #print "reading ... ",folder
     
     nEvents = 0
     sumPosWeight = 0
@@ -92,8 +143,16 @@ for folder in sorted(rootFiles.keys()):
         sumPosWeight +=round(math.fabs(hist.GetBinContent(2))*w)
         sumNegWeight +=round(math.fabs(hist.GetBinContent(1))*w)
 
-    print "\tentries = ",nEvents
-    print "\tpos = ",sumPosWeight
-    print "\tneg = ",sumNegWeight
-    print "\teff = ",sumPosWeight-sumNegWeight
+    tab = "    "
+    print tab+"{\""+folder.rsplit("_v",1)[0]+"\","
+    print tab+tab+"{"
+    print tab+tab+tab+"//total="+str(nEvents)+" eff="+str(sumPosWeight)+" - "+str(sumNegWeight)+" = "+str(sumPosWeight-sumNegWeight)
+    print tab+tab+tab+str(sumPosWeight-sumNegWeight)+","
+    print tab+tab+tab+findXsec(folder.rsplit("_v",1)[0])
+    print tab+tab+"}"
+    print tab+"},"
+    #print "\tentries = ",nEvents
+    #print "\tpos = ",sumPosWeight
+    #print "\tneg = ",sumNegWeight
+    #print "\teff = ",sumPosWeight-sumNegWeight
 
