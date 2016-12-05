@@ -55,7 +55,7 @@ class MuonSelection:
             Module(),
             _inputEventViewName("Reconstructed"),
             _inputMuonName("Muon"),
-            _tightMuonName("TightLepton"),
+            _tightMuonName("TightMuon"),
 
             _pTMinTightMuon(24),
             _etaMaxTightMuon(2.4),
@@ -63,7 +63,6 @@ class MuonSelection:
             _pfRelMidIsoTightMuon(0.15),
             
             _numMuons(1)
-
         {
             addSink("input", "input");
             _outputIsoSource = addSource("1 iso muon", "iso");

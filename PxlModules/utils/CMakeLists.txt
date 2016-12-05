@@ -71,3 +71,18 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(Duplicator MODULE Duplicator.cpp)
+target_link_libraries(Duplicator ${PXL_LIBRARIES})
+install(
+    TARGETS Duplicator
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+
+
+add_library(Flag MODULE Flag.cpp)
+target_link_libraries(Flag ${PXL_LIBRARIES})
+install(
+    TARGETS Flag
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+

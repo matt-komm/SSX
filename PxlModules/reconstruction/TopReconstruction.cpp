@@ -90,14 +90,14 @@ class TopReconstruction:
         TopReconstruction():
             Module(),
             _inputEventViewNameLepton("Reconstructed"),
-            _leptonName("TightMuon"),
+            _leptonName("TightLepton"),
             
             _inputEventViewNameNeutrino("SingleTop"),
             _neutrinoName("Neutrino"),
             
             _inputEventViewNameJets("Reconstructed"),
             _bJetNames({"SelectedBJet"}),
-            _lightJetNames({"SelectedJet","SelectedBLooseJet"}),
+            _lightJetNames({"SelectedJet","SelectedBMidJet","SelectedBLooseJet"}),
             
             _outputEventViewName("SingleTop"),
             _wbosonName("W"),
