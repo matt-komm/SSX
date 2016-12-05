@@ -109,7 +109,7 @@ class ElectronVeto:
             {
                 return false;
             }
-            if (_idString.size()>0 and (not particle->getUserRecord("spring15eleIDVeto25ns")))
+            if (_idString.size()>0 and (not particle->getUserRecord(_idString)))
             {
                 return false;
             }
