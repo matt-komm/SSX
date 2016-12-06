@@ -27,17 +27,22 @@ for folder in rootFiles.keys():
     print "found ",len(rootFiles[folder])," in ",folder
     nFiles+=len(rootFiles[folder])
 
-puHist = None
 
+outputFile = ROOT.TFile("pu.root","RECREATE")
+currentDir = ROOT.gDirectory
+totalPU = None
 for folder in rootFiles.keys():
+    puHist = None
+    entires = 0
     for i,f in enumerate(rootFiles[folder]):
         rootFile = ROOT.TFile(f)
         hist = rootFile.Get("eventAndPuInfo/nTrueInteractions1")
         if (puHist==None):
-            puHist = hist.Clone("nTrueInteractions1D")
+            puHist = hist.Clone(folder.rsplit("_v",1)[0])
             #puHist = ROOT.TH1F("nTrueInteractions1D","nTrueInteractions1D",500,0,100)
             puHist.Sumw2()
             puHist.SetDirectory(0)
+            entires+=hist.GetEntries()
         else:
             #puHist.Add(hist)
             for ibin in range(puHist.GetNbinsX()):
@@ -45,12 +50,22 @@ for folder in rootFiles.keys():
                     ibin+1,
                     puHist.GetBinContent(ibin+1)+hist.GetBinContent(hist.FindBin(puHist.GetBinCenter(ibin+1)))
                 )
+            entires+=hist.GetEntries()
+            
         rootFile.Close()
-        print i,"/",len(rootFiles[folder]),puHist.Integral()
-
-puHist.Scale(1.0/puHist.Integral())
-outputFile = ROOT.TFile("pu.root","RECREATE")
-puHist.SetDirectory(outputFile)
-puHist.Write()
+        print i,"/",len(rootFiles[folder])," entries=",entires
+        if entires>5000000:
+            break
+    outputFile.cd()
+    puHist.Scale(1.0/puHist.Integral())
+    puHist.SetDirectory(outputFile)
+    puHist.Write()
+    if totalPU == None:
+        totalPU = puHist.Clone("total")
+    else:
+        totalPU.Add(puHist)
+totalPU.Scale(1.0/totalPU.Integral())
+totalPU.SetDirectory(outputFile)
+totalPU.Write()
 outputFile.Close()
 

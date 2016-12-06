@@ -57,7 +57,7 @@ class MuonSelection:
             _inputMuonName("Muon"),
             _tightMuonName("TightLepton"),
 
-            _pTMinTightMuon(24),
+            _pTMinTightMuon(26),
             _etaMaxTightMuon(2.4),
             _pfRelIsoTightMuon(0.06),
             _pfRelMidIsoTightMuon(0.15),

@@ -31,7 +31,7 @@ class NeutrinoPz:
             Module(),
             _inputEventViewName("Reconstructed"),
             _metName("MET"),
-            _leptonName("TightMuon"),
+            _leptonName("TightLepton"),
             
             _outputEventViewName("SingleTop"),
             _neutrinoName("Neutrino")

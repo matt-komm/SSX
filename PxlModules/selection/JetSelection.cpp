@@ -139,12 +139,15 @@ class JetSelection:
             {
                 return false;
             }
-            if (not (fabs(particle->getEta())<_etaMaxJet))
+            
+            const double absEta = fabs(particle->getEta());
+            
+            if (not (absEta<_etaMaxJet))
             {
                 return false;
             }
             
-            if (fabs(particle->getEta())<3.0)
+            if (absEta<=2.7)
             {
                 if (particle->hasUserRecord("neutralHadronEnergyFraction"))
                 {
@@ -153,7 +156,6 @@ class JetSelection:
                         return false;
                     }
                 }
-                
                 if (particle->hasUserRecord("neutralEmEnergyFraction"))
                 {
                     if (not (particle->getUserRecord("neutralEmEnergyFraction").toFloat()<0.99))
@@ -166,39 +168,38 @@ class JetSelection:
                 {
                     return false;
                 }
-            }
-            
-            if (fabs(particle->getEta())<2.4)
-            {
-                if (particle->hasUserRecord("chargedHadronEnergyFraction"))
+                
+                if (absEta<=2.4)
                 {
-                    if (not (particle->getUserRecord("chargedHadronEnergyFraction").toFloat()>0.0))
+                    if (particle->hasUserRecord("chargedHadronEnergyFraction"))
+                    {
+                        if (not (particle->getUserRecord("chargedHadronEnergyFraction").toFloat()>0.0))
+                        {
+                            return false;
+                        }
+                    } 
+                    else
+                    {
+                        //CHF needs to be >0; if the entry does not exists -> CHF=0 so do not accept this jet
+                        return false;
+                    }
+                    
+                    if (not (particle->getUserRecord("chargedMultiplicity").toInt32()>0))
                     {
                         return false;
                     }
-                } 
-                else
-                {
-                    //CHF needs to be >0; if the entry does not exists -> CHF=0 so do not accept this jet
-                    return false;
-                }
-                
-                if (not (particle->getUserRecord("chargedMultiplicity").toInt32()>0))
-                {
-                    return false;
-                }
-                
-                //same as 'chargedEmEnergy'
-                if (particle->hasUserRecord("electronEnergyFraction"))
-                {
-                    if (not (particle->getUserRecord("electronEnergyFraction").toFloat()<0.99))
+                    
+                    //same as 'chargedEmEnergy'
+                    if (particle->hasUserRecord("electronEnergyFraction"))
                     {
-                        return false;
+                        if (not (particle->getUserRecord("electronEnergyFraction").toFloat()<0.99))
+                        {
+                            return false;
+                        }
                     }
                 }
             }
-            
-            if (fabs(particle->getEta())>3.0)
+            else if ((absEta>2.7) and (absEta<=3.0))
             {
                 if (particle->hasUserRecord("neutralEmEnergyFraction"))
                 {
@@ -207,6 +208,22 @@ class JetSelection:
                         return false;
                     }
                 }
+
+                if (not (particle->getUserRecord("neutralMultiplicity").toInt32()>2))
+                {
+                    return false;
+                }
+            }
+            else if (absEta>3.0)
+            {
+                if (particle->hasUserRecord("neutralEmEnergyFraction"))
+                {
+                    if (not (particle->getUserRecord("neutralEmEnergyFraction").toFloat()<0.90))
+                    {
+                        return false;
+                    }
+                }
+
                 if (not (particle->getUserRecord("neutralMultiplicity").toInt32()>10))
                 {
                     return false;
