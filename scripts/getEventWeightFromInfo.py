@@ -75,6 +75,7 @@ if stopForError:
     print "EXIT due to file mismatch"
     sys.exit(-1)
     
+WtoLeptons = 0.1086
     
 xsecDB = {
     "DYJetsToLL_M-10to50":18610.0,
@@ -100,6 +101,14 @@ xsecDB = {
     "QCD_Pt-800to1000_MuEnrichedPt5":32.35,  #LO MadGraph from MCM
     "QCD_Pt-1000toInf_MuEnrichedPt5":10.43, #LO MadGraph from MCM
      
+    "ST_t-channel_4f_leptonDecays": (80.95+136.02)*3*WtoLeptons,
+    "ST_t-channel_antitop_4f_leptonDecays": 80.95*3*WtoLeptons,
+    "ST_t-channel_top_4f_leptonDecays": 136.02*3*WtoLeptons,
+    
+    "ST_t-channel_5f_leptonDecays": (80.95+136.02)*3*WtoLeptons,
+    "ST_t-channel_antitop_5f_leptonDecays": 80.95*3*WtoLeptons,
+    "ST_t-channel_top_5f_leptonDecays": 136.02*3*WtoLeptons,
+     
     "ST_t-channel_4f": 80.95+136.02,
     "ST_t-channel_antitop_4f": 80.95,
     "ST_t-channel_top_4f": 136.02,
@@ -110,6 +119,7 @@ xsecDB = {
     
     "ST_tW_antitop": 35.6,
     "ST_tW_top": 35.6,
+    "ST_tWll": 2*35.6*(3*WtoLeptons)*(3*WtoLeptons),
     
     "WJetsToLNu":20508.9*3,
     

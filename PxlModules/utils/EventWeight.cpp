@@ -262,11 +262,11 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
         {
             //total=18516105.0 eff=11251282.0 - 7264823.0 = 3986459.0
             3986459.0,
-            216.97 // xsec for process 'ST_t-channel_4f'
+            216.97*3*0.1086 // xsec for process 'ST_t-channel_4f'
         }
     }
 };
-        
+
 const std::unordered_map<std::string,const std::unordered_map<std::string,FileInfo>> _eventWeightsPerEra =
 {
     {"80Xv1",eventWeights80Xv1},
