@@ -103,7 +103,7 @@ xsecDB = {
     "DY3JetsToLL_M-10to50":96.47, #LO MadGraph from MCM
     "DY4JetsToLL_M-10to50":34.84, #LO MadGraph from MCM
     
-    "DYJetsToLL_M-50": 1921.8*3,
+    "DYJetsToLL_M-50": 4895.0, #from HIG-16-017
     
     "QCD_Pt-20toInf_MuEnrichedPt15": 866600000 * 0.00044,
     

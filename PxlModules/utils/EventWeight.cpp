@@ -221,14 +221,14 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
         {
             //total=100348291.0 eff=83822323.0 - 16525968.0 = 67296355.0
             67296355.0,
-            5765.4 // xsec for process 'DYJetsToLL_M-50'
+            4895.0 // xsec for process 'DYJetsToLL_M-50'
         }
     },
     {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
         {
             //total=82358269.0 eff=82358269.0 - 0.0 = 82358269.0
             82358269.0,
-            5765.4 // xsec for process 'DYJetsToLL_M-50'
+            4895.0 // xsec for process 'DYJetsToLL_M-50'
         }
     },
     {"QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
