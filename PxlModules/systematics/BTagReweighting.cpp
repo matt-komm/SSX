@@ -24,20 +24,20 @@ class BTagReweighting:
     private:
         pxl::Source* _outputSource;
         
-        
         BTagCalibration _btagCalib;
-        BTagCalibrationReader _readerNominal_ttbar;
-        BTagCalibrationReader _readerUp_ttbar;
-        BTagCalibrationReader _readerDown_ttbar;
         
-        BTagCalibrationReader _readerNominal_inc;
-        BTagCalibrationReader _readerUp_inc;
-        BTagCalibrationReader _readerDown_inc;
+        std::vector<BTagCalibrationReader> _readerNominal_ttbar;
+        std::vector<BTagCalibrationReader> _readerUp_ttbar;
+        std::vector<BTagCalibrationReader> _readerDown_ttbar;
         
-        std::shared_ptr<TH2F> mcEff_b;
-        std::shared_ptr<TH2F> mcEff_c;
-        std::shared_ptr<TH2F> mcEff_q;
-        std::shared_ptr<TH2F> mcEff_other;
+        std::vector<BTagCalibrationReader> _readerNominal_inc;
+        std::vector<BTagCalibrationReader> _readerUp_inc;
+        std::vector<BTagCalibrationReader> _readerDown_inc;
+        
+        std::vector<std::shared_ptr<TH2F>> mcEff_b;
+        std::vector<std::shared_ptr<TH2F>> mcEff_c;
+        std::vector<std::shared_ptr<TH2F>> mcEff_q;
+        std::vector<std::shared_ptr<TH2F>> mcEff_other;
             
         BWGHT::BTagWeightCalculator _btagWeightCalc;
         
@@ -48,19 +48,20 @@ class BTagReweighting:
         
         std::string _sfFile;
         std::string _mcFile;
+        std::vector<std::string> _histPostFix;
         std::string _eventViewName;
         std::vector<std::string> _jetNames;
-        std::string _ljetName;
         
-        double _wp;
+        std::vector<double> _wp;
 
     public:
         BTagReweighting():
             Module(),               
             _bTaggingAlgorithmName("pfCombinedMVAV2BJetTags"),
             _eventViewName("Reconstructed"),
-            _jetNames({"SelectedBJet","SelectedJet"}),
-            _wp(0.875)
+            _histPostFix({"loose","medium","tight"}),
+            _jetNames({"SelectedJet","SelectedBJet","SelectedBJetTight","SelectedBJetMed","SelectedBJetLoose"}),
+            _wp({-0.715,0.185,0.875})
         {
             addSink("input", "input");
             _outputSource = addSource("output","output");
@@ -69,10 +70,13 @@ class BTagReweighting:
             
             addOption("SF csv file","",_sfFile,pxl::OptionDescription::USAGE_FILE_OPEN);
             addOption("MC efficiency file","",_mcFile,pxl::OptionDescription::USAGE_FILE_OPEN);
+            addOption("MC hist postfix","",_histPostFix);
             addOption("event view name","",_eventViewName);
             addOption("jet names","",_jetNames);
             
-            addOption("workingpoint","",_wp);
+            std::vector<std::string> wp2str;
+            for (double wp: _wp) wp2str.push_back(std::to_string(wp));
+            addOption("workingpoint","",wp2str);
             
             
         }
@@ -120,160 +124,174 @@ class BTagReweighting:
             calc.getEventWeight({Jet(0.1),Jet(0.7),Jet(0.5)});
             */
             getOption("b tagging algorithm",_bTaggingAlgorithmName);
+            
             getOption("SF csv file",_sfFile);
             getOption("MC efficiency file",_mcFile);
+            getOption("MC hist postfix",_histPostFix);
             getOption("event view name",_eventViewName);
             getOption("jet names",_jetNames);
             
-            getOption("workingpoint",_wp);
+            std::vector<std::string> wp2str;
+            _wp.clear();
+            getOption("workingpoint",wp2str);
+            for (const std::string& wp: wp2str) _wp.push_back(std::atof(wp.c_str()));
             
             TFile mcEffFile(_mcFile.c_str());
             
-            TH2F* hist_b = dynamic_cast<TH2F*>(mcEffFile.Get("b__tight"));
-            hist_b->SetDirectory(0);
-            mcEff_b.reset(hist_b);
+            _btagCalib = BTagCalibration("csvv1", _sfFile);
             
-            TH2F* hist_c = dynamic_cast<TH2F*>(mcEffFile.Get("c__tight"));
-            hist_c->SetDirectory(0);
-            mcEff_c.reset(hist_c);
+            std::vector<BTagEntry::OperatingPoint> opPoints({BTagEntry::OP_LOOSE,BTagEntry::OP_MEDIUM,BTagEntry::OP_TIGHT});
             
-            TH2F* hist_other = dynamic_cast<TH2F*>(mcEffFile.Get("other__tight"));
-            hist_other->SetDirectory(0);
-            mcEff_other.reset(hist_other);
-            
-            mcEffFile.Close();
-
-            
-            _btagCalib=BTagCalibration("csvv1", _sfFile);
-            _readerNominal_ttbar = BTagCalibrationReader(
-                &_btagCalib,               // calibration instance
-                BTagEntry::OP_TIGHT,  // operating point
-                "ttbar",               // measurement type
-                "central"             // systematics type
-            );           
-            _readerUp_ttbar = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "ttbar", "up");  // sys up
-            _readerDown_ttbar = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "ttbar", "down");  // sys down
-                        
-            _readerNominal_inc = BTagCalibrationReader(
-                &_btagCalib,               // calibration instance
-                BTagEntry::OP_TIGHT,  // operating point
-                "incl",               // measurement type
-                "central"             // systematics type
-            );           
-            _readerUp_inc = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "incl", "up");  // sys up
-            _readerDown_inc = BTagCalibrationReader(&_btagCalib, BTagEntry::OP_TIGHT, "incl", "down");  // sys down
-   
-                        
-                        
-            BWGHT::WorkingPoint tightWP(_wp);
-            
-            tightWP.setEfficiencyFunction(new BWGHT::LambdaEfficiencyFunction([&](const BWGHT::Jet& jet, BWGHT::SYS::TYPE sys) -> double
+            for (unsigned int iwp = 0; iwp<3; ++iwp)
             {
-                float pt = jet.pt; 
-                float eta = fabs(jet.eta);
+                TH2F* hist_b = dynamic_cast<TH2F*>(mcEffFile.Get("b__tight"));
+                hist_b->SetDirectory(0);
+                mcEff_b.emplace_back(hist_b);
                 
-                double efficiency =0.0;
+                TH2F* hist_c = dynamic_cast<TH2F*>(mcEffFile.Get("c__tight"));
+                hist_c->SetDirectory(0);
+                mcEff_c.emplace_back(hist_c);
                 
-                if (jet.flavor==5)
-                {
-                    int etaBin = mcEff_b->GetXaxis()->FindBin(eta);
-                    int ptBin = mcEff_b->GetYaxis()->FindBin(pt);
-                    efficiency = mcEff_b->GetBinContent(etaBin,ptBin);
-                }
-                else if (jet.flavor==4)
-                {
-                    int etaBin = mcEff_c->GetXaxis()->FindBin(eta);
-                    int ptBin = mcEff_c->GetYaxis()->FindBin(pt);
-                    efficiency = mcEff_c->GetBinContent(etaBin,ptBin);
-                }
-                else
-                {
-                    int etaBin = mcEff_other->GetXaxis()->FindBin(eta);
-                    int ptBin = mcEff_other->GetYaxis()->FindBin(pt);
-                    efficiency = mcEff_other->GetBinContent(etaBin,ptBin);
-                }
-                if (efficiency<0.01)
-                {
-                    efficiency+=0.005;
-                }
-                return efficiency;
-            
-            }));
-            tightWP.setScaleFactorFunction(new BWGHT::LambdaScaleFactorFunction([&](const BWGHT::Jet& jet, BWGHT::SYS::TYPE sys) -> double
-            {
+                TH2F* hist_other = dynamic_cast<TH2F*>(mcEffFile.Get("other__tight"));
+                hist_other->SetDirectory(0);
+                mcEff_other.emplace_back(hist_other);
                 
-                float pt = jet.pt; 
-                float eta = jet.eta;
-                bool doubleUncertainty = false;
-                
-                BTagEntry::JetFlavor flavor = BTagEntry::FLAV_UDSG;
-                double jet_scalefactor =  1.0;
-                double jet_scalefactor_up =  1.0;
-                double jet_scalefactor_down = 1.0;
-                
-                if (jet.flavor==5)
-                {
-                    flavor = BTagEntry::FLAV_B;
-                    if (pt>MaxBJetPt)  
-                    {
-                        pt = MaxBJetPt; 
-                        doubleUncertainty = true;
-                    }
-                    jet_scalefactor = _readerNominal_ttbar.eval(flavor, eta, pt); 
-                    jet_scalefactor_up = _readerUp_ttbar.eval(flavor, eta, pt); 
-                    jet_scalefactor_down = _readerDown_ttbar.eval(flavor, eta, pt);   
-                } 
-                else if (jet.flavor==4)
-                {
-                    flavor = BTagEntry::FLAV_C;
-                    if (pt>MaxBJetPt)  
-                    {
-                        pt = MaxBJetPt; 
-                        doubleUncertainty = true;
-                    }
-                    jet_scalefactor = _readerNominal_ttbar.eval(flavor, eta, pt); 
-                    jet_scalefactor_up = _readerUp_ttbar.eval(flavor, eta, pt); 
-                    jet_scalefactor_down = _readerDown_ttbar.eval(flavor, eta, pt); 
-                } 
-                else
-                {
-                    flavor = BTagEntry::FLAV_UDSG;
-                    if (pt>MaxLJetPt)  
-                    {
-                        pt = MaxLJetPt; 
-                        doubleUncertainty = true;
-                    }
-                    jet_scalefactor = _readerNominal_inc.eval(flavor, eta, pt); 
-                    jet_scalefactor_up = _readerUp_inc.eval(flavor, eta, pt); 
-                    jet_scalefactor_down = _readerDown_inc.eval(flavor, eta, pt);   
-                }
+                mcEffFile.Close();
 
-                if (doubleUncertainty)
+                
+                
+                _readerNominal_ttbar.push_back(BTagCalibrationReader(
+                    &_btagCalib,               // calibration instance
+                    opPoints[iwp],  // operating point
+                    "ttbar",               // measurement type
+                    "central"             // systematics type
+                ));           
+                _readerUp_ttbar.push_back(BTagCalibrationReader(&_btagCalib, opPoints[iwp], "ttbar", "up"));  // sys up
+                _readerDown_ttbar.push_back(BTagCalibrationReader(&_btagCalib, opPoints[iwp], "ttbar", "down"));  // sys down
+                            
+                _readerNominal_inc.push_back(BTagCalibrationReader(
+                    &_btagCalib,               // calibration instance
+                    opPoints[iwp],  // operating point
+                    "incl",               // measurement type
+                    "central"             // systematics type
+                ));           
+                _readerUp_inc.push_back(BTagCalibrationReader(&_btagCalib, opPoints[iwp], "incl", "up"));  // sys up
+                _readerDown_inc.push_back(BTagCalibrationReader(&_btagCalib, opPoints[iwp], "incl", "down"));  // sys down
+       
+                            
+                            
+                BWGHT::WorkingPoint tightWP(_wp[iwp]);
+                
+                tightWP.setEfficiencyFunction(new BWGHT::LambdaEfficiencyFunction([this,iwp](const BWGHT::Jet& jet, BWGHT::SYS::TYPE sys) -> double
                 {
-                    jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
-                    jet_scalefactor_down = 2*(jet_scalefactor_down - jet_scalefactor) + jet_scalefactor; 
-                }
+                    float pt = jet.pt; 
+                    float eta = fabs(jet.eta);
+                    
+                    double efficiency =0.0;
+                    
+                    if (jet.flavor==5)
+                    {
+                        int etaBin = mcEff_b[iwp]->GetXaxis()->FindBin(eta);
+                        int ptBin = mcEff_b[iwp]->GetYaxis()->FindBin(pt);
+                        efficiency = mcEff_b[iwp]->GetBinContent(etaBin,ptBin);
+                    }
+                    else if (jet.flavor==4)
+                    {
+                        int etaBin = mcEff_c[iwp]->GetXaxis()->FindBin(eta);
+                        int ptBin = mcEff_c[iwp]->GetYaxis()->FindBin(pt);
+                        efficiency = mcEff_c[iwp]->GetBinContent(etaBin,ptBin);
+                    }
+                    else
+                    {
+                        int etaBin = mcEff_other[iwp]->GetXaxis()->FindBin(eta);
+                        int ptBin = mcEff_other[iwp]->GetYaxis()->FindBin(pt);
+                        efficiency = mcEff_other[iwp]->GetBinContent(etaBin,ptBin);
+                    }
+                    if (efficiency<0.01)
+                    {
+                        efficiency+=0.005;
+                    }
+                    std::cout<<"\tcall eff "<<iwp<<" val="<<efficiency<<std::endl;
+                    return efficiency;
+                
+                }));
+                tightWP.setScaleFactorFunction(new BWGHT::LambdaScaleFactorFunction([this,iwp](const BWGHT::Jet& jet, BWGHT::SYS::TYPE sys) -> double
+                {
+                    
+                    float pt = jet.pt; 
+                    float eta = jet.eta;
+                    bool doubleUncertainty = false;
+                    
+                    BTagEntry::JetFlavor flavor = BTagEntry::FLAV_UDSG;
+                    double jet_scalefactor =  1.0;
+                    double jet_scalefactor_up =  1.0;
+                    double jet_scalefactor_down = 1.0;
+                    
+                    if (jet.flavor==5)
+                    {
+                        flavor = BTagEntry::FLAV_B;
+                        if (pt>MaxBJetPt)  
+                        {
+                            pt = MaxBJetPt; 
+                            doubleUncertainty = true;
+                        }
+                        jet_scalefactor = _readerNominal_ttbar[iwp].eval(flavor, eta, pt); 
+                        jet_scalefactor_up = _readerUp_ttbar[iwp].eval(flavor, eta, pt); 
+                        jet_scalefactor_down = _readerDown_ttbar[iwp].eval(flavor, eta, pt);   
+                    } 
+                    else if (jet.flavor==4)
+                    {
+                        flavor = BTagEntry::FLAV_C;
+                        if (pt>MaxBJetPt)  
+                        {
+                            pt = MaxBJetPt; 
+                            doubleUncertainty = true;
+                        }
+                        jet_scalefactor = _readerNominal_ttbar[iwp].eval(flavor, eta, pt); 
+                        jet_scalefactor_up = _readerUp_ttbar[iwp].eval(flavor, eta, pt); 
+                        jet_scalefactor_down = _readerDown_ttbar[iwp].eval(flavor, eta, pt); 
+                    } 
+                    else
+                    {
+                        flavor = BTagEntry::FLAV_UDSG;
+                        if (pt>MaxLJetPt)  
+                        {
+                            pt = MaxLJetPt; 
+                            doubleUncertainty = true;
+                        }
+                        jet_scalefactor = _readerNominal_inc[iwp].eval(flavor, eta, pt); 
+                        jet_scalefactor_up = _readerUp_inc[iwp].eval(flavor, eta, pt); 
+                        jet_scalefactor_down = _readerDown_inc[iwp].eval(flavor, eta, pt);   
+                    }
 
-                else if (sys== BWGHT::SYS::BC_UP and (flavor==BTagEntry::FLAV_B or flavor==BTagEntry::FLAV_C))
-                {
-                    return jet_scalefactor_up;
-                }
-                else if (sys== BWGHT::SYS::BC_DOWN and (flavor==BTagEntry::FLAV_B or flavor==BTagEntry::FLAV_C))
-                {
-                    return jet_scalefactor_down;
-                }
-                else if (sys== BWGHT::SYS::L_UP and flavor==BTagEntry::FLAV_UDSG)
-                {
-                    return jet_scalefactor_up;
-                }
-                else if (sys== BWGHT::SYS::L_DOWN and flavor==BTagEntry::FLAV_UDSG)
-                {
-                    return jet_scalefactor_down;
-                }
-                return jet_scalefactor;
-            
-            }));
-            _btagWeightCalc.addWorkingPoint(tightWP);
+                    if (doubleUncertainty)
+                    {
+                        jet_scalefactor_up = 2*(jet_scalefactor_up - jet_scalefactor) + jet_scalefactor; 
+                        jet_scalefactor_down = 2*(jet_scalefactor_down - jet_scalefactor) + jet_scalefactor; 
+                    }
+
+                    else if (sys== BWGHT::SYS::BC_UP and (flavor==BTagEntry::FLAV_B or flavor==BTagEntry::FLAV_C))
+                    {
+                        return jet_scalefactor_up;
+                    }
+                    else if (sys== BWGHT::SYS::BC_DOWN and (flavor==BTagEntry::FLAV_B or flavor==BTagEntry::FLAV_C))
+                    {
+                        return jet_scalefactor_down;
+                    }
+                    else if (sys== BWGHT::SYS::L_UP and flavor==BTagEntry::FLAV_UDSG)
+                    {
+                        return jet_scalefactor_up;
+                    }
+                    else if (sys== BWGHT::SYS::L_DOWN and flavor==BTagEntry::FLAV_UDSG)
+                    {
+                        return jet_scalefactor_down;
+                    }
+                    return jet_scalefactor;
+                    std::cout<<"\tcall sf "<<iwp<<" val="<<jet_scalefactor<<std::endl;
+                
+                }));
+                _btagWeightCalc.addWorkingPoint(tightWP);
+            }
         }
 
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)
@@ -311,11 +329,13 @@ class BTagReweighting:
                                     jets.emplace_back(particle->getUserRecord(_bTaggingAlgorithmName).toFloat(),abs(particle->hasUserRecord("partonFlavour") ? particle->getUserRecord("partonFlavour").toInt32() : 0),particle->getPt(),particle->getEta());
                                 }
                             }
+                            std::cout<<"getting weight for "<<jets.size()<<" jets ..."<<std::endl;
                             eventView->setUserRecord("btagging_nominal",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::NOMINAL));
-                            eventView->setUserRecord("btagging_bc_up",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_UP));
+                            /*eventView->setUserRecord("btagging_bc_up",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_UP));
                             eventView->setUserRecord("btagging_bc_down",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_DOWN));
                             eventView->setUserRecord("btagging_l_up",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::L_UP));
                             eventView->setUserRecord("btagging_l_down",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::L_DOWN));
+                            */
                         }
                     }
                     
