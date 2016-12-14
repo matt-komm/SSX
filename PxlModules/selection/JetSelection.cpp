@@ -32,9 +32,9 @@ class JetSelection:
         bool _dRInvert;
         double _dR;
         
-        bool _nhfBarrelOnly;
-        bool _emBarrelOnly;
         std::vector<std::string> _dRObjects;
+        
+        int64_t _nLeadingJetsToStore;
         
         
         struct SortByPt
@@ -58,9 +58,11 @@ class JetSelection:
 
             _dRInvert(false),
             _dR(0.3),
-            _dRObjects({"TightLepton","TightMuon","TightElectron"})
+            _dRObjects({"TightLepton","TightMuon","TightElectron"}),
             /*Initial Values taken from TOP JetMET Analysis (Run2) */
             /*https://twiki.cern.ch/twiki/bin/view/CMS/TopJME#General_Information */
+            
+            _nLeadingJetsToStore(2)
         {
             addSink("input", "input");
             
@@ -83,6 +85,8 @@ class JetSelection:
             addOption("invert dR","inverts dR cleaning",_dRInvert);
             addOption("dR cut","remove jets close to other objects, e.g. leptons",_dR);
             addOption("dR objects","object names to which the jets should NOT be close to",_dRObjects);
+        
+            addOption("store n leading jets","",_nLeadingJetsToStore);
         }
 
         ~JetSelection()
@@ -125,6 +129,8 @@ class JetSelection:
             getOption("invert dR",_dRInvert);
             getOption("dR cut",_dR);
             getOption("dR objects",_dRObjects);
+            
+            getOption("store n leading jets",_nLeadingJetsToStore);
             
             if (_dRObjects.size()==0)
             {
@@ -330,6 +336,13 @@ class JetSelection:
                     
                     
                     std::sort(selectedJets.begin(),selectedJets.end(),JetSelection::SortByPt());
+                    
+                    for (unsigned int ijet = 0; std::min<int>(ijet<selectedJets.size(),_nLeadingJetsToStore);++ijet)
+                    {
+                        pxl::Particle* jetClone = inputEventView->create<pxl::Particle>();
+                        jetClone->setName("LeadingJet");
+                        jetClone->setP4(selectedJets[ijet]->getVector());
+                    }
                     
                     unsigned char nBFlavor = 0;
                     unsigned char nCFlavor = 0;

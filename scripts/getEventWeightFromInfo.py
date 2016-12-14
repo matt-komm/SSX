@@ -53,7 +53,7 @@ for folder in os.listdir(baseFolder):
                     pxlioFiles[folder].append(os.path.join(dirpath,f))
                     
 
-for folder in rootFiles.keys(): #this loop will not go over data
+for folder in sorted(rootFiles.keys()): #this loop will not go over data
     print "found ",len(rootFiles[folder]),"/",len(pxlioFiles[folder])," info/pxlio files in ",folder
     if len(rootFiles[folder])!=len(pxlioFiles[folder]):
         print "\t"+warn("WARNING")+": uneven number of info/root files"
@@ -70,10 +70,29 @@ for folder in rootFiles.keys(): #this loop will not go over data
         missingRoot -= set(rootIds)
         print "\tmissing root: ",missingRoot
         stopForError=True
+        
+        
+print
+for folder in sorted(pxlioFiles.keys()): #this loop will not go over data
+    if (rootFiles.has_key(folder)):
+        continue
+    print "found ",len(pxlioFiles[folder])," pxlio files in ",folder
+    pxlioIds = []
+    for f in pxlioFiles[folder]:
+        pxlioIds.append(int(f.rsplit("_",1)[1].split(".",1)[0]))
+    pxlioIds.sort()
+    missingIds = []
+    for i,id in enumerate(pxlioIds):
+        if (1+i+len(missingIds))!=id:
+            missingIds.extend(range(1+i+len(missingIds),id))
+    if len(missingIds)>0:
+        print "\t"+warn("WARNING")+": likely missing files  "+str(missingIds)
+        print "\texisting+missing files = "+str( len(pxlioFiles[folder])+len(missingIds))
+
 
 if stopForError:
     print "EXIT due to file mismatch"
-    sys.exit(-1)
+    #sys.exit(-1)
     
 WtoLeptons = 0.1086
     
@@ -88,18 +107,18 @@ xsecDB = {
     
     "QCD_Pt-20toInf_MuEnrichedPt15": 866600000 * 0.00044,
     
-    "QCD_Pt-15to20_MuEnrichedPt5":1273190000,  #LO MadGraph from MCM
-    "QCD_Pt-20to30_MuEnrichedPt5":558528000,  #LO MadGraph from MCM
-    "QCD_Pt-30to50_MuEnrichedPt5":139803000,  #LO MadGraph from MCM
-    "QCD_Pt-50to80_MuEnrichedPt5":19222500,  #LO MadGraph from MCM
-    "QCD_Pt-80to120_MuEnrichedPt5":2758420,  #LO MadGraph from MCM
-    "QCD_Pt-120to170_MuEnrichedPt5":469797,  #LO MadGraph from MCM
-    "QCD_Pt-170to300_MuEnrichedPt5":117989,  #LO MadGraph from MCM
-    "QCD_Pt-300to470_MuEnrichedPt5":7820.25,  #LO MadGraph from MCM
-    "QCD_Pt-470to600_MuEnrichedPt5":645.5,  #LO MadGraph from MCM
-    "QCD_Pt-600to800_MuEnrichedPt5":187.11,  #LO MadGraph from MCM
-    "QCD_Pt-800to1000_MuEnrichedPt5":32.35,  #LO MadGraph from MCM
-    "QCD_Pt-1000toInf_MuEnrichedPt5":10.43, #LO MadGraph from MCM
+    "QCD_Pt-15to20_MuEnrichedPt5":1273190000*0.003,  #LO MadGraph from MCM
+    "QCD_Pt-20to30_MuEnrichedPt5":558528000*0053,  #LO MadGraph from MCM
+    "QCD_Pt-30to50_MuEnrichedPt5":139803000*0.01182,  #LO MadGraph from MCM
+    "QCD_Pt-50to80_MuEnrichedPt5":19222500*0.02276,  #LO MadGraph from MCM
+    "QCD_Pt-80to120_MuEnrichedPt5":2758420*0.03844,  #LO MadGraph from MCM
+    "QCD_Pt-120to170_MuEnrichedPt5":469797*0.05362,  #LO MadGraph from MCM
+    "QCD_Pt-170to300_MuEnrichedPt5":117989*0.07335,  #LO MadGraph from MCM
+    "QCD_Pt-300to470_MuEnrichedPt5":7820.25*0.10196,  #LO MadGraph from MCM
+    "QCD_Pt-470to600_MuEnrichedPt5":645.5*0.12242,  #LO MadGraph from MCM
+    "QCD_Pt-600to800_MuEnrichedPt5":187.11*0.13412,  #LO MadGraph from MCM
+    "QCD_Pt-800to1000_MuEnrichedPt5":32.35*0.14552,  #LO MadGraph from MCM
+    "QCD_Pt-1000toInf_MuEnrichedPt5":10.43*0.15544, #LO MadGraph from MCM
      
     "ST_t-channel_4f_leptonDecays": (80.95+136.02)*3*WtoLeptons,
     "ST_t-channel_antitop_4f_leptonDecays": 80.95*3*WtoLeptons,
@@ -125,6 +144,10 @@ xsecDB = {
     
     "TT": 831.76,
     "TTJets": 831.76,
+    
+    "WW":63.7,
+    "WZ":47.13,
+    "ZZ":16.523, #https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Diboson
 }
 
 def findXsec(name):

@@ -97,38 +97,17 @@ const std::unordered_map<std::string,FileInfo> eventWeights80Xv1 = {
 //total= eff= - 0 = 
 
 const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
-    {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        {
-            //total=2615990.0 eff=2130420.0 - 485570.0 = 1644850.0
-            1644850.0,
-            725.0 // xsec for process 'DY1JetsToLL_M-10to50'
-        }
-    },
     {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
         {
-            //total=37993099.0 eff=37993099.0 - 0.0 = 37993099.0
-            37993099.0,
+            //total=38462822.0 eff=38462822.0 - 0.0 = 38462822.0
+            38462822.0,
             725.0 // xsec for process 'DY1JetsToLL_M-10to50'
-        }
-    },
-    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        {
-            //total=10249314.0 eff=6425873.0 - 3823441.0 = 2602432.0
-            2602432.0,
-            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
-        }
-    },
-    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        {
-            //total=19736468.0 eff=19736468.0 - 0.0 = 19736468.0
-            19736468.0,
-            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
         }
     },
     {"DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
         {
-            //total=4381742.0 eff=4381742.0 - 0.0 = 4381742.0
-            4381742.0,
+            //total=4885667.0 eff=4885667.0 - 0.0 = 4885667.0
+            4885667.0,
             96.47 // xsec for process 'DY3JetsToLL_M-10to50'
         }
     },
@@ -139,130 +118,194 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
             34.84 // xsec for process 'DY4JetsToLL_M-10to50'
         }
     },
-    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        {
-            //total=14639647.0 eff=12231171.0 - 2408476.0 = 9822695.0
-            9822695.0,
-            5765.4 // xsec for process 'DYJetsToLL_M-50'
-        }
-    },
-    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
-        {
-            //total=91350867.0 eff=91350867.0 - 0.0 = 91350867.0
-            91350867.0,
-            5765.4 // xsec for process 'DYJetsToLL_M-50'
-        }
-    },
     {"QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         {
-            //total=223800.0 eff=223800.0 - 0.0 = 223800.0
-            223800.0,
-            10.43 // xsec for process 'QCD_Pt-1000toInf_MuEnrichedPt5'
-        }
-    },
-    {"QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=7925929.0 eff=7925929.0 - 0.0 = 7925929.0
-            7925929.0,
-            469797 // xsec for process 'QCD_Pt-120to170_MuEnrichedPt5'
+            //total=3511433.0 eff=3511433.0 - 0.0 = 3511433.0
+            3511433.0,
+            1.6212392 // xsec for process 'QCD_Pt-1000toInf_MuEnrichedPt5'
         }
     },
     {"QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         {
             //total=4617630.0 eff=4617630.0 - 0.0 = 4617630.0
             4617630.0,
-            1273190000 // xsec for process 'QCD_Pt-15to20_MuEnrichedPt5'
+            3819570.0 // xsec for process 'QCD_Pt-15to20_MuEnrichedPt5'
         }
     },
-    {"QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
+    {"QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8",
         {
-            //total=8693138.0 eff=8693138.0 - 0.0 = 8693138.0
-            8693138.0,
-            117989 // xsec for process 'QCD_Pt-170to300_MuEnrichedPt5'
-        }
-    },
-    {"QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=31516731.0 eff=31516731.0 - 0.0 = 31516731.0
-            31516731.0,
-            558528000 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
+            //total=22093630.0 eff=22093630.0 - 0.0 = 22093630.0
+            22093630.0,
+            381304.0 // xsec for process 'QCD_Pt-20toInf_MuEnrichedPt15'
         }
     },
     {"QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
         {
             //total=16174442.0 eff=16174442.0 - 0.0 = 16174442.0
             16174442.0,
-            7820.25 // xsec for process 'QCD_Pt-300to470_MuEnrichedPt5'
+            797.35269 // xsec for process 'QCD_Pt-300to470_MuEnrichedPt5'
         }
     },
     {"QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         {
             //total=28343259.0 eff=28343259.0 - 0.0 = 28343259.0
             28343259.0,
-            139803000 // xsec for process 'QCD_Pt-30to50_MuEnrichedPt5'
-        }
-    },
-    {"QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        {
-            //total=5927876.0 eff=5927876.0 - 0.0 = 5927876.0
-            5927876.0,
-            645.5 // xsec for process 'QCD_Pt-470to600_MuEnrichedPt5'
-        }
-    },
-    {"QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=20383957.0 eff=20383957.0 - 0.0 = 20383957.0
-            20383957.0,
-            19222500 // xsec for process 'QCD_Pt-50to80_MuEnrichedPt5'
-        }
-    },
-    {"QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        {
-            //total=5868022.0 eff=5868022.0 - 0.0 = 5868022.0
-            5868022.0,
-            187.11 // xsec for process 'QCD_Pt-600to800_MuEnrichedPt5'
+            1652471.46 // xsec for process 'QCD_Pt-30to50_MuEnrichedPt5'
         }
     },
     {"QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
         {
-            //total=5252347.0 eff=5252347.0 - 0.0 = 5252347.0
-            5252347.0,
-            32.35 // xsec for process 'QCD_Pt-800to1000_MuEnrichedPt5'
+            //total=5571419.0 eff=5571419.0 - 0.0 = 5571419.0
+            5571419.0,
+            4.707572 // xsec for process 'QCD_Pt-800to1000_MuEnrichedPt5'
         }
     },
     {"QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         {
             //total=13856755.0 eff=13856755.0 - 0.0 = 13856755.0
             13856755.0,
-            2758420 // xsec for process 'QCD_Pt-80to120_MuEnrichedPt5'
+            106033.6648 // xsec for process 'QCD_Pt-80to120_MuEnrichedPt5'
+        }
+    },
+    {"ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
+        {
+            //total=985000.0 eff=985000.0 - 0.0 = 985000.0
+            985000.0,
+            35.6 // xsec for process 'ST_tW_antitop'
+        }
+    },
+    {"ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
+        {
+            //total=998400.0 eff=998400.0 - 0.0 = 998400.0
+            998400.0,
+            35.6 // xsec for process 'ST_tW_top'
+        }
+    },
+    {"WW_TuneCUETP8M1_13TeV-pythia8",
+        {
+            //total=993214.0 eff=993214.0 - 0.0 = 993214.0
+            993214.0,
+            63.7 // xsec for process 'WW'
+        }
+    },
+    {"ZZ_TuneCUETP8M1_13TeV-pythia8",
+        {
+            //total=989312.0 eff=989312.0 - 0.0 = 989312.0
+            989312.0,
+            16.523 // xsec for process 'ZZ'
+        }
+    },
+
+    {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        {
+            //total=15857985.0 eff=12914744.0 - 2943241.0 = 9971503.0
+            9971503.0,
+            725.0 // xsec for process 'DY1JetsToLL_M-10to50'
+        }
+    },
+    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        {
+            //total=40125650.0 eff=25141124.0 - 14984526.0 = 10156598.0
+            10156598.0,
+            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
+        }
+    },
+    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+        {
+            //total=18054140.0 eff=18054140.0 - 0.0 = 18054140.0
+            18054140.0,
+            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
+        }
+    },
+    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        {
+            //total=100348291.0 eff=83822323.0 - 16525968.0 = 67296355.0
+            67296355.0,
+            5765.4 // xsec for process 'DYJetsToLL_M-50'
+        }
+    },
+    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
+        {
+            //total=82358269.0 eff=82358269.0 - 0.0 = 82358269.0
+            82358269.0,
+            5765.4 // xsec for process 'DYJetsToLL_M-50'
+        }
+    },
+    {"QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
+        {
+            //total=7616025.0 eff=7616025.0 - 0.0 = 7616025.0
+            7616025.0,
+            25190.51514 // xsec for process 'QCD_Pt-120to170_MuEnrichedPt5'
+        }
+    },
+    {"QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
+        {
+            //total=8662673.0 eff=8662673.0 - 0.0 = 8662673.0
+            8662673.0,
+            8654.49315 // xsec for process 'QCD_Pt-170to300_MuEnrichedPt5'
+        }
+    },
+    {"QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
+        {
+            //total=30963606.0 eff=30963606.0 - 0.0 = 30963606.0
+            30963606.0,
+            24016704000 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
+        }
+    },
+    {"QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
+        {
+            //total=5677962.0 eff=5677962.0 - 0.0 = 5677962.0
+            5677962.0,
+            79.02211 // xsec for process 'QCD_Pt-470to600_MuEnrichedPt5'
+        }
+    },
+    {"QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
+        {
+            //total=20383957.0 eff=20383957.0 - 0.0 = 20383957.0
+            20383957.0,
+            437504.1 // xsec for process 'QCD_Pt-50to80_MuEnrichedPt5'
+        }
+    },
+    {"QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
+        {
+            //total=5868022.0 eff=5868022.0 - 0.0 = 5868022.0
+            5868022.0,
+            25.0951932 // xsec for process 'QCD_Pt-600to800_MuEnrichedPt5'
+        }
+    },
+    {"ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_ext",
+        {
+            //total=17037964.0 eff=10358536.0 - 6679428.0 = 3679108.0
+            3679108.0,
+            70.688826 // xsec for process 'ST_t-channel_4f_leptonDecays'
         }
     },
     {"ST_tWll_5f_LO_13TeV-MadGraph-pythia8",
         {
             //total=50000.0 eff=50000.0 - 0.0 = 50000.0
             50000.0,
-            0.01123
+            7.557569568 // xsec for process 'ST_tWll'
         }
     },
     {"TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",
         {
-            //total=67889681.0 eff=67889681.0 - 0.0 = 67889681.0
-            67889681.0,
+            //total=63791765.0 eff=63791765.0 - 0.0 = 63791765.0
+            63791765.0,
             831.76 // xsec for process 'TT'
         }
     },
     {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ext",
         {
-            //total=47502020.0 eff=40064921.0 - 7437099.0 = 32627822.0
-            32627822.0,
+            //total=45321161.0 eff=38225041.0 - 7096120.0 = 31128921.0
+            31128921.0,
             61526.7 // xsec for process 'WJetsToLNu'
         }
     },
-    {"ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_ext",
+    {"WZ_TuneCUETP8M1_13TeV-pythia8",
         {
-            //total=18516105.0 eff=11251282.0 - 7264823.0 = 3986459.0
-            3986459.0,
-            216.97*3*0.1086 // xsec for process 'ST_t-channel_4f'
+            //total=1000000.0 eff=1000000.0 - 0.0 = 1000000.0
+            1000000.0,
+            47.13 // xsec for process 'WZ'
         }
     }
 };
