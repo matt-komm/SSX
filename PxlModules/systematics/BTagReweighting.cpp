@@ -136,7 +136,7 @@ class BTagReweighting:
             getOption("workingpoint",wp2str);
             for (const std::string& wp: wp2str) _wp.push_back(std::atof(wp.c_str()));
             
-            TFile mcEffFile(_mcFile.c_str());
+            
             
             _btagCalib = BTagCalibration("csvv1", _sfFile);
             
@@ -144,21 +144,33 @@ class BTagReweighting:
             
             for (unsigned int iwp = 0; iwp<3; ++iwp)
             {
+                TFile mcEffFile(_mcFile.c_str());
                 TH2F* hist_b = dynamic_cast<TH2F*>(mcEffFile.Get((std::string("b__")+_histPostFix[iwp]).c_str()));
+                if (!hist_b)
+                {
+                    throw std::runtime_error("Cannot find histogram '"+(std::string("b__")+_histPostFix[iwp])+"' in file '"+_mcFile+"'");
+                }
                 hist_b->SetDirectory(0);
                 mcEff_b.emplace_back(hist_b);
                 
                 TH2F* hist_c = dynamic_cast<TH2F*>(mcEffFile.Get((std::string("c__")+_histPostFix[iwp]).c_str()));
+                if (!hist_c)
+                {
+                    throw std::runtime_error("Cannot find histogram '"+(std::string("c__")+_histPostFix[iwp])+"' in file '"+_mcFile+"'");
+                }
                 hist_c->SetDirectory(0);
                 mcEff_c.emplace_back(hist_c);
                 
                 TH2F* hist_other = dynamic_cast<TH2F*>(mcEffFile.Get((std::string("other__")+_histPostFix[iwp]).c_str()));
+                if (!hist_other)
+                {
+                    throw std::runtime_error("Cannot find histogram '"+(std::string("other__")+_histPostFix[iwp])+"' in file '"+_mcFile+"'");
+                }
                 hist_other->SetDirectory(0);
                 mcEff_other.emplace_back(hist_other);
                 
                 mcEffFile.Close();
 
-                
                 
                 _readerNominal_ttbar.push_back(BTagCalibrationReader(
                     &_btagCalib,               // calibration instance
@@ -209,12 +221,12 @@ class BTagReweighting:
                     }
                     if (efficiency<0.01)
                     {
-                        efficiency+=0.005;
+                        efficiency+=0.005-iwp*0.0005; //make eff less for tighter wps
                     }
-                    std::cout<<"\tcall eff "<<iwp<<" val="<<efficiency<<std::endl;
                     return efficiency;
                 
                 }));
+                
                 tightWP.setScaleFactorFunction(new BWGHT::LambdaScaleFactorFunction([this,iwp](const BWGHT::Jet& jet, BWGHT::SYS::TYPE sys) -> double
                 {
                     
@@ -287,7 +299,6 @@ class BTagReweighting:
                         return jet_scalefactor_down;
                     }
                     return jet_scalefactor;
-                    std::cout<<"\tcall sf "<<iwp<<" val="<<jet_scalefactor<<std::endl;
                 
                 }));
                 _btagWeightCalc.addWorkingPoint(tightWP);
@@ -329,13 +340,12 @@ class BTagReweighting:
                                     jets.emplace_back(particle->getUserRecord(_bTaggingAlgorithmName).toFloat(),abs(particle->hasUserRecord("partonFlavour") ? particle->getUserRecord("partonFlavour").toInt32() : 0),particle->getPt(),particle->getEta());
                                 }
                             }
-                            std::cout<<"getting weight for "<<jets.size()<<" jets ..."<<std::endl;
                             eventView->setUserRecord("btagging_nominal",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::NOMINAL));
-                            /*eventView->setUserRecord("btagging_bc_up",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_UP));
+                            eventView->setUserRecord("btagging_bc_up",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_UP));
                             eventView->setUserRecord("btagging_bc_down",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_DOWN));
                             eventView->setUserRecord("btagging_l_up",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::L_UP));
                             eventView->setUserRecord("btagging_l_down",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::L_DOWN));
-                            */
+                            
                         }
                     }
                     
