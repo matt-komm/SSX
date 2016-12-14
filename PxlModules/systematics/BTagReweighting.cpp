@@ -144,15 +144,15 @@ class BTagReweighting:
             
             for (unsigned int iwp = 0; iwp<3; ++iwp)
             {
-                TH2F* hist_b = dynamic_cast<TH2F*>(mcEffFile.Get("b__tight"));
+                TH2F* hist_b = dynamic_cast<TH2F*>(mcEffFile.Get((std::string("b__")+_histPostFix[iwp]).c_str()));
                 hist_b->SetDirectory(0);
                 mcEff_b.emplace_back(hist_b);
                 
-                TH2F* hist_c = dynamic_cast<TH2F*>(mcEffFile.Get("c__tight"));
+                TH2F* hist_c = dynamic_cast<TH2F*>(mcEffFile.Get((std::string("c__")+_histPostFix[iwp]).c_str()));
                 hist_c->SetDirectory(0);
                 mcEff_c.emplace_back(hist_c);
                 
-                TH2F* hist_other = dynamic_cast<TH2F*>(mcEffFile.Get("other__tight"));
+                TH2F* hist_other = dynamic_cast<TH2F*>(mcEffFile.Get((std::string("other__")+_histPostFix[iwp]).c_str()));
                 hist_other->SetDirectory(0);
                 mcEff_other.emplace_back(hist_other);
                 
