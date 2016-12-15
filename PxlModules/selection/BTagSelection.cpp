@@ -30,6 +30,7 @@ class BTagSelection:
         double _maxEtaBJet; //Maximum pseudorapidity for b-tagging according to b-tagging algorithm
         double _bTaggingWorkingPoint; // working point of b-tagging algorithm above jets are tagged
 
+        bool _copySelectedJets;
     public:
         BTagSelection():
             Module(),
@@ -38,7 +39,8 @@ class BTagSelection:
             _bTaggedJetName("SelectedBJet"),
             _bTaggingAlgorithmName("pfCombinedMVAV2BJetTags"),
             _maxEtaBJet(2.4),
-            _bTaggingWorkingPoint(0.875)
+            _bTaggingWorkingPoint(0.875),
+            _copySelectedJets(false)
 
         {
             addSink("input", "input");
@@ -57,6 +59,8 @@ class BTagSelection:
 
             addOption("maximum b-jet eta","",_maxEtaBJet);
             addOption("working point","",_bTaggingWorkingPoint);
+            
+            addOption("copy selected jets","",_copySelectedJets);
 
         }
 
@@ -96,6 +100,8 @@ class BTagSelection:
 
             getOption("maximum b-jet eta",_maxEtaBJet);
             getOption("working point",_bTaggingWorkingPoint);
+            
+            getOption("copy selected jets",_copySelectedJets);
         }
 
         bool isBtagged(pxl::Particle* particle)
@@ -144,7 +150,7 @@ class BTagSelection:
                                 {
                                     if (isBtagged(particle))
                                     {
-                                        particle->setName(_bTaggedJetName);
+                                        
                                         selectedBJets.push_back(particle);
                                     }
                                 }
@@ -154,6 +160,18 @@ class BTagSelection:
                     if (inputEventView)
                     {
                         inputEventView->setUserRecord("n"+_bTaggedJetName,selectedBJets.size());
+                        
+                        for (pxl::Particle* bjet: selectedBJets)
+                        {
+                            pxl::Particle* p = bjet;
+                            if (_copySelectedJets)
+                            {
+                                p = dynamic_cast<pxl::Particle*>(bjet->clone());
+                                inputEventView->insertObject(p);
+                            }
+                            p->setName(_bTaggedJetName);
+                        }
+                        
                     }
                     else
                     {
