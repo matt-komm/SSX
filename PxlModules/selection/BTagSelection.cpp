@@ -20,6 +20,7 @@ class BTagSelection:
         std::string _inputJetName;
         std::string _inputEventViewName;
         std::string _bTaggedJetName;
+        std::string _untaggedJetName;
 
         std::string _bTaggingAlgorithmName; //b-tag algorithm out of the ones implemented in CMSSW
 
@@ -36,7 +37,8 @@ class BTagSelection:
             Module(),
             _inputJetName("SelectedJet"),
             _inputEventViewName("Reconstructed"),
-            _bTaggedJetName("SelectedBJet"),
+            _bTaggedJetName("SelectedBJetTight"),
+            _untaggedJetName("SelectedLJetTight"),
             _bTaggingAlgorithmName("pfCombinedMVAV2BJetTags"),
             _maxEtaBJet(2.4),
             _bTaggingWorkingPoint(0.875),
@@ -54,6 +56,7 @@ class BTagSelection:
             addOption("event view","name of the event view where jets are selected",_inputEventViewName);
             addOption("input jet name","name of particles to consider for b-tagging",_inputJetName);
             addOption("name of selected b-jets","",_bTaggedJetName);
+            addOption("name of untagged-jets","",_untaggedJetName);
 
             addOption("b Tagging Algorithm","",_bTaggingAlgorithmName);
 
@@ -96,6 +99,7 @@ class BTagSelection:
             getOption("event view",_inputEventViewName);
             getOption("input jet name",_inputJetName);
             getOption("name of selected b-jets",_bTaggedJetName);
+            getOption("name of untagged-jets",_untaggedJetName);
             getOption("b Tagging Algorithm",_bTaggingAlgorithmName);
 
             getOption("maximum b-jet eta",_maxEtaBJet);
@@ -129,6 +133,7 @@ class BTagSelection:
                     event->getObjectsOfType(eventViews);
                     
                     std::vector<pxl::Particle*> selectedBJets;
+                    std::vector<pxl::Particle*> selectedLJets;
                     
                     pxl::EventView* inputEventView = nullptr;
                     
@@ -150,8 +155,11 @@ class BTagSelection:
                                 {
                                     if (isBtagged(particle))
                                     {
-                                        
                                         selectedBJets.push_back(particle);
+                                    }
+                                    else
+                                    {
+                                        selectedLJets.push_back(particle);
                                     }
                                 }
                             }
@@ -170,6 +178,16 @@ class BTagSelection:
                                 inputEventView->insertObject(p);
                             }
                             p->setName(_bTaggedJetName);
+                        }
+                        for (pxl::Particle* ljet: selectedLJets)
+                        {
+                            pxl::Particle* p = ljet;
+                            if (_copySelectedJets)
+                            {
+                                p = dynamic_cast<pxl::Particle*>(ljet->clone());
+                                inputEventView->insertObject(p);
+                            }
+                            p->setName(_untaggedJetName);
                         }
                         
                     }
