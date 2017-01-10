@@ -286,11 +286,16 @@ class BTagWeightCalculator
                     double mcEfficiency2 = wp2.getEfficiencyFunction()->getEfficiency(*jet,systematic);
                     double dataSF2 = wp2.getScaleFactorFunction()->getScaleFactor(*jet,systematic);
                     
-                    if ((mcEfficiency1-mcEfficiency2)<=0)
+                    if ((mcEfficiency1-mcEfficiency2)<=0.0)
                     {
-                        throw std::runtime_error("Found equal or higher efficiency at tighter working point. Check the efficiency functions!");
+                        throw std::runtime_error(
+                            "Found equal or higher efficiency at tighter working point. Check the efficiency functions! eff1="
+                            +std::to_string(mcEfficiency1)+"@wp="
+                            +std::to_string(wp1.getDiscriminatorValue())+" > eff2="
+                            +std::to_string(mcEfficiency2)+"@wp="
+                            +std::to_string(wp2.getDiscriminatorValue()));
                     }
-                    if ((dataSF1*mcEfficiency1-dataSF2*mcEfficiency2)<0)
+                    if ((dataSF1*mcEfficiency1-dataSF2*mcEfficiency2)<0.0)
                     {
                         throw std::runtime_error("Found negative b-tagging weight. Check the SF functions!");
                     }

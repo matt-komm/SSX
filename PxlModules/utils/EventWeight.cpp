@@ -97,11 +97,32 @@ const std::unordered_map<std::string,FileInfo> eventWeights80Xv1 = {
 //total= eff= - 0 = 
 
 const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
+    {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        {
+            //total=15857985.0 eff=12912008.0 - 2945977.0 = 9966031.0
+            9966031.0,
+            725.0 // xsec for process 'DY1JetsToLL_M-10to50'
+        }
+    },
     {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
         {
-            //total=38462822.0 eff=38462822.0 - 0.0 = 38462822.0
-            38462822.0,
+            //total=36265419.0 eff=36265419.0 - 0.0 = 36265419.0
+            36265419.0,
             725.0 // xsec for process 'DY1JetsToLL_M-10to50'
+        }
+    },
+    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        {
+            //total=41924360.0 eff=26273281.0 - 15651079.0 = 10622202.0
+            10622202.0,
+            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
+        }
+    },
+    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+        {
+            //total=18925170.0 eff=18925170.0 - 0.0 = 18925170.0
+            18925170.0,
+            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
         }
     },
     {"DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
@@ -118,11 +139,32 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
             34.84 // xsec for process 'DY4JetsToLL_M-10to50'
         }
     },
+    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        {
+            //total=104113466.0 eff=86986430.0 - 17127036.0 = 69859394.0
+            69859394.0,
+            4895.0 // xsec for process 'DYJetsToLL_M-50'
+        }
+    },
+    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
+        {
+            //total=91350867.0 eff=91350867.0 - 0.0 = 91350867.0
+            91350867.0,
+            4895.0 // xsec for process 'DYJetsToLL_M-50'
+        }
+    },
     {"QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         {
-            //total=3511433.0 eff=3511433.0 - 0.0 = 3511433.0
-            3511433.0,
+            //total=3884666.0 eff=3884666.0 - 0.0 = 3884666.0
+            3884666.0,
             1.6212392 // xsec for process 'QCD_Pt-1000toInf_MuEnrichedPt5'
+        }
+    },
+    {"QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
+        {
+            //total=7925929.0 eff=7925929.0 - 0.0 = 7925929.0
+            7925929.0,
+            25190.51514 // xsec for process 'QCD_Pt-120to170_MuEnrichedPt5'
         }
     },
     {"QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
@@ -130,6 +172,20 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
             //total=4617630.0 eff=4617630.0 - 0.0 = 4617630.0
             4617630.0,
             3819570.0 // xsec for process 'QCD_Pt-15to20_MuEnrichedPt5'
+        }
+    },
+    {"QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
+        {
+            //total=8693138.0 eff=8693138.0 - 0.0 = 8693138.0
+            8693138.0,
+            8654.49315 // xsec for process 'QCD_Pt-170to300_MuEnrichedPt5'
+        }
+    },
+    {"QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
+        {
+            //total=31516731.0 eff=31516731.0 - 0.0 = 31516731.0
+            31516731.0,
+            24016704000 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
         }
     },
     {"QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8",
@@ -153,109 +209,10 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
             1652471.46 // xsec for process 'QCD_Pt-30to50_MuEnrichedPt5'
         }
     },
-    {"QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        {
-            //total=5571419.0 eff=5571419.0 - 0.0 = 5571419.0
-            5571419.0,
-            4.707572 // xsec for process 'QCD_Pt-800to1000_MuEnrichedPt5'
-        }
-    },
-    {"QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=13856755.0 eff=13856755.0 - 0.0 = 13856755.0
-            13856755.0,
-            106033.6648 // xsec for process 'QCD_Pt-80to120_MuEnrichedPt5'
-        }
-    },
-    {"ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
-        {
-            //total=985000.0 eff=985000.0 - 0.0 = 985000.0
-            985000.0,
-            35.6 // xsec for process 'ST_tW_antitop'
-        }
-    },
-    {"ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
-        {
-            //total=998400.0 eff=998400.0 - 0.0 = 998400.0
-            998400.0,
-            35.6 // xsec for process 'ST_tW_top'
-        }
-    },
-    {"WW_TuneCUETP8M1_13TeV-pythia8",
-        {
-            //total=993214.0 eff=993214.0 - 0.0 = 993214.0
-            993214.0,
-            63.7 // xsec for process 'WW'
-        }
-    },
-    {"ZZ_TuneCUETP8M1_13TeV-pythia8",
-        {
-            //total=989312.0 eff=989312.0 - 0.0 = 989312.0
-            989312.0,
-            16.523 // xsec for process 'ZZ'
-        }
-    },
-
-    {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        {
-            //total=15857985.0 eff=12914744.0 - 2943241.0 = 9971503.0
-            9971503.0,
-            725.0 // xsec for process 'DY1JetsToLL_M-10to50'
-        }
-    },
-    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        {
-            //total=40125650.0 eff=25141124.0 - 14984526.0 = 10156598.0
-            10156598.0,
-            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
-        }
-    },
-    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        {
-            //total=18054140.0 eff=18054140.0 - 0.0 = 18054140.0
-            18054140.0,
-            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
-        }
-    },
-    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        {
-            //total=100348291.0 eff=83822323.0 - 16525968.0 = 67296355.0
-            67296355.0,
-            4895.0 // xsec for process 'DYJetsToLL_M-50'
-        }
-    },
-    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
-        {
-            //total=82358269.0 eff=82358269.0 - 0.0 = 82358269.0
-            82358269.0,
-            4895.0 // xsec for process 'DYJetsToLL_M-50'
-        }
-    },
-    {"QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=7616025.0 eff=7616025.0 - 0.0 = 7616025.0
-            7616025.0,
-            25190.51514 // xsec for process 'QCD_Pt-120to170_MuEnrichedPt5'
-        }
-    },
-    {"QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        {
-            //total=8662673.0 eff=8662673.0 - 0.0 = 8662673.0
-            8662673.0,
-            8654.49315 // xsec for process 'QCD_Pt-170to300_MuEnrichedPt5'
-        }
-    },
-    {"QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=30963606.0 eff=30963606.0 - 0.0 = 30963606.0
-            30963606.0,
-            24016704000 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
-        }
-    },
     {"QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
         {
-            //total=5677962.0 eff=5677962.0 - 0.0 = 5677962.0
-            5677962.0,
+            //total=5927876.0 eff=5927876.0 - 0.0 = 5927876.0
+            5927876.0,
             79.02211 // xsec for process 'QCD_Pt-470to600_MuEnrichedPt5'
         }
     },
@@ -273,11 +230,39 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
             25.0951932 // xsec for process 'QCD_Pt-600to800_MuEnrichedPt5'
         }
     },
+    {"QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
+        {
+            //total=5571419.0 eff=5571419.0 - 0.0 = 5571419.0
+            5571419.0,
+            4.707572 // xsec for process 'QCD_Pt-800to1000_MuEnrichedPt5'
+        }
+    },
+    {"QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
+        {
+            //total=13856755.0 eff=13856755.0 - 0.0 = 13856755.0
+            13856755.0,
+            106033.6648 // xsec for process 'QCD_Pt-80to120_MuEnrichedPt5'
+        }
+    },
     {"ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_ext",
         {
-            //total=17037964.0 eff=10358536.0 - 6679428.0 = 3679108.0
-            3679108.0,
+            //total=16713374.0 eff=10155978.0 - 6557396.0 = 3598582.0
+            3598582.0,
             70.688826 // xsec for process 'ST_t-channel_4f_leptonDecays'
+        }
+    },
+    {"ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
+        {
+            //total=985000.0 eff=985000.0 - 0.0 = 985000.0
+            985000.0,
+            35.6 // xsec for process 'ST_tW_antitop'
+        }
+    },
+    {"ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
+        {
+            //total=998400.0 eff=998400.0 - 0.0 = 998400.0
+            998400.0,
+            35.6 // xsec for process 'ST_tW_top'
         }
     },
     {"ST_tWll_5f_LO_13TeV-MadGraph-pythia8",
@@ -289,16 +274,23 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
     },
     {"TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",
         {
-            //total=63791765.0 eff=63791765.0 - 0.0 = 63791765.0
-            63791765.0,
+            //total=69303446.0 eff=69303446.0 - 0.0 = 69303446.0
+            69303446.0,
             831.76 // xsec for process 'TT'
         }
     },
     {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ext",
         {
-            //total=45321161.0 eff=38225041.0 - 7096120.0 = 31128921.0
-            31128921.0,
+            //total=47502020.0 eff=40057650.0 - 7444370.0 = 32613280.0
+            32613280.0,
             61526.7 // xsec for process 'WJetsToLNu'
+        }
+    },
+    {"WW_TuneCUETP8M1_13TeV-pythia8",
+        {
+            //total=993214.0 eff=993214.0 - 0.0 = 993214.0
+            993214.0,
+            63.7 // xsec for process 'WW'
         }
     },
     {"WZ_TuneCUETP8M1_13TeV-pythia8",
@@ -306,6 +298,13 @@ const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
             //total=1000000.0 eff=1000000.0 - 0.0 = 1000000.0
             1000000.0,
             47.13 // xsec for process 'WZ'
+        }
+    },
+    {"ZZ_TuneCUETP8M1_13TeV-pythia8",
+        {
+            //total=989312.0 eff=989312.0 - 0.0 = 989312.0
+            989312.0,
+            16.523 // xsec for process 'ZZ'
         }
     }
 };

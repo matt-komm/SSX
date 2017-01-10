@@ -67,9 +67,9 @@ class Example(modules.PythonModule):
             return "out"
         process = event.getUserRecord("ProcessName")
         weight=1.0
+        weight=event.getUserRecord("genweight")
         for eventView in event.getEventViews():
-            if eventView.getName()=="Generated":
-                weight=eventView.getUserRecord("genweight")
+            
             if eventView.getName()=="Reconstructed":
                 for particle in eventView.getParticles():
                     if (particle.getName()=="SelectedJet") or (particle.getName()=="SelectedBJet"):
