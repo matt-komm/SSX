@@ -54,8 +54,8 @@ if __name__=="__main__":
         config.JobType.outputFiles = ["output.pxlio"]
         
     config.JobType.inputFiles=[
-        "Spring16_23Sep2016AllV2_DATA.db",
-        "Spring16_23Sep2016V2_MC.db"
+        "Summer16_23Sep2016AllV2_DATA.db",
+        "Summer16_23Sep2016V2_MC.db"
     ]
     config.JobType.maxJobRuntimeMin=10*60
 
@@ -237,7 +237,7 @@ if __name__=="__main__":
     if dataset.split("/")[2].find("_ext")!=-1:
         processName+="_ext"
 
-    jobName = processName+'_v170116'
+    jobName = processName+'_v170120'
     
     print "submitting... ",jobName
     
