@@ -68,7 +68,7 @@ execute "git reset Pxl"
 
 ln -s ../../UserCode
 ln -s ../../crab
-
+ln -s ../../sync
 execute "scram b -j10"
 
 cd $BASEDIR

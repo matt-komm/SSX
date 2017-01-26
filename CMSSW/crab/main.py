@@ -54,8 +54,8 @@ if __name__=="__main__":
         config.JobType.outputFiles = ["output.pxlio"]
         
     config.JobType.inputFiles=[
-        "Summer16_23Sep2016AllV2_DATA.db",
-        "Summer16_23Sep2016V2_MC.db"
+        "Summer16_23Sep2016AllV3_DATA.db",
+        "Summer16_23Sep2016V3_MC.db"
     ]
     config.JobType.maxJobRuntimeMin=10*60
 
@@ -207,7 +207,12 @@ if __name__=="__main__":
         "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
         "/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
         "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
-        "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+        "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+        
+        "/WW_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+        "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+        "/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+        
     ]
     
     data80X = [        
@@ -237,7 +242,7 @@ if __name__=="__main__":
     if dataset.split("/")[2].find("_ext")!=-1:
         processName+="_ext"
 
-    jobName = processName+'_v170120'
+    jobName = processName+'_v170121'
     
     print "submitting... ",jobName
     
@@ -257,8 +262,6 @@ if __name__=="__main__":
         else:
             config.JobType.pyCfgParams=['processName='+processName,'isData=True','isReRecoData=True','onlyFiltered=True']
         
-        if dataset.find("reHLT")!=-1:
-            config.JobType.pyCfgParams.append('reHLT=True')
         
         config.Data.outLFNDirBase='/store/user/mkomm/'+config.General.requestName+"/"+jobName
         
