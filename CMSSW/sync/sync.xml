@@ -5,7 +5,7 @@
     <option name="end"  type="long" >
 -1    </option>
     <option name="File names"  type="string_vector" >
-<![CDATA[("tchannel.pxlio")]]>    </option>
+<![CDATA[("SingleMu_RunB.pxlio")]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
@@ -77,7 +77,7 @@ True    </option>
     <option name="LooseMuon Minimum pT"  type="double" >
 10    </option>
     <option name="LooseMuon Maximum Eta"  type="double" >
-2.5    </option>
+2.4    </option>
     <option name="LooseMuon Minimum Relative Iso DeltaBeta"  type="double" >
 0.2    </option>
     <option name="LooseMuon Relative Iso DeltaBeta; Beta Parameter"  type="double" >
@@ -103,7 +103,7 @@ True    </option>
     <option name="Clean event"  type="boolean" >
 True    </option>
     <option name="LooseElectron Minimum pT"  type="double" >
-20    </option>
+15    </option>
     <option name="LooseElectron Maximum eta"  type="double" >
 2.5    </option>
     <option name="ID"  type="string" >
@@ -186,9 +186,9 @@ True    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[10:12:55]]>      </entry>
       <entry name="xPos"  type="double" >
-353      </entry>
+354      </entry>
       <entry name="yPos"  type="double" >
-500      </entry>
+498      </entry>
     </userrecords>
   </module>
   <module name="PyModule4"  type="PyModule"  isEnabled="true" >
@@ -259,7 +259,7 @@ False    </option>
     <option name="dR objects"  type="string_vector" >
 <![CDATA[("TightLepton","TightMuon","TightElectron")]]>    </option>
     <option name="store n leading jets"  type="long" >
-2    </option>
+0    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
@@ -309,7 +309,7 @@ False    </option>
     <option name="maximum b-jet eta"  type="double" >
 2.4    </option>
     <option name="working point"  type="double" >
-0.875    </option>
+0.9432    </option>
     <option name="copy selected jets"  type="boolean" >
 False    </option>
     <userrecords>
@@ -318,9 +318,9 @@ False    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[10:12:55]]>      </entry>
       <entry name="xPos"  type="double" >
-951      </entry>
+952      </entry>
       <entry name="yPos"  type="double" >
-837      </entry>
+840      </entry>
     </userrecords>
   </module>
   <module name="PyModule7"  type="PyModule"  isEnabled="true" >
@@ -515,6 +515,6 @@ False    </option>
     <entry name="Modification date"  type="string" >
 <![CDATA[2017-01-26]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[16:14:22]]>    </entry>
+<![CDATA[18:12:12]]>    </entry>
   </userrecords>
 </analysis>

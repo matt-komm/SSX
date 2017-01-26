@@ -45,10 +45,9 @@ class Example(modules.PythonModule):
         region = "none"
             
         weight=1.0
+        if event.hasUserRecord("genweight"):
+            weight=event.getUserRecord("genweight")
         for eventView in event.getEventViews():
-            if eventView.getName()=="Generated":
-                weight=eventView.getUserRecord("genweight")
-                break
     
             if eventView.getName()=="Reconstructed":
                 if event.hasUserRecord("muoncat"):
@@ -114,6 +113,7 @@ class Example(modules.PythonModule):
         for process in self._idEvents.keys():
             for region in self._idEvents[process].keys():
                 f=open(self._outputFile+"."+process+"."+region,'w')
+                f.write("%12s, %8s, %8s\n"%("id","run","lumi"))
                 for ids in self._idEvents[process][region]:
                     f.write("%12i, %8i, %8i\n"%(ids["id"],ids["run"],ids["lumi"]))
                 f.close()

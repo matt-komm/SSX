@@ -39,7 +39,7 @@ eval `scramv1 runtime -sh`
 execute "git cms-init"
 
 #https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
-execute "git cms-merge-topic ikrav:egm_id_80X_v1"
+execute "git cms-merge-topic ikrav:egm_id_80X_v2"
 
 #https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_20_for
 execute "git cms-merge-topic cms-met:METRecipe_8020"
