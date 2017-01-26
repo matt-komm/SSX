@@ -42,6 +42,8 @@ for folder in os.listdir(baseFolder):
                 if len(dirnames)>1:
                     print "\t"+warn("WARNING")+": found multiple output folders in ",dirpath," ",dirnames
                     stopForError=True
+            if dirpath.endswith("failed") and len(dirnames)>0:
+                print "\t"+warn("WARNING")+": found failed folder in ",dirpath," with content ",dirnames
             for f in filenames:
                 if rootFileMatch.match(f):
                     if not rootFiles.has_key(folder):
@@ -104,6 +106,10 @@ xsecDB = {
     "DY4JetsToLL_M-10to50":34.84, #LO MadGraph from MCM
     
     "DYJetsToLL_M-50": 4895.0, #from HIG-16-017
+    "DY1JetsToLL_M-50": 1016.0, #from HIG-16-017
+    "DY2JetsToLL_M-50": 331.0, #from HIG-16-017
+    "DY3JetsToLL_M-50": 96.0, #from HIG-16-017
+    "DY4JetsToLL_M-50": 51.0, #from HIG-16-017
     
     "QCD_Pt-20toInf_MuEnrichedPt15": 866600000 * 0.00044,
     
@@ -142,6 +148,10 @@ xsecDB = {
     
     "WJetsToLNu":20508.9*3,
     
+    "WToLNu_0J_13TeV":49670.0, #MCM
+    "WToLNu_1J_13TeV":8264.0, #MCM
+    "WToLNu_2J_13TeV":2544.0, #MCM
+    
     "TT": 831.76,
     "TTJets": 831.76,
     
@@ -157,24 +167,27 @@ def findXsec(name):
         if (len(process)>len(match)) and (name.find(process)!=-1):
             match = process
     if len(match)==0:
-        return "? //WARNING, xsec not found"
+        return "? //"+warn("WARNING")+", xsec not found"
     return str(xsecDB[match])+" // xsec for process '"+match+"'"
 
 for folder in sorted(rootFiles.keys()):
     #print "reading ... ",folder
     
     nEvents = 0
-    sumPosWeight = 0
-    sumNegWeight = 0
+    weightedSumPos = 0
+    weightedSumNeg = 0
+
     for f in rootFiles[folder]:
         rootFile = ROOT.TFile(f)
         hist = rootFile.Get("eventAndPuInfo/genweight")
-        wSum = math.fabs(hist.GetBinContent(1))+math.fabs(hist.GetBinContent(2))
-        eSum = hist.GetEntries()
-        w = eSum/wSum
-        nEvents+=eSum
-        sumPosWeight +=round(math.fabs(hist.GetBinContent(2))*w)
-        sumNegWeight +=round(math.fabs(hist.GetBinContent(1))*w)
+        
+        weightedSumNeg += math.fabs(hist.GetBinContent(1))
+        weightedSumPos += math.fabs(hist.GetBinContent(2))
+        nEvents += hist.GetEntries()
+
+    avgWeight = nEvents/(weightedSumNeg+weightedSumPos)
+    sumPosWeight = round(weightedSumPos*avgWeight)
+    sumNegWeight = round(weightedSumNeg*avgWeight)
 
     tab = "    "
     print tab+"{\""+folder.rsplit("_v",1)[0]+"\","
