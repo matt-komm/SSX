@@ -113,9 +113,9 @@ class Example(modules.PythonModule):
         for process in self._idEvents.keys():
             for region in self._idEvents[process].keys():
                 f=open(self._outputFile+"."+process+"."+region,'w')
-                f.write("%12s, %8s, %8s\n"%("id","run","lumi"))
+                f.write("%8s | %12s | %8s\n"%("run","id","lumi"))
                 for ids in self._idEvents[process][region]:
-                    f.write("%12i, %8i, %8i\n"%(ids["id"],ids["run"],ids["lumi"]))
+                    f.write("%8i | %12i | %8i\n"%(ids["run"],ids["id"],ids["lumi"]))
                 f.close()
         
         
