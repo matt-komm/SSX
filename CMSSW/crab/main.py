@@ -29,7 +29,7 @@ def getlog(task,*args,**kwargs):
     except HTTPException, hte:
         print hte.headers   
         
-isMC = True    
+isMC = False    
 
 if __name__=="__main__":
 
@@ -242,7 +242,7 @@ if __name__=="__main__":
     if dataset.split("/")[2].find("_ext")!=-1:
         processName+="_ext"
 
-    jobName = processName+'_v170121'
+    jobName = processName+'_v170126'
     
     print "submitting... ",jobName
     

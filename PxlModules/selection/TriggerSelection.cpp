@@ -75,7 +75,14 @@ class TriggerSelection:
             getOption("required trigger flags",triggerFlags);
             for (const std::string& flag: triggerFlags)
             {
-                _triggerRegex.emplace_back(flag);
+                try
+                {
+                    _triggerRegex.emplace_back(flag);
+                } 
+                catch (std::regex_error& e)
+                {
+                    throw std::runtime_error("Error while parsing trigger regex '"+flag+"': "+e.what());
+                }
             }
             
             getOption("combined flag",_combinedFlag);
