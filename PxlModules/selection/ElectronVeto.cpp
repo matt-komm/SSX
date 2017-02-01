@@ -121,6 +121,28 @@ class ElectronVeto:
             {
                 return false;
             }
+            if (std::fabs(particle->getUserRecord("superClusterEta").toFloat())<1.479)
+            {
+                if (not (particle->getUserRecord("dxy").toFloat()<0.05))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("dz").toFloat()<0.10))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (not (particle->getUserRecord("dxy").toFloat()<0.10))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("dz").toFloat()<0.20))
+                {
+                    return false;
+                }
+            }
 
             return true;
         }
