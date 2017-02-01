@@ -60,8 +60,8 @@ class BTagReweighting:
             _bTaggingAlgorithmName("pfCombinedMVAV2BJetTags"),
             _eventViewName("Reconstructed"),
             _histPostFix({"loose","medium","tight"}),
-            _jetNames({"SelectedJet","SelectedBJet","SelectedBJetTight","SelectedBJetMed","SelectedBJetLoose"}),
-            _wp({-0.715,0.185,0.875})
+            _jetNames({"SelectedJet"}),
+            _wp({-0.5884,0.4432,0.9432})
         {
             addSink("input", "input");
             _outputSource = addSource("output","output");
@@ -221,7 +221,7 @@ class BTagReweighting:
                     }
                     if (efficiency<0.01)
                     {
-                        efficiency+=0.005-iwp*0.0005; //make eff less for tighter wps
+                        efficiency+=0.01/std::pow(1.5,iwp); //make eff less for tighter wps
                     }
                     return efficiency;
                 
@@ -337,7 +337,11 @@ class BTagReweighting:
                                 if (std::find(_jetNames.cbegin(),_jetNames.cend(),particle->getName())!=_jetNames.cend())
                                 {
                                     //use parton flavor 0 if no genParton found
-                                    jets.emplace_back(particle->getUserRecord(_bTaggingAlgorithmName).toFloat(),abs(particle->hasUserRecord("partonFlavour") ? particle->getUserRecord("partonFlavour").toInt32() : 0),particle->getPt(),particle->getEta());
+                                    jets.emplace_back(
+                                        particle->getUserRecord(_bTaggingAlgorithmName).toFloat(),
+                                        abs(particle->hasUserRecord("partonFlavour") ? particle->getUserRecord("partonFlavour").toInt32() : 0),
+                                        particle->getPt(),particle->getEta()
+                                    );
                                 }
                             }
                             eventView->setUserRecord("btagging_nominal",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::NOMINAL));

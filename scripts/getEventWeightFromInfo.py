@@ -191,11 +191,11 @@ for folder in sorted(rootFiles.keys()):
 
     tab = "    "
     print tab+"{\""+folder.rsplit("_v",1)[0]+"\","
-    print tab+tab+"{"
+    print tab+tab+"new SimpleWeightInfo("
     print tab+tab+tab+"//total="+str(nEvents)+" eff="+str(sumPosWeight)+" - "+str(sumNegWeight)+" = "+str(sumPosWeight-sumNegWeight)
     print tab+tab+tab+str(sumPosWeight-sumNegWeight)+","
     print tab+tab+tab+findXsec(folder.rsplit("_v",1)[0])
-    print tab+tab+"}"
+    print tab+tab+")"
     print tab+"},"
     #print "\tentries = ",nEvents
     #print "\tpos = ",sumPosWeight

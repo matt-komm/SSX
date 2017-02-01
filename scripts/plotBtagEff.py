@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import ROOT
 import numpy
@@ -127,9 +127,9 @@ ROOT.gStyle.SetTitleFont(43, "XYZ")
 ROOT.gStyle.SetTitleSize(32, "XYZ")
 # ROOT.gStyle.SetTitleXSize(Float_t size = 0.02) # Another way to set the size?
 # ROOT.gStyle.SetTitleYSize(Float_t size = 0.02)
-ROOT.gStyle.SetTitleXOffset(1.)
+ROOT.gStyle.SetTitleXOffset(1.135)
 #ROOT.gStyle.SetTitleYOffset(1.2)
-ROOT.gStyle.SetTitleOffset(1.3, "YZ") # Another way to set the Offset
+ROOT.gStyle.SetTitleOffset(1.32, "YZ") # Another way to set the Offset
 
 # For the axis labels:
 
@@ -189,43 +189,6 @@ ROOT.gStyle.SetPalette(1)
 
 
 rootObj = []
-
-processNames = [
-    "ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_ext",
-    "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",
-    "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
-]
-
-
-inputFiles = ["btaggingEff.root"]
-'''
-basedir = "/nfs/user/mkomm/SSX13/selection/signalMC"
-matching = re.compile("btaggingEff[0-9]+.root")
-
-for f in os.listdir(basedir):
-    if matching.match(f):
-        inputFiles.append(os.path.join(basedir,f))
-
-print "found ",len(inputFiles),"input files in ",basedir
-'''
-flavors = [
-    "b",
-    "c",
-    "other"
-]
-
-workingpoints = [
-    "tight",
-    "medium",
-    "loose"
-]
-
-hists={}
-
-ptbinning = numpy.array([20,30,40.0,55.0,110,150,220,320,450,600])
-etabinning = numpy.array([0.0,0.2,0.7,1.4,2.0,2.2,2.3,2.5])
-
-
 
 def findBestChi2(fct,guess,xvalues,yvalues,yerrors):
 
@@ -291,28 +254,22 @@ def getEfficiency(nominatorHist, denominatorHist):
     return graph, maxEff
     
 def getEfficiency2D(nominatorHist, denominatorHist):
-    histEff = ROOT.TH2F("eff"+str(random.random()),"",len(etabinning)-1,etabinning,len(ptbinning)-1,ptbinning)
+    histEff = nominatorHist.Clone(nominatorHist.GetName()+"eff"+str(random.random()))
     rootObj.append(histEff)
     for ibin in range(histEff.GetNbinsX()):
-        isEmpty=True
         for jbin in range(histEff.GetNbinsY()):
-            histEff.SetBinContent(ibin+1,jbin+1,0)
-        
             n = nominatorHist.GetBinContent(ibin+1,jbin+1)
             d = denominatorHist.GetBinContent(ibin+1,jbin+1)
-            if d>20:
-                isEmpty=False
+            if d>40 and n>1:
                 histEff.SetBinContent(ibin+1,jbin+1,n/d)
-        if (isEmpty and ibin!=0):
-            for jbin in range(histEff.GetNbinsY()):
-                histEff.SetBinContent(ibin+1,jbin+1,histEff.GetBinContent(ibin,jbin+1))
-        
-        for jbin in range(histEff.GetNbinsY()):
-            if histEff.GetBinContent(ibin+1,jbin+1)<0.00000001:
-                for jbin_alt1 in reversed(range(jbin)):
-                    if histEff.GetBinContent(ibin+1,jbin_alt1+1)>0.00000001:
-                        histEff.SetBinContent(ibin+1,jbin+1,histEff.GetBinContent(ibin+1,jbin_alt1+1))
+            else:
+                for altBin in reversed(range(jbin+1)):
+                    n = 0.5*nominatorHist.GetBinContent(ibin+1,altBin+1)+0.25*nominatorHist.GetBinContent(ibin,altBin+1)+0.25*nominatorHist.GetBinContent(ibin+2,altBin+1)
+                    d = 0.5*denominatorHist.GetBinContent(ibin+1,altBin+1)+0.25*denominatorHist.GetBinContent(ibin,altBin+1)+0.25*denominatorHist.GetBinContent(ibin+2,altBin+1)
+                    if d>20 and n>0:
+                        histEff.SetBinContent(ibin+1,jbin+1,n/d)
                         break
+                        
     return histEff
     
 def drawGraph(graphs,varName,titles,yAxis="",maxEff=1.0):
@@ -461,6 +418,43 @@ def rebinHist2D(hist,rangeX,rangeY):
             newHist.Fill(x,y,c)
     return newHist
 
+processNames = [
+    "ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
+    "ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
+    "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",
+    "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
+    "DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+]
+
+print "using input file: ",args[0]
+inputFiles = [args[0]]
+'''
+basedir = "/nfs/user/mkomm/SSX13/selection/signalMC"
+matching = re.compile("btaggingEff[0-9]+.root")
+
+for f in os.listdir(basedir):
+    if matching.match(f):
+        inputFiles.append(os.path.join(basedir,f))
+
+print "found ",len(inputFiles),"input files in ",basedir
+'''
+flavors = [
+    "b",
+    "c",
+    "other"
+]
+
+workingpoints = [
+    "tight",
+    "medium",
+    "loose"
+]
+
+hists={}
+
+ptbinning = numpy.array([20.0,30.0,40.0,55.0,110,150,220,320,450,600])
+etabinning = numpy.array([0.0,0.2,0.7,1.4,2.0,2.2,2.3,2.5])
+
 
 
 for ifile,inputFile in enumerate(inputFiles):
@@ -500,7 +494,7 @@ for ifile,inputFile in enumerate(inputFiles):
                     hists[flavor][workingpoint]["true"].Add(rebinnedTrue)
     rootFile.Close()
                     
-outputFile = ROOT.TFile("btagging.root","RECREATE")
+outputFile = ROOT.TFile(args[0].rsplit(".")[0]+"_rebin.root","RECREATE")
 for flavor in flavors:
     for workingpoint in workingpoints: 
         eff = getEfficiency2D(hists[flavor][workingpoint]["tagged"],hists[flavor][workingpoint]["true"])
@@ -597,6 +591,12 @@ for flavor in flavors:
         cv.Print("btagging_"+flavor+"__"+workingpoint+".png")
         
 outputFile.Close()      
+                
+
+    
+
+
+
                 
 
     

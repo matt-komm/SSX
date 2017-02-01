@@ -10,308 +10,310 @@
 
 static pxl::Logger logger("EventWeight");
 
-struct FileInfo
+class WeightInfo
 {
-    double nEvents;
-    double crossSection;
+    public:
+
+        virtual double getWeight(const pxl::Event* event) const = 0;
 };
 
-const std::unordered_map<std::string,FileInfo> eventWeights80Xv1 = {
-    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+class SimpleWeightInfo:
+    public WeightInfo
+{
+    public:
+        double _nEvents;
+        double _crossSection;
+        
+        SimpleWeightInfo(double nEvents, double crossSection):
+            _nEvents(nEvents),
+            _crossSection(crossSection)
         {
-            //total=28696958.0 eff=23968195.0 - 4728763.0 = 19239432.0
-            19239432,
-            1921.8*3 
         }
-    },
-    {"DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        
+        virtual double getWeight(const pxl::Event*) const
         {
-            //total=30915886.0 eff=26706311.0 - 4209575.0 = 22496736.0
-            22496736,
-            18610.0
+            return _crossSection/_nEvents;
         }
-    },
-    {"QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=22093630.0 eff=22093630.0 - 0 = 22093630.0
-            22093630.0,
-            866600000 * 0.00044
-        }
-    },
-    
-    {"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
-        {
-            //total=19825855.0 eff=19825855.0 - 0 = 19825855.0
-            19825855.0,
-            80.95
-        }
-    },
-    {"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
-        {
-            //total=32243692.0 eff=32243692.0 - 0 = 32243692.0
-            32243692.0,
-            136.02
-        }
-    },
-    
-    {"ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
-        {
-            //total=985000.0 eff=985000.0 - 0 = 985000.0
-            985000.0,
-            35.6 //from MCM
-        }
-    },
-    
-    {"ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
-        {
-            //total=998400.0 eff=998400.0 - 0 = 998400.0
-            998400.0,
-            35.6
-        }
-    },
-    
-    {"TT_TuneCUETP8M1_13TeV-powheg-pythia8_ext",
-        {
-            //total=182123200.0 eff=182123200.0 - 0 = 182123200.0
-            182123200.0,
-            831.76
-        }
-    },
-    
-    {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        {
-            //total=9908534.0 eff=8341457.0 - 1567077.0 = 6774380.0
-            6774380.0,
-            20508.9*3
-        }
-    },
-    
-    {"WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        {
-            //total=28210360.0 eff=28210360.0 - .0 = 28210360.0
-            28210360.0,
-            20508.9*3
-        }
-    }
 };
-//total= eff= - 0 = 
 
-const std::unordered_map<std::string,FileInfo> eventWeights80XwithHLT = {
-    {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+class WeightPerPartonInfo:
+    public WeightInfo
+{
+    public:
+        const std::vector<double> _weightsPerParton;
+        
+        WeightPerPartonInfo(std::vector<double> weightsPerParton):
+            _weightsPerParton(weightsPerParton)
         {
-            //total=15857985.0 eff=12912008.0 - 2945977.0 = 9966031.0
-            9966031.0,
-            725.0 // xsec for process 'DY1JetsToLL_M-10to50'
         }
-    },
+        
+        virtual double getWeight(const pxl::Event* ev) const
+        {
+            int index = -1;
+            if (ev->hasUserRecord("nparton"))
+            {
+                index = ev->getUserRecord("nparton").toInt64();
+            }
+            else
+            {
+                throw std::runtime_error("Cannot find 'nparton' field for event "+ev->getUserRecord("ProcessName").toString());
+            }
+            if (index<0)
+            {
+                throw std::runtime_error("'nparton' field should not be negative (="+std::to_string(index)+") for event "+ev->getUserRecord("ProcessName").toString());
+            }
+            if (index>=_weightsPerParton.size())
+            {
+                index = _weightsPerParton.size()-1;
+            }
+            return _weightsPerParton[index];
+        }
+};
+
+WeightPerPartonInfo* drellYanM50 = new WeightPerPartonInfo({
+    0.1205*0.001,
+    0.0163*0.001,
+    0.0167*0.001,
+    0.0173*0.001,
+    0.0135*0.001,
+    0.1205*0.001
+});
+
+WeightPerPartonInfo* drellYanM10to50 = new WeightPerPartonInfo({
+    0.5273*0.001,
+    0.0204*0.001,
+    0.0226*0.001,
+    0.0217*0.001,
+    0.0187*0.001,
+    0.5273*0.001
+});
+
+const std::unordered_map<std::string,WeightInfo*> eventWeights80XwithHLT = {
+
+
     {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        {
-            //total=36265419.0 eff=36265419.0 - 0.0 = 36265419.0
-            36265419.0,
-            725.0 // xsec for process 'DY1JetsToLL_M-10to50'
-        }
+        drellYanM10to50
     },
-    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        {
-            //total=41924360.0 eff=26273281.0 - 15651079.0 = 10622202.0
-            10622202.0,
-            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
-        }
+    {"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+        drellYanM50
     },
     {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        {
-            //total=18925170.0 eff=18925170.0 - 0.0 = 18925170.0
-            18925170.0,
-            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
-        }
+        drellYanM10to50
+    },
+    {"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+        drellYanM50
     },
     {"DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        {
-            //total=4885667.0 eff=4885667.0 - 0.0 = 4885667.0
-            4885667.0,
-            96.47 // xsec for process 'DY3JetsToLL_M-10to50'
-        }
+        drellYanM10to50
+    },
+    {"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+        drellYanM50
     },
     {"DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        {
-            //total=2093405.0 eff=2093405.0 - 0.0 = 2093405.0
-            2093405.0,
-            34.84 // xsec for process 'DY4JetsToLL_M-10to50'
-        }
+        drellYanM10to50
     },
-    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        {
-            //total=104113466.0 eff=86986430.0 - 17127036.0 = 69859394.0
-            69859394.0,
-            4895.0 // xsec for process 'DYJetsToLL_M-50'
-        }
+    {"DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+        drellYanM50
+    },
+    {"DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+        drellYanM10to50
     },
     {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
-        {
-            //total=91350867.0 eff=91350867.0 - 0.0 = 91350867.0
-            91350867.0,
-            4895.0 // xsec for process 'DYJetsToLL_M-50'
-        }
+        drellYanM50
     },
     {"QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=3884666.0 eff=3884666.0 - 0.0 = 3884666.0
-            3884666.0,
+        new SimpleWeightInfo(
+            //total=3566646.0 eff=3566646.0 - 0.0 = 3566646.0
+            3566646.0,
             1.6212392 // xsec for process 'QCD_Pt-1000toInf_MuEnrichedPt5'
-        }
+        )
     },
     {"QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=7925929.0 eff=7925929.0 - 0.0 = 7925929.0
-            7925929.0,
+        new SimpleWeightInfo(
+            //total=11938140.0 eff=11938140.0 - 0.0 = 11938140.0
+            11938140.0,
             25190.51514 // xsec for process 'QCD_Pt-120to170_MuEnrichedPt5'
-        }
+        )
     },
     {"QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=4617630.0 eff=4617630.0 - 0.0 = 4617630.0
-            4617630.0,
+        new SimpleWeightInfo(
+            //total=4141251.0 eff=4141251.0 - 0.0 = 4141251.0
+            4141251.0,
             3819570.0 // xsec for process 'QCD_Pt-15to20_MuEnrichedPt5'
-        }
+        )
     },
-    {"QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        {
-            //total=8693138.0 eff=8693138.0 - 0.0 = 8693138.0
-            8693138.0,
+    {"QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
+        new SimpleWeightInfo(
+            //total=19607777.0 eff=19607777.0 - 0.0 = 19607777.0
+            19607777.0,
             8654.49315 // xsec for process 'QCD_Pt-170to300_MuEnrichedPt5'
-        }
+        )
     },
     {"QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=31516731.0 eff=31516731.0 - 0.0 = 31516731.0
-            31516731.0,
+        new SimpleWeightInfo(
+            //total=31475157.0 eff=31475157.0 - 0.0 = 31475157.0
+            31475157.0,
             24016704000 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
-        }
-    },
-    {"QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=22093630.0 eff=22093630.0 - 0.0 = 22093630.0
-            22093630.0,
-            381304.0 // xsec for process 'QCD_Pt-20toInf_MuEnrichedPt15'
-        }
+        )
     },
     {"QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        {
-            //total=16174442.0 eff=16174442.0 - 0.0 = 16174442.0
-            16174442.0,
+        new SimpleWeightInfo(
+            //total=24127643.0 eff=24127643.0 - 0.0 = 24127643.0
+            24127643.0,
             797.35269 // xsec for process 'QCD_Pt-300to470_MuEnrichedPt5'
-        }
+        )
     },
     {"QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=28343259.0 eff=28343259.0 - 0.0 = 28343259.0
-            28343259.0,
+        new SimpleWeightInfo(
+            //total=29252006.0 eff=29252006.0 - 0.0 = 29252006.0
+            29252006.0,
             1652471.46 // xsec for process 'QCD_Pt-30to50_MuEnrichedPt5'
-        }
+        )
     },
     {"QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        {
-            //total=5927876.0 eff=5927876.0 - 0.0 = 5927876.0
-            5927876.0,
+        new SimpleWeightInfo(
+            //total=9847664.0 eff=9847664.0 - 0.0 = 9847664.0
+            9847664.0,
             79.02211 // xsec for process 'QCD_Pt-470to600_MuEnrichedPt5'
-        }
+        )
     },
     {"QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=20383957.0 eff=20383957.0 - 0.0 = 20383957.0
-            20383957.0,
+        new SimpleWeightInfo(
+            //total=19806915.0 eff=19806915.0 - 0.0 = 19806915.0
+            19806915.0,
             437504.1 // xsec for process 'QCD_Pt-50to80_MuEnrichedPt5'
-        }
+        )
     },
-    {"QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        {
-            //total=5868022.0 eff=5868022.0 - 0.0 = 5868022.0
-            5868022.0,
+    {"QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
+        new SimpleWeightInfo(
+            //total=9756853.0 eff=9756853.0 - 0.0 = 9756853.0
+            9756853.0,
             25.0951932 // xsec for process 'QCD_Pt-600to800_MuEnrichedPt5'
-        }
+        )
     },
     {"QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        {
-            //total=5571419.0 eff=5571419.0 - 0.0 = 5571419.0
-            5571419.0,
+        new SimpleWeightInfo(
+            //total=9966149.0 eff=9966149.0 - 0.0 = 9966149.0
+            9966149.0,
             4.707572 // xsec for process 'QCD_Pt-800to1000_MuEnrichedPt5'
-        }
+        )
     },
-    {"QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        {
-            //total=13856755.0 eff=13856755.0 - 0.0 = 13856755.0
-            13856755.0,
+    {"QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
+        new SimpleWeightInfo(
+            //total=9797244.0 eff=9797244.0 - 0.0 = 9797244.0
+            9797244.0,
             106033.6648 // xsec for process 'QCD_Pt-80to120_MuEnrichedPt5'
-        }
+        )
     },
-    {"ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_ext",
-        {
-            //total=16713374.0 eff=10155978.0 - 6557396.0 = 3598582.0
-            3598582.0,
-            70.688826 // xsec for process 'ST_t-channel_4f_leptonDecays'
-        }
+    {"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
+        new SimpleWeightInfo(
+            //total=38811017.0 eff=38811017.0 - 0.0 = 38811017.0
+            38811017.0,
+            80.95 // xsec for process 'ST_t-channel_antitop_4f'
+        )
     },
-    {"ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
-        {
-            //total=985000.0 eff=985000.0 - 0.0 = 985000.0
-            985000.0,
+    {"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
+        new SimpleWeightInfo(
+            //total=67240808.0 eff=67240808.0 - 0.0 = 67240808.0
+            67240808.0,
+            136.02 // xsec for process 'ST_t-channel_top_4f'
+        )
+    },
+    {"ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1_ext",
+        new SimpleWeightInfo(
+            //total=3256407.0 eff=3256407.0 - 0.0 = 3256407.0
+            3256407.0,
             35.6 // xsec for process 'ST_tW_antitop'
-        }
+        )
     },
-    {"ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1",
-        {
-            //total=998400.0 eff=998400.0 - 0.0 = 998400.0
-            998400.0,
+    {"ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_ext",
+        new SimpleWeightInfo(
+            //total=6933094.0 eff=6933094.0 - 0.0 = 6933094.0
+            6933094.0,
+            35.6 // xsec for process 'ST_tW_antitop'
+        )
+    },
+    {"ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1_ext",
+        new SimpleWeightInfo(
+            //total=3256650.0 eff=3256650.0 - 0.0 = 3256650.0
+            3256650.0,
             35.6 // xsec for process 'ST_tW_top'
-        }
+        )
     },
-    {"ST_tWll_5f_LO_13TeV-MadGraph-pythia8",
-        {
-            //total=50000.0 eff=50000.0 - 0.0 = 50000.0
-            50000.0,
-            7.557569568 // xsec for process 'ST_tWll'
-        }
+    {"ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_ext",
+        new SimpleWeightInfo(
+            //total=6952830.0 eff=6952830.0 - 0.0 = 6952830.0
+            6952830.0,
+            35.6 // xsec for process 'ST_tW_top'
+        )
     },
     {"TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",
-        {
-            //total=69303446.0 eff=69303446.0 - 0.0 = 69303446.0
-            69303446.0,
+        new SimpleWeightInfo(
+            //total=77229341.0 eff=77229341.0 - 0.0 = 77229341.0
+            77229341.0,
             831.76 // xsec for process 'TT'
-        }
+        )
     },
-    {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ext",
-        {
-            //total=47502020.0 eff=40057650.0 - 7444370.0 = 32613280.0
-            32613280.0,
+    {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+        new SimpleWeightInfo(
+            //total=23141980.0 eff=19491569.0 - 3650411.0 = 15841158.0
+            15841158.0,
             61526.7 // xsec for process 'WJetsToLNu'
-        }
+        )
     },
-    {"WW_TuneCUETP8M1_13TeV-pythia8",
-        {
-            //total=993214.0 eff=993214.0 - 0.0 = 993214.0
-            993214.0,
+    {"WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
+        new SimpleWeightInfo(
+            //total=56526888.0 eff=56526888.0 - 0.0 = 56526888.0
+            56526888.0,
+            61526.7 // xsec for process 'WJetsToLNu'
+        )
+    },
+    {"WToLNu_0J_13TeV-amcatnloFXFX-pythia8_ext",
+        new SimpleWeightInfo(
+            //total=49142195.0 eff=44541889.0 - 4600306.0 = 39941583.0
+            39941583.0,
+            49670.0 // xsec for process 'WToLNu_0J_13TeV'
+        )
+    },
+    {"WToLNu_1J_13TeV-amcatnloFXFX-pythia8",
+        new SimpleWeightInfo(
+            //total=40739942.0 eff=29901704.0 - 10838238.0 = 19063466.0
+            19063466.0,
+            8264.0 // xsec for process 'WToLNu_1J_13TeV'
+        )
+    },
+    {"WToLNu_2J_13TeV-amcatnloFXFX-pythia8_ext",
+        new SimpleWeightInfo(
+            //total=53135013.0 eff=34346729.0 - 18788284.0 = 15558445.0
+            15558445.0,
+            2544.0 // xsec for process 'WToLNu_2J_13TeV'
+        )
+    },
+    {"WW_TuneCUETP8M1_13TeV-pythia8_ext",
+        new SimpleWeightInfo(
+            //total=6987124.0 eff=6987124.0 - 0.0 = 6987124.0
+            6987124.0,
             63.7 // xsec for process 'WW'
-        }
+        )
     },
-    {"WZ_TuneCUETP8M1_13TeV-pythia8",
-        {
-            //total=1000000.0 eff=1000000.0 - 0.0 = 1000000.0
-            1000000.0,
+    {"WZ_TuneCUETP8M1_13TeV-pythia8_ext",
+        new SimpleWeightInfo(
+            //total=2995828.0 eff=2995828.0 - 0.0 = 2995828.0
+            2995828.0,
             47.13 // xsec for process 'WZ'
-        }
+        )
     },
-    {"ZZ_TuneCUETP8M1_13TeV-pythia8",
-        {
-            //total=989312.0 eff=989312.0 - 0.0 = 989312.0
-            989312.0,
+    {"ZZ_TuneCUETP8M1_13TeV-pythia8_ext",
+        new SimpleWeightInfo(
+            //total=998034.0 eff=998034.0 - 0.0 = 998034.0
+            998034.0,
             16.523 // xsec for process 'ZZ'
-        }
+        )
     }
 };
 
-const std::unordered_map<std::string,const std::unordered_map<std::string,FileInfo>> _eventWeightsPerEra =
+const std::unordered_map<std::string,const std::unordered_map<std::string,WeightInfo*>> _eventWeightsPerEra =
 {
-    {"80Xv1",eventWeights80Xv1},
     {"80XwithHLT",eventWeights80XwithHLT}
 };
 
@@ -413,7 +415,7 @@ class EventWeight:
 	                    auto it = _eventWeightsPerEra.at(_eraName).find(strippedProcessName);
                         if (it!=_eventWeightsPerEra.at(_eraName).end())
                         {
-	                        event->setUserRecord("mc_weight",1.0*it->second.crossSection/it->second.nEvents);
+	                        event->setUserRecord("mc_weight",1.0*it->second->getWeight(event));
                         }
                     }
                     if (strippedProcessName.size()==0)

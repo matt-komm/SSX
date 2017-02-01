@@ -297,7 +297,10 @@ class BTagWeightCalculator
                     }
                     if ((dataSF1*mcEfficiency1-dataSF2*mcEfficiency2)<0.0)
                     {
-                        throw std::runtime_error("Found negative b-tagging weight. Check the SF functions!");
+                        throw std::runtime_error("Found negative b-tagging weight for wp1="
+                            +std::to_string(wp1.getDiscriminatorValue())+"/wp2="+std::to_string(wp2.getDiscriminatorValue())+" SF1="
+                            +std::to_string(dataSF1)+"/SF2="+std::to_string(dataSF2)+" eff1="
+                            +std::to_string(mcEfficiency1)+"/eff2="+std::to_string(mcEfficiency2)+". Check the SF functions!");
                     }
                     
                     //std::cout<<"     eff@wp"<<iwp<<" - eff@wp"<<(iwp+1)<<" = "<<mcEfficiency1<<" - "<<mcEfficiency2<<" = "<<mcEfficiency1-mcEfficiency2<<std::endl; 
