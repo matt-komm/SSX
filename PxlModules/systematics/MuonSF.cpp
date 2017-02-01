@@ -117,29 +117,35 @@ class MuonSF:
     
         std::string _eventViewName;
         std::string _muonName;
+        std::string _sfName;
+        
+        std::string _muonMatchingFlag;
         
         pxl::Source* _outputSource;
         
         
-        ScaleFactor* _triggerSF;
-        ScaleFactor* _isoSF;
-        ScaleFactor* _idSF;
+        ScaleFactor* _scaleFactor;
         
     public:
         MuonSF():
             Module(),
             _eventViewName("Reconstructed"),
-            _muonName("TightMuon")
+            _muonName("TightMuon"),
+            _sfName("iso"),
+            _muonMatchingFlag("")
         {
             addSink("input", "input");
             addOption("event view name", "", _eventViewName);
             addOption("muon name", "", _muonName);
+            addOption("SF name", "", _sfName);
+            //for dimuon events triggered with single mu trigger one needs to apply
+            //trigger Sf only to the one matched to the trigger
+            //id&iso to both since they passed the selection
+            addOption("muon matching flag", "", _muonMatchingFlag);
             
             _outputSource = addSource("output","output");
             
-            _triggerSF=new ScaleFactor(this,"trigger");
-            _isoSF=new ScaleFactor(this,"iso");
-            _idSF=new ScaleFactor(this,"ID");
+            _scaleFactor=new ScaleFactor(this,"SF");
         }
 
         ~MuonSF()
@@ -173,10 +179,9 @@ class MuonSF:
         {
             getOption("event view name", _eventViewName);
             getOption("muon name", _muonName);
+            getOption("SF name", _sfName);
 
-            _triggerSF->init(this);
-            _isoSF->init(this);
-            _idSF->init(this);
+            _scaleFactor->init(this);
         }
         
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)
@@ -190,47 +195,42 @@ class MuonSF:
                     std::vector<pxl::EventView*> eventViews;
                     event->getObjectsOfType(eventViews);
                     
-                    pxl::Particle* muon = nullptr;
                     for (pxl::EventView* eventView: eventViews)
                     {
-                        
                         if (eventView->getName()==_eventViewName)
                         {
+                            double nominalSF = 1.0;
+                            double upSF = 1.0;
+                            double downSF = 1.0;
                             std::vector<pxl::Particle*> particles;
                             eventView->getObjectsOfType(particles);
                             for (pxl::Particle* particle: particles)
                             {
                                 if (particle->getName()==_muonName)
                                 {
-                                    if (muon==nullptr)
+                                    if (_muonMatchingFlag.size()>0)
                                     {
-                                        muon=particle;
+                                        if (particle->hasUserRecord(_muonMatchingFlag) and particle->getUserRecord("_muonMatchingFlag").toBool())
+                                        {
+                                            nominalSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),0);
+                                            upSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),1);
+                                            downSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),-1);
+                                        }
                                     }
                                     else
                                     {
-                                        throw std::runtime_error("Found multiple muons with name '"+_muonName+"' in event");
+                                        nominalSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),0);
+                                        upSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),1);
+                                        downSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),-1);
                                     }
                                 }
                             }
+                            eventView->setUserRecord(_sfName+"_SF_nominal",nominalSF),
+                            eventView->setUserRecord(_sfName+"_SF_up",upSF);
+                            eventView->setUserRecord(_sfName+"_SF_down",downSF);
                         }
                     }
-                    if (!muon)
-                    {
-                        throw std::runtime_error("Found no muon with name '"+_muonName+"' in event");
-                    }
                     
-                    muon->setUserRecord("trigger_SF_nominal",_triggerSF->getScaleFactor(muon->getPt(),muon->getEta(),0));
-                    muon->setUserRecord("trigger_SF_up",_triggerSF->getScaleFactor(muon->getPt(),muon->getEta(),1));
-                    muon->setUserRecord("trigger_SF_down",_triggerSF->getScaleFactor(muon->getPt(),muon->getEta(),-1));
-                    
-                    muon->setUserRecord("iso_SF_nominal",_isoSF->getScaleFactor(muon->getPt(),muon->getEta(),0));
-                    muon->setUserRecord("iso_SF_up",_isoSF->getScaleFactor(muon->getPt(),muon->getEta(),1));
-                    muon->setUserRecord("iso_SF_down",_isoSF->getScaleFactor(muon->getPt(),muon->getEta(),-1));
-                    
-                    muon->setUserRecord("id_SF_nominal",_idSF->getScaleFactor(muon->getPt(),muon->getEta(),0));
-                    muon->setUserRecord("id_SF_up",_idSF->getScaleFactor(muon->getPt(),muon->getEta(),1));
-                    muon->setUserRecord("id_SF_down",_idSF->getScaleFactor(muon->getPt(),muon->getEta(),-1));
-      
                     _outputSource->setTargets(event);
                     return _outputSource->processTargets();
                 }
