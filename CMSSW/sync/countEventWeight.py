@@ -29,7 +29,6 @@ class Example(modules.PythonModule):
         self._outputFile=self.__module.getOption("output")
         self._step = self.__module.getOption("step")
         self._nEvents={}
-        
         self._idEvents={}
 
     def beginRun(self):
@@ -45,10 +44,8 @@ class Example(modules.PythonModule):
         region = "none"
             
         weight=1.0
-        '''
         if event.hasUserRecord("genweight"):
             weight=event.getUserRecord("genweight")
-        '''
         for eventView in event.getEventViews():
     
             if eventView.getName()=="Reconstructed":
