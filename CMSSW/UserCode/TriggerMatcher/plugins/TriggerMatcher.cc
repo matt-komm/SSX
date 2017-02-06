@@ -16,6 +16,7 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include "FWCore/Common/interface/TriggerNames.h"
@@ -143,6 +144,9 @@ class TriggerMatcher:
 };
 
 typedef TriggerMatcher<pat::Muon> TriggerMatcherMuons;
+typedef TriggerMatcher<pat::Electron> TriggerMatcherElectrons;
 
 DEFINE_FWK_MODULE (TriggerMatcherMuons);
+DEFINE_FWK_MODULE (TriggerMatcherElectrons);
+
 
