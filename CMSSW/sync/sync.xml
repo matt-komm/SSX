@@ -428,9 +428,9 @@ False    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[10:12:55]]>      </entry>
       <entry name="xPos"  type="double" >
-598      </entry>
+1107      </entry>
       <entry name="yPos"  type="double" >
-289      </entry>
+152      </entry>
     </userrecords>
   </module>
   <module name="PyModule9"  type="PyModule"  isEnabled="true" >
@@ -443,16 +443,16 @@ False    </option>
     <option name="class"  type="string" >
 <![CDATA[]]>    </option>
     <option name="ids"  type="string_vector" >
-<![CDATA[("20359415","21631772","329192995","329895560","330137477")]]>    </option>
+<![CDATA[("1015192834")]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[10:12:55]]>      </entry>
       <entry name="xPos"  type="double" >
-415      </entry>
+923      </entry>
       <entry name="yPos"  type="double" >
-273      </entry>
+136      </entry>
     </userrecords>
   </module>
   <connection>
@@ -528,12 +528,6 @@ False    </option>
     </sink>
   </connection>
   <connection>
-    <source module="NeutrinoPz1"  name="output" >
-    </source>
-    <sink module="PyDecide1"  name="in" >
-    </sink>
-  </connection>
-  <connection>
     <source module="PyDecide1"  name="yes" >
     </source>
     <sink module="PyModule8"  name="in" >
@@ -554,19 +548,25 @@ False    </option>
   <connection>
     <source module="PyModule4"  name="out" >
     </source>
+    <sink module="ElectronVeto1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="NeutrinoPz1"  name="output" >
+    </source>
     <sink module="PyModule9"  name="in" >
     </sink>
   </connection>
   <connection>
     <source module="File Output1"  name="out" >
     </source>
-    <sink module="ElectronVeto1"  name="input" >
+    <sink module="PyDecide1"  name="in" >
     </sink>
   </connection>
   <connection>
     <source module="PyModule9"  name="veto" >
     </source>
-    <sink module="ElectronVeto1"  name="input" >
+    <sink module="PyDecide1"  name="in" >
     </sink>
   </connection>
   <userrecords>
@@ -575,6 +575,6 @@ False    </option>
     <entry name="Modification date"  type="string" >
 <![CDATA[2017-02-01]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[13:57:44]]>    </entry>
+<![CDATA[15:01:57]]>    </entry>
   </userrecords>
 </analysis>

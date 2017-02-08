@@ -5,6 +5,8 @@
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
+#include "FWCore/Framework/interface/one/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -20,7 +22,7 @@
 #include "TH3F.h"
 
 class EventInfoCollector:
-    public edm::EDAnalyzer
+    public edm::one::EDAnalyzer<>
 {
     private:    
         edm::Service<TFileService> fs;
