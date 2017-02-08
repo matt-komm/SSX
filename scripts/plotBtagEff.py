@@ -422,6 +422,7 @@ processNames = [
     "ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
     "ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
     "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",
+    "WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
     "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
     "DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
 ]
@@ -465,10 +466,14 @@ for ifile,inputFile in enumerate(inputFiles):
         for workingpoint in workingpoints:
             hists[flavor][workingpoint]={}
             for process in processNames:
-                print "\t",flavor,workingpoint,process
+                print "\t",flavor,workingpoint,process,
             
                 taggedHistName = "tagged"+"__"+flavor+"__"+workingpoint+"__"+process
                 taggedHist = rootFile.Get(taggedHistName)
+                if taggedHist==None:
+                    print "missing"
+                    continue
+                print
                 taggedHist.SetDirectory(0)
                 
                 rebinnedTagged = rebinHist2D(taggedHist,

@@ -111,10 +111,10 @@ xsecDB = {
     "DY3JetsToLL_M-50": 96.0, #from HIG-16-017
     "DY4JetsToLL_M-50": 51.0, #from HIG-16-017
     
-    "QCD_Pt-20toInf_MuEnrichedPt15": 866600000 * 0.00044,
+    "QCD_Pt-20toInf_MuEnrichedPt15": 720648000 * 0.00042,
     
     "QCD_Pt-15to20_MuEnrichedPt5":1273190000*0.003,  #LO MadGraph from MCM
-    "QCD_Pt-20to30_MuEnrichedPt5":558528000*0053,  #LO MadGraph from MCM
+    "QCD_Pt-20to30_MuEnrichedPt5":558528000*0.0053,  #LO MadGraph from MCM
     "QCD_Pt-30to50_MuEnrichedPt5":139803000*0.01182,  #LO MadGraph from MCM
     "QCD_Pt-50to80_MuEnrichedPt5":19222500*0.02276,  #LO MadGraph from MCM
     "QCD_Pt-80to120_MuEnrichedPt5":2758420*0.03844,  #LO MadGraph from MCM

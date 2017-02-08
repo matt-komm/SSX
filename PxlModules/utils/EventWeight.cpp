@@ -173,7 +173,7 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
         new SimpleWeightInfo(
             //total=31475157.0 eff=31475157.0 - 0.0 = 31475157.0
             31475157.0,
-            24016704000 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
+            2960198.4 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
         )
     },
     {"QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
@@ -417,7 +417,7 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80XwithHLT = {
         new SimpleWeightInfo(
             //total=31475157.0 eff=31475157.0 - 0.0 = 31475157.0
             31475157.0,
-            24016704000 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
+            2960198.4 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
         )
     },
     {"QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
