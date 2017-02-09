@@ -329,7 +329,14 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
             998034.0,
             16.523 // xsec for process 'ZZ'
         )
-    }
+    },
+    {"bTag_B2bX_t_13TeV",
+        new SimpleWeightInfo(
+            //total=21000.0 eff=21000.0 - 0.0 = 21000.0
+            21000.0,
+            0.130 //WARNING, xsec not found
+        )
+    },
 };
 
 
@@ -573,7 +580,14 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80XwithHLT = {
             998034.0,
             16.523 // xsec for process 'ZZ'
         )
-    }
+    },
+    {"bTag_B2bX_t_13TeV",
+        new SimpleWeightInfo(
+            //total=21000.0 eff=21000.0 - 0.0 = 21000.0
+            21000.0,
+            0.130 //WARNING, xsec not found
+        )
+    },
 };
 
 const std::unordered_map<std::string,const std::unordered_map<std::string,WeightInfo*>> _eventWeightsPerEra =
