@@ -70,6 +70,23 @@ class WeightPerPartonInfo:
         }
 };
 
+const std::unordered_map<std::string,WeightInfo*> eventWeights80XPL = {
+    {"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
+        new SimpleWeightInfo(
+            //total=38409719.0 eff=38409719.0 - 0.0 = 38409719.0
+            38409719.0,
+            80.95 // xsec for process 'ST_t-channel_antitop_4f'
+        )
+    },
+    {"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
+        new SimpleWeightInfo(
+            //total=67026664.0 eff=67026664.0 - 0.0 = 67026664.0
+            67026664.0,
+            136.02 // xsec for process 'ST_t-channel_top_4f'
+        )
+    }
+};
+
 const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
     {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
         new SimpleWeightInfo(
@@ -593,7 +610,8 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80XwithHLT = {
 const std::unordered_map<std::string,const std::unordered_map<std::string,WeightInfo*>> _eventWeightsPerEra =
 {
     {"80XwithHLT",eventWeights80XwithHLT},
-    {"80Xexcl",eventWeights80Xexcl}
+    {"80Xexcl",eventWeights80Xexcl},
+    {"80XPL",eventWeights80XPL}
 };
 
 class EventWeight:

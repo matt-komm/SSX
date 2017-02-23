@@ -227,6 +227,8 @@ if __name__=="__main__":
         for fileInput in fileInputModules:
             fileInput["module"].setOption(fileInput["option"],fileInput["files_partioned"][n])
         for fileOutput in fileOutputModules:
+            if len(fileOutput["file"])==0:
+                raise Exception("Output name for module '"+fileOutput["module"].getName()+"' is empty")
             fileOutput["module"].setOption(fileOutput["option"],createPartionedFileName(fileOutput["file"],n))
         exporters=pxl.xml.AnalysisXmlExport()
         analysisFileName=os.path.join(outputFolder,createPartionedFileName(args[0],n))
