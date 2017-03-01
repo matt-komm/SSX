@@ -5,7 +5,7 @@
     <option name="end"  type="long" >
 -1    </option>
     <option name="File names"  type="string_vector" >
-<![CDATA[("SingleMu_RunB.pxlio")]]>    </option>
+<![CDATA[("tchannel.pxlio")]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
@@ -384,9 +384,9 @@ False    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[10:12:55]]>      </entry>
       <entry name="xPos"  type="double" >
-997      </entry>
+1332      </entry>
       <entry name="yPos"  type="double" >
-267      </entry>
+313      </entry>
     </userrecords>
   </module>
   <module name="PyModule8"  type="PyModule"  isEnabled="true" >
@@ -408,9 +408,9 @@ False    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[10:12:55]]>      </entry>
       <entry name="xPos"  type="double" >
-1158      </entry>
+1493      </entry>
       <entry name="yPos"  type="double" >
-283      </entry>
+329      </entry>
     </userrecords>
   </module>
   <module name="File Output1"  type="File Output"  isEnabled="true" >
@@ -428,9 +428,9 @@ False    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[10:12:55]]>      </entry>
       <entry name="xPos"  type="double" >
-1107      </entry>
+1108      </entry>
       <entry name="yPos"  type="double" >
-152      </entry>
+153      </entry>
     </userrecords>
   </module>
   <module name="PyModule9"  type="PyModule"  isEnabled="true" >
@@ -443,7 +443,7 @@ False    </option>
     <option name="class"  type="string" >
 <![CDATA[]]>    </option>
     <option name="ids"  type="string_vector" >
-<![CDATA[("1015192834")]]>    </option>
+<![CDATA[("18233359")]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
@@ -510,12 +510,6 @@ False    </option>
     </sink>
   </connection>
   <connection>
-    <source module="PyModule6"  name="out" >
-    </source>
-    <sink module="BTagSelection1"  name="input" >
-    </sink>
-  </connection>
-  <connection>
     <source module="BTagSelection1"  name="1 b-Tags" >
     </source>
     <sink module="PyModule7"  name="in" >
@@ -552,19 +546,25 @@ False    </option>
     </sink>
   </connection>
   <connection>
-    <source module="NeutrinoPz1"  name="output" >
+    <source module="PyModule6"  name="out" >
     </source>
     <sink module="PyModule9"  name="in" >
     </sink>
   </connection>
   <connection>
-    <source module="File Output1"  name="out" >
+    <source module="PyModule9"  name="veto" >
     </source>
-    <sink module="PyDecide1"  name="in" >
+    <sink module="BTagSelection1"  name="input" >
     </sink>
   </connection>
   <connection>
-    <source module="PyModule9"  name="veto" >
+    <source module="File Output1"  name="out" >
+    </source>
+    <sink module="BTagSelection1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="NeutrinoPz1"  name="output" >
     </source>
     <sink module="PyDecide1"  name="in" >
     </sink>
@@ -573,8 +573,8 @@ False    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2017-02-01]]>    </entry>
+<![CDATA[2017-02-23]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[15:01:57]]>    </entry>
+<![CDATA[17:53:41]]>    </entry>
   </userrecords>
 </analysis>

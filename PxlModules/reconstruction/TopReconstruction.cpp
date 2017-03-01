@@ -475,6 +475,16 @@ class TopReconstruction:
             if (bjet and lightjet)
             {
                 makeCMSystem(eventView,"Dijet",{bjet,lightjet});
+                eventView->setUserRecord("dijet_pull_angle",(
+                    bjet->getUserRecord("pullY").toFloat()*lightjet->getUserRecord("pullY").toFloat()
+                    +bjet->getUserRecord("pullPhi").toFloat()*lightjet->getUserRecord("pullPhi").toFloat())/
+                    std::sqrt((
+                        bjet->getUserRecord("pullY").toFloat()*bjet->getUserRecord("pullY").toFloat()+
+                        bjet->getUserRecord("pullPhi").toFloat()*bjet->getUserRecord("pullPhi").toFloat()
+                    )*(lightjet->getUserRecord("pullY").toFloat()*lightjet->getUserRecord("pullY").toFloat()+
+                       lightjet->getUserRecord("pullPhi").toFloat()*lightjet->getUserRecord("pullPhi").toFloat()
+                    ))
+                );
                 makeCMSystem(eventView,"Shat",{bjet,lightjet,lepton,neutrino});
             }
             

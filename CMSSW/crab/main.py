@@ -60,6 +60,7 @@ if __name__=="__main__":
     config.JobType.maxJobRuntimeMin=10*60
 
     config.Data.inputDBS = 'global'
+    #config.Data.inputDBS = 'phys03
     if isMC:
         config.Data.splitting = 'FileBased'
         config.Data.unitsPerJob = 6
@@ -154,6 +155,8 @@ if __name__=="__main__":
     ]
     
     mc80Xv2Moriond = [
+        #"/bTag_B2bX_t_13TeV/zichen-B2bX_13TeV_step3-8ce03fc302488195777eb8e1e985030a/USER",
+    
         "/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
         "/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
         
@@ -192,7 +195,9 @@ if __name__=="__main__":
         
         "/WToLNu_0J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
         "/WToLNu_1J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
-        "/WToLNu_2J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",    
+        "/WToLNu_2J_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM", 
+        
+         
         
         
         
@@ -212,6 +217,8 @@ if __name__=="__main__":
         "/WW_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
         "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
         "/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+        
+        
         
     ]
     
@@ -242,7 +249,7 @@ if __name__=="__main__":
     if dataset.split("/")[2].find("_ext")!=-1:
         processName+="_ext"
 
-    jobName = processName+'_v170126'
+    jobName = processName+'_v170213'
     
     print "submitting... ",jobName
     
@@ -256,7 +263,7 @@ if __name__=="__main__":
         if isMC:
             if processName.find("ST_t-channel")>=0:
                 config.JobType.pyCfgParams=['processName='+processName,'addPL=True','noFilter=True']
-                config.Data.unitsPerJob/=2
+                config.Data.unitsPerJob/=3
             else:
                 config.JobType.pyCfgParams=['processName='+processName,'onlyFiltered=True']
         else:
