@@ -29,7 +29,7 @@ def getlog(task,*args,**kwargs):
     except HTTPException, hte:
         print hte.headers   
         
-isMC = True    
+isMC = False    
 
 if __name__=="__main__":
 
@@ -249,7 +249,7 @@ if __name__=="__main__":
     if dataset.split("/")[2].find("_ext")!=-1:
         processName+="_ext"
 
-    jobName = processName+'_v170213'
+    jobName = processName+'_v170303'
     
     print "submitting... ",jobName
     
@@ -267,9 +267,12 @@ if __name__=="__main__":
             else:
                 config.JobType.pyCfgParams=['processName='+processName,'onlyFiltered=True']
         else:
-            config.JobType.pyCfgParams=['processName='+processName,'isData=True','isReRecoData=True','onlyFiltered=True']
-        
-        
+            if processName.find("PromptReco")>=0:
+                config.JobType.pyCfgParams=['processName='+processName,'isData=True','isReRecoData=False','onlyFiltered=True']  
+            else:
+                config.JobType.pyCfgParams=['processName='+processName,'isData=True','isReRecoData=True','onlyFiltered=True']  
+            
+            
         config.Data.outLFNDirBase='/store/user/mkomm/'+config.General.requestName+"/"+jobName
         
         #print config.JobType.pyCfgParams

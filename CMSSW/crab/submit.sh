@@ -1,8 +1,8 @@
 #!/bin/bash
-for i in {0..36};
+for i in {1..36};
     do
     echo
-    #sleep 2s
+    sleep 2s
     #echo $i
     python crab/main.py $i
     done
