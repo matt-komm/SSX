@@ -46,7 +46,7 @@ class MuonVeto:
             _cleanEvent(true),
 
             _pTminLooseMuon(10),
-            _etamaxLooseMuon(2.5),
+            _etamaxLooseMuon(2.4),
             _pfRelIsoCorDbLooseMuon(0.2),
             _pfRelIsoCorDbBetaLooseMuon(0.5)
 

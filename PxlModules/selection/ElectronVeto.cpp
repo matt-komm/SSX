@@ -34,11 +34,11 @@ class ElectronVeto:
             _inputElectronName("Electron"),
             _looseElectronName("LooseElectron"),
             
-            _idString("spring15eleIDVeto25ns"),
+            _idString("summer16eleIDVeto25ns"),
             
             _cleanEvent(true),
 
-            _pTMinLooseElectron(20),
+            _pTMinLooseElectron(15),
             _etaMaxLooseElectron(2.5)
 
         {

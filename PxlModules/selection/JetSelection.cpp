@@ -57,12 +57,12 @@ class JetSelection:
             _etaMaxJet(4.7),
 
             _dRInvert(false),
-            _dR(0.3),
+            _dR(0.4),
             _dRObjects({"TightLepton","TightMuon","TightElectron"}),
             /*Initial Values taken from TOP JetMET Analysis (Run2) */
             /*https://twiki.cern.ch/twiki/bin/view/CMS/TopJME#General_Information */
             
-            _nLeadingJetsToStore(2)
+            _nLeadingJetsToStore(0)
         {
             addSink("input", "input");
             
