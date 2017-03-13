@@ -20,9 +20,9 @@ class ElectronSelection:
     public pxl::Module
 {
     private:
-        pxl::Source* _outputIsoSource;
-        pxl::Source* _outputMidIsoSource;
-        pxl::Source* _outputAntiIsoSource;
+        pxl::Source* _outputTightSource;
+        pxl::Source* _outputVetoSource;
+        pxl::Source* _outputAntivetoSource;
         pxl::Source* _outputOtherSource;
 
         std::string _inputEventViewName;
@@ -32,9 +32,10 @@ class ElectronSelection:
         /*Tight Electron Related Criteria*/
         double _pTMinTightElectron;  //Minimum transverse momentum
         double _etaMaxTightElectron; //Maximum pseudorapidity
-        double _pfRelRelIsoTightElectron; //relIso relative to tight WP
-        double _pfRelRelMidIsoTightElectron; //relIso relative to tight WP
 
+        std::string _hltPreselectionString;
+        std::string _tightIdString;
+        std::string _vetoIdString;
       
         int64_t _numElectrons;
         
@@ -55,18 +56,20 @@ class ElectronSelection:
             _inputElectronName("Electron"),
             _tightElectronName("TightLepton"),
 
-            _pTMinTightElectron(24),
-            _etaMaxTightElectron(2.4),
-            _pfRelRelIsoTightElectron(1.0),
-            _pfRelRelMidIsoTightElectron(2.0),
+            _pTMinTightElectron(35),
+            _etaMaxTightElectron(2.1),
+            
+            _hltPreselectionString(""),
+            _tightIdString("summer16eleIDTight25ns"),
+            _vetoIdString("summer16eleIDVeto25ns"),
             
             _numElectrons(1)
 
         {
             addSink("input", "input");
-            _outputIsoSource = addSource("1 iso ele", "iso");
-            _outputMidIsoSource = addSource("1 mid-iso ele", "mid-iso");
-            _outputAntiIsoSource = addSource("1 anti-iso ele", "anti-iso");
+            _outputTightSource = addSource("1 tight ele", "tight");
+            _outputVetoSource = addSource("1 veto ele", "veto");
+            _outputAntivetoSource = addSource("1 antiveto ele", "antiveto");
             _outputOtherSource = addSource("other", "other");
 
             addOption("Event view","name of the event view where electrons are selected",_inputEventViewName);
@@ -75,8 +78,11 @@ class ElectronSelection:
 
             addOption("TightElectron Minimum pT","",_pTMinTightElectron);
             addOption("TightElectron Maximum Eta","",_etaMaxTightElectron);
-            addOption("TightElectron Minimum Rel Relative Iso","",_pfRelRelIsoTightElectron);
-            addOption("TightElectron Minimum Rel Relative MidIso","",_pfRelRelMidIsoTightElectron);
+            
+            addOption("HLT ID","",_hltPreselectionString),
+            addOption("tight ID","",_tightIdString),
+            addOption("veto ID","",_vetoIdString),
+ 
         
             addOption("number of electrons","",_numElectrons);
         }
@@ -116,24 +122,19 @@ class ElectronSelection:
 
             getOption("TightElectron Minimum pT",_pTMinTightElectron);
             getOption("TightElectron Maximum Eta",_etaMaxTightElectron);
-            getOption("TightElectron Minimum Rel Relative Iso",_pfRelRelIsoTightElectron);
-            getOption("TightElectron Minimum Rel Relative MidIso",_pfRelRelMidIsoTightElectron);
+            
+            getOption("HLT ID",_hltPreselectionString),
+            getOption("tight ID",_tightIdString),
+            getOption("veto ID",_vetoIdString),
         
             getOption("number of electrons",_numElectrons);
 
         }
-
+        
         bool passesTightCriteria(pxl::Particle* particle)
         {
-            if (not (particle->getPt()>_pTMinTightElectron))
-            {
-                return false;
-            }
-            if (not (fabs(particle->getEta())<_etaMaxTightElectron))
-            {
-                return false;
-            }
-            
+            return particle->getUserRecord(_tightIdString).toBool();
+            /*
             if (std::fabs(particle->getUserRecord("superClusterEta").toFloat())<1.479)
             {
                 if (not (particle->getUserRecord("full5x5_sigmaIetaIeta").toFloat()<0.00998))
@@ -212,7 +213,33 @@ class ElectronSelection:
                     return false;
                 }
             }
-            
+            */
+        }
+        
+        bool passesVetoCriteria(pxl::Particle* particle)
+        {
+            return particle->getUserRecord(_vetoIdString).toBool();
+        }
+        
+        
+
+        bool passesSelectionCriteria(pxl::Particle* particle)
+        {
+            if (not (particle->getPt()>_pTMinTightElectron))
+            {
+                return false;
+            }
+            if (not (fabs(particle->getEta())<_etaMaxTightElectron))
+            {
+                return false;
+            }
+            if (_hltPreselectionString.size()>0)
+            {
+                if (not particle->getUserRecord(_hltPreselectionString).toBool())
+                {
+                    return false;
+                }
+            }
             
             return true;
         }
@@ -229,9 +256,9 @@ class ElectronSelection:
                     
                     pxl::EventView* eventView = nullptr;
                     
-                    std::vector<pxl::Particle*> tightIsoEles;
-                    std::vector<pxl::Particle*> tightMidIsoEles;
-                    std::vector<pxl::Particle*> tightAntiIsoEles;
+                    std::vector<pxl::Particle*> tightEles;
+                    std::vector<pxl::Particle*> vetoEles;
+                    std::vector<pxl::Particle*> antivetoEles;
 
                     for (unsigned ieventView=0; ieventView<eventViews.size();++ieventView)
                     {
@@ -247,24 +274,19 @@ class ElectronSelection:
 
                                 if (particle->getName()==_inputElectronName)
                                 {
-                                    const float relrelIso = pfRelRelElectronIso(particle,0.0588,0.0571);
-                                    particle->setUserRecord("relrelIso",relrelIso);
-                                    if (passesTightCriteria(particle))
+                                    if (passesSelectionCriteria(particle))
                                     {
-                                        if (relrelIso<_pfRelRelIsoTightElectron)
+                                        if (passesTightCriteria(particle))
                                         {
-                                            //highly isolated electrons
-                                            tightIsoEles.push_back(particle);
+                                            tightEles.push_back(particle);
                                         }
-                                        else if (relrelIso>_pfRelRelIsoTightElectron && relrelIso<_pfRelRelMidIsoTightElectron)
+                                        else if (passesVetoCriteria(particle))
                                         {
-                                            //intermediate isolated electrons
-                                            tightMidIsoEles.push_back(particle);
+                                            vetoEles.push_back(particle);
                                         }
                                         else
                                         {
-                                            //non-isolated electrons
-                                            tightAntiIsoEles.push_back(particle);
+                                            antivetoEles.push_back(particle);
                                         }
                                     }
                                 }
@@ -272,56 +294,56 @@ class ElectronSelection:
                             break;
                         }
                     }
-                    std::sort(tightIsoEles.begin(),tightIsoEles.end(),ElectronSelection::SortByPt());
-                    std::sort(tightMidIsoEles.begin(),tightMidIsoEles.end(),ElectronSelection::SortByPt());
-                    std::sort(tightAntiIsoEles.begin(),tightAntiIsoEles.end(),ElectronSelection::SortByPt());
+                    std::sort(tightEles.begin(),tightEles.end(),ElectronSelection::SortByPt());
+                    std::sort(vetoEles.begin(),vetoEles.end(),ElectronSelection::SortByPt());
+                    std::sort(antivetoEles.begin(),antivetoEles.end(),ElectronSelection::SortByPt());
                     
-                    //0=iso, 1=midiso, 2=looseiso, 3=other
+                    //0=tight, 1=veto, 2=antiveto, 3=other
                     
-                    //N highly iso ele only
-                    if (tightIsoEles.size()==_numElectrons)
+                    //N tight ele only
+                    if (tightEles.size()==_numElectrons)
                     {
-                        for (pxl::Particle* p: tightIsoEles)
+                        for (pxl::Particle* p: tightEles)
                         {
                             p->setName(_tightElectronName);
                         }
                         eventView->setUserRecord("elecat",0);
-                        _outputIsoSource->setTargets(event);
-                        return _outputIsoSource->processTargets();
+                        _outputTightSource->setTargets(event);
+                        return _outputTightSource->processTargets();
                     }
-                    //<N highly iso ele, rest intermediate iso eles
-                    else if (tightIsoEles.size()<_numElectrons && (tightIsoEles.size()+tightMidIsoEles.size())==_numElectrons)
+                    //<N tight ele, rest veto eles
+                    else if (tightEles.size()<_numElectrons && (tightEles.size()+vetoEles.size())==_numElectrons)
                     {
-                        for (pxl::Particle* p: tightIsoEles)
+                        for (pxl::Particle* p: tightEles)
                         {
                             p->setName(_tightElectronName);
                         }
-                        for (pxl::Particle* p: tightMidIsoEles)
+                        for (pxl::Particle* p: vetoEles)
                         {
                             p->setName(_tightElectronName);
                         }
                         eventView->setUserRecord("elecat",1);
-                        _outputMidIsoSource->setTargets(event);
-                        return _outputMidIsoSource->processTargets();
+                        _outputVetoSource->setTargets(event);
+                        return _outputVetoSource->processTargets();
                     }
-                    //<N highly iso ele, <N intermediate iso eles, rest non-iso ele
-                    else if (tightIsoEles.size()<_numElectrons && tightMidIsoEles.size()<_numElectrons && (tightIsoEles.size()+tightMidIsoEles.size()+tightAntiIsoEles.size())==_numElectrons)
+                    //<N tight ele, <N veto eles, rest antiveto ele
+                    else if (tightEles.size()<_numElectrons && vetoEles.size()<_numElectrons && (tightEles.size()+vetoEles.size()+antivetoEles.size())==_numElectrons)
                     {
-                        for (pxl::Particle* p: tightIsoEles)
+                        for (pxl::Particle* p: tightEles)
                         {
                             p->setName(_tightElectronName);
                         }
-                        for (pxl::Particle* p: tightMidIsoEles)
+                        for (pxl::Particle* p: vetoEles)
                         {
                             p->setName(_tightElectronName);
                         }
-                        for (pxl::Particle* p: tightAntiIsoEles)
+                        for (pxl::Particle* p: antivetoEles)
                         {
                             p->setName(_tightElectronName);
                         }
                         eventView->setUserRecord("elecat",2);
-                        _outputAntiIsoSource->setTargets(event);
-                        return _outputAntiIsoSource->processTargets();
+                        _outputAntivetoSource->setTargets(event);
+                        return _outputAntivetoSource->processTargets();
                     }
                     else
                     {
