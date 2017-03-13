@@ -129,8 +129,8 @@ ROOT.gStyle.SetTitleSize(32, "XYZ")
 # ROOT.gStyle.SetTitleYSize(Float_t size = 0.02)
 ROOT.gStyle.SetTitleXOffset(1.135)
 #ROOT.gStyle.SetTitleYOffset(1.2)
-ROOT.gStyle.SetTitleOffset(1.32, "YZ") # Another way to set the Offset
-
+ROOT.gStyle.SetTitleOffset(1.3, "Y") # Another way to set the Offset
+ROOT.gStyle.SetTitleOffset(1.15, "Z")
 # For the axis labels:
 
 ROOT.gStyle.SetLabelColor(1, "XYZ")
@@ -183,7 +183,7 @@ ROOT.gStyle.SetLineScalePS(2)
 # ROOT.gStyle.SetTimeOffset(Double_t toffset)
 # ROOT.gStyle.SetHistMinimumZero(kTRUE)
 
-ROOT.gStyle.SetPaintTextFormat("4.1f")
+ROOT.gStyle.SetPaintTextFormat("4.0f")
 ROOT.gStyle.SetPalette(1)
 #ROOT.gStyle.SetPaintTextFormat("7.4f")
 
@@ -354,7 +354,7 @@ def drawGraph(graphs,varName,titles,yAxis="",maxEff=1.0):
 
     
 
-    legend.Draw("Same")
+    #legend.Draw("Same")
         
     pSample=ROOT.TPaveText(cv.GetLeftMargin()+0.025,0.94,cv.GetLeftMargin()+0.025,0.94,"NDC")
     pSample.SetFillColor(ROOT.kWhite)
@@ -387,7 +387,7 @@ def drawGraph(graphs,varName,titles,yAxis="",maxEff=1.0):
     
     
 
-    legend.Draw("Same")
+    #legend.Draw("Same")
 
     cv.Update()
 
@@ -453,7 +453,8 @@ workingpoints = [
 
 hists={}
 
-ptbinning = numpy.array([20.0,30.0,40.0,55.0,110,150,220,320,450,600])
+#ptbinning = numpy.array([20.0,30.0,40.0,55.0,110,150,220,320,450,600])
+ptbinning = numpy.array([40.0,55.0,110,150,220,320,450,600])
 etabinning = numpy.array([0.0,0.2,0.7,1.4,2.0,2.2,2.3,2.5])
 
 
@@ -504,13 +505,13 @@ for flavor in flavors:
     for workingpoint in workingpoints: 
         eff = getEfficiency2D(hists[flavor][workingpoint]["tagged"],hists[flavor][workingpoint]["true"])
         eff.SetMarkerColor(ROOT.kBlack)
-        eff.SetMarkerSize(1.25)
+        eff.SetMarkerSize(1.5)
         
         eff.SetDirectory(outputFile)
         eff.SetName(flavor+"__"+workingpoint)
         eff.Write()
         
-        cv = ROOT.TCanvas("cv_dist"+str(random.random()),"",800,600)
+        cv = ROOT.TCanvas("cv_dist"+str(random.random()),"",800,650)
         cv.SetPad(0.0, 0.0, 1.0, 1.0)
         cv.SetFillStyle(4000)
 
@@ -531,9 +532,9 @@ for flavor in flavors:
 
         # Margins:
         cv.SetLeftMargin(0.14)
-        cv.SetRightMargin(0.205)
-        cv.SetTopMargin(0.08)
-        cv.SetBottomMargin(0.135)
+        cv.SetRightMargin(0.175)
+        cv.SetTopMargin(0.07)
+        cv.SetBottomMargin(0.125)
 
         # For the Global title:
         cv.SetTitle("")
@@ -543,7 +544,7 @@ for flavor in flavors:
         cv.SetTicky(1)
         
         
-        axis=ROOT.TH2F("axis"+str(random.random()),";|#eta|;p_{T}",50,etabinning[0],etabinning[-1],50,ptbinning[0],ptbinning[-1])
+        axis=ROOT.TH2F("axis"+str(random.random()),";|#eta|;p_{T} (GeV)",50,etabinning[0],etabinning[-1],50,ptbinning[0],ptbinning[-1])
         axis.GetYaxis().SetNdivisions(508)
         axis.GetXaxis().SetNdivisions(508)
         axis.GetXaxis().SetTickLength(0.015/(1-cv.GetLeftMargin()-cv.GetRightMargin()))
@@ -551,12 +552,16 @@ for flavor in flavors:
         axis.GetYaxis().SetNoExponent(True)
         
         
-        #axis.GetZaxis().SetTitle("efficiency")
+
         axis.Draw("AXIS")
         
         eff.Scale(100.0)
         
         eff.Draw("Same colztext")
+        
+        #eff.GetZaxis().SetRangeUser(0,60)
+        #axis.GetZaxis().SetTitle("efficiency %")
+        eff.GetZaxis().SetTitle("efficiency (%)")
         
         '''
         if flavor=="b":

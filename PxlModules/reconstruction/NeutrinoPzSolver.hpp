@@ -77,12 +77,13 @@ std::vector< T > const EquationSolve(const T & a, const T & b,const T & c,const 
       return result;
 }
 
-math::XYZTLorentzVector NuMomentum(float leptonPx, float leptonPy, float leptonPz, float leptonPt, float leptonE, float metPx, float metPy )
+std::pair<math::XYZTLorentzVector,math::XYZTLorentzVector> NuMomentum(float leptonPx, float leptonPy, float leptonPz, float leptonPt, float leptonE, float metPx, float metPy )
 {
 
     double  mW = 80.399;
 
-    math::XYZTLorentzVector result;
+    math::XYZTLorentzVector result(0,0,0,0);
+    math::XYZTLorentzVector result2(0,0,0,0);
 
     //  double Wmt = sqrt(pow(Lepton.et()+MET.pt(),2) - pow(Lepton.px()+metPx,2) - pow(leptonPy+metPy,2) );
 
@@ -91,11 +92,10 @@ math::XYZTLorentzVector NuMomentum(float leptonPx, float leptonPy, float leptonP
     double a  = (mu * leptonPz) / (leptonE * leptonE - leptonPz * leptonPz);
     double a2 = TMath::Power(a, 2);
     double b  = (TMath::Power(leptonE, 2.) * (MisET2) - TMath::Power(mu, 2.)) / (TMath::Power(leptonE, 2) - TMath::Power(leptonPz, 2));
-    double pz1(0), pz2(0), pznu(0);
+    double pz1(0), pz2(0), pznu(0), pznu2(0);
     int nNuSol(0);
     if(nNuSol);
 
-    math::XYZTLorentzVector p4nu_rec;
     math::XYZTLorentzVector p4W_rec;
     math::XYZTLorentzVector p4b_rec;
     math::XYZTLorentzVector p4Top_rec;
@@ -121,16 +121,21 @@ math::XYZTLorentzVector NuMomentum(float leptonPx, float leptonPy, float leptonP
         //    if(usePzMinusSolutions_)pznu = pz2;
         //if(usePzAbsValMinimumSolutions_){
         pznu = pz1;
-        if (fabs(pz1) > fabs(pz2)) pznu = pz2;
+        pznu2 = pz2;
+        if (fabs(pz1) > fabs(pz2))
+        {
+            pznu = pz2;
+            pznu2 = pz1;
+        }
         //}
 
 
         double Enu = sqrt(MisET2 + pznu * pznu);
+        double Enu2 = sqrt(MisET2 + pznu2 * pznu2);
 
-        p4nu_rec.SetPxPyPzE(metPx, metPy, pznu, Enu);
-
-        //    result =.push_back(p4nu_rec);
-        result = p4nu_rec;
+        result.SetPxPyPzE(metPx, metPy, pznu, Enu);
+        result2.SetPxPyPzE(metPx, metPy, pznu2, Enu2);
+ 
 
     }
     else
@@ -204,7 +209,7 @@ math::XYZTLorentzVector NuMomentum(float leptonPx, float leptonPy, float leptonP
         double pyZeroValue = ( mW * mW * pxlep + 2 * pxlep * pylep * zeroValue);
         double delta2ZeroValue = (zeroValue - metpx) * (zeroValue - metpx) + (pyZeroValue - metpy) * (pyZeroValue - metpy);
 
-        if (deltaMin == 14000 * 14000)return result;
+        if (deltaMin == 14000 * 14000)return std::make_pair(result,result2);
         //    else std:://cout << " test " << std::endl;
 
         if (delta2ZeroValue < deltaMin)
@@ -223,7 +228,7 @@ math::XYZTLorentzVector NuMomentum(float leptonPx, float leptonPy, float leptonP
 
         //if(!useMetForNegativeSolutions_){
         double Enu = sqrt(minPx * minPx + minPy * minPy + pznu * pznu);
-        p4nu_rec.SetPxPyPzE(minPx, minPy, pznu , Enu);
+        result.SetPxPyPzE(minPx, minPy, pznu , Enu);
 
         //    }
         //    else{
@@ -233,9 +238,8 @@ math::XYZTLorentzVector NuMomentum(float leptonPx, float leptonPy, float leptonP
         //    }
 
         //      result.push_back(p4nu_rec);
-        result = p4nu_rec;
     }
-    return result;
+    return std::make_pair(result,result2);
 }
 
 

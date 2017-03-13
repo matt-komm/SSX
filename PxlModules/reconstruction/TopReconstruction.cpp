@@ -6,6 +6,7 @@
 #include "pxl/modules/ModuleFactory.hh"
 
 #include "angles.h"
+#include "vdtMath.h"
 
 #include <algorithm>
 #include <cmath>
@@ -249,7 +250,7 @@ class TopReconstruction:
                         minDR=std::min(minDR,deltaR);
                         maxDR=std::max(maxDR,deltaR);
                         
-                        const float deltaPhi = p1->getVector().deltaPhi(&(p2->getVector()));
+                        const float deltaPhi = fabs(p1->getVector().deltaPhi(&(p2->getVector())));
                         minDPhi=std::min(minDPhi,deltaPhi);
                         maxDPhi=std::max(maxDPhi,deltaPhi);
                     }
@@ -471,21 +472,32 @@ class TopReconstruction:
                 eventView->setUserRecord(lepton->getName()+"_"+lightjet->getName()+"_dPhi",std::fabs(lepton->getVector().deltaPhi(&lightjet->getVector())));
                 eventView->setUserRecord(lepton->getName()+"_"+lightjet->getName()+"_dEta",std::fabs(lepton->getVector().deltaEta(&lightjet->getVector())));
                 eventView->setUserRecord(lepton->getName()+"_"+lightjet->getName()+"_dR",lepton->getVector().deltaR(&lightjet->getVector()));
+            
+                makeCMSystem(eventView,"Shat",{bjet,lightjet,lepton,neutrino});
             }
             if (bjet and lightjet)
             {
                 makeCMSystem(eventView,"Dijet",{bjet,lightjet});
-                eventView->setUserRecord("dijet_pull_angle",(
-                    bjet->getUserRecord("pullY").toFloat()*lightjet->getUserRecord("pullY").toFloat()
-                    +bjet->getUserRecord("pullPhi").toFloat()*lightjet->getUserRecord("pullPhi").toFloat())/
-                    std::sqrt((
-                        bjet->getUserRecord("pullY").toFloat()*bjet->getUserRecord("pullY").toFloat()+
-                        bjet->getUserRecord("pullPhi").toFloat()*bjet->getUserRecord("pullPhi").toFloat()
-                    )*(lightjet->getUserRecord("pullY").toFloat()*lightjet->getUserRecord("pullY").toFloat()+
-                       lightjet->getUserRecord("pullPhi").toFloat()*lightjet->getUserRecord("pullPhi").toFloat()
-                    ))
+                
+                const double bPt = bjet->getPt();
+                pxl::Basic3Vector bpull(
+                    bPt*vdt::fast_cos(bjet->getPhi()+bjet->getUserRecord("pullPhi").toFloat()),
+                    bPt*vdt::fast_sin(bjet->getPhi()+bjet->getUserRecord("pullPhi").toFloat()),
+                    bPt*std::cosh(bjet->getEta()+bjet->getUserRecord("pullY").toFloat())
                 );
-                makeCMSystem(eventView,"Shat",{bjet,lightjet,lepton,neutrino});
+                
+                const double lPt = lightjet->getPt();
+                pxl::Basic3Vector lpull(
+                    bPt*vdt::fast_cos(lightjet->getPhi()+lightjet->getUserRecord("pullPhi").toFloat()),
+                    bPt*vdt::fast_sin(lightjet->getPhi()+lightjet->getUserRecord("pullPhi").toFloat()),
+                    bPt*std::cosh(lightjet->getEta()+lightjet->getUserRecord("pullY").toFloat())
+                );
+                
+                
+                eventView->setUserRecord("dijet_pull_angle",angle(bpull,lpull));
+                eventView->setUserRecord("dijet_angle",angle(bjet->getVector(),lightjet->getVector()));
+                
+                
             }
             
             calculateAngles(eventView, lepton, neutrino, wboson, bjet, top, lightjet);

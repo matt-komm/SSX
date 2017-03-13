@@ -70,22 +70,6 @@ class WeightPerPartonInfo:
         }
 };
 
-const std::unordered_map<std::string,WeightInfo*> eventWeights80XPL = {
-    {"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
-        new SimpleWeightInfo(
-            //total=38409719.0 eff=38409719.0 - 0.0 = 38409719.0
-            38409719.0,
-            80.95 // xsec for process 'ST_t-channel_antitop_4f'
-        )
-    },
-    {"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
-        new SimpleWeightInfo(
-            //total=67026664.0 eff=67026664.0 - 0.0 = 67026664.0
-            67026664.0,
-            136.02 // xsec for process 'ST_t-channel_top_4f'
-        )
-    }
-};
 
 const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
     {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
@@ -153,8 +137,8 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
     },
     {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
         new SimpleWeightInfo(
-            //total=47838543.0 eff=47838543.0 - 0.0 = 47838543.0
-            47838543.0,
+            //total=49144274.0 eff=49144274.0 - 0.0 = 49144274.0
+            49144274.0,
             4895.0 // xsec for process 'DYJetsToLL_M-50'
         )
     },
@@ -195,8 +179,8 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
     },
     {"QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
         new SimpleWeightInfo(
-            //total=24127643.0 eff=24127643.0 - 0.0 = 24127643.0
-            24127643.0,
+            //total=24605508.0 eff=24605508.0 - 0.0 = 24605508.0
+            24605508.0,
             797.35269 // xsec for process 'QCD_Pt-300to470_MuEnrichedPt5'
         )
     },
@@ -293,22 +277,22 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
     },
     {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
         new SimpleWeightInfo(
-            //total=23141980.0 eff=19491569.0 - 3650411.0 = 15841158.0
-            15841158.0,
+            //total=23712175.0 eff=19971756.0 - 3740419.0 = 16231337.0
+            16231337.0,
             61526.7 // xsec for process 'WJetsToLNu'
         )
     },
     {"WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
         new SimpleWeightInfo(
-            //total=56526888.0 eff=56526888.0 - 0.0 = 56526888.0
-            56526888.0,
+            //total=57026058.0 eff=57026058.0 - 0.0 = 57026058.0
+            57026058.0,
             61526.7 // xsec for process 'WJetsToLNu'
         )
     },
     {"WToLNu_0J_13TeV-amcatnloFXFX-pythia8_ext",
         new SimpleWeightInfo(
-            //total=49142195.0 eff=44541889.0 - 4600306.0 = 39941583.0
-            39941583.0,
+            //total=48648355.0 eff=44094225.0 - 4554130.0 = 39540095.0
+            39540095.0,
             49670.0 // xsec for process 'WToLNu_0J_13TeV'
         )
     },
@@ -610,8 +594,7 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80XwithHLT = {
 const std::unordered_map<std::string,const std::unordered_map<std::string,WeightInfo*>> _eventWeightsPerEra =
 {
     {"80XwithHLT",eventWeights80XwithHLT},
-    {"80Xexcl",eventWeights80Xexcl},
-    {"80XPL",eventWeights80XPL}
+    {"80Xexcl",eventWeights80Xexcl}
 };
 
 class EventWeight:
@@ -634,7 +617,7 @@ class EventWeight:
             Module(),
             _processNameField("ProcessName"),
             _allowedPostfixes({"","_iso","_midiso","_antiiso"}),
-            _eraName("80XwithHLT"),
+            _eraName("80Xexcl"),
             _weightName("mcweight")
         {
             addSink("input", "input");

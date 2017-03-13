@@ -144,13 +144,16 @@ class NeutrinoPz:
                                 //our code
                                 //solveNu4Momentum(neutrino,lepton->getVector(),met->getPx(),met->getPy());
                                 //from Hamed - possible difference is in treating the complex solution cases
-                                math::XYZTLorentzVector nuVec = NuMomentum(lepton->getPx(), lepton->getPy(), lepton->getPz(), lepton->getPt(), lepton->getE(), met->getPx(),met->getPy() );
+                                std::pair<math::XYZTLorentzVector,math::XYZTLorentzVector> nuVecs = NuMomentum(lepton->getPx(), lepton->getPy(), lepton->getPz(), lepton->getPt(), lepton->getE(), met->getPx(),met->getPy() );
                                 //std::cout<<neutrino->getPt()-nuVec.Pt()<<std::endl;
-                                neutrino->setP4(nuVec.Px(),nuVec.Py(),nuVec.Pz(),nuVec.E());
+                                neutrino->setP4(nuVecs.first.Px(),nuVecs.first.Py(),nuVecs.first.Pz(),nuVecs.first.E());
 
                                 const double mtw_beforePz = calculateMTW(lepton,met);
                                 
                                 outputEventView->setUserRecord("mtw_beforePz",mtw_beforePz);
+                                neutrino->setUserRecord("pz1",nuVecs.first.Pz());
+                                neutrino->setUserRecord("pz2",nuVecs.second.Pz());
+                                neutrino->setUserRecord("dpz",fabs(nuVecs.first.Pz()-nuVecs.second.Pz()));
                                 
                             }
                             else if (!met)

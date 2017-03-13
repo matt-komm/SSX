@@ -1,3 +1,7 @@
+include_directories(
+    ${PROJECT_SOURCE_DIR}/internal/vdt/include
+)
+
 add_library(NeutrinoPz MODULE NeutrinoPz.cpp)
 target_link_libraries(NeutrinoPz ${PXL_LIBRARIES})
 install(

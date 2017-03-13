@@ -125,6 +125,15 @@ xsecDB = {
     "QCD_Pt-600to800_MuEnrichedPt5":187.11*0.13412,  #LO MadGraph from MCM
     "QCD_Pt-800to1000_MuEnrichedPt5":32.35*0.14552,  #LO MadGraph from MCM
     "QCD_Pt-1000toInf_MuEnrichedPt5":10.43*0.15544, #LO MadGraph from MCM
+    
+    "QCD_Pt-15to20_EMEnriched":1279000000*0.0018,
+    "QCD_Pt-20to30_EMEnriched":557600000*0.0096,
+    "QCD_Pt-30to50_EMEnriched":136000000*0.073,
+    "QCD_Pt-50to80_EMEnriched": 19800000*0.146,
+    "QCD_Pt-80to120_EMEnriched":2800000*0.125,
+    "QCD_Pt-120to170_EMEnriched":477000*0.132,
+    "QCD_Pt-170to300_EMEnriched":114000*0.165,
+    "QCD_Pt-300toInf_EMEnriched":9000*0.15,
      
     "ST_t-channel_4f_leptonDecays": (80.95+136.02)*3*WtoLeptons,
     "ST_t-channel_antitop_4f_leptonDecays": 80.95*3*WtoLeptons,
