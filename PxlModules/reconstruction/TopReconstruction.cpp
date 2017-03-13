@@ -488,9 +488,9 @@ class TopReconstruction:
                 
                 const double lPt = lightjet->getPt();
                 pxl::Basic3Vector lpull(
-                    bPt*vdt::fast_cos(lightjet->getPhi()+lightjet->getUserRecord("pullPhi").toFloat()),
-                    bPt*vdt::fast_sin(lightjet->getPhi()+lightjet->getUserRecord("pullPhi").toFloat()),
-                    bPt*std::cosh(lightjet->getEta()+lightjet->getUserRecord("pullY").toFloat())
+                    lPt*vdt::fast_cos(lightjet->getPhi()+lightjet->getUserRecord("pullPhi").toFloat()),
+                    lPt*vdt::fast_sin(lightjet->getPhi()+lightjet->getUserRecord("pullPhi").toFloat()),
+                    lPt*std::cosh(lightjet->getEta()+lightjet->getUserRecord("pullY").toFloat())
                 );
                 
                 

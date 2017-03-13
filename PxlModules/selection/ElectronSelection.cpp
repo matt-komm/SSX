@@ -233,6 +233,36 @@ class ElectronSelection:
             {
                 return false;
             }
+            if (fabs(particle->getEta())>1.4442 && fabs(particle->getEta())<1.5660)
+            {
+                return false;
+            }
+            if (not particle->getUserRecord("passConversionVeto").toBool())
+            {
+                return false;
+            }
+            if (std::fabs(particle->getUserRecord("superClusterEta").toFloat())<1.479)
+            {
+                if (not (particle->getUserRecord("dxy").toFloat()<0.05))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("dz").toFloat()<0.10))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (not (particle->getUserRecord("dxy").toFloat()<0.10))
+                {
+                    return false;
+                }
+                if (not (particle->getUserRecord("dz").toFloat()<0.20))
+                {
+                    return false;
+                }
+            }
             if (_hltPreselectionString.size()>0)
             {
                 if (not particle->getUserRecord(_hltPreselectionString).toBool())
