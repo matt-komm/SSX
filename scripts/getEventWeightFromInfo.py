@@ -33,11 +33,17 @@ rootFileMatch = re.compile("info_[0-9]+.root")
 rootFiles = {}
 pxlioFileMatch = re.compile("output_[0-9]+.pxlio")
 pxlioFiles = {}
+
+
+
 for folder in os.listdir(baseFolder):
     if folder.find(args[0])!=-1:
         #print "searching in ...",folder
         for dirpath, dirnames, filenames in os.walk(os.path.join(baseFolder,folder)):
             #print dirpath
+            sys.stdout.write("\r" + dirpath)
+            sys.stdout.flush()
+            
             if dirpath.endswith("crab_SSX"): #this also checks data
                 if len(dirnames)>1:
                     print "\t"+warn("WARNING")+": found multiple output folders in ",dirpath," ",dirnames
@@ -54,6 +60,7 @@ for folder in os.listdir(baseFolder):
                         pxlioFiles[folder]=[]
                     pxlioFiles[folder].append(os.path.join(dirpath,f))
                     
+print "finished looping"
 
 for folder in sorted(rootFiles.keys()): #this loop will not go over data
     print "found ",len(rootFiles[folder]),"/",len(pxlioFiles[folder])," info/pxlio files in ",folder

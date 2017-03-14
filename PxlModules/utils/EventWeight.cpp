@@ -149,6 +149,13 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
             1.6212392 // xsec for process 'QCD_Pt-1000toInf_MuEnrichedPt5'
         )
     },
+    {"QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
+        new SimpleWeightInfo(
+            //total=40964345.0 eff=40964345.0 - 0.0 = 40964345.0
+            40964345.0,
+            62964.0 // xsec for process 'QCD_Pt-120to170_EMEnriched'
+        )
+    },
     {"QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         new SimpleWeightInfo(
             //total=11938140.0 eff=11938140.0 - 0.0 = 11938140.0
@@ -163,11 +170,25 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
             3819570.0 // xsec for process 'QCD_Pt-15to20_MuEnrichedPt5'
         )
     },
+    {"QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8",
+        new SimpleWeightInfo(
+            //total=11136483.0 eff=11136483.0 - 0.0 = 11136483.0
+            11136483.0,
+            18810.0 // xsec for process 'QCD_Pt-170to300_EMEnriched'
+        )
+    },
     {"QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         new SimpleWeightInfo(
             //total=19607777.0 eff=19607777.0 - 0.0 = 19607777.0
             19607777.0,
             8654.49315 // xsec for process 'QCD_Pt-170to300_MuEnrichedPt5'
+        )
+    },
+    {"QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8",
+        new SimpleWeightInfo(
+            //total=9218954.0 eff=9218954.0 - 0.0 = 9218954.0
+            9218954.0,
+            5352960.0 // xsec for process 'QCD_Pt-20to30_EMEnriched'
         )
     },
     {"QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
@@ -184,6 +205,20 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
             797.35269 // xsec for process 'QCD_Pt-300to470_MuEnrichedPt5'
         )
     },
+    {"QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8",
+        new SimpleWeightInfo(
+            //total=7373633.0 eff=7373633.0 - 0.0 = 7373633.0
+            7373633.0,
+            1350.0 // xsec for process 'QCD_Pt-300toInf_EMEnriched'
+        )
+    },
+    {"QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
+        new SimpleWeightInfo(
+            //total=6768384.0 eff=6768384.0 - 0.0 = 6768384.0
+            6768384.0,
+            9928000.0 // xsec for process 'QCD_Pt-30to50_EMEnriched'
+        )
+    },
     {"QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         new SimpleWeightInfo(
             //total=29252006.0 eff=29252006.0 - 0.0 = 29252006.0
@@ -196,6 +231,13 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
             //total=9847664.0 eff=9847664.0 - 0.0 = 9847664.0
             9847664.0,
             79.02211 // xsec for process 'QCD_Pt-470to600_MuEnrichedPt5'
+        )
+    },
+    {"QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
+        new SimpleWeightInfo(
+            //total=22820109.0 eff=22820109.0 - 0.0 = 22820109.0
+            22820109.0,
+            2890800.0 // xsec for process 'QCD_Pt-50to80_EMEnriched'
         )
     },
     {"QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
@@ -217,6 +259,13 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
             //total=9966149.0 eff=9966149.0 - 0.0 = 9966149.0
             9966149.0,
             4.707572 // xsec for process 'QCD_Pt-800to1000_MuEnrichedPt5'
+        )
+    },
+    {"QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
+        new SimpleWeightInfo(
+            //total=39985821.0 eff=39985821.0 - 0.0 = 39985821.0
+            39985821.0,
+            350000.0 // xsec for process 'QCD_Pt-80to120_EMEnriched'
         )
     },
     {"QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",

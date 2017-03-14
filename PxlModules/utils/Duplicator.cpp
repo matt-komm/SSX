@@ -16,13 +16,22 @@ class Duplicator:
         pxl::Source* _source1;
         pxl::Source* _source2;
         
+        bool _active1;
+        bool _active2;
+        
     public:
         Duplicator():
-            Module()
+            Module(),
+            _active1(true),
+            _active2(true)
         {
             addSink("input", "input");
-            _source1 = addSource("out1","out1");
             _source2 = addSource("out2","out2");
+            _source1 = addSource("out1","out1");
+            
+            addOption("active 1","",_active1);
+            addOption("active 2","",_active2);
+            
         }
 
         ~Duplicator()
@@ -63,14 +72,23 @@ class Duplicator:
             {
                 pxl::Event *event  = dynamic_cast<pxl::Event*>(sink->get());
                 if (event)
-                {
-                    pxl::Event* eventClone = dynamic_cast<pxl::Event*>(event->clone());
-                    _source1->setTargets(event);
-                    bool success = _source1->processTargets();
-                    _source2->setTargets(eventClone);
-                    success &= _source2->processTargets();
+                {   
+                    bool success = true;
+                    if (_active1)
+                    {
+
+                        _source1->setTargets(event);
+                        success &= _source1->processTargets();
+                    }
+                    if (_active2)
+                    {
+                        pxl::Event* eventClone = dynamic_cast<pxl::Event*>(event->clone());
+                        _source2->setTargets(eventClone);
+                        success &= _source2->processTargets();
+                        delete eventClone;
+                    }
                     
-                    delete eventClone;
+                    
                     return success;
                 }
             }
