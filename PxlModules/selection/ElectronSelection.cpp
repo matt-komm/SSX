@@ -133,6 +133,17 @@ class ElectronSelection:
         
         bool passesTightCriteria(pxl::Particle* particle)
         {
+            if (not particle->getUserRecord("passConversionVeto").toBool())
+            {
+                return false;
+            }
+            if (_hltPreselectionString.size()>0)
+            {
+                if (not particle->getUserRecord(_hltPreselectionString).toBool())
+                {
+                    return false;
+                }
+            }
             return particle->getUserRecord(_tightIdString).toBool();
             /*
             if (std::fabs(particle->getUserRecord("superClusterEta").toFloat())<1.479)
@@ -218,6 +229,17 @@ class ElectronSelection:
         
         bool passesVetoCriteria(pxl::Particle* particle)
         {
+            if (not particle->getUserRecord("passConversionVeto").toBool())
+            {
+                return false;
+            }
+            if (_hltPreselectionString.size()>0)
+            {
+                if (not particle->getUserRecord(_hltPreselectionString).toBool())
+                {
+                    return false;
+                }
+            }
             return particle->getUserRecord(_vetoIdString).toBool();
         }
         
@@ -237,10 +259,7 @@ class ElectronSelection:
             {
                 return false;
             }
-            if (not particle->getUserRecord("passConversionVeto").toBool())
-            {
-                return false;
-            }
+            
             if (std::fabs(particle->getUserRecord("superClusterEta").toFloat())<1.479)
             {
                 if (not (particle->getUserRecord("dxy").toFloat()<0.05))
@@ -259,13 +278,6 @@ class ElectronSelection:
                     return false;
                 }
                 if (not (particle->getUserRecord("dz").toFloat()<0.20))
-                {
-                    return false;
-                }
-            }
-            if (_hltPreselectionString.size()>0)
-            {
-                if (not particle->getUserRecord(_hltPreselectionString).toBool())
                 {
                     return false;
                 }
