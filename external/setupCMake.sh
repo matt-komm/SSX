@@ -27,12 +27,12 @@ function execute
 
 cd $BASEDIR/external
 
-execute wget --no-check-certificate https://cmake.org/files/v3.4/cmake-3.4.0-rc3.tar.gz
-execute tar -zxvf cmake-3.4.0-rc3.tar.gz
+execute wget --no-check-certificate https://cmake.org/files/v3.7/cmake-3.7.2.tar.gz
+execute tar -zxvf cmake-3.7.2.tar.gz
 
-cd $BASEDIR/external/cmake-3.4.0-rc3
+cd $BASEDIR/external/cmake-3.7.2
 
-CMAKEBASEDIR=$BASEDIR/external/cmake-3.4.0-rc3/release
+CMAKEBASEDIR=$BASEDIR/external/cmake-3.7.2/release
 addVar CMAKEBASEDIR $CMAKEBASEDIR
 addVar PATH $CMAKEBASEDIR/bin:"$"PATH
 
