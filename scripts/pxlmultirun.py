@@ -24,6 +24,16 @@ def getValue(elem1,elem2):
 		return 1
 	else:
 		return -1
+		
+def chunks(l, n):
+    clist = []
+    for i in range(n):
+        clist.append([])
+    index = 0
+    for item in l:
+        clist[index].append(item)
+        index=(index+1) % n
+    return clist
 
 def shift(list1,list2):
 	sum1=sum(list1)
@@ -158,6 +168,7 @@ def findMatches(path,regex):
 if __name__=="__main__":
     parser = OptionParser()
     parser.add_option("-n", dest="N", default="10")
+    parser.add_option("-p", dest="P", default="1")
     parser.add_option("-f", action="store_true", default=False, dest="force")
     parser.add_option("-o", action="store_true", default=False, dest="override")
     parser.add_option("--out", default="", dest="out")
@@ -301,10 +312,24 @@ echo "done executing: "$@
         shellFile.write(shellscript)
         shellFile.close()
         os.chmod(os.path.join(os.getcwd(),outputFolder,"run.sh"),0744)
-        condorConfig=open(os.path.join(outputFolder,"pxlrun.condor"),"w")
-        condorConfig.write(preconfig)
-        for analysisFile in analysisFiles:
-            #condorConfig.write("arguments = --addSearchPath="+os.path.dirname(os.path.abspath(args[0]))+" "+analysisFile+"\n")
-            condorConfig.write("arguments = "+analysisFile+"\n")
-            condorConfig.write("queue\n")
-        condorConfig.close()
+        
+        analysisFileChunks = chunks(analysisFiles,int(options.P))
+        dagConfig = open(os.path.join(outputFolder,"pxlrun.dag"),"w")
+        for ipart in range(int(options.P)):
+            print "create job part ",ipart+1, " with ",len(analysisFileChunks[ipart])," jobs"
+            condorConfig=open(os.path.join(outputFolder,"pxlrun_part"+str(ipart)+".condor"),"w")
+            condorConfig.write(preconfig)
+            dagConfig.write("JOB  pxlrun_part"+str(ipart)+"  pxlrun_part"+str(ipart)+".condor\n")
+            
+            for analysisFile in analysisFileChunks[ipart]:
+                #condorConfig.write("arguments = --addSearchPath="+os.path.dirname(os.path.abspath(args[0]))+" "+analysisFile+"\n")
+                condorConfig.write("arguments = "+analysisFile+"\n")
+                condorConfig.write("queue\n")
+            condorConfig.close()
+        print "total number of created jobs ",len(analysisFiles)
+        dagConfig.write("\n")
+        for ipart in range(int(options.P)-1):
+            dagConfig.write("PARENT pxlrun_part"+str(ipart)+" CHILD pxlrun_part"+str(ipart+1)+"\n")
+        dagConfig.close()
+            
+
