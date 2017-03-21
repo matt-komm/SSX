@@ -261,6 +261,7 @@ log = /dev/null
 should_transfer_files = YES
 when_to_transfer_output = ON_EXIT
 requirements   = (CMSFARM =?= TRUE)
++AccountingGroup="group_one.mkomm"
 '''
         if options.addoption!=None:
             f = open(options.addoption)
@@ -269,6 +270,7 @@ requirements   = (CMSFARM =?= TRUE)
             f.close()
             
         shellscript='''#!/bin/bash
+echo "------------------ start ------------------"
 echo "Started Job at "`date`
 number=$RANDOM
 let "number %= 100"
@@ -276,7 +278,7 @@ echo "sleeping for ... "$number
 sleep $number
 echo "HOSTNAME: "$HOSTNAME
 tries=1
-until [ "$tries" -gt "100" ] || (ls > /dev/null && ls /storage/data/cms/store/user/mkomm > /dev/null && ls /nfs/user/mkomm > /dev/null && ls /home/fynu/mkomm > /dev/null)
+until [ "$tries" -gt "100" ] || (ls > /dev/null && ls /storage/data/cms/store/user/mkomm > /dev/null && ls /nfs/user/mkomm > /dev/null && ls /home/fynu/mkomm > /dev/null && ls /cvmfs/cp3.uclouvain.be/gcc/gcc-4.9.1-sl6_amd64_gcc44/lib > /dev/null && ls /cvmfs/cp3.uclouvain.be/root/root-6.02.05-sl6_amd64_gcc49/lib > /dev/null)
 do
   sleep 10s
   rndsleep=$RANDOM
@@ -297,12 +299,22 @@ cd /home/fynu/mkomm/SSX
 source setVars.sh
 export HOME=/home/fynu/mkomm
 cd $_CONDOR_SCRATCH_DIR
-env
+echo "------------------ env ------------------"
+env | sort
+echo "------------------ pwd ------------------"
 pwd
-which pxlrun
+echo "------------------ ll ------------------"
+ls -lh
+echo "------------------ setup ------------------"
+echo "g++: `which g++`"
+echo "root: `which root`"
+echo "pxlrun: `which pxlrun`"
+echo "------------------ job ------------------"
 echo "executing: "$@
 pxlrun -v $@
 echo "done executing: "$@
+echo "------------------ ll ------------------"
+ls -lh
 '''
         try:
             os.mkdir(os.path.join(outputFolder,"log"))
