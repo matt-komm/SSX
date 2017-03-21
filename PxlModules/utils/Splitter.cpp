@@ -26,6 +26,7 @@ class Splitter:
         std::vector<std::pair<std::regex,int>> _splitLimits;
         
         bool _random;
+        bool _useEventNumber;
         bool _useExistingFlag;
         
         std::string _processNameField;
@@ -48,6 +49,7 @@ class Splitter:
             _limits({"[A-Za-z0-9_\\-]+=-1"}),
             _random(false),
             _useExistingFlag(false),
+            _useEventNumber(true),
             _processNameField("ProcessName"),
             _passedEvents(0),
             _selectedEvents(0),
@@ -65,6 +67,7 @@ class Splitter:
             addOption("percentages","percentage of events to select",_percentages);
             addOption("limits","limit the events to split per process",_limits);
             addOption("random","select events randomly",_random);
+            addOption("use event number","select events based on the event number,lumi,run",_useEventNumber);
             addOption("use existing flag","use flag from previous module",_useExistingFlag);
             
             addOption("split name","UR name to indicate if selected or not",_splitName);            
@@ -129,8 +132,14 @@ class Splitter:
             }
             
             getOption("random",_random);
+            getOption("use event number",_useEventNumber);
             getOption("use existing flag",_useExistingFlag);
             getOption("split name",_splitName);
+            
+            if (_random && _useEventNumber)
+            {
+                throw std::runtime_error(getName()+": Inconsistent configuration! use either 'random' or 'event number' but not both.");
+            }
         }
 
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)
@@ -187,6 +196,7 @@ class Splitter:
                         throw std::runtime_error("Cannot find splitting percentage for process '"+processName+"'");
                     }
                     
+                    
                     if ((limit>0) and (limit<_splittingInfo[processName].first))
                     {
                         selected = true;
@@ -194,9 +204,24 @@ class Splitter:
                     }
                     else
                     {
+                        
                         if (_random)
                         {
                             selected = _uniformDist(_generator)<percentage;
+                        }
+                        else if (_useEventNumber)
+                        {
+                            long eventNumber = event->getUserRecord("Event number").toUInt64();
+                            long runNumber = event->getUserRecord("Run").toUInt32();
+                            long lumiSection = event->getUserRecord("LuminosityBlock").toUInt32();
+                            
+                            std::size_t hash = 123;
+                            hash ^= std::hash<long>{}(eventNumber) + 0x9e3779b9 + (hash<<6) + (hash>>2);
+                            hash ^= std::hash<long>{}(runNumber) + 0x9e3779b9 + (hash<<6) + (hash>>2);
+                            hash ^= std::hash<long>{}(lumiSection) + 0x9e3779b9 + (hash<<6) + (hash>>2);
+                  
+                           
+                            selected = 0.0001*(hash%1001)<percentage;
                         }
                         else
                         {
