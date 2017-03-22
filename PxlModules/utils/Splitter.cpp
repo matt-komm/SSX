@@ -215,13 +215,13 @@ class Splitter:
                             long runNumber = event->getUserRecord("Run").toUInt32();
                             long lumiSection = event->getUserRecord("LuminosityBlock").toUInt32();
                             
-                            std::size_t hash = 123;
+                            std::size_t hash = 12345679;
                             hash ^= std::hash<long>{}(eventNumber) + 0x9e3779b9 + (hash<<6) + (hash>>2);
                             hash ^= std::hash<long>{}(runNumber) + 0x9e3779b9 + (hash<<6) + (hash>>2);
                             hash ^= std::hash<long>{}(lumiSection) + 0x9e3779b9 + (hash<<6) + (hash>>2);
                   
-                           
-                            selected = 0.0001*(hash%1001)<percentage;
+
+                            selected = 0.001*(hash%1000)<percentage;
                         }
                         else
                         {
@@ -266,7 +266,23 @@ class Splitter:
         {
             for (auto it: _splittingInfo)
             {
-                logger(pxl::LOG_LEVEL_INFO , "Split fraction for '",it.first,"': ",1.0*it.second.second/it.second.first, " (",it.second.first," events passed)");
+                double desiredPercentage = 1.0;
+                for (auto itSplit: _splits)
+                {
+                    if (std::regex_match(it.first,itSplit.first))
+                    {
+                        desiredPercentage=itSplit.second;
+                        break;
+                    }
+                }
+                int passedEvents = it.second.first;
+                double achievedPercentage = 1.0*it.second.second/it.second.first;
+                
+                logger(pxl::LOG_LEVEL_INFO , getName()+" split fraction for '",it.first,"': ",1.0*achievedPercentage, " (desired="+std::to_string(desiredPercentage)+"; ",passedEvents," events processed)");
+                if (desiredPercentage>0 and std::fabs(desiredPercentage-achievedPercentage)/desiredPercentage>1.0/std::sqrt(passedEvents))
+                {
+                    throw std::runtime_error(getName()+" split actual split fraction ("+std::to_string(achievedPercentage)+") too far away from desired one ("+std::to_string(desiredPercentage)+") for process '"+it.first+"' with processed events "+std::to_string(passedEvents));
+                }
             }
         }
 
