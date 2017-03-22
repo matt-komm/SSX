@@ -33,7 +33,7 @@ class SubAnalysis:
                 
                 virtual bool analyse(pxl::Sink *sink)
                 {
-                    std::cout<<"connecting events"<<std::endl;
+                    //std::cout<<"connecting events"<<std::endl;
                     _exit->setTargets(sink->get());
                     return _exit->processTargets();
                 }
@@ -84,17 +84,17 @@ class SubAnalysis:
             return getStaticType();
         }
 
-        bool isRunnable() const
+        virtual bool isRunnable() const
         {
             // this module does not provide events, so return false
             return false;
         }
 
-        void initialize() throw (std::runtime_error)
+        virtual void initialize() throw (std::runtime_error)
         {
         }
 
-        void beginJob() throw (std::runtime_error)
+        virtual void beginJob() throw (std::runtime_error)
         {
             getOption("analysis file",_xmlFile);
             pxl::AnalysisXmlImport analysisImporter;
@@ -144,16 +144,24 @@ class SubAnalysis:
                 sink->setModule(_connectorModule.get());
             }
         }
+        
+        virtual void beginRun()
+        {
+            for (pxl::Module* module: _initModules)
+            {
+                module->beginRun();
+            }
+        }
 
-        bool analyse(pxl::Sink *sink) throw (std::runtime_error)
+        virtual bool analyse(pxl::Sink *sink) throw (std::runtime_error)
         {
             try
             {
-                std::cout<<"start sub module"<<std::endl;
+                //std::cout<<"start sub module"<<std::endl;
                 pxl::Source* source = _entryModule->getSource("out");
                 source->setTargets(sink->get());
                 bool success = source->processTargets();
-                std::cout<<"end sub module"<<std::endl;
+                //std::cout<<"end sub module"<<std::endl;
                 return success;
                 
                // pxl::Event *event  = dynamic_cast<pxl::Event*>(sink->get());
@@ -171,15 +179,23 @@ class SubAnalysis:
             return false;
         }
         
-        void endJob()
+        virtual void endJob()
         {
             for (pxl::Module* module: _initModules)
             {
                 module->endJob();
             }
         }
+        
+        virtual void endRun()
+        {
+            for (pxl::Module* module: _initModules)
+            {
+                module->endRun();
+            }
+        }
 
-        void shutdown() throw(std::runtime_error)
+        virtual void shutdown() throw(std::runtime_error)
         {
             for (pxl::Module* module: _initModules)
             {
