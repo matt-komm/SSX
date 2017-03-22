@@ -86,11 +86,13 @@ class SubAnalysis:
             _connectorOutputModules.clear();
             _initModules.clear();
             
-
-            
             getOption("analysis file",_xmlFile);
-            _xmlFile = getAnalysis()->findFile(_xmlFile);
+            if (_xmlFile=="")
+            {
+                return;
+            }
             
+            _xmlFile = getAnalysis()->findFile(_xmlFile);
             logger(pxl::LOG_LEVEL_INFO,"Xml file: ",_xmlFile);
             
             pxl::AnalysisXmlImport analysisImporter;

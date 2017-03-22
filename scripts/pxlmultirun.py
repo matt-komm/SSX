@@ -179,19 +179,30 @@ if __name__=="__main__":
     if options.out!="":
         if (os.path.exists(options.out)):
             if options.force and not options.override:
+                print "recreate output directory ...",
                 shutil.rmtree(options.out)
+                print "done"
         if not options.override:
             os.mkdir(options.out)
         elif len(os.listdir(options.out))>0:
             print "WARNING: output folder '",options.out,"' contains already ",len(os.listdir(options.out))," files/folders that wont be deleted because override (-o) was specified!"
     outputFolder=options.out
+    
+    print "loading pxl plugins ...",
     pluginManager=pxl.core.PluginManager()
     pluginManager.loadPluginsFromDirectory(os.path.join(os.environ['HOME'],".pxl-3.5","plugins"))
+    print "done"
+    
+    print "import analysis ...",
     analysisImporter=pxl.xml.AnalysisXmlImport()
     analysisImporter.open(args[0])
     analysis = pxl.modules.Analysis()
+    analysis.addSearchPath(os.path.abspath(args[0]).rsplit("/")[0])
     analysisImporter.parseInto(analysis)
     analysisImporter.close()
+    print "done"
+    
+    print "parse modules ...",
     moduleList = analysis.getModules()
     fileInputModules=[]
     fileOutputModules=[]
@@ -218,7 +229,9 @@ if __name__=="__main__":
                     m.setOption(op.name,os.path.abspath(m.getOption(op.name)))
             elif op.name=="filename" and (m.getType()=="PyModule" or m.getType()=="PyAnalyse"):
                 m.setOption(op.name,os.path.abspath(m.getOption(op.name)))
+    print "done"
     
+    print "evaluate regex"
     for i,fileInput in enumerate(fileInputModules):
         evaluatedList=[]
         for f in fileInput["files"]:
@@ -233,6 +246,7 @@ if __name__=="__main__":
         fileInputModules[i]["files"]=evaluatedList
         fileInputModules[i]["files_partioned"]=generatePartions(evaluatedList,N)
 
+    print "write out new analyses ...",
     analysisFiles=[]
     for n in range(N):
         for fileInput in fileInputModules:
@@ -250,6 +264,9 @@ if __name__=="__main__":
         #print "h2"
         analysisFiles.append(os.path.abspath(analysisFileName))
         #print "h3"
+    print "done"
+        
+    print "make job cfg ...",
     if (options.condor):
         
             
@@ -328,7 +345,6 @@ ls -lh
         analysisFileChunks = chunks(analysisFiles,int(options.P))
         dagConfig = open(os.path.join(outputFolder,"pxlrun.dag"),"w")
         for ipart in range(int(options.P)):
-            print "create job part ",ipart+1, " with ",len(analysisFileChunks[ipart])," jobs"
             condorConfig=open(os.path.join(outputFolder,"pxlrun_part"+str(ipart)+".condor"),"w")
             condorConfig.write(preconfig)
             dagConfig.write("JOB  pxlrun_part"+str(ipart)+"  pxlrun_part"+str(ipart)+".condor\n")
@@ -338,10 +354,11 @@ ls -lh
                 condorConfig.write("arguments = "+analysisFile+"\n")
                 condorConfig.write("queue\n")
             condorConfig.close()
-        print "total number of created jobs ",len(analysisFiles)
+        print len(analysisFiles), "jobs created"
         dagConfig.write("\n")
         for ipart in range(int(options.P)-1):
             dagConfig.write("PARENT pxlrun_part"+str(ipart)+" CHILD pxlrun_part"+str(ipart+1)+"\n")
         dagConfig.close()
+        
             
 
