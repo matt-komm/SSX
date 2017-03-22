@@ -49,6 +49,8 @@ class MuonSF:
                 module->getOption(prefix+" file name",fileName);
                 module->getOption(prefix+" hist name",histogramName);
                 module->getOption(prefix+" add uncertainty", additionalUncertainty);
+                
+                fileName = module->getAnalysis()->findFile(fileName);
             
                 TFile rootFile(fileName.c_str());
                 if ((not rootFile.IsOpen()) or (rootFile.GetSize()==0))

@@ -89,6 +89,9 @@ class PileUpReweighting:
             getOption("data histogram files",_dataFiles);
             getOption("data histogram name",_dataHistName);
             
+            _mcFile = getAnalysis()->findFile(_mcFile);
+            
+            
             
             TFile mcFile(_mcFile.c_str());
             TH1* histMC = dynamic_cast<TH1*>(mcFile.Get(_mcHistName.c_str()));
@@ -108,6 +111,7 @@ class PileUpReweighting:
             
             for (unsigned int idataFile = 0; idataFile < _dataFiles.size(); ++idataFile)
             {
+                _dataFiles[idataFile] = getAnalysis()->findFile(_dataFiles[idataFile]);
                 TFile dataFile(_dataFiles[idataFile].c_str());
                 TH1* histData = dynamic_cast<TH1*>(dataFile.Get(_dataHistName.c_str()));
                 if (not histData)

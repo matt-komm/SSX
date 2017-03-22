@@ -121,6 +121,7 @@ class MuonSelection:
             getOption("TightMuon Minimum Relative MidIso",_pfRelMidIsoTightMuon);
         
             getOption("number of muons",_numMuons);
+            
         }
 
         bool passesTightCriteria(pxl::Particle* particle)

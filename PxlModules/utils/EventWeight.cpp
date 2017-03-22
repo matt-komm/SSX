@@ -716,10 +716,6 @@ class EventWeight:
             }
             logger(pxl::LOG_LEVEL_INFO , "Event weights taken from '"+_eraName+"'");
             
-            for (auto it = _eventWeightsPerEra.at(_eraName).cbegin(); it != _eventWeightsPerEra.at(_eraName).cend(); ++it)
-            {
-                _processNameList.push_back(it->first);
-            }
             getOption("weightname",_weightName);
             
         }
@@ -733,27 +729,14 @@ class EventWeight:
                 {
                     
                     std::string processName = event->getUserRecord(_processNameField).toString();
-                    std::string strippedProcessName = "";
-                    for (std::string& possibleName: _processNameList)
+                    auto it = _eventWeightsPerEra.at(_eraName).find(processName);
+                    if (it==_eventWeightsPerEra.at(_eraName).cend())
                     {
-                        //need to find the largest match here for the 'ext' samples
-                        if ((possibleName.size()>strippedProcessName.size()) and std::equal(possibleName.begin(),possibleName.end(),processName.begin()))
-                        {
-                            strippedProcessName = possibleName;
-                        }
+                        throw std::runtime_error("no event weight information available for process name '"+processName+"' in era '"+_eraName+"'");
                     }
-
-                    if (strippedProcessName.size()>0)
+                    else
                     {
-	                    auto it = _eventWeightsPerEra.at(_eraName).find(strippedProcessName);
-                        if (it!=_eventWeightsPerEra.at(_eraName).end())
-                        {
-	                        event->setUserRecord(_weightName,1.0*it->second->getWeight(event));
-                        }
-                    }
-                    if (strippedProcessName.size()==0)
-                    {
-                        throw std::runtime_error("no event weight information available for process name '"+processName+"'");
+                        event->setUserRecord(_weightName,1.0*it->second->getWeight(event));
                     }
                     _outputSource->setTargets(event);
                     return _outputSource->processTargets();

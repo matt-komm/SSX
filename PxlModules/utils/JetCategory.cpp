@@ -102,9 +102,9 @@ class JetCategory:
                 {
                     if (ev->getName()==_evName)
                     {
-                        int nTight = ev->getUserRecord(_tightUR);
-                        int nMed = ev->getUserRecord(_medUR);
-                        int nLoose = ev->getUserRecord(_looseUR);
+                        long nTight = ev->getUserRecord(_tightUR).toUInt64();
+                        long nMed = ev->getUserRecord(_medUR).toUInt64();
+                        long nLoose = ev->getUserRecord(_looseUR).toUInt64();
                         
                         if (nTight>0)
                         {

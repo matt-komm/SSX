@@ -158,11 +158,11 @@ class NeutrinoPz:
                             }
                             else if (!met)
                             {
-                                throw std::runtime_error("no MET found!");
+                                throw std::runtime_error("no MET with name '"+_metName+"' found!");
                             }
                             else if (!lepton)
                             {
-                                throw std::runtime_error("no lepton found!");
+                                throw std::runtime_error("no lepton with name '"+_leptonName+"' found!");
                             }
                             else if (!neutrino)
                             {

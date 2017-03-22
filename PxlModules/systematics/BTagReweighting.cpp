@@ -131,6 +131,10 @@ class BTagReweighting:
             getOption("event view name",_eventViewName);
             getOption("jet names",_jetNames);
             
+            
+            _sfFile = getAnalysis()->findFile(_sfFile);
+            _mcFile = getAnalysis()->findFile(_mcFile);
+            
             std::vector<std::string> wp2str;
             _wp.clear();
             getOption("workingpoint",wp2str);

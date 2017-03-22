@@ -56,7 +56,6 @@ class SubAnalysis:
             _xmlFile(""),
             _subAnalysis(nullptr)
         {
-            std::cout<<"c'tor subanalysis"<<std::endl;
 
         }
 
@@ -80,7 +79,6 @@ class SubAnalysis:
         virtual void initialize()
         {
             addOption("analysis file","",_xmlFile,pxl::OptionDescription::USAGE_FILE_OPEN);
-            std::cout<<"init subanalysis"<<std::endl;
 
             
             _subAnalysis.reset();
@@ -93,7 +91,7 @@ class SubAnalysis:
             getOption("analysis file",_xmlFile);
             _xmlFile = getAnalysis()->findFile(_xmlFile);
             
-            std::cout<<"xml file "<<_xmlFile<<std::endl;
+            logger(pxl::LOG_LEVEL_INFO,"Xml file: ",_xmlFile);
             
             pxl::AnalysisXmlImport analysisImporter;
             if (!analysisImporter.open(_xmlFile))
@@ -101,38 +99,38 @@ class SubAnalysis:
                 return;
             }
             _subAnalysis.reset(new pxl::Analysis());
+            _subAnalysis->addSearchPath(_xmlFile.substr(0,_xmlFile.rfind("/")));
+            logger(pxl::LOG_LEVEL_INFO,"Search path: ",_xmlFile.substr(0,_xmlFile.rfind("/")));
             analysisImporter.parseInto(_subAnalysis.get());
             analysisImporter.close();
             const std::vector<Module*>& moduleList = _subAnalysis->getModules();
             for (Module* module: moduleList)
             {
                 //map only in/out modules which have not INGORE written in their name
-                if (module->getName().find("IGNORE")==std::string::npos)
-                {
-                    pxl::InputModule* posssibleEntryModule = dynamic_cast<pxl::InputModule*>(module);
 
-                    if (posssibleEntryModule!=nullptr)
-                    {
-                        pxl::Sink* sink = addSink(module->getName(),module->getName());
-                        _inputModules[sink] = posssibleEntryModule;
-                        
-                    }
+                pxl::InputModule* posssibleEntryModule = dynamic_cast<pxl::InputModule*>(module);
+                pxl::OutputModule* posssibleExitModule = dynamic_cast<pxl::OutputModule*>(module);
+                if (posssibleEntryModule!=nullptr and (module->getName().find("IGNORE")==std::string::npos))
+                {
+                    pxl::Sink* sink = addSink(module->getName(),module->getName());
+                    _inputModules[sink] = posssibleEntryModule;
                     
-                    pxl::OutputModule* posssibleExitModule = dynamic_cast<pxl::OutputModule*>(module);
-                    if (posssibleExitModule!=nullptr)
-                    {
-                        pxl::Source* outSource = addSource(module->getName(),module->getName());
-                        _connectorOutputModules[module->getName()] = std::make_shared<ConnectorModule>(
-                            outSource
-                        );
-                        module->getSink("in")->setModule(_connectorOutputModules[module->getName()].get());
-                    }
                 }
+                else if (posssibleExitModule!=nullptr and (module->getName().find("IGNORE")==std::string::npos))
+                {
+                    pxl::Source* outSource = addSource(module->getName(),module->getName());
+                    _connectorOutputModules[module->getName()] = std::make_shared<ConnectorModule>(
+                        outSource
+                    );
+                    module->getSink("in")->setModule(_connectorOutputModules[module->getName()].get());
+                }
+
                 else
                 {
-                    module->initialize();
+                    
                     _initModules.push_back(module);
                 }
+                
             }
             Module::initialize();
         }
@@ -156,7 +154,22 @@ class SubAnalysis:
             for (pxl::Module* module: _initModules)
             {
                 module->beginRun();
+                /*
+                std::cout<<"Module: "<<module->getName()<<std::endl;
+                const std::vector<pxl::OptionDescription>& opDesc = module->getOptionDescriptions();
+                for (pxl::OptionDescription op: opDesc)
+                {
+                    if (op.type==pxl::OptionDescription::TYPE_STRING)
+                    {
+                        std::string value;
+                        module->getOption(op.name,value);
+                        std::cout<<"  "<<op.name<<": "<<value<<std::endl;
+                    }
+                    
+                }
+                */
             }
+            
         }
 
         virtual bool analyse(pxl::Sink *sink) throw (std::runtime_error)
