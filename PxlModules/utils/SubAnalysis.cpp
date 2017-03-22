@@ -42,13 +42,11 @@ class SubAnalysis:
     private:
         std::string _xmlFile;
         
-        pxl::Source* _outputSource;
         
         std::shared_ptr<pxl::Analysis> _subAnalysis;
-        pxl::InputModule* _entryModule;
-        pxl::OutputModule* _exitModule;
         
-        std::shared_ptr<ConnectorModule> _connectorModule;
+        std::unordered_map<pxl::Sink*,pxl::InputModule*> _inputModules;
+        std::unordered_map<std::string,std::shared_ptr<ConnectorModule>> _connectorOutputModules;
         
         std::vector<pxl::Module*> _initModules;
         
@@ -56,15 +54,10 @@ class SubAnalysis:
         SubAnalysis():
             Module(),
             _xmlFile(""),
-            _subAnalysis(nullptr),
-            _entryModule(nullptr),
-            _exitModule(nullptr),
-            _connectorModule(nullptr)
+            _subAnalysis(nullptr)
         {
-            addSink("input", "input");
-            _outputSource = addSource("output","output");
-            
-            addOption("analysis file","",_xmlFile,pxl::OptionDescription::USAGE_FILE_OPEN);
+            std::cout<<"c'tor subanalysis"<<std::endl;
+
         }
 
         ~SubAnalysis()
@@ -83,6 +76,66 @@ class SubAnalysis:
         {
             return getStaticType();
         }
+        
+        virtual void initialize()
+        {
+            addOption("analysis file","",_xmlFile,pxl::OptionDescription::USAGE_FILE_OPEN);
+            std::cout<<"init subanalysis"<<std::endl;
+
+            
+            _subAnalysis.reset();
+            _inputModules.clear();
+            _connectorOutputModules.clear();
+            _initModules.clear();
+            
+
+            
+            getOption("analysis file",_xmlFile);
+            _xmlFile = getAnalysis()->findFile(_xmlFile);
+            
+            std::cout<<"xml file "<<_xmlFile<<std::endl;
+            
+            pxl::AnalysisXmlImport analysisImporter;
+            if (!analysisImporter.open(_xmlFile))
+            {
+                return;
+            }
+            _subAnalysis.reset(new pxl::Analysis());
+            analysisImporter.parseInto(_subAnalysis.get());
+            analysisImporter.close();
+            const std::vector<Module*>& moduleList = _subAnalysis->getModules();
+            for (Module* module: moduleList)
+            {
+                //map only in/out modules which have not INGORE written in their name
+                if (module->getName().find("IGNORE")==std::string::npos)
+                {
+                    pxl::InputModule* posssibleEntryModule = dynamic_cast<pxl::InputModule*>(module);
+
+                    if (posssibleEntryModule!=nullptr)
+                    {
+                        pxl::Sink* sink = addSink(module->getName(),module->getName());
+                        _inputModules[sink] = posssibleEntryModule;
+                        
+                    }
+                    
+                    pxl::OutputModule* posssibleExitModule = dynamic_cast<pxl::OutputModule*>(module);
+                    if (posssibleExitModule!=nullptr)
+                    {
+                        pxl::Source* outSource = addSource(module->getName(),module->getName());
+                        _connectorOutputModules[module->getName()] = std::make_shared<ConnectorModule>(
+                            outSource
+                        );
+                        module->getSink("in")->setModule(_connectorOutputModules[module->getName()].get());
+                    }
+                }
+                else
+                {
+                    module->initialize();
+                    _initModules.push_back(module);
+                }
+            }
+            Module::initialize();
+        }
 
         virtual bool isRunnable() const
         {
@@ -90,58 +143,11 @@ class SubAnalysis:
             return false;
         }
 
-        virtual void initialize() throw (std::runtime_error)
-        {
-        }
-
         virtual void beginJob() throw (std::runtime_error)
         {
-            getOption("analysis file",_xmlFile);
-            pxl::AnalysisXmlImport analysisImporter;
-            analysisImporter.open(_xmlFile);
-            _subAnalysis.reset(new pxl::Analysis());
-            analysisImporter.parseInto(_subAnalysis.get());
-            analysisImporter.close();
-            const std::vector<Module*>& moduleList = _subAnalysis->getModules();
-            for (Module* module: moduleList)
+            for (pxl::Module* module: _initModules)
             {
-                pxl::InputModule* posssibleEntryModule = dynamic_cast<pxl::InputModule*>(module);
-                pxl::OutputModule* posssibleExitModule = dynamic_cast<pxl::OutputModule*>(module);
-                if (posssibleEntryModule!=nullptr)
-                {
-                    if (_entryModule!=nullptr)
-                    {
-                        throw std::runtime_error(getName()+": detected multiple InputModules in sub analysis '"+_xmlFile+"'.");
-                    }
-                    _entryModule = posssibleEntryModule;
-                }
-                else if (module->getName().find("EXIT")!=std::string::npos)
-                {
-
-                    if (posssibleExitModule!=nullptr)
-                    {
-                        if (_exitModule!=nullptr)
-                        {
-                            throw std::runtime_error(getName()+": detected multiple OutputModules in sub analysis '"+_xmlFile+"'.");
-                        }
-                        _exitModule = posssibleExitModule;
-                    }
-                }
-                else
-                {
-                    module->beginJob();
-                    _initModules.push_back(module);
-                }
-            }
-            if (_entryModule==nullptr)
-            {
-                throw std::runtime_error(getName()+": detected no InputModule in sub analysis '"+_xmlFile+"'.");
-            }
-            if (_exitModule!=nullptr)
-            {
-                _connectorModule.reset(new ConnectorModule(_outputSource));
-                pxl::Sink* sink = _exitModule->getSink("in");
-                sink->setModule(_connectorModule.get());
+                module->beginJob();
             }
         }
         
@@ -158,13 +164,12 @@ class SubAnalysis:
             try
             {
                 //std::cout<<"start sub module"<<std::endl;
-                pxl::Source* source = _entryModule->getSource("out");
+                pxl::InputModule* entryModule = _inputModules[sink];
+                pxl::Source* source = entryModule->getSource("out");
                 source->setTargets(sink->get());
                 bool success = source->processTargets();
-                //std::cout<<"end sub module"<<std::endl;
                 return success;
                 
-               // pxl::Event *event  = dynamic_cast<pxl::Event*>(sink->get());
             }
             catch(std::exception &e)
             {
@@ -203,11 +208,21 @@ class SubAnalysis:
             }
         }
 
-        void destroy() throw (std::runtime_error)
+        virtual void destroy() throw (std::runtime_error)
         {
             delete this;
         }
+        
+        virtual void setOption(const std::string &name, const std::string &value)
+        {
+	        Module::setOption(name, value);
+	        if (name == "analysis file")
+	        {
+		        reload();
+	        }
+        }
 };
+
 
 PXL_MODULE_INIT(SubAnalysis)
 PXL_PLUGIN_INIT

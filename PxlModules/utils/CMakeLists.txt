@@ -78,6 +78,13 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(JetCategory MODULE JetCategory.cpp)
+target_link_libraries(JetCategory ${PXL_LIBRARIES})
+install(
+    TARGETS JetCategory
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+
 
 add_library(Flag MODULE Flag.cpp)
 target_link_libraries(Flag ${PXL_LIBRARIES})
