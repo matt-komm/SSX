@@ -33,6 +33,13 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(ElectronSF MODULE ElectronSF.cpp)
+target_link_libraries(ElectronSF ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
+install(
+    TARGETS ElectronSF
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+
 add_library(TopPtReweighting MODULE TopPtReweighting.cpp)
 target_link_libraries(TopPtReweighting ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
 install(

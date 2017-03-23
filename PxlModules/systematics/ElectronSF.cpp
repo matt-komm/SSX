@@ -13,9 +13,9 @@
 #include "TH2.h"
 #include "TFile.h"
 
-static pxl::Logger logger("MuonSF");
+static pxl::Logger logger("ElectronSF");
 
-class MuonSF:
+class ElectronSF:
     public pxl::Module
 {
     private:
@@ -118,10 +118,10 @@ class MuonSF:
         };
     
         std::string _eventViewName;
-        std::string _muonName;
+        std::string _electronName;
         std::string _sfName;
-        std::string _muonCatgeory;
-        std::string _muonMatchingFlag;
+        std::string _electronCatgeory;
+        std::string _electronMatchingFlag;
         
         bool _failIfNoLepton;
         
@@ -131,24 +131,24 @@ class MuonSF:
         ScaleFactor* _scaleFactor;
         
     public:
-        MuonSF():
+        ElectronSF():
             Module(),
             _eventViewName("Reconstructed"),
-            _muonName("TightLepton"),
+            _electronName("TightLepton"),
             _sfName("iso"),
-            _muonCatgeory("muoncat"),
-            _muonMatchingFlag(""),
-            _failIfNoLepton(true)
+            _electronCatgeory("elecat"),
+            _failIfNoLepton(true),
+            _electronMatchingFlag("")
         {
             addSink("input", "input");
             addOption("event view name", "", _eventViewName);
-            addOption("muon name", "", _muonName);
+            addOption("lepton name", "", _electronName);
             addOption("SF name", "", _sfName);
             //for dimuon events triggered with single mu trigger one needs to apply
             //trigger Sf only to the one matched to the trigger
             //id&iso to both since they passed the selection
-            addOption("selection flag","",_muonCatgeory);
-            addOption("muon matching flag", "", _muonMatchingFlag);
+            addOption("selection flag","",_electronCatgeory);
+            addOption("matching flag", "", _electronMatchingFlag);
             
             addOption("fail if no lepton found", "", _failIfNoLepton);
             
@@ -157,14 +157,14 @@ class MuonSF:
             _scaleFactor=new ScaleFactor(this,"SF");
         }
 
-        ~MuonSF()
+        ~ElectronSF()
         {
         }
 
         // every Module needs a unique type
         static const std::string &getStaticType()
         {
-            static std::string type ("MuonSF");
+            static std::string type ("ElectronSF");
             return type;
         }
 
@@ -187,13 +187,13 @@ class MuonSF:
         void beginJob() throw (std::runtime_error)
         {
             getOption("event view name", _eventViewName);
-            getOption("muon name", _muonName);
+            getOption("lepton name", _electronName);
             getOption("SF name", _sfName);
             //for dimuon events triggered with single mu trigger one needs to apply
             //trigger Sf only to the one matched to the trigger
             //id&iso to both since they passed the selection
-            getOption("selection flag",_muonCatgeory);
-            getOption("muon matching flag", _muonMatchingFlag);
+            getOption("selection flag",_electronCatgeory);
+            getOption("matching flag", _electronMatchingFlag);
             
             getOption("fail if no lepton found", _failIfNoLepton);
 
@@ -219,20 +219,20 @@ class MuonSF:
                             double upSF = 1.0;
                             double downSF = 1.0;
                             
-                            if (eventView->hasUserRecord(_muonCatgeory) and eventView->getUserRecord(_muonCatgeory).toInt32()==0)
+                            if (eventView->hasUserRecord(_electronCatgeory) and eventView->getUserRecord(_electronCatgeory).toInt32()==0)
                             {
-                                int nMuons = 0;
+                                int nElectrons = 0;
                                 std::vector<pxl::Particle*> particles;
                                 eventView->getObjectsOfType(particles);
                                 for (pxl::Particle* particle: particles)
                                 {
-                                    if (particle->getName()==_muonName)
+                                    if (particle->getName()==_electronName)
                                     {
-                                        if (_muonMatchingFlag.size()>0)
+                                        if (_electronMatchingFlag.size()>0)
                                         {
-                                            if (particle->hasUserRecord(_muonMatchingFlag) and particle->getUserRecord(_muonMatchingFlag).toBool())
+                                            if (particle->hasUserRecord(_electronMatchingFlag) and particle->getUserRecord(_electronMatchingFlag).toBool())
                                             {
-                                                ++nMuons;
+                                                ++nElectrons;
                                                 nominalSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),0);
                                                 upSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),1);
                                                 downSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),-1);
@@ -240,16 +240,16 @@ class MuonSF:
                                         }
                                         else
                                         {
-                                            ++nMuons;
+                                            ++nElectrons;
                                             nominalSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),0);
                                             upSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),1);
                                             downSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),-1);
                                         }
                                     }
                                 }
-                                if (_failIfNoLepton and nMuons==0)
+                                if (_failIfNoLepton and nElectrons==0)
                                 {
-                                    throw std::runtime_error("No muons with name '"+_muonName+"' for scale factors found");
+                                    throw std::runtime_error("No electrons with name '"+_electronName+"' for scale factors found");
                                 }
                             }
                             eventView->setUserRecord(_sfName+"_SF_nominal",nominalSF),
@@ -290,5 +290,5 @@ class MuonSF:
 };
 
 
-PXL_MODULE_INIT(MuonSF)
+PXL_MODULE_INIT(ElectronSF)
 PXL_PLUGIN_INIT

@@ -34,15 +34,18 @@ rootFiles = {}
 pxlioFileMatch = re.compile("output_[0-9]+.pxlio")
 pxlioFiles = {}
 
+N = len(os.listdir(baseFolder))
 
+for ifolder,folder in enumerate(os.listdir(baseFolder)):
+    #print dirpath
+    sys.stdout.write("\r" + folder+ " ... ")
+    sys.stdout.flush()
 
-for folder in os.listdir(baseFolder):
     if folder.find(args[0])!=-1:
         #print "searching in ...",folder
+        
         for dirpath, dirnames, filenames in os.walk(os.path.join(baseFolder,folder)):
-            #print dirpath
-            sys.stdout.write("\r" + dirpath)
-            sys.stdout.flush()
+            
             
             if dirpath.endswith("crab_SSX"): #this also checks data
                 if len(dirnames)>1:
@@ -59,8 +62,9 @@ for folder in os.listdir(baseFolder):
                     if not pxlioFiles.has_key(folder):
                         pxlioFiles[folder]=[]
                     pxlioFiles[folder].append(os.path.join(dirpath,f))
+
                     
-print "finished looping"
+print "\rfinished looping"
 
 for folder in sorted(rootFiles.keys()): #this loop will not go over data
     print "found ",len(rootFiles[folder]),"/",len(pxlioFiles[folder])," info/pxlio files in ",folder
@@ -184,7 +188,7 @@ def findXsec(name):
             match = process
     if len(match)==0:
         return "? //"+warn("WARNING")+", xsec not found"
-    return str(xsecDB[match])+" // xsec for process '"+match+"'"
+    return [str(xsecDB[match])+" // xsec for process '"+match+"'",xsecDB[match]]
 
 for folder in sorted(rootFiles.keys()):
     #print "reading ... ",folder
@@ -192,6 +196,8 @@ for folder in sorted(rootFiles.keys()):
     nEvents = 0
     weightedSumPos = 0
     weightedSumNeg = 0
+    
+    weightedGenSum = 0.0
 
     for f in rootFiles[folder]:
         rootFile = ROOT.TFile(f)
@@ -200,19 +206,33 @@ for folder in sorted(rootFiles.keys()):
         weightedSumNeg += math.fabs(hist.GetBinContent(1))
         weightedSumPos += math.fabs(hist.GetBinContent(2))
         nEvents += hist.GetEntries()
+        
+        weightedGenSum+=hist.GetBinContent(1)+hist.GetBinContent(2)
 
     avgWeight = nEvents/(weightedSumNeg+weightedSumPos)
     sumPosWeight = round(weightedSumPos*avgWeight)
     sumNegWeight = round(weightedSumNeg*avgWeight)
 
     tab = "    "
+    '''
     print tab+"{\""+folder.rsplit("_v",1)[0]+"\","
     print tab+tab+"new SimpleWeightInfo("
     print tab+tab+tab+"//total="+str(nEvents)+" eff="+str(sumPosWeight)+" - "+str(sumNegWeight)+" = "+str(sumPosWeight-sumNegWeight)
     print tab+tab+tab+str(sumPosWeight-sumNegWeight)+","
-    print tab+tab+tab+findXsec(folder.rsplit("_v",1)[0])
+    print tab+tab+tab+findXsec(folder.rsplit("_v",1)[0])[0]
     print tab+tab+")"
     print tab+"},"
+    '''
+    
+    print tab+"{\""+folder.rsplit("_v",1)[0]+"\","
+    print tab+tab+"new SimpleWeightInfo("
+    print tab+tab+tab+"//xtotal="+str(nEvents)+" eff="+str(sumPosWeight)+" - "+str(sumNegWeight)+" = "+str(sumPosWeight-sumNegWeight)
+    print tab+tab+tab+str(weightedGenSum)+", //xsec from weight = ",str(weightedGenSum/nEvents)," (matching eff = "+str(weightedGenSum/nEvents/findXsec(folder.rsplit("_v",1)[0])[1])+")"
+    print tab+tab+tab+findXsec(folder.rsplit("_v",1)[0])[0]
+    print tab+tab+")"
+    print tab+"},"
+    
+    
     #print "\tentries = ",nEvents
     #print "\tpos = ",sumPosWeight
     #print "\tneg = ",sumNegWeight
