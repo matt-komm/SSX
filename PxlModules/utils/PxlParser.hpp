@@ -175,6 +175,19 @@ class SyntaxNode
                     tree->storeVariable(prefix+urName,it.second);
                 }
             }
+            else
+            {
+                for (auto it: *ur->getContainer())
+                {
+                    std::string urName=it.first;
+                    if (std::regex_match(urName,_regex))
+                    {
+                        std::replace(urName.begin(), urName.end(), ' ', '_');
+                        std::replace(urName.begin(), urName.end(), ':', '_');
+                        tree->storeVariable(prefix+urName,it.second);
+                    }
+                }
+            }
         }
 };
 
