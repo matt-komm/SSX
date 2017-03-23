@@ -72,8 +72,8 @@ class Splitter:
             
             addOption("process name field","",_processNameField);
             
-            addOption("percentages","percentage of events to select",{"[A-Za-z0-9_\\-]+=0.7"});
-            addOption("limits","limit the events to split per process",{"[A-Za-z0-9_\\-]+=-1"});
+            addOption("percentages","percentage of events to select",std::vector<std::string>{"[A-Za-z0-9_\\-]+=0.7"});
+            addOption("limits","limit the events to split per process",std::vector<std::string>{"[A-Za-z0-9_\\-]+=-1"});
             addOption("random","select events randomly",_random);
             addOption("use event number","select events based on the event number,lumi,run",_useEventNumber);
             addOption("use existing flag","use flag from previous module",_useExistingFlag);
