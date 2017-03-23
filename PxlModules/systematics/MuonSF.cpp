@@ -13,110 +13,16 @@
 #include "TH2.h"
 #include "TFile.h"
 
+#include "SFReader.hh"
+
 static pxl::Logger logger("MuonSF");
 
 class MuonSF:
     public pxl::Module
 {
     private:
-        struct ScaleFactor
-        {
-            std::string prefix;
+
             
-            std::string fileName;
-            std::string histogramName;
-            double additionalUncertainty;
-            
-            TH2* rootHistogramPtEta;
-            
-            ScaleFactor(
-                pxl::Module* module,
-                const std::string& prefix
-            ):
-                prefix(prefix),
-                fileName(),
-                histogramName(),
-                additionalUncertainty(0),
-                rootHistogramPtEta(nullptr)
-            {
-                module->addOption(prefix+" file name","","",pxl::OptionDescription::USAGE_FILE_OPEN);
-                module->addOption(prefix+" hist name","","");
-                module->addOption(prefix+" add uncertainty", "", 0.0);
-            }
-            
-            void init(pxl::Module* module)
-            {
-                module->getOption(prefix+" file name",fileName);
-                module->getOption(prefix+" hist name",histogramName);
-                module->getOption(prefix+" add uncertainty", additionalUncertainty);
-                
-                fileName = module->getAnalysis()->findFile(fileName);
-            
-                TFile rootFile(fileName.c_str());
-                if ((not rootFile.IsOpen()) or (rootFile.GetSize()==0))
-                {
-                    throw std::runtime_error("SF file '"+fileName+"' does not exits!");
-                }
-                TH2* h = dynamic_cast<TH2*>(rootFile.Get(histogramName.c_str()));
-                if (!h)
-                {
-                    throw std::runtime_error("Histogram '"+histogramName+"' does not exist in file '"+fileName+"'");
-                }
-                if (h->GetXaxis()->GetXmax()>50.0 and h->GetYaxis()->GetXmax()<5.0)
-                {
-                    rootHistogramPtEta = (TH2*)h->Clone((std::string("histMuonSF")+std::to_string(std::rand())).c_str());
-                    rootHistogramPtEta->SetDirectory(0);
-                }
-                else
-                {
-                    throw std::runtime_error("Histogram '"+histogramName+"' in file '"+fileName+"' does not seem to be binned x=pt and y=eta");
-                }
-            }
-            
-            float getScaleFactor(double pt, double eta,int shift=0)
-            {
-                if (rootHistogramPtEta)
-                {
-                    int xbin = rootHistogramPtEta->GetXaxis()->FindBin(pt);
-                    int ybin = rootHistogramPtEta->GetYaxis()->FindBin(fabs(eta));
-                    if (xbin<=0)
-                    {
-                        throw std::runtime_error("Got muon with pt="+std::to_string(pt)+" that underflows the SF histogram '"+histogramName+"'");
-                    }
-                    else if (xbin>rootHistogramPtEta->GetXaxis()->GetNbins())
-                    {
-                        xbin=rootHistogramPtEta->GetXaxis()->GetNbins();
-                    }
-                    if (ybin<=0)
-                    {
-                        throw std::runtime_error("Got muon with eta="+std::to_string(eta)+" that underflows the SF histogram '"+histogramName+"'");
-                    }
-                    else if (ybin>rootHistogramPtEta->GetYaxis()->GetNbins())
-                    {
-                        ybin=rootHistogramPtEta->GetYaxis()->GetNbins();
-                    }
-                    float sf = rootHistogramPtEta->GetBinContent(xbin,ybin);
-                    if (sf<0.1)
-                    {
-                        throw std::runtime_error("Got muon SF of "+std::to_string(sf)+"(<0.1) for pt="+std::to_string(pt)+" eta="+std::to_string(eta)+" from histogram '"+histogramName+"'");
-                    }
-                    if (shift>=1)
-                    {
-                        sf += fabs(rootHistogramPtEta->GetBinError(xbin,ybin))+fabs(additionalUncertainty);
-                    }
-                    else if (shift<=-1)
-                    {
-                        sf -= fabs(rootHistogramPtEta->GetBinError(xbin,ybin))+fabs(additionalUncertainty);
-                    }
-                    return sf;
-                }
-                else
-                {
-                    throw std::runtime_error("Histogram '"+histogramName+"' not yet read from file or it has been deleted");
-                }
-            }
-        };
-    
         std::string _eventViewName;
         std::string _muonName;
         std::string _sfName;
@@ -128,7 +34,7 @@ class MuonSF:
         pxl::Source* _outputSource;
         
         
-        ScaleFactor* _scaleFactor;
+        SFReader* _scaleFactor;
         
     public:
         MuonSF():
@@ -154,7 +60,7 @@ class MuonSF:
             
             _outputSource = addSource("output","output");
             
-            _scaleFactor=new ScaleFactor(this,"SF");
+            _scaleFactor=new SFReader(this,"SF");
         }
 
         ~MuonSF()
@@ -233,17 +139,19 @@ class MuonSF:
                                             if (particle->hasUserRecord(_muonMatchingFlag) and particle->getUserRecord(_muonMatchingFlag).toBool())
                                             {
                                                 ++nMuons;
-                                                nominalSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),0);
-                                                upSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),1);
-                                                downSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),-1);
+                                                auto sfAndError = _scaleFactor->getSFAndError(particle->getPt(),std::fabs(particle->getEta()));
+                                                nominalSF *= sfAndError.first;
+                                                upSF *= sfAndError.first+sfAndError.second;
+                                                downSF *= sfAndError.first-sfAndError.second;
                                             }
                                         }
                                         else
                                         {
                                             ++nMuons;
-                                            nominalSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),0);
-                                            upSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),1);
-                                            downSF *= _scaleFactor->getScaleFactor(particle->getPt(),particle->getEta(),-1);
+                                            auto sfAndError = _scaleFactor->getSFAndError(particle->getPt(),std::fabs(particle->getEta()));
+                                            nominalSF *= sfAndError.first;
+                                            upSF *= sfAndError.first+sfAndError.second;
+                                            downSF *= sfAndError.first-sfAndError.second;
                                         }
                                     }
                                 }

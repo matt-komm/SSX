@@ -290,7 +290,7 @@ class Splitter:
                 double achievedPercentage = 1.0*itProcess.second.selected/itProcess.second.total;
                 
                 logger(pxl::LOG_LEVEL_INFO , getName()+" split fraction for '",itProcess.first,"': ",1.0*achievedPercentage, " (desired="+std::to_string(desiredPercentage)+"; ",passedEvents," events processed)");
-                if (!_useExistingFlag and desiredPercentage>0 and std::fabs(desiredPercentage-achievedPercentage)/desiredPercentage>1.5/std::sqrt(passedEvents))
+                if (!_useExistingFlag and passedEvents>10 and desiredPercentage>0 and std::fabs(desiredPercentage-achievedPercentage)/desiredPercentage>1.5/std::sqrt(passedEvents))
                 {
                     logger(pxl::LOG_LEVEL_ERROR,getName()+" split actual split fraction ("+std::to_string(achievedPercentage)+") too far away from desired one ("+std::to_string(desiredPercentage)+") for process '"+itProcess.first+"' with processed events "+std::to_string(passedEvents));
                 }
