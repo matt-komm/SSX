@@ -18,81 +18,76 @@ class PLObjects:
     private:
     
         std::string _eventViewName;
-        
-        enum JetProjectionMode
-        {
-            NONE=0, //no projection
-            EXL=1, //exclude prompt leptons
-            EXLN=2, //exclude prompt leptons + neutrinos
-            EXLNN=3 //exclude prompt leptons + all neutrinos
-        };
-        
-        enum TauMode
-        {
-            EXCLUDE=0, //exlude promt leptons from tau, include them in jets
-            INCLUDE=1 //include promt leptons from tau, exclude them in jets
-        };
 
-        struct Setup
-        {
-            TauMode tauMode;
-            JetProjectionMode jetMode;
-            std::string outName;
-            std::string leptonName;
-            std::string jetName;
-            std::string metName;
-
-            Setup(
-                TauMode tauMode,
-                JetProjectionMode jetMode
-                
-            ):
-                tauMode(tauMode),
-                jetMode(jetMode)
-            {
-                if (tauMode==INCLUDE) { leptonName="Lepton"; outName="incTau"; }
-                else { leptonName="LeptonWOTau"; outName="exTau"; }
-                
-                jetName = "Jet";
-                
-                if (jetMode==EXL) { jetName+="ExL"; outName+="_exL"; }
-                else if (jetMode==EXLN) { jetName+="ExLN"; outName+="_exLN";}
-                else if (jetMode==EXLNN) { jetName+="ExLNN"; outName+="_exLNN"; }
-                
-                if (tauMode==EXCLUDE and jetMode!=NONE) { jetName+="WTau"; }
-                
-                metName = "NeutrinoPrompt";
-                if (jetMode==EXLNN) { metName = "NeutrinoAll"; }  
-                else if (tauMode==EXCLUDE) { metName = "NeutrinoPromptWOTau"; }
-            }
-        };
+        pxl::Source* _outputSource;
+        pxl::Source* _noLeptonSource;
         
-        std::vector<std::pair<Setup,bool>> _setups;
+        std::string _leptonInputName;
+        std::string _selectedLeptonName;
+        int64_t _leptonPdgId;
+        double _leptonPt;
+        double _leptonEta;
         
-        pxl::Source* _nominalSource;
+        std::string _jetInputName;
+        std::string _selectedJetName;
+        double _jetPt;
+        double _jetEta;
+        double _dR;
+        
+        std::string _selectedBjetName;
+        double _bJetEta;
+        double _bHadronEta;
+        
+        std::string _neutrinoInputName;
+        std::string _selectedMETName;
         
         
     public:
         PLObjects():
             Module(),
-            _eventViewName("ParticleLevel")
-            
+            _eventViewName("PTR"),
+            _leptonInputName("Lepton"),
+            _selectedLeptonName("TightLepton"),
+            _leptonPdgId(13),
+            _leptonPt(26),
+            _leptonEta(2.4),
+            _jetInputName("Jet"),
+            _selectedJetName("SelectedLJet"),
+            _jetPt(40.0),
+            _jetEta(4.7),
+            _dR(-1),
+            _selectedBjetName("SelectedBJet"),
+            _bJetEta(2.4),
+            _bHadronEta(2.4),
+            _neutrinoInputName("Neutrino"),
+            _selectedMETName("MET")
         {
             addSink("input", "input");
             addOption("event view name", "", _eventViewName);
 
-            _nominalSource = addSource("nominal","output");
+            _noLeptonSource = addSource("noLepton","noLepton");
+            _outputSource = addSource("output","output");
             
-            for (auto tauMode: {EXCLUDE,INCLUDE})
-            {
-                for (auto jetMode: {NONE,EXL,EXLN,EXLNN})
-                {
-                    _setups.emplace_back(Setup(tauMode,jetMode),true);
-                    bool enabled = true;
-                    addOption(_setups.back().first.outName,"",enabled);
-                    _setups.back().second = enabled;
-                }
-            }
+            
+            addOption("lepton input name", "", _leptonInputName);
+            addOption("selected lepton name", "", _selectedLeptonName);
+            addOption("lepton pdgId", "", _leptonPdgId);
+            addOption("lepton pt", "", _leptonPt);
+            addOption("lepton eta", "", _leptonEta);
+            
+            addOption("jet input name", "", _jetInputName);
+            addOption("selected jet name", "", _selectedJetName);
+            addOption("jet pt", "", _jetPt);
+            addOption("jet eta", "", _jetEta);
+            addOption("lepton-jet dR", "", _dR);
+            
+            addOption("selected bjet name", "", _selectedBjetName);
+            addOption("bjet eta", "", _bJetEta);
+            addOption("B hadron eta", "", _bHadronEta);
+            
+            addOption("neutrino input name","",_neutrinoInputName);
+            addOption("MET name", "",_selectedMETName);
+
         }
 
         ~PLObjects()
@@ -126,10 +121,24 @@ class PLObjects:
         {
             getOption("event view name", _eventViewName);
             
-            for (auto setup: _setups)
-            { 
-                getOption(setup.first.outName,setup.second);
-            }
+            getOption("lepton input name", _leptonInputName);
+            getOption("selected lepton name", _selectedLeptonName);
+            getOption("lepton pdgId", _leptonPdgId);
+            getOption("lepton pt", _leptonPt);
+            getOption("lepton eta", _leptonEta);
+            
+            getOption("jet input name", _jetInputName);
+            getOption("selected jet name", _selectedJetName);
+            getOption("jet pt", _jetPt);
+            getOption("jet eta", _jetEta);
+            getOption("lepton-jet dR", _dR);
+            
+            getOption("selected bjet name", _selectedBjetName);
+            getOption("bjet eta", _bJetEta);
+            getOption("B hadron eta", _bHadronEta);
+            
+            getOption("neutrino input name",_neutrinoInputName);
+            getOption("MET name",_selectedMETName);
         
         }
         
@@ -148,49 +157,93 @@ class PLObjects:
                     {
                         if (ev->getName()==_eventViewName)
                         {
-                            for (auto setup: _setups)
+                            std::vector<pxl::Particle*> particles;
+                            ev->getObjectsOfType(particles);
+                            
+                            std::vector<pxl::Particle*> leptons;
+                            std::vector<pxl::Particle*> jets;
+                            
+                            pxl::Particle* met = ev->create<pxl::Particle>();
+                            met->setName(_selectedMETName);
+                            double met_px = 0;
+                            double met_py = 0;
+                            
+                            for (auto particle: particles)
                             {
-                                if (not setup.second)
+                                if (particle->getName()==_leptonInputName
+                                    and std::abs(particle->getPdgNumber())==_leptonPdgId
+                                    and particle->getPt()>_leptonPt
+                                    and std::fabs(particle->getEta())<_leptonEta
+                                   )
                                 {
-                                    continue;
+                                    particle->setName(_selectedLeptonName);
+                                    leptons.push_back(particle);
                                 }
-                                
-                                pxl::EventView* evClone = (pxl::EventView*)ev->clone();
-                                evClone->setName("PL_"+setup.first.outName);
-                                event->insertObject(evClone);
-                                
-                                std::vector<pxl::Particle*> particles;
-                                evClone->getObjectsOfType(particles);
-                                
-                                for (auto p: particles)
+                                else if (particle->getName()==_jetInputName
+                                    and particle->getPt()>_jetPt
+                                    and std::fabs(particle->getEta())<_jetEta
+                                   )
                                 {
-                                    const std::string name = p->getName();
-                                    if (name == setup.first.leptonName)
-                                    {
-                                        p->setName("Lepton");
-                                    }
-                                    else if (name == setup.first.jetName)
-                                    {
-                                        p->setName("Jet");
-                                    }
-                                    else if (name == setup.first.metName)
-                                    {
-                                        p->setName("Neutrino");
-                                    }
-                                    else
-                                    {
-                                        evClone->removeObject(p);
-                                    }
+                                    particle->setName(_selectedJetName);
+                                    jets.push_back(particle);
                                 }
-                                
-                                  
+                                else if (particle->getName()==_neutrinoInputName)
+                                {
+                                    met_px+=particle->getPx();
+                                    met_py+=particle->getPy();
+                                    ev->removeObject(particle);
+                                }
+                                else
+                                {
+                                    ev->removeObject(particle);
+                                }
                             }
-                            event->removeObject(ev);
-                            break;
+                            ev->setUserRecord("n"+_selectedLeptonName,leptons.size());
+                            met->setP4(met_px, met_py, 0.0, std::sqrt(met_px*met_px+met_py*met_py));
+                                                        
+                            if (_dR>0)
+                            {
+                                for (auto itjet = jets.begin(); itjet!=jets.end();)
+                                {
+                                    for (auto lepton: leptons)
+                                    {
+                                        if ((*itjet)->getVector().deltaR(lepton->getVector())<_dR)
+                                        {
+                                            jets.erase(itjet);
+                                            continue;
+                                        }
+                                    }
+                                    ++itjet;
+                                }
+                            }
+                            std::vector<pxl::Particle*> bjets;
+                            for (auto jet: jets)
+                            {
+                                if (std::abs(jet->getPdgNumber())==5
+                                    and std::fabs(jet->getEta())<_bJetEta
+                                   )
+                                {
+                                    jet->setName(_selectedBjetName);
+                                    bjets.push_back(jet);
+                                }
+                            }
+                            ev->setUserRecord("n"+_selectedJetName,jets.size());
+                            ev->setUserRecord("n"+_selectedBjetName,bjets.size());
+                            
+                            if (leptons.size()!=1)
+                            {
+                                _noLeptonSource->setTargets(event);
+                                return _noLeptonSource->processTargets();
+                            }
+                            else
+                            {
+                                _outputSource->setTargets(event);
+                                return _outputSource->processTargets();
+                            }
                         }
                     }
-                    _nominalSource->setTargets(event);
-                    return _nominalSource->processTargets();
+                    _noLeptonSource->setTargets(event);
+                    return _noLeptonSource->processTargets();
                 }
             }
             catch(std::exception &e)

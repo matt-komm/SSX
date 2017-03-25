@@ -17,6 +17,7 @@ class NeutrinoPz:
 {
     private:
         pxl::Source* _output;
+        pxl::Source* _noLepton;
 
         std::string _inputEventViewName;
         std::string _metName;
@@ -38,6 +39,7 @@ class NeutrinoPz:
 
         {
             addSink("input", "Input");
+            _noLepton = addSource("noLepton", "noLepton");
             _output = addSource("output", "output");
 
             addOption("input event view","name of the event view",_inputEventViewName);
@@ -156,15 +158,16 @@ class NeutrinoPz:
                                 neutrino->setUserRecord("dpz",fabs(nuVecs.first.Pz()-nuVecs.second.Pz()));
                                 
                             }
-                            else if (!met)
+                            if (!met)
                             {
                                 throw std::runtime_error("no MET with name '"+_metName+"' found!");
                             }
-                            else if (!lepton)
+                            if (!lepton)
                             {
-                                throw std::runtime_error("no lepton with name '"+_leptonName+"' found!");
+                                _noLepton->setTargets(event);
+                                return _noLepton->processTargets();
                             }
-                            else if (!neutrino)
+                            if (met and lepton and !neutrino)
                             {
                                 throw std::runtime_error("no neutrino reconstructed!");
                             }

@@ -93,6 +93,13 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(Matching MODULE Matching.cpp)
+target_link_libraries(Matching ${PXL_LIBRARIES})
+install(
+    TARGETS Matching
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+
 add_library(SubAnalysis MODULE SubAnalysis.cpp)
 target_link_libraries(SubAnalysis ${PXL_LIBRARIES})
 install(
