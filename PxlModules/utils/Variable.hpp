@@ -2,6 +2,7 @@
 #define __VARIABLE_H__
 
 #include <iostream>
+#include <typeinfo>
 
 class Variable
 {
@@ -10,6 +11,7 @@ class Variable
         {
         }
         
+        virtual const std::type_info& getType() const = 0;
         virtual void* getAddress() = 0;
         virtual void reset() = 0;
         virtual bool isDirty() = 0;
@@ -30,11 +32,18 @@ class VariableTmpl:
     private:
         TYPE* _value;
         bool _isDirty;
+        constexpr static const std::type_info& _type = typeid(TYPE);
     public:
         VariableTmpl(TYPE value=std::numeric_limits<TYPE>::lowest()):
             _value(new TYPE(value)),
+            
             _isDirty(true)
         {
+        }
+        
+        virtual const std::type_info& getType() const
+        {
+            return _type;
         }
         
         virtual void* getAddress()

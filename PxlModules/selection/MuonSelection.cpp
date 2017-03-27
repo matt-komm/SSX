@@ -173,7 +173,7 @@ class MuonSelection:
                                 if (particle->getName()==_inputMuonName)
                                 {
                                     const float relIso = pfRelMuonIso(particle,0.5);
-                                    particle->setUserRecord("relIso",relIso);
+                                    particle->setUserRecord("deltaBetaRelIso",relIso);
                                     if (passesTightCriteria(particle))
                                     {
                                         if (relIso<_pfRelIsoTightMuon)

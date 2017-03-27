@@ -2,7 +2,7 @@ find_package(ROOT REQUIRED)
 
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR} 
-    ${PROJECT_SOURCE_DIR}/internal/TMVA/inc/TMVA
+    ${PROJECT_SOURCE_DIR}/internal/TMVA/inc
     ${ROOT_INCLUDE_DIR}
     ${PROJECT_SOURCE_DIR}/internal/rapidjson
 )

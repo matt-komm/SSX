@@ -170,7 +170,7 @@ xsecDB = {
     
     "WToLNu_0J_13TeV":49670.0, #MCM
     "WToLNu_1J_13TeV":8264.0, #MCM
-    "WToLNu_2J_13TeV":2544.0, #MCM
+    "WToLNu_2J_13TeV":3226.0, #MCM 2628
     
     "TT": 831.76,
     "TTJets": 831.76,

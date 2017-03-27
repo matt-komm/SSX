@@ -161,7 +161,27 @@ class Splitter:
             {
                 pxl::Event *event  = dynamic_cast<pxl::Event*>(sink->get());
                 
-                const std::string processName = event->getUserRecord(_processNameField);
+                if (event->getUserRecord("isRealData").toBool())
+                {
+                    event->setUserRecord(_splitName,true);
+                    event->setUserRecord(_splitName+"_frac",1.0);
+                    _outputSource->setTargets(event);
+                    return _outputSource->processTargets();
+                }
+                
+                std::string processName = event->getUserRecord(_processNameField);
+                if (event->hasUserRecord("nparton"))
+                {
+                    processName+=std::to_string(event->getUserRecord("nparton").toInt32())+"q";
+                }
+                if (event->hasUserRecord("nparton4"))
+                {
+                    processName+=std::to_string(event->getUserRecord("nparton4").toInt32())+"c";
+                }
+                if (event->hasUserRecord("nparton5"))
+                {
+                    processName+=std::to_string(event->getUserRecord("nparton5").toInt32())+"b";
+                }
                 
                 if (_splittingInfo.find(processName)==_splittingInfo.end())
                 {
@@ -290,7 +310,7 @@ class Splitter:
                 double achievedPercentage = 1.0*itProcess.second.selected/itProcess.second.total;
                 
                 logger(pxl::LOG_LEVEL_INFO , getName()+" split fraction for '",itProcess.first,"': ",1.0*achievedPercentage, " (desired="+std::to_string(desiredPercentage)+"; ",passedEvents," events processed)");
-                if (!_useExistingFlag and passedEvents>10 and desiredPercentage>0 and std::fabs(desiredPercentage-achievedPercentage)/desiredPercentage>1.5/std::sqrt(passedEvents))
+                if (!_useExistingFlag and desiredPercentage*passedEvents>10 and desiredPercentage>0 and std::fabs(desiredPercentage-achievedPercentage)/achievedPercentage>2.5/std::sqrt(passedEvents))
                 {
                     logger(pxl::LOG_LEVEL_ERROR,getName()+" split actual split fraction ("+std::to_string(achievedPercentage)+") too far away from desired one ("+std::to_string(desiredPercentage)+") for process '"+itProcess.first+"' with processed events "+std::to_string(passedEvents));
                 }

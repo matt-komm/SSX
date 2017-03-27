@@ -42,7 +42,7 @@ class Matching:
                 {
                     if (!p2)
                     {
-                        p1->setUserRecord(prefix,-1.0);
+                        p1->setUserRecord(prefix+"_dR",-1.0);
                         return false;
                     }
                     else
@@ -123,12 +123,17 @@ class Matching:
                     std::vector<pxl::EventView*> eventViews;
                     event->getObjectsOfType(eventViews);
                     
+                    pxl::EventView* recoEV = nullptr;
+                    pxl::EventView* particleEV = nullptr;
+                    pxl::EventView* partonEV = nullptr;
+                    
                     for (auto ev: eventViews)
                     {
                         if (ev->getName()=="Parton")
                         {
                             std::vector<pxl::Particle*> particles;
                             ev->getObjectsOfType(particles);
+                            partonEV=ev;
                             for (auto particle: particles)
                             {
                                 if (particle->getName()=="Lepton") partonST.lepton=particle;
@@ -143,34 +148,57 @@ class Matching:
                         {
                             std::vector<pxl::Particle*> particles;
                             ev->getObjectsOfType(particles);
+                            particleEV=ev;
                             for (auto particle: particles)
                             {
-                                if (particle->getName()=="TightLepton") partonST.lepton=particle;
-                                if (particle->getName()=="Neutrino") partonST.neutrino=particle;
-                                if (particle->getName()=="W") partonST.wboson=particle;
-                                if (particle->getName()=="Top") partonST.top=particle;
-                                if (particle->getName()=="BJet") partonST.bjet=particle;
-                                if (particle->getName()=="LightJet") partonST.ljet=particle;
+                                if (particle->getName()=="TightLepton") particleST.lepton=particle;
+                                if (particle->getName()=="Neutrino") particleST.neutrino=particle;
+                                if (particle->getName()=="W") particleST.wboson=particle;
+                                if (particle->getName()=="Top") particleST.top=particle;
+                                if (particle->getName()=="BJet") particleST.bjet=particle;
+                                if (particle->getName()=="LightJet") particleST.ljet=particle;
                             }
                         }
                         else if (ev->getName()=="SingleTop")
                         {
                             std::vector<pxl::Particle*> particles;
                             ev->getObjectsOfType(particles);
+                            recoEV=ev;
                             for (auto particle: particles)
                             {
-                                if (particle->getName()=="TightLepton") partonST.lepton=particle;
-                                if (particle->getName()=="Neutrino") partonST.neutrino=particle;
-                                if (particle->getName()=="W") partonST.wboson=particle;
-                                if (particle->getName()=="Top") partonST.top=particle;
-                                if (particle->getName()=="BJet") partonST.bjet=particle;
-                                if (particle->getName()=="LightJet") partonST.ljet=particle;
+                                if (particle->getName()=="TightLepton") recoST.lepton=particle;
+                                if (particle->getName()=="Neutrino") recoST.neutrino=particle;
+                                if (particle->getName()=="W") recoST.wboson=particle;
+                                if (particle->getName()=="Top") recoST.top=particle;
+                                if (particle->getName()=="BJet") recoST.bjet=particle;
+                                if (particle->getName()=="LightJet") recoST.ljet=particle;
                             }
                         }
                     }
-                    recoST.match("PTR_",particleST);
-                    recoST.match("GEN_",partonST);
-                    particleST.match("GEN_",partonST);
+                    if (recoST.match("PTR",particleST))
+                    {
+                        recoEV->setUserRecord("matchedToPTR",true);
+                    }
+                    else
+                    {
+                        recoEV->setUserRecord("matchedToPTR",false);
+                    }
+                    if (recoST.match("GEN",partonST))
+                    {
+                        recoEV->setUserRecord("matchedToGEN",true);
+                    }
+                    else
+                    {
+                        recoEV->setUserRecord("matchedToGEN",false);
+                    }
+                    if (particleST.match("GEN",partonST))
+                    {
+                        particleEV->setUserRecord("matchedToGEN",true);
+                    }
+                    else
+                    {
+                        particleEV->setUserRecord("matchedToGEN",false);
+                    }
                     
                     _source->setTargets(event);
                     return _source->processTargets();

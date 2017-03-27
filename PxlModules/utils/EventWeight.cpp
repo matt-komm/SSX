@@ -356,7 +356,7 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
         new SimpleWeightInfo(
             //total=53135013.0 eff=34346729.0 - 18788284.0 = 15558445.0
             15558445.0,
-            2544.0 // xsec for process 'WToLNu_2J_13TeV'
+            3226.0 // xsec for process 'WToLNu_2J_13TeV'
         )
     },
     {"WW_TuneCUETP8M1_13TeV-pythia8_ext",
