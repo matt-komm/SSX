@@ -109,7 +109,8 @@ class ElectronVeto:
             {
                 return false;
             }
-            if (fabs(particle->getEta())>1.4442 && fabs(particle->getEta())<1.5660)
+            float scEta = particle->getUserRecord("superClusterEta").toFloat();
+            if (fabs(scEta)>1.4442 && fabs(scEta)<1.5660)
             {
                 return false;
             }
@@ -121,7 +122,7 @@ class ElectronVeto:
             {
                 return false;
             }
-            if (std::fabs(particle->getUserRecord("superClusterEta").toFloat())<1.479)
+            if (std::fabs(scEta)<1.479)
             {
                 if (not (particle->getUserRecord("dxy").toFloat()<0.05))
                 {
