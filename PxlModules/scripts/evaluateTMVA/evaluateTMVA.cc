@@ -60,8 +60,6 @@ class TreeAccess
             }
             return _variables[name]->toFloat();
         }
-        
-        
 };
 
 class MVASetup
