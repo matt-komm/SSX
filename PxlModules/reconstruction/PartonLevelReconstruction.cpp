@@ -207,6 +207,7 @@ class PartonLevelReconstruction:
                             std::vector<pxl::Particle*> additionalBquarkCandidates;
 
                             std::vector<pxl::Particle*> leptonCandidates;
+                            std::vector<pxl::Particle*> leptonCandidatesFromTaus;
                             std::vector<pxl::Particle*> neutrinoCandidates;
                             std::vector<pxl::Particle*> additionalNeutrinoCandidates;
                             
@@ -286,7 +287,7 @@ class PartonLevelReconstruction:
                                         }
                                         if (taumother and checkFlag(taumother,FromHardProcess))
                                         {
-                                            leptonCandidates.push_back(particle);
+                                            leptonCandidatesFromTaus.push_back(particle);
                                         }
                                     }
                                 }
@@ -435,7 +436,9 @@ class PartonLevelReconstruction:
                                 outputEV->insertObject(addLquarkClone);
                             }
                             
-                            if (leptonCandidates.size()>1)
+                            if ((leptonCandidates.size()+leptonCandidatesFromTaus.size())>1
+                                or ((leptonCandidates.size()>0) and (leptonCandidatesFromTaus.size()>0))
+                            )
                             {
                                 throw std::runtime_error("Lepton ambiguity discovered");
                             }
@@ -447,9 +450,21 @@ class PartonLevelReconstruction:
                                 pxl::Particle* leptonClone = (pxl::Particle*)lepton->clone();
                                 leptonClone->setName("Lepton");
                                 leptonClone->setUserRecord("pdg",lepton->getPdgNumber());
+                                leptonClone->setUserRecord("fromTau",false);
                                 outputEV->insertObject(leptonClone);
                                 wbosonClone->linkDaughter(leptonClone);
                                 
+                            }
+                            else if (leptonCandidatesFromTaus.size()==1)
+                            {
+                                lepton = leptonCandidatesFromTaus.front();
+                            
+                                pxl::Particle* leptonClone = (pxl::Particle*)lepton->clone();
+                                leptonClone->setName("Lepton");
+                                leptonClone->setUserRecord("pdg",lepton->getPdgNumber());
+                                leptonClone->setUserRecord("fromTau",true);
+                                outputEV->insertObject(leptonClone);
+                                wbosonClone->linkDaughter(leptonClone);
                             }
                             
                             if (neutrinoCandidates.size()>1)
@@ -499,7 +514,7 @@ class PartonLevelReconstruction:
                          
                     
 
-                            if (leptonCandidates.size()==0 or neutrinoCandidates.size()==0)
+                            if ((leptonCandidates.size()+leptonCandidatesFromTaus.size())==0 or neutrinoCandidates.size()==0)
                             {
                                 outputEV->setUserRecord("isLeptonic",false);
                                 _outputHadronic->setTargets(event);
