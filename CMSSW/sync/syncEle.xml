@@ -1,0 +1,582 @@
+<analysis file_format_version="0.4" >
+  <module name="File Input1"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+0    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[("tchannel.pxlio")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+49      </entry>
+      <entry name="yPos"  type="double" >
+46      </entry>
+    </userrecords>
+  </module>
+  <module name="TriggerSelection1"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_Ele32_eta2p1_WPTight_Gsf_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[Ele32Tight_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+296      </entry>
+      <entry name="yPos"  type="double" >
+94      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule1"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[countEventWeight.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="output"  type="string" >
+<![CDATA[all.txt]]>    </option>
+    <option name="step"  type="string" >
+<![CDATA[all]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+125      </entry>
+      <entry name="yPos"  type="double" >
+187      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule2"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[countEventWeight.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="output"  type="string" >
+<![CDATA[trigger.txt]]>    </option>
+    <option name="step"  type="string" >
+<![CDATA[trigger]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+564      </entry>
+      <entry name="yPos"  type="double" >
+122      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule3"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[countEventWeight.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="output"  type="string" >
+<![CDATA[isoele.txt]]>    </option>
+    <option name="step"  type="string" >
+<![CDATA[isoele]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+337      </entry>
+      <entry name="yPos"  type="double" >
+483      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule4"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[countEventWeight.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="output"  type="string" >
+<![CDATA[vetoele.txt]]>    </option>
+    <option name="step"  type="string" >
+<![CDATA[vetoele]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+44      </entry>
+      <entry name="yPos"  type="double" >
+668      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule5"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[countEventWeight.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="output"  type="string" >
+<![CDATA[vetomuon.txt]]>    </option>
+    <option name="step"  type="string" >
+<![CDATA[vetomuon]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+397      </entry>
+      <entry name="yPos"  type="double" >
+805      </entry>
+    </userrecords>
+  </module>
+  <module name="JetSelection1"  type="JetSelection"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="input jet name"  type="string" >
+<![CDATA[Jet]]>    </option>
+    <option name="name of selected jets"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="clean event"  type="boolean" >
+True    </option>
+    <option name="PF Jet Minimum pT"  type="double" >
+40    </option>
+    <option name="PF Jet Maximum Eta"  type="double" >
+4.7    </option>
+    <option name="invert dR"  type="boolean" >
+False    </option>
+    <option name="dR cut"  type="double" >
+0.4    </option>
+    <option name="dR objects"  type="string_vector" >
+<![CDATA[("TightLepton","TightMuon","TightElectron")]]>    </option>
+    <option name="store n leading jets"  type="long" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+598      </entry>
+      <entry name="yPos"  type="double" >
+736      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule6"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[countEventWeight.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="output"  type="string" >
+<![CDATA[2jets.txt]]>    </option>
+    <option name="step"  type="string" >
+<![CDATA[2jets]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+807      </entry>
+      <entry name="yPos"  type="double" >
+792      </entry>
+    </userrecords>
+  </module>
+  <module name="BTagSelection1"  type="BTagSelection"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="input jet name"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="name of selected b-jets"  type="string" >
+<![CDATA[SelectedBJetTight]]>    </option>
+    <option name="name of untagged-jets"  type="string" >
+<![CDATA[SelectedLJetTight]]>    </option>
+    <option name="b Tagging Algorithm"  type="string" >
+<![CDATA[pfCombinedMVAV2BJetTags]]>    </option>
+    <option name="maximum b-jet eta"  type="double" >
+2.4    </option>
+    <option name="working point"  type="double" >
+0.9432    </option>
+    <option name="copy selected jets"  type="boolean" >
+False    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+952      </entry>
+      <entry name="yPos"  type="double" >
+840      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule7"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[countEventWeight.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="output"  type="string" >
+<![CDATA[1btag.txt]]>    </option>
+    <option name="step"  type="string" >
+<![CDATA[1btag]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+985      </entry>
+      <entry name="yPos"  type="double" >
+579      </entry>
+    </userrecords>
+  </module>
+  <module name="NeutrinoPz1"  type="NeutrinoPz"  isEnabled="true" >
+    <option name="input event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="met name"  type="string" >
+<![CDATA[MET]]>    </option>
+    <option name="lepton name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="neutrino name"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+1086      </entry>
+      <entry name="yPos"  type="double" >
+445      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule8"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[countEventWeight.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="output"  type="string" >
+<![CDATA[met.txt]]>    </option>
+    <option name="step"  type="string" >
+<![CDATA[met]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+1493      </entry>
+      <entry name="yPos"  type="double" >
+329      </entry>
+    </userrecords>
+  </module>
+  <module name="File Output1"  type="File Output"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[selected.pxlio]]>    </option>
+    <option name="Buffer size"  type="long" >
+20485760    </option>
+    <option name="# Objects/file section"  type="long" >
+2000    </option>
+    <option name="Compression level"  type="long" >
+3    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+1108      </entry>
+      <entry name="yPos"  type="double" >
+153      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule9"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[selectEventIds.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="ids"  type="string_vector" >
+<![CDATA[("17994066","28723757")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+923      </entry>
+      <entry name="yPos"  type="double" >
+136      </entry>
+    </userrecords>
+  </module>
+  <module name="ElectronVeto2"  type="ElectronVeto"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input electron name"  type="string" >
+<![CDATA[Electron]]>    </option>
+    <option name="Name of selected loose electrons"  type="string" >
+<![CDATA[LooseElectron]]>    </option>
+    <option name="Clean event"  type="boolean" >
+True    </option>
+    <option name="LooseElectron Minimum pT"  type="double" >
+15    </option>
+    <option name="LooseElectron Maximum eta"  type="double" >
+2.5    </option>
+    <option name="ID"  type="string" >
+<![CDATA[summer16eleIDVeto25ns]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+504      </entry>
+      <entry name="yPos"  type="double" >
+478      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonVeto2"  type="MuonVeto"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input muon name"  type="string" >
+<![CDATA[Muon]]>    </option>
+    <option name="Name of selected loose muons"  type="string" >
+<![CDATA[LooseMuon]]>    </option>
+    <option name="Clean event"  type="boolean" >
+True    </option>
+    <option name="LooseMuon Minimum pT"  type="double" >
+10    </option>
+    <option name="LooseMuon Maximum Eta"  type="double" >
+2.4    </option>
+    <option name="LooseMuon Minimum Relative Iso DeltaBeta"  type="double" >
+0.2    </option>
+    <option name="LooseMuon Relative Iso DeltaBeta; Beta Parameter"  type="double" >
+0.5    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+221      </entry>
+      <entry name="yPos"  type="double" >
+687      </entry>
+    </userrecords>
+  </module>
+  <module name="ElectronSelection1"  type="ElectronSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input electron name"  type="string" >
+<![CDATA[Electron]]>    </option>
+    <option name="Name of selected tight electrons"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="TightElectron Minimum pT"  type="double" >
+35    </option>
+    <option name="TightElectron Maximum Eta"  type="double" >
+2.1    </option>
+    <option name="HLT ID"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="tight ID"  type="string" >
+<![CDATA[summer16eleIDTight25ns]]>    </option>
+    <option name="veto ID"  type="string" >
+<![CDATA[summer16eleIDVeto25ns]]>    </option>
+    <option name="number of electrons"  type="long" >
+1    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+112      </entry>
+      <entry name="yPos"  type="double" >
+372      </entry>
+    </userrecords>
+  </module>
+  <module name="PyDecide2"  type="PyDecide"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[metSelection.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+1327      </entry>
+      <entry name="yPos"  type="double" >
+410      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="File Input1"  name="out" >
+    </source>
+    <sink module="PyModule1"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule1"  name="out" >
+    </source>
+    <sink module="TriggerSelection1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TriggerSelection1"  name="selected" >
+    </source>
+    <sink module="PyModule2"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule5"  name="out" >
+    </source>
+    <sink module="JetSelection1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection1"  name="2 Jets" >
+    </source>
+    <sink module="PyModule6"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelection1"  name="1 b-Tags" >
+    </source>
+    <sink module="PyModule7"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule7"  name="out" >
+    </source>
+    <sink module="NeutrinoPz1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule9"  name="out" >
+    </source>
+    <sink module="File Output1"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule3"  name="out" >
+    </source>
+    <sink module="ElectronVeto2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronVeto2"  name="veto loose electrons" >
+    </source>
+    <sink module="PyModule4"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule4"  name="out" >
+    </source>
+    <sink module="MuonVeto2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonVeto2"  name="veto loose muons" >
+    </source>
+    <sink module="PyModule5"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSelection1"  name="1 tight ele" >
+    </source>
+    <sink module="PyModule3"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule6"  name="out" >
+    </source>
+    <sink module="BTagSelection1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="NeutrinoPz1"  name="output" >
+    </source>
+    <sink module="PyDecide2"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyDecide2"  name="yes" >
+    </source>
+    <sink module="PyModule8"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule2"  name="out" >
+    </source>
+    <sink module="PyModule9"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="File Output1"  name="out" >
+    </source>
+    <sink module="ElectronSelection1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule9"  name="veto" >
+    </source>
+    <sink module="ElectronSelection1"  name="input" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2017-03-30]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[18:37:20]]>    </entry>
+  </userrecords>
+</analysis>

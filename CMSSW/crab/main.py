@@ -29,7 +29,7 @@ def getlog(task,*args,**kwargs):
     except HTTPException, hte:
         print hte.headers   
         
-isMC = False    
+isMC = True    
 
 if __name__=="__main__":
 
@@ -60,15 +60,15 @@ if __name__=="__main__":
     config.JobType.maxJobRuntimeMin=10*60
 
     config.Data.inputDBS = 'global'
-    #config.Data.inputDBS = 'phys03
+    #config.Data.inputDBS = 'phys03'
     if isMC:
         config.Data.splitting = 'FileBased'
         config.Data.unitsPerJob = 6
     else:
         config.Data.splitting = 'LumiBased'
         #config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt' #ICHEP
-        config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Final/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt'
-        
+        #config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Final/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt'
+        config.Data.lumiMask = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
         config.Data.unitsPerJob = 150
     
     #config.Data.ignoreLocality = True #use to circumvent crab/dbs bug with open data blocks (while its being writing)
@@ -199,8 +199,6 @@ if __name__=="__main__":
         
          
         
-        
-        
         "/QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
         "/QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
         "/QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
@@ -214,6 +212,16 @@ if __name__=="__main__":
         "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM",
         "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
         
+        
+        "/QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+        "/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+        "/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+        "/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+        "/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
+        "/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+        "/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM",
+        
+        
         "/WW_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
         "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
         "/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM",
@@ -221,7 +229,7 @@ if __name__=="__main__":
         
         
     ]
-    
+    '''
     data80X = [        
         '/SingleMuon/Run2016B-23Sep2016-v3/MINIAOD',
         '/SingleMuon/Run2016C-23Sep2016-v1/MINIAOD',
@@ -232,7 +240,39 @@ if __name__=="__main__":
         
         '/SingleMuon/Run2016H-PromptReco-v2/MINIAOD',
         '/SingleMuon/Run2016H-PromptReco-v3/MINIAOD',
+        
+        
+        '/SingleElectron/Run2016B-23Sep2016-v3/MINIAOD',
+        '/SingleElectron/Run2016C-23Sep2016-v1/MINIAOD',
+        '/SingleElectron/Run2016D-23Sep2016-v1/MINIAOD',
+        '/SingleElectron/Run2016E-23Sep2016-v1/MINIAOD',
+        '/SingleElectron/Run2016F-23Sep2016-v1/MINIAOD',
+        '/SingleElectron/Run2016G-23Sep2016-v1/MINIAOD',
+        
+        '/SingleElectron/Run2016H-PromptReco-v2/MINIAOD',
+        '/SingleElectron/Run2016H-PromptReco-v3/MINIAOD',
     ]
+    '''
+    data80X = [ 
+        '/SingleMuon/Run2016B-03Feb2017_ver2-v2/MINIAOD',
+        '/SingleMuon/Run2016C-03Feb2017-v1/MINIAOD',
+        '/SingleMuon/Run2016D-03Feb2017-v1/MINIAOD',
+        '/SingleMuon/Run2016E-03Feb2017-v1/MINIAOD',
+        '/SingleMuon/Run2016F-03Feb2017-v1/MINIAOD',
+        '/SingleMuon/Run2016G-03Feb2017-v1/MINIAOD',
+        '/SingleMuon/Run2016H-03Feb2017_ver2-v1/MINIAOD',
+        '/SingleMuon/Run2016H-03Feb2017_ver3-v1/MINIAOD',
+        
+        '/SingleElectron/Run2016B-03Feb2017_ver2-v2/MINIAOD',
+        '/SingleElectron/Run2016C-03Feb2017-v1/MINIAOD',
+        '/SingleElectron/Run2016D-03Feb2017-v1/MINIAOD',
+        '/SingleElectron/Run2016E-03Feb2017-v1/MINIAOD',
+        '/SingleElectron/Run2016F-03Feb2017-v1/MINIAOD',
+        '/SingleElectron/Run2016G-03Feb2017-v1/MINIAOD',
+        '/SingleElectron/Run2016H-03Feb2017_ver2-v1/MINIAOD',
+        '/SingleElectron/Run2016H-03Feb2017_ver3-v1/MINIAOD',
+    ]
+    
     if isMC:
         dataset=mc80Xv2Moriond[int(args[0])]
         processName = dataset.split("/")[1]
