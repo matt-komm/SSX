@@ -228,7 +228,7 @@ class PartonLevelReconstruction:
                                 //unpackFlags(particle);
                                 
                                 //Find Top --------------------------------------------------------
-                                if (std::fabs(particle->getPdgNumber())==6 and checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag))
+                                if (std::abs(particle->getPdgNumber())==6 and checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag))
                                 {
                                     if (top!=nullptr)
                                     {
@@ -240,7 +240,7 @@ class PartonLevelReconstruction:
                                 
                                 //Find W boson --------------------------------------------------------
                                 //copy flags fails here
-                                if (std::fabs(particle->getPdgNumber())==24 and checkFlag(particle,IsHardProcess))
+                                if (std::abs(particle->getPdgNumber())==24 and checkFlag(particle,IsHardProcess))
                                 {
                                     if (wboson!=nullptr)
                                     {
@@ -250,14 +250,14 @@ class PartonLevelReconstruction:
                                 }
                                 
                                 //Find b quarks --------------------------------------------------------
-                                if (std::fabs(particle->getPdgNumber())==5 and checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag))
+                                if (std::abs(particle->getPdgNumber())==5 and checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag))
                                 {
                                     bquarkCandidates.push_back(particle);
                                 }
                                 
                                 //Find l quarks --------------------------------------------------------
                                 //First copy flag is not always present
-                                if (std::fabs(particle->getPdgNumber())<5 and checkFlag(particle,FromHardProcess))
+                                if (std::abs(particle->getPdgNumber())<5 and checkFlag(particle,FromHardProcess))
                                 {
                                     if (_lastCopies and checkFlag(particle,IsLastCopy))
                                     {
@@ -270,7 +270,7 @@ class PartonLevelReconstruction:
                                 }
                                 
                                 //Find leptons --------------------------------------------------------
-                                if (std::fabs(particle->getPdgNumber())==11 or std::fabs(particle->getPdgNumber())==13)
+                                if (std::abs(particle->getPdgNumber())==11 or std::abs(particle->getPdgNumber())==13)
                                 {
                                     //deal with direct W->lnu
                                     if (checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag) and checkFlag(particle,IsPrompt))
@@ -292,14 +292,14 @@ class PartonLevelReconstruction:
                                     }
                                 }
                                 //protect against tau->gamma,tau FSR
-                                else if (_addTau and checkFlag(particle,FromHardProcess) and std::fabs(particle->getPdgNumber())==15 and checkFlag(particle,IsPrompt) and checkFlag(particle,copyGenFlag))
+                                else if (_addTau and checkFlag(particle,FromHardProcess) and std::abs(particle->getPdgNumber())==15 and checkFlag(particle,IsPrompt) and checkFlag(particle,copyGenFlag))
                                 {
                                     leptonCandidates.push_back(particle);
                                 }
                                 
                                 
                                 //Find neutrinos --------------------------------------------------------
-                                if (std::fabs(particle->getPdgNumber())==12 or std::fabs(particle->getPdgNumber())==14 or std::fabs(particle->getPdgNumber())==16)
+                                if (std::abs(particle->getPdgNumber())==12 or std::abs(particle->getPdgNumber())==14 or std::abs(particle->getPdgNumber())==16)
                                 {
                                     //deal only with direct W->lnu, ignore subsequent neutrinos from tau decays
                                     if (checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag) and checkFlag(particle,IsPrompt))
@@ -498,9 +498,13 @@ class PartonLevelReconstruction:
                             outputEV->setUserRecord("njets",(int)(2+additionalLquarkCandidates.size()+additionalBquarkCandidates.size()));
                             outputEV->setUserRecord("nbjets",(int)(1+additionalBquarkCandidates.size()));
                             
+                            const double mtw = calculateMTW(lepton,neutrinoClone);
+                            
+                            outputEV->setUserRecord("mtw",mtw);
                             
                             calculateAngles(
                                 outputEV, 
+                                "",
                                 lepton, 
                                 neutrinoClone, 
                                 wboson, 

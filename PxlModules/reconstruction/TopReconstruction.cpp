@@ -217,6 +217,64 @@ class TopReconstruction:
             return top;
         }
         
+        pxl::Particle* makeBestTop(pxl::EventView* eventView, pxl::Particle* lepton, pxl::Particle* neutrino, pxl::Particle* wboson,  std::vector<pxl::Particle*> lightjets, std::vector<pxl::Particle*> bjets)
+        {
+            const double bestTopMass = 172.5;
+            
+            pxl::Particle* ljet = nullptr;
+            pxl::Particle* bjet = nullptr;
+            
+            std::vector<pxl::Particle*> jets = lightjets;
+            jets.insert(jets.end(),bjets.begin(),bjets.end());
+            
+            
+            pxl::LorentzVector topVec(0,0,0,0);
+            for (pxl::Particle* jet: jets)
+            {
+                pxl::LorentzVector testVec = lepton->getVector()+neutrino->getVector()+jet->getVector();
+                if (std::fabs(topVec.getMass()-bestTopMass)>std::fabs(testVec.getMass()-bestTopMass))
+                {
+                    topVec=testVec;
+                    bjet = jet;
+                }
+            }
+            for (pxl::Particle* jet: jets)
+            {
+                if (jet!=bjet)
+                {
+                    if (!ljet or (std::fabs(ljet->getEta())<std::fabs(jet->getEta())))
+                    {
+                        ljet=jet;
+                    }
+                }
+            }
+            
+            pxl::Particle* top = eventView->create<pxl::Particle>();
+            top->setName(_topName+"Best");
+            top->setP4(topVec);
+            top->setUserRecord("Y",0.5*std::log((top->getE()+top->getPz())/(top->getE()-top->getPz())));
+            
+            if (ljet)
+            {
+                pxl::Particle* ljetClone = (pxl::Particle*)ljet->clone();
+                ljetClone->setName("LightJetBest");
+                eventView->insertObject(ljetClone);
+            }
+            if (bjet)
+            {
+                pxl::Particle* bjetClone = (pxl::Particle*)bjet->clone();
+                bjetClone->setName("BJetBest");
+                eventView->insertObject(bjetClone);
+            }
+            
+            if (ljet and bjet)
+            {
+                calculateAngles(eventView,"best_", lepton, neutrino, wboson, bjet, top, ljet);
+            }
+            
+            return top;
+        }
+        
         pxl::Particle* makeCMSystem(pxl::EventView* eventView, const std::string& name, std::vector<pxl::Particle*> particles)
         {
             pxl::Particle* cm = eventView->create<pxl::Particle>();
@@ -504,7 +562,12 @@ class TopReconstruction:
                 }
             }
             
-            calculateAngles(eventView, lepton, neutrino, wboson, bjet, top, lightjet);
+            if (wboson and (lightjets.size()+bjets.size())>0)
+            {
+                pxl::Particle* bestTop = makeBestTop(eventView,lepton, neutrino, wboson,lightjets,bjets);
+            }
+            
+            calculateAngles(eventView, "", lepton, neutrino, wboson, bjet, top, lightjet);
             
             return category;
         }

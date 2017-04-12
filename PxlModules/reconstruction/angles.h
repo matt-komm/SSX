@@ -21,31 +21,31 @@ double calculateMTW(pxl::Particle* lepton, pxl::Particle* met)
     return sqrt((lepton->getPt()+met->getPt())*(lepton->getPt()+met->getPt())-(lepton->getPx()+met->getPx())*(lepton->getPx()+met->getPx())-(lepton->getPy()+met->getPy())*(lepton->getPy()+met->getPy()));           
 }
 
-void calculateAngles(pxl::EventView* eventView, pxl::Particle* lepton, pxl::Particle* neutrino, pxl::Particle* wboson, pxl::Particle* bjet, pxl::Particle* top, pxl::Particle* lightjet)
+void calculateAngles(pxl::EventView* eventView, const std::string& prefix, pxl::Particle* lepton, pxl::Particle* neutrino, pxl::Particle* wboson, pxl::Particle* bjet, pxl::Particle* top, pxl::Particle* lightjet)
 {
     if (eventView && lepton && wboson && top)
     {
         //w polarization - helicity basis (l in W system vs. W in top system)
-        eventView->setUserRecord("cosTheta_wH",angleInRestFrame(lepton->getVector(),wboson->getBoostVector(),wboson->getVector(),top->getBoostVector()));
+        eventView->setUserRecord(prefix+"cosTheta_wH",angleInRestFrame(lepton->getVector(),wboson->getBoostVector(),wboson->getVector(),top->getBoostVector()));
     }
     if (eventView && lepton && wboson && top && lightjet)
     {
         //w polarization - normal basis
         pxl::Basic3Vector normalAxis = lightjet->getVector().cross(wboson->getVector());
-        eventView->setUserRecord("cosTheta_wN",angleInRestFrame(lepton->getVector(),wboson->getBoostVector(),normalAxis,wboson->getBoostVector()));
+        eventView->setUserRecord(prefix+"cosTheta_wN",angleInRestFrame(lepton->getVector(),wboson->getBoostVector(),normalAxis,wboson->getBoostVector()));
         //w polarization - transvers basis
         pxl::Basic3Vector transverseAxis = wboson->getVector().cross(normalAxis);
-        eventView->setUserRecord("cosTheta_wT",angleInRestFrame(lepton->getVector(),wboson->getBoostVector(),transverseAxis,wboson->getBoostVector()));
+        eventView->setUserRecord(prefix+"cosTheta_wT",angleInRestFrame(lepton->getVector(),wboson->getBoostVector(),transverseAxis,wboson->getBoostVector()));
 
         //top polarization - lepton
-        eventView->setUserRecord("cosTheta_tPL",angleInRestFrame(lepton->getVector(),top->getBoostVector(),lightjet->getVector(),top->getBoostVector()));
+        eventView->setUserRecord(prefix+"cosTheta_tPL",angleInRestFrame(lepton->getVector(),top->getBoostVector(),lightjet->getVector(),top->getBoostVector()));
     }
     if (eventView && top && lightjet && bjet && neutrino)
     {
         //top polarization - bjet
-        eventView->setUserRecord("cosTheta_tPB",angleInRestFrame(bjet->getVector(),top->getBoostVector(),lightjet->getVector(),top->getBoostVector()));
+        eventView->setUserRecord(prefix+"cosTheta_tPB",angleInRestFrame(bjet->getVector(),top->getBoostVector(),lightjet->getVector(),top->getBoostVector()));
         //top polarization - neutrino
-        eventView->setUserRecord("cosTheta_tPN",angleInRestFrame(neutrino->getVector(),top->getBoostVector(),lightjet->getVector(),top->getBoostVector()));                    
+        eventView->setUserRecord(prefix+"cosTheta_tPN",angleInRestFrame(neutrino->getVector(),top->getBoostVector(),lightjet->getVector(),top->getBoostVector()));                    
     }
 }
 
