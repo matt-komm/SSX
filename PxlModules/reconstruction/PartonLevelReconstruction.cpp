@@ -498,10 +498,11 @@ class PartonLevelReconstruction:
                             outputEV->setUserRecord("njets",(int)(2+additionalLquarkCandidates.size()+additionalBquarkCandidates.size()));
                             outputEV->setUserRecord("nbjets",(int)(1+additionalBquarkCandidates.size()));
                             
-                            const double mtw = calculateMTW(lepton,neutrinoClone);
-                            
-                            outputEV->setUserRecord("mtw",mtw);
-                            
+                            if (lepton and neutrinoClone)
+                            {
+                                const double mtw = calculateMTW(lepton,neutrinoClone);
+                                outputEV->setUserRecord("mtw",mtw);
+                            }
                             calculateAngles(
                                 outputEV, 
                                 "",
