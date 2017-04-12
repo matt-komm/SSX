@@ -242,7 +242,7 @@ class TopReconstruction:
             {
                 if (jet!=bjet)
                 {
-                    if (!ljet or (std::fabs(ljet->getEta())<std::fabs(jet->getEta())))
+                    if (ljet or (std::fabs(ljet->getEta())<std::fabs(jet->getEta())))
                     {
                         ljet=jet;
                     }
