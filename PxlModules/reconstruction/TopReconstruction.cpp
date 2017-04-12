@@ -217,7 +217,7 @@ class TopReconstruction:
             return top;
         }
         
-        pxl::Particle* makeBestTop(pxl::EventView* eventView, pxl::Particle* lepton, pxl::Particle* neutrino, pxl::Particle* wboson,  std::vector<pxl::Particle*> lightjets, std::vector<pxl::Particle*> bjets)
+        pxl::Particle* makeBestTop(pxl::EventView* eventView, pxl::Particle* lepton, pxl::Particle* neutrino,  std::vector<pxl::Particle*> lightjets, std::vector<pxl::Particle*> bjets)
         {
             const double bestTopMass = 172.5;
             
@@ -269,7 +269,9 @@ class TopReconstruction:
             
             if (ljet and bjet)
             {
-                calculateAngles(eventView,"best_", lepton, neutrino, wboson, bjet, top, ljet);
+                pxl::Particle wboson;
+                wboson.setP4(lepton->getVector()+neutrino->getVector());
+                calculateAngles(eventView,"best_", lepton, neutrino, &wboson, bjet, top, ljet);
             }
             
             return top;
@@ -349,6 +351,10 @@ class TopReconstruction:
                 throw std::runtime_error("no neutrino found!");
             }
             
+            if ((lightjets.size()+bjets.size())>0)
+            {
+                makeBestTop(eventView,lepton, neutrino,lightjets,bjets);
+            }
             
             
             if (njets==0)
@@ -562,10 +568,7 @@ class TopReconstruction:
                 }
             }
             
-            if (wboson and (lightjets.size()+bjets.size())>0)
-            {
-                pxl::Particle* bestTop = makeBestTop(eventView,lepton, neutrino, wboson,lightjets,bjets);
-            }
+            
             
             calculateAngles(eventView, "", lepton, neutrino, wboson, bjet, top, lightjet);
             
