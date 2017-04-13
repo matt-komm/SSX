@@ -470,20 +470,22 @@ class PartonLevelReconstruction:
                             double minDR = 100.0;
                             double minEta = 100.0;
                             double minPhi = 100.0;
-                            for (pxl::Particle* p: lquarkCandidates)
+                            if (lepton)
                             {
-                                p->setUserRecord("dRcleanMin",p->getVector().deltaR(&lepton->getVector()));
-                                p->setUserRecord("dEtacleanMin",std::fabs(p->getVector().deltaEta(&lepton->getVector())));
-                                p->setUserRecord("dPhicleanMin",std::fabs(p->getVector().deltaPhi(&lepton->getVector())));
+                                for (pxl::Particle* p: lquarkCandidates)
+                                {
+                                    p->setUserRecord("dRcleanMin",p->getVector().deltaR(&lepton->getVector()));
+                                    p->setUserRecord("dEtacleanMin",std::fabs(p->getVector().deltaEta(&lepton->getVector())));
+                                    p->setUserRecord("dPhicleanMin",std::fabs(p->getVector().deltaPhi(&lepton->getVector())));
+                                }
+                                
+                                for (pxl::Particle* p: bquarkCandidates)
+                                {
+                                    p->setUserRecord("dRcleanMin",p->getVector().deltaR(&lepton->getVector()));
+                                    p->setUserRecord("dEtacleanMin",std::fabs(p->getVector().deltaEta(&lepton->getVector())));
+                                    p->setUserRecord("dPhicleanMin",std::fabs(p->getVector().deltaPhi(&lepton->getVector())));
+                                }
                             }
-                            
-                            for (pxl::Particle* p: bquarkCandidates)
-                            {
-                                p->setUserRecord("dRcleanMin",p->getVector().deltaR(&lepton->getVector()));
-                                p->setUserRecord("dEtacleanMin",std::fabs(p->getVector().deltaEta(&lepton->getVector())));
-                                p->setUserRecord("dPhicleanMin",std::fabs(p->getVector().deltaPhi(&lepton->getVector())));
-                            }
-                            
                             
                             
                             if (neutrinoCandidates.size()>1)
