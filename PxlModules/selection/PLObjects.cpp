@@ -209,7 +209,7 @@ class PLObjects:
                                     {
                                         if ((*itjet)->getVector().deltaR(lepton->getVector())<_dR)
                                         {
-                                            jets.erase(itjet);
+                                            itjet = jets.erase(itjet);
                                             continue;
                                         }
                                     }
