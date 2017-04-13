@@ -205,15 +205,20 @@ class PLObjects:
                             {
                                 for (auto itjet = jets.begin(); itjet!=jets.end();)
                                 {
+                                    bool erased = false;
                                     for (auto lepton: leptons)
                                     {
-                                        if ((*itjet)->getVector().deltaR(lepton->getVector())<_dR)
+                                        if ((*itjet)->getVector().deltaR(&lepton->getVector())<_dR)
                                         {
                                             itjet = jets.erase(itjet);
-                                            continue;
+                                            erased = true;
+                                            break;
                                         }
                                     }
-                                    ++itjet;
+                                    if (!erased)
+                                    {
+                                        ++itjet;
+                                    }
                                 }
                             }
                             std::vector<pxl::Particle*> bjets;
