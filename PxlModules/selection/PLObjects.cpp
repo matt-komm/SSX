@@ -201,26 +201,32 @@ class PLObjects:
                             ev->setUserRecord("n"+_selectedLeptonName,leptons.size());
                             met->setP4(met_px, met_py, 0.0, std::sqrt(met_px*met_px+met_py*met_py));
                                                         
-                            if (_dR>0)
+                            
+                            
+                            for (auto itjet = jets.begin(); itjet!=jets.end();)
                             {
-                                for (auto itjet = jets.begin(); itjet!=jets.end();)
+                                double minDR = 100.0;
+                                double minEta = 100.0;
+                                double minPhi = 100.0;
+                                for (auto lepton: leptons)
                                 {
-                                    bool erased = false;
-                                    for (auto lepton: leptons)
-                                    {
-                                        if ((*itjet)->getVector().deltaR(&lepton->getVector())<_dR)
-                                        {
-                                            itjet = jets.erase(itjet);
-                                            erased = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!erased)
-                                    {
-                                        ++itjet;
-                                    }
+                                    minDR = std::min(minDR,(*itjet)->getVector().deltaR(&lepton->getVector()));
+                                    minEta = std::min(minEta,std::fabs((*itjet)->getVector().deltaEta(&lepton->getVector())));
+                                    minPhi = std::min(minPhi,std::fabs((*itjet)->getVector().deltaPhi(&lepton->getVector())));
+                                }
+                                if (_dR>0 and minDR<_dR)
+                                {
+                                    itjet = jets.erase(itjet);
+                                }
+                                else
+                                {
+                                    (*itjet)->setUserRecord("dRcleanMin",minDR);
+                                    (*itjet)->setUserRecord("dPhicleanMin",minEta);
+                                    (*itjet)->setUserRecord("dEtacleanMin",minPhi);
+                                    ++itjet;
                                 }
                             }
+                            
                             std::vector<pxl::Particle*> bjets;
                             for (auto jet: jets)
                             {

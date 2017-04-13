@@ -254,7 +254,7 @@ class JetSelection:
                     const double dR = selectedJet->getVector().deltaR(&dRCleanObj->getVector());
                     const double dPhi = std::fabs(selectedJet->getVector().deltaPhi(&dRCleanObj->getVector()));
                     const double dEta = std::fabs(selectedJet->getVector().deltaEta(&dRCleanObj->getVector()));
-                    if ((!_dRInvert && dR<_dR) or (_dRInvert && dR>_dR))
+                    if (_dR>0 and ((!_dRInvert && dR<_dR) or (_dRInvert && dR>_dR)))
                     {
                         eventView->removeObject(selectedJet);
                         selectedJets.erase(it);
