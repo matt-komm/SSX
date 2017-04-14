@@ -15,6 +15,7 @@
 #include <map>
 #include <functional>
 #include <algorithm>
+#include <memory>
 
 static pxl::Logger logger("RootTreeWriter");
 
@@ -73,7 +74,7 @@ class RootTreeWriter:
         
         std::string _outputFileName;
         
-        OutputStore* _store;
+        std::shared_ptr<OutputStore> _store;
         
         std::vector<std::string> _selections;
         
@@ -122,7 +123,7 @@ class RootTreeWriter:
         void beginJob() throw (std::runtime_error)
         {
             getOption("root file",_outputFileName);
-            _store = new OutputStore(_outputFileName);
+            _store.reset(new OutputStore(_outputFileName));
             getOption("variables",_selections);
             for (const std::string& s: _selections)
             {
@@ -166,7 +167,6 @@ class RootTreeWriter:
             if (_store)
             {
                 _store->close();
-                delete _store;
             }
         }
 

@@ -34,7 +34,7 @@ class MuonSF:
         pxl::Source* _outputSource;
         
         
-        SFReader* _scaleFactor;
+        std::shared_ptr<SFReader> _scaleFactor;
         
     public:
         MuonSF():
@@ -60,7 +60,7 @@ class MuonSF:
             
             _outputSource = addSource("output","output");
             
-            _scaleFactor=new SFReader(this,"SF");
+            _scaleFactor.reset(new SFReader(this,"SF"));
         }
 
         ~MuonSF()

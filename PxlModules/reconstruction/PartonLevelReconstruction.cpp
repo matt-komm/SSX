@@ -348,6 +348,84 @@ class PartonLevelReconstruction:
                             outputEV->insertObject(wbosonClone);
                             topClone->linkDaughter(wbosonClone);
                             
+                            
+                            
+                            if ((leptonCandidates.size()+leptonCandidatesFromTaus.size())>1
+                                or ((leptonCandidates.size()>0) and (leptonCandidatesFromTaus.size()>0))
+                            )
+                            {
+                                throw std::runtime_error("Lepton ambiguity discovered");
+                            }
+                            
+                            if (leptonCandidates.size()==1)
+                            {
+                                lepton = leptonCandidates.front();
+                            
+                                pxl::Particle* leptonClone = (pxl::Particle*)lepton->clone();
+                                leptonClone->setName("Lepton");
+                                leptonClone->setUserRecord("pdg",lepton->getPdgNumber());
+                                leptonClone->setUserRecord("fromTau",false);
+                                outputEV->insertObject(leptonClone);
+                                wbosonClone->linkDaughter(leptonClone);
+                                
+                            }
+                            else if (leptonCandidatesFromTaus.size()==1)
+                            {
+                                lepton = leptonCandidatesFromTaus.front();
+                            
+                                pxl::Particle* leptonClone = (pxl::Particle*)lepton->clone();
+                                leptonClone->setName("Lepton");
+                                leptonClone->setUserRecord("pdg",lepton->getPdgNumber());
+                                leptonClone->setUserRecord("fromTau",true);
+                                outputEV->insertObject(leptonClone);
+                                wbosonClone->linkDaughter(leptonClone);
+                            }
+                            
+                            double minDR = 100.0;
+                            double minEta = 100.0;
+                            double minPhi = 100.0;
+                            if (lepton)
+                            {
+                                for (pxl::Particle* p: lquarkCandidates)
+                                {
+                                    p->setUserRecord("dRcleanMin",p->getVector().deltaR(&lepton->getVector()));
+                                    p->setUserRecord("dEtacleanMin",std::fabs(p->getVector().deltaEta(&lepton->getVector())));
+                                    p->setUserRecord("dPhicleanMin",std::fabs(p->getVector().deltaPhi(&lepton->getVector())));
+                                }
+                                
+                                for (pxl::Particle* p: bquarkCandidates)
+                                {
+                                    p->setUserRecord("dRcleanMin",p->getVector().deltaR(&lepton->getVector()));
+                                    p->setUserRecord("dEtacleanMin",std::fabs(p->getVector().deltaEta(&lepton->getVector())));
+                                    p->setUserRecord("dPhicleanMin",std::fabs(p->getVector().deltaPhi(&lepton->getVector())));
+                                }
+                            }
+                            
+                            
+                            if (neutrinoCandidates.size()>1)
+                            {
+                                throw std::runtime_error("Neutrino ambiguity discovered");
+                            }
+                            
+                            pxl::Particle* neutrinoClone = nullptr;
+                            if (neutrinoCandidates.size()==1)
+                            {
+                                neutrino = neutrinoCandidates.front();
+                                neutrinoClone = (pxl::Particle*)neutrino->clone();
+                                if (_sumAddNeutrinos)
+                                {
+                                    for (pxl::Particle* p: additionalNeutrinoCandidates)
+                                    {
+                                        neutrinoClone->addP4(p->getVector());
+                                    }
+                                }
+
+                                neutrinoClone->setName("Neutrino");
+                                neutrinoClone->setUserRecord("pdg",neutrino->getPdgNumber());
+                                outputEV->insertObject(neutrinoClone);
+                                wbosonClone->linkDaughter(neutrinoClone);
+                            }
+                            
                             if (bquarkCandidates.size()==0)
                             {
                                 throw std::runtime_error("no b quarks found in hard process");
@@ -436,81 +514,7 @@ class PartonLevelReconstruction:
                                 outputEV->insertObject(addLquarkClone);
                             }
                             
-                            if ((leptonCandidates.size()+leptonCandidatesFromTaus.size())>1
-                                or ((leptonCandidates.size()>0) and (leptonCandidatesFromTaus.size()>0))
-                            )
-                            {
-                                throw std::runtime_error("Lepton ambiguity discovered");
-                            }
                             
-                            if (leptonCandidates.size()==1)
-                            {
-                                lepton = leptonCandidates.front();
-                            
-                                pxl::Particle* leptonClone = (pxl::Particle*)lepton->clone();
-                                leptonClone->setName("Lepton");
-                                leptonClone->setUserRecord("pdg",lepton->getPdgNumber());
-                                leptonClone->setUserRecord("fromTau",false);
-                                outputEV->insertObject(leptonClone);
-                                wbosonClone->linkDaughter(leptonClone);
-                                
-                            }
-                            else if (leptonCandidatesFromTaus.size()==1)
-                            {
-                                lepton = leptonCandidatesFromTaus.front();
-                            
-                                pxl::Particle* leptonClone = (pxl::Particle*)lepton->clone();
-                                leptonClone->setName("Lepton");
-                                leptonClone->setUserRecord("pdg",lepton->getPdgNumber());
-                                leptonClone->setUserRecord("fromTau",true);
-                                outputEV->insertObject(leptonClone);
-                                wbosonClone->linkDaughter(leptonClone);
-                            }
-                            
-                            double minDR = 100.0;
-                            double minEta = 100.0;
-                            double minPhi = 100.0;
-                            if (lepton)
-                            {
-                                for (pxl::Particle* p: lquarkCandidates)
-                                {
-                                    p->setUserRecord("dRcleanMin",p->getVector().deltaR(&lepton->getVector()));
-                                    p->setUserRecord("dEtacleanMin",std::fabs(p->getVector().deltaEta(&lepton->getVector())));
-                                    p->setUserRecord("dPhicleanMin",std::fabs(p->getVector().deltaPhi(&lepton->getVector())));
-                                }
-                                
-                                for (pxl::Particle* p: bquarkCandidates)
-                                {
-                                    p->setUserRecord("dRcleanMin",p->getVector().deltaR(&lepton->getVector()));
-                                    p->setUserRecord("dEtacleanMin",std::fabs(p->getVector().deltaEta(&lepton->getVector())));
-                                    p->setUserRecord("dPhicleanMin",std::fabs(p->getVector().deltaPhi(&lepton->getVector())));
-                                }
-                            }
-                            
-                            
-                            if (neutrinoCandidates.size()>1)
-                            {
-                                throw std::runtime_error("Neutrino ambiguity discovered");
-                            }
-                            
-                            pxl::Particle* neutrinoClone = nullptr;
-                            if (neutrinoCandidates.size()==1)
-                            {
-                                neutrino = neutrinoCandidates.front();
-                                neutrinoClone = (pxl::Particle*)neutrino->clone();
-                                if (_sumAddNeutrinos)
-                                {
-                                    for (pxl::Particle* p: additionalNeutrinoCandidates)
-                                    {
-                                        neutrinoClone->addP4(p->getVector());
-                                    }
-                                }
-
-                                neutrinoClone->setName("Neutrino");
-                                neutrinoClone->setUserRecord("pdg",neutrino->getPdgNumber());
-                                outputEV->insertObject(neutrinoClone);
-                                wbosonClone->linkDaughter(neutrinoClone);
-                            }
                                 
                             
 

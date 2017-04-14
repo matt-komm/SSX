@@ -30,6 +30,15 @@ class SyntaxNode
         {
         }
         
+        ~SyntaxNode()
+        {
+            for (SyntaxNode<TREE>* tree: _children)
+            {
+                delete tree;
+            }
+            _children.clear();
+        }
+        
         inline const std::string& getField() const
         {
             return _field;
@@ -200,6 +209,15 @@ class SyntaxTree
 
         SyntaxTree()
         {
+        }
+        
+        ~SyntaxTree()
+        {
+            for (SyntaxNode<TREE>* tree: _children)
+            {
+                delete tree;
+            }
+            _children.clear();
         }
         
         void evaluate(pxl::Event* event, TREE* tree)

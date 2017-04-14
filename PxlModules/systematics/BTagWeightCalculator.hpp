@@ -145,8 +145,8 @@ class WorkingPoint
 {
     private:
         double _discriminatorValue;
-        const EfficiencyFunction* _efficiencyFunction;
-        const ScaleFactorFunction* _scaleFactorFunction;
+        std::shared_ptr<EfficiencyFunction> _efficiencyFunction;
+        std::shared_ptr<ScaleFactorFunction> _scaleFactorFunction;
     
     public:
         
@@ -178,14 +178,14 @@ class WorkingPoint
             _discriminatorValue=discriminatorValue;
         }
         
-        void setEfficiencyFunction(const EfficiencyFunction* fct)
+        void setEfficiencyFunction(EfficiencyFunction* fct)
         {
-            _efficiencyFunction=fct;
+            _efficiencyFunction.reset(fct);
         }
         
-        void setScaleFactorFunction(const ScaleFactorFunction* fct)
+        void setScaleFactorFunction(ScaleFactorFunction* fct)
         {
-            _scaleFactorFunction=fct;
+            _scaleFactorFunction.reset(fct);
         }
         
         inline double getDiscriminatorValue() const
@@ -195,12 +195,12 @@ class WorkingPoint
         
         inline const EfficiencyFunction* getEfficiencyFunction() const
         {  
-            return _efficiencyFunction;
+            return _efficiencyFunction.get();
         }
         
         inline const ScaleFactorFunction* getScaleFactorFunction() const
         {   
-            return _scaleFactorFunction;
+            return _scaleFactorFunction.get();
         }
         
 };
@@ -221,6 +221,11 @@ class BTagWeightCalculator
             defaultMaximumWP.setEfficiencyFunction(new ConstEfficiencyFunction(0.0));
             defaultMaximumWP.setScaleFactorFunction(new ConstScaleFactorFunction(0.0));;
             addWorkingPoint(defaultMaximumWP);
+        }
+        
+        ~BTagWeightCalculator()
+        {
+            _workingPoints.clear();
         }
         
         void addWorkingPoint(const WorkingPoint& workingPoint)

@@ -17,6 +17,27 @@ class WeightInfo
         virtual double getWeight(const pxl::Event* event) const = 0;
 };
 
+class WeightInfoContainer
+{
+    protected:
+        std::shared_ptr<WeightInfo> _ptr;
+    public:
+        WeightInfoContainer(WeightInfo* ptr):
+            _ptr(ptr)
+        {
+        }
+        
+        WeightInfo* operator->()
+        {
+            return _ptr.get();
+        }
+        
+        const WeightInfo* operator->() const
+        {
+            return _ptr.get();
+        }
+};
+
 class SimpleWeightInfo:
     public WeightInfo
 {
@@ -40,11 +61,16 @@ class WeightPerPartonInfo:
     public WeightInfo
 {
     public:
-        const std::vector<double> _weightsPerParton;
+        std::vector<double> _weightsPerParton;
         
         WeightPerPartonInfo(std::vector<double> weightsPerParton):
             _weightsPerParton(weightsPerParton)
         {
+        }
+        
+        ~WeightPerPartonInfo()
+        {
+            _weightsPerParton.clear();
         }
         
         virtual double getWeight(const pxl::Event* ev) const
@@ -71,7 +97,7 @@ class WeightPerPartonInfo:
 };
 
 
-const std::unordered_map<std::string,WeightInfo*> eventWeights80Xexcl = {
+const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = {
     {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
         new SimpleWeightInfo(
             //total=39840774.0 eff=39840774.0 - 0.0 = 39840774.0
@@ -409,7 +435,7 @@ WeightPerPartonInfo* drellYanM10to50 = new WeightPerPartonInfo({
     0.5273*0.001
 });
 
-const std::unordered_map<std::string,WeightInfo*> eventWeights80XwithHLT = {
+const std::unordered_map<std::string,WeightInfoContainer> eventWeights80XwithHLT = {
 
 
     {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
@@ -640,7 +666,7 @@ const std::unordered_map<std::string,WeightInfo*> eventWeights80XwithHLT = {
     },
 };
 
-const std::unordered_map<std::string,const std::unordered_map<std::string,WeightInfo*>> _eventWeightsPerEra =
+const std::unordered_map<std::string,const std::unordered_map<std::string,WeightInfoContainer>> _eventWeightsPerEra =
 {
     {"80XwithHLT",eventWeights80XwithHLT},
     {"80Xexcl",eventWeights80Xexcl}

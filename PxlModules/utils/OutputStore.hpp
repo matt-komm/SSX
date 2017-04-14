@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <string>
 #include <iostream>
+#include <memory>
 
 #include "RootTree.hpp"
 
@@ -20,10 +21,11 @@ class OutputStore
 
     private:
         TFile* _file;
-        std::unordered_map<std::string,RootTree*> _treeMap;
+        std::unordered_map<std::string,std::shared_ptr<RootTree>> _treeMap;
         pxl::Logger _logger;
     public:
         OutputStore(std::string filename);
+        ~OutputStore();
         RootTree* getTree(std::string treeName);
         void close();
 };
