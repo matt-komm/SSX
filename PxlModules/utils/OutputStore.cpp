@@ -8,14 +8,14 @@ OutputStore::OutputStore(std::string filename):
 
 RootTree* OutputStore::getTree(std::string treeName)
 {
-    std::unordered_map<std::string,RootTree*>::iterator elem = _treeMap.find(treeName.c_str());
+    auto elem = _treeMap.find(treeName.c_str());
     if (elem==_treeMap.end())
     {
         _logger(pxl::LOG_LEVEL_DEBUG,"create new tree: ",treeName);
-        _treeMap[treeName]=new RootTree(_file, treeName);
-        return _treeMap[treeName];
+        _treeMap[treeName].reset(new RootTree(_file, treeName));
+        return _treeMap[treeName].get();
     } else {
-        return elem->second;
+        return elem->second.get();
     }
 }
 

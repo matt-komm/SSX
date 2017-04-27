@@ -24,6 +24,18 @@ class RootTree
         pxl::Logger _logger;
     public:
         RootTree(TFile* file, std::string name);
+        ~RootTree()
+        {
+            _file->Close();
+            delete _tree;
+            delete _file;
+            for (auto itPair: _variables)
+            {
+                delete itPair.second;
+            }
+            _variables.clear();
+            
+        }
         
         template<class TYPE>
         void storeVariable(const std::string& name, const TYPE& value)
@@ -37,6 +49,7 @@ class RootTree
                 (*elem->second)=value;
             }
         }
+        
         
         void resetVariables();
         

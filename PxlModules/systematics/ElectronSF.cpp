@@ -34,7 +34,7 @@ class ElectronSF:
         pxl::Source* _outputSource;
         
         
-        SFReader* _scaleFactor;
+        std::shared_ptr<SFReader> _scaleFactor;
         
     public:
         ElectronSF():
@@ -60,7 +60,7 @@ class ElectronSF:
             
             _outputSource = addSource("output","output");
             
-            _scaleFactor=new SFReader(this,"SF");
+            _scaleFactor.reset(new SFReader(this,"SF"));
         }
 
         ~ElectronSF()
