@@ -3,7 +3,7 @@
 OutputStore::OutputStore(std::string filename):
     _logger("OutputStore")
 {
-    _file = new TFile(filename.c_str(),"RECREATE");
+    _file.reset(new TFile(filename.c_str(),"RECREATE"));
 }
 
 RootTree* OutputStore::getTree(std::string treeName)

@@ -18,32 +18,24 @@ class RootTree
 {
     private:
         unsigned int _count;
-        std::unordered_map<std::string,Variable*> _variables;
+        std::unordered_map<std::string,std::shared_ptr<Variable>> _variables;
         TTree* _tree;
-        TFile* _file;
+        std::shared_ptr<TFile> _file;
         pxl::Logger _logger;
     public:
-        RootTree(TFile* file, std::string name);
+        RootTree(std::shared_ptr<TFile>& file, std::string name);
         ~RootTree()
         {
-            _file->Close();
-            delete _tree;
-            delete _file;
-            for (auto itPair: _variables)
-            {
-                delete itPair.second;
-            }
             _variables.clear();
-            
         }
         
         template<class TYPE>
         void storeVariable(const std::string& name, const TYPE& value)
         {
-            std::unordered_map<std::string,Variable*>::iterator elem = _variables.find(name.c_str());
+            auto elem = _variables.find(name.c_str());
             if (elem==_variables.end()) {
                 _logger(pxl::LOG_LEVEL_DEBUG ,"store new variable '",name,"' in tree '",_tree->GetName(),"' with ",_count," empty entries");
-                VariableTmpl<TYPE>* var = bookVariable<TYPE>(name);
+                std::shared_ptr<VariableTmpl<TYPE>> var = bookVariable<TYPE>(name);
                 var->setValue(value);
             } else {
                 (*elem->second)=value;
@@ -160,9 +152,9 @@ class RootTree
         }
 
         template<class TYPE>
-        VariableTmpl<TYPE>* bookVariable(const std::string& name)
+        std::shared_ptr<VariableTmpl<TYPE>> bookVariable(const std::string& name)
         {
-            VariableTmpl<TYPE>* var = new VariableTmpl<TYPE>();
+            std::shared_ptr<VariableTmpl<TYPE>> var(new VariableTmpl<TYPE>());
             _variables[name]=var;
             TBranch* branch = _tree->Branch(name.c_str(),(TYPE*)var->getAddress());
             _logger(pxl::LOG_LEVEL_DEBUG ,"fill new variable '",name,"' in tree '",_tree->GetName(),"' with ",_count," empty entries");

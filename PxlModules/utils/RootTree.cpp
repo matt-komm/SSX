@@ -1,12 +1,12 @@
 #include "RootTree.hpp"
 
-RootTree::RootTree(TFile* file, std::string name):
+RootTree::RootTree(std::shared_ptr<TFile>& file, std::string name):
     _file(file),
     _count(0),
     _logger("Tree")
 {
     _tree = new TTree(name.c_str(),name.c_str());
-    _tree->SetDirectory(file);
+    _tree->SetDirectory(file.get());
 }
 
 
@@ -19,7 +19,7 @@ void RootTree::fill()
 
 void RootTree::resetVariables()
 {
-    for (std::unordered_map<std::string,Variable*>::iterator it = _variables.begin(); it!=_variables.end(); ++it)
+    for (auto it = _variables.begin(); it!=_variables.end(); ++it)
     {
         //std::cout<<it->first<<": "<<it->second->isDirty()<<std::endl;
         it->second->reset();
