@@ -34,3 +34,10 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(TTbarPartonLevelReconstruction MODULE TTbarPartonLevelReconstruction.cpp)
+target_link_libraries(TTbarPartonLevelReconstruction ${PXL_LIBRARIES})
+install(
+    TARGETS TTbarPartonLevelReconstruction
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+

@@ -21,13 +21,7 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
-### still experimental
-add_library(IsrTagging MODULE IsrTagging.cpp)
-target_link_libraries(IsrTagging ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
-#install(
-#    TARGETS IsrTagging
-#    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
-#)
+
 
 add_library(LumiMask MODULE LumiMask.cpp)
 target_link_libraries(LumiMask ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
@@ -57,12 +51,6 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
-add_library(SlimParticleLevelObjects MODULE SlimParticleLevelObjects.cpp)
-target_link_libraries(SlimParticleLevelObjects ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
-install(
-    TARGETS SlimParticleLevelObjects
-    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
-)
 
 add_library(LumiInfo MODULE LumiInfo.cpp)
 target_link_libraries(LumiInfo ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
@@ -85,13 +73,6 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
-
-add_library(Flag MODULE Flag.cpp)
-target_link_libraries(Flag ${PXL_LIBRARIES})
-install(
-    TARGETS Flag
-    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
-)
 
 add_library(Matching MODULE Matching.cpp)
 target_link_libraries(Matching ${PXL_LIBRARIES})
