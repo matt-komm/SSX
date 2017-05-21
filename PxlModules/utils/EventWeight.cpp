@@ -20,7 +20,7 @@ class WeightInfo
 class WeightInfoContainer
 {
     protected:
-        std::shared_ptr<WeightInfo> _ptr;
+        WeightInfo* _ptr;
     public:
         WeightInfoContainer(WeightInfo* ptr):
             _ptr(ptr)
@@ -29,12 +29,25 @@ class WeightInfoContainer
         
         WeightInfo* operator->()
         {
-            return _ptr.get();
+            return _ptr;
         }
         
         const WeightInfo* operator->() const
         {
-            return _ptr.get();
+            return _ptr;
+        }
+        
+        ~WeightInfoContainer()
+        {
+            //This will segfault; most likly sth wrong with (static?) memory allocation in
+            //the weight list below ... shared_ptr does not help either
+            //So live with this memleak atm
+            /*
+            if (_ptr)
+            {
+                delete _ptr;
+            }
+            */
         }
 };
 

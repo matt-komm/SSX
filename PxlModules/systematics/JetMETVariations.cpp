@@ -42,12 +42,12 @@ class JetMETVariations:
         JetMETVariations():
             Module(),
             _eventViewName("Reconstructed"),
-            _nominalJetName("JetRes"),
-            _nominalMETName("METRes"),
+            _nominalJetName("Jetsmeared"),
+            _nominalMETName("MET"),
             _renamedJet("Jet"),
             _renamedMET("MET"),
             _removeOtherVariations(true),
-            _variationNames({"Res","En","UnclEn"})
+            _variationNames({"Res","En","Unc"})
         {
             addSink("input", "input");
             
@@ -138,8 +138,7 @@ class JetMETVariations:
             event->getObjectsOfType(eventViews);
             
             bool metRenamed = false;
-            
-            pxl::Particle* nominalMET = nullptr;
+            bool jetRenamed = false;
             
             for (pxl::EventView* eventView: eventViews)
             {
@@ -152,6 +151,7 @@ class JetMETVariations:
                         if (particle->getName()==jetName)
                         {
                             particle->setName(_renamedJet);
+                            jetRenamed = true;
                         }
                         else if (particle->getName()==metName)
                         {
@@ -162,10 +162,7 @@ class JetMETVariations:
                             }
                             metRenamed=true;
                         }
-                        else if (particle->getName()==_nominalMETName)
-                        {
-                            nominalMET = particle;
-                        }
+                        
                         
                         //remove particle if it begins with _renamedJet
                         else if (_removeOtherVariations and std::equal(_renamedJet.begin(),_renamedJet.end(),particle->getName().begin()))
@@ -180,18 +177,17 @@ class JetMETVariations:
                         
                     }
                     
-                    //need MET in event for neutrino pz
                     if (not metRenamed)
                     {
-                        nominalMET->setName(_renamedMET);
+                        throw std::runtime_error("No MET object found of name '"+metName+"'");
                     }
-                    else if (nominalMET)
+                    if (not jetRenamed)
                     {
-                        eventView->removeObject(nominalMET);
+                        throw std::runtime_error("No Jet object found of name '"+jetName+"'");
                     }
+                    
                 }
             }
-
         }
 
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)
@@ -203,58 +199,61 @@ class JetMETVariations:
                 if (event)
                 {
                     bool success = true;
-                    for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
+                    if (not event->getUserRecord("isRealData").toBool())
                     {
-                        if (variation->second.active[0])
+                        for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
                         {
-                            pxl::Event* eventShiftedUp = dynamic_cast<pxl::Event*>(event->clone());
-                            if (not eventShiftedUp)
+                            if (variation->second.active[0])
                             {
-                                throw std::runtime_error("cloning of Event failed");
+                                pxl::Event* eventShiftedUp = dynamic_cast<pxl::Event*>(event->clone());
+                                if (not eventShiftedUp)
+                                {
+                                    throw std::runtime_error("cloning of Event failed");
+                                }
+                                eventShiftedUp->setUserRecord("ProcessName",eventShiftedUp->getUserRecord("ProcessName").toString()+"_"+variation->first+"Up");
+                                std::string jetName = variation->second.inputJetName+"Up";
+                                if (variation->second.inputJetName=="")
+                                {
+                                    jetName=_nominalJetName;
+                                }
+                                std::string metName = variation->second.inputMETName+"Up";
+                                if (variation->second.inputMETName=="")
+                                {
+                                    metName=_nominalMETName;
+                                }
+                                renameJetMET(eventShiftedUp,jetName,metName);
+                                variation->second.sources[0]->setTargets(eventShiftedUp);
+                                success &= variation->second.sources[0]->processTargets();
+                                delete eventShiftedUp;
                             }
-                            std::string jetName = variation->second.inputJetName+"Up";
-                            if (variation->second.inputJetName=="")
+                            if (variation->second.active[1])
                             {
-                                jetName=_nominalJetName;
+                                pxl::Event* eventShiftedDown = dynamic_cast<pxl::Event*>(event->clone());
+                                if (not eventShiftedDown)
+                                {
+                                    throw std::runtime_error("cloning of Event failed");
+                                }
+                                eventShiftedDown->setUserRecord("ProcessName",eventShiftedDown->getUserRecord("ProcessName").toString()+"_"+variation->first+"Down");
+                                std::string jetName = variation->second.inputJetName+"Down";
+                                if (variation->second.inputJetName=="")
+                                {
+                                    jetName=_nominalJetName;
+                                }
+                                std::string metName = variation->second.inputMETName+"Down";
+                                if (variation->second.inputMETName=="")
+                                {
+                                    metName=_nominalMETName;
+                                }
+                                renameJetMET(eventShiftedDown,jetName,metName);
+                                variation->second.sources[1]->setTargets(eventShiftedDown);
+                                success &= variation->second.sources[1]->processTargets();
+                                delete eventShiftedDown;
                             }
-                            std::string metName = variation->second.inputMETName+"Up";
-                            if (variation->second.inputMETName=="")
-                            {
-                                metName=_nominalMETName;
-                            }
-                            renameJetMET(eventShiftedUp,jetName,metName);
-                            variation->second.sources[0]->setTargets(eventShiftedUp);
-                            success &= variation->second.sources[0]->processTargets();
-                            delete eventShiftedUp;
                         }
-                        if (variation->second.active[1])
-                        {
-                            pxl::Event* eventShiftedDown = dynamic_cast<pxl::Event*>(event->clone());
-                            if (not eventShiftedDown)
-                            {
-                                throw std::runtime_error("cloning of Event failed");
-                            }
-                            std::string jetName = variation->second.inputJetName+"Down";
-                            if (variation->second.inputJetName=="")
-                            {
-                                jetName=_nominalJetName;
-                            }
-                            std::string metName = variation->second.inputMETName+"Down";
-                            if (variation->second.inputMETName=="")
-                            {
-                                metName=_nominalMETName;
-                            }
-                            renameJetMET(eventShiftedDown,jetName,metName);
-                            variation->second.sources[1]->setTargets(eventShiftedDown);
-                            success &= variation->second.sources[1]->processTargets();
-                            delete eventShiftedDown;
-                        }
+                        renameJetMET(event,_nominalJetName,_nominalMETName);
                     }
-                    
-                    renameJetMET(event,_nominalJetName,_nominalMETName);
                     _nominalSource->setTargets(event);
                     success &= _nominalSource->processTargets();
-                    
                     return success;
                 }
             }
