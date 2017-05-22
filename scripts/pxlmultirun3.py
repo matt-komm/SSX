@@ -171,7 +171,7 @@ def findMatches(path,regex):
 if __name__=="__main__":
     parser = OptionParser()
     parser.add_option("-n", dest="N", default="10")
-    parser.add_option("-p", dest="P", default="1")
+    parser.add_option("-t", dest="hours", default="4")
     parser.add_option("-f", action="store_true", default=False, dest="force")
     parser.add_option("-o", action="store_true", default=False, dest="override")
     parser.add_option("--out", default="", dest="out")
@@ -184,6 +184,7 @@ if __name__=="__main__":
                 shutil.rmtree(options.out)
         if not options.override:
             os.mkdir(options.out)
+            os.mkdir(os.path.join(options.out,"log"))
         elif len(os.listdir(options.out))>0:
             print "WARNING: output folder '",options.out,"' contains already ",len(os.listdir(options.out))," files/folders that wont be deleted because override (-o) was specified!"
     outputFolder=options.out
@@ -261,7 +262,18 @@ if __name__=="__main__":
     for analysisFile in analysisFiles:
         xmlList+="    ['"+analysisFile+"'],\n"
     
-    generated = genScript.substitute({"JOBNAME":os.path.basename(args[0]),"XMLLIST":xmlList})
+    generated = genScript.substitute({
+        "JOBNAME":os.path.basename(args[0]),
+        "HOURS":"%02i"%options.hours,
+        "MINUTES":"00",
+        "EXEC":"pxlrun",
+        "SCRIPTNAME":"runJob.sh",
+        "ARGLIST":"'XMLANAYLSIS'",
+        "ARGSTOJOB":"$XMLANAYLSIS",
+        "JOBARGLIST":xmlList,
+        "DOSTAGEOUT":"True",
+        "STAGEOUTFILES":"'*.root*'"
+    })
     
     fileout = open(os.path.join(outputFolder,"slurm_cfg.py"),"w")
     fileout.write(generated)

@@ -11,8 +11,8 @@ config = Configuration()
 config.sbatch_partition = 'cp3'
 config.sbatch_qos = 'cp3'
 config.sbatch_workdir = '.'
-config.sbatch_time = '0-04:00'
-config.sbatch_mem = '1024'
+config.sbatch_time = '0-$HOURS:$MINUTES'
+config.sbatch_mem = '2048'
 
 config.sbatch_output = '/dev/null'
 config.sbatch_error = '/dev/null'
@@ -27,11 +27,11 @@ config.inputSandboxFilename = ''
 
 config.batchScriptsDir = config.sbatch_workdir
 
-config.batchScriptsFilename = 'runJob.sh'
+config.batchScriptsFilename = '$SCRIPTNAME'
 
-config.stageout = True
+config.stageout = $DOSTAGEOUT
 
-config.stageoutFiles = ['*.root*','*.pxlio']
+config.stageoutFiles = [$STAGEOUTFILES]
 
 config.writeLogsOnWN = True
 
@@ -47,10 +47,12 @@ config.useJobArray = True
 
 config.numJobs = None
 
-config.inputParamsNames = ['XMLANAYLSIS']
+config.inputParamsNames = [
+$ARGLIST
+]
 
 config.inputParams = [
-$XMLLIST
+$JOBARGLIST
 ]
 
 
@@ -90,6 +92,7 @@ echo "gcc: `which gcc` (version `gcc -dumpversion`)"
 echo "python: `which python`"
 cd $$HOME/SSX
 source setVars.sh
+echo "take pxlrun from: `which pxlrun`"
 echo "------------ scratch dir -----------"
 echo "scratch dir: $$LOCALSCRATCH"
 cd $$LOCALSCRATCH
@@ -99,11 +102,12 @@ echo "------------ dir -----------"
 pwd
 ls -lh
 echo "------------ job -----------"
-echo "take pxlrun from: `which pxlrun`"
-echo "execute: pxlrun $$XMLANAYLSIS"
+echo "execute: $EXEC $ARGSTOJOB"
 export PXL_LOG_LEVEL=2
-pxlrun $$XMLANAYLSIS
-echo "done executing: pxlrun $$XMLANAYLSIS"
+/usr/bin/time -v -o $$LOCALSCRATCH/perf.time $EXEC $ARGSTOJOB
+echo "done executing: $EXEC $ARGSTOJOB"
+echo "------------ timing -----------"
+cat $$LOCALSCRATCH/perf.time
 echo "------------ dir -----------"
 pwd
 for f in `find . | sort`

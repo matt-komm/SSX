@@ -62,7 +62,7 @@ class JetSelection:
             /*Initial Values taken from TOP JetMET Analysis (Run2) */
             /*https://twiki.cern.ch/twiki/bin/view/CMS/TopJME#General_Information */
             
-            _nLeadingJetsToStore(0)
+            _nLeadingJetsToStore(3)
         {
             addSink("input", "input");
             
@@ -128,7 +128,11 @@ class JetSelection:
 
             getOption("invert dR",_dRInvert);
             getOption("dR cut",_dR);
-            getOption("dR objects",_dRObjects);
+            
+            std::vector<std::string> temp;
+            getOption("dR objects",temp);
+            _dRObjects.clear();
+            std::copy(temp.begin(), temp.end(), std::back_inserter(_dRObjects));
             
             getOption("store n leading jets",_nLeadingJetsToStore);
             
@@ -337,39 +341,37 @@ class JetSelection:
                     
                     std::sort(selectedJets.begin(),selectedJets.end(),JetSelection::SortByPt());
                     
-                    for (unsigned int ijet = 0; std::min<int>(ijet<selectedJets.size(),_nLeadingJetsToStore);++ijet)
-                    {
-                        pxl::Particle* jetClone = inputEventView->create<pxl::Particle>();
-                        jetClone->setName("LeadingJet");
-                        jetClone->setP4(selectedJets[ijet]->getVector());
-                    }
                     
                     unsigned char nBFlavor = 0;
                     unsigned char nCFlavor = 0;
                     unsigned char nLFlavor = 0;
                     unsigned char nGFlavor = 0;
+                    
                     for (unsigned int ijet = 0; ijet < selectedJets.size(); ++ ijet)
                     {
-                        if (!selectedJets[ijet]->hasUserRecord("partonFlavour"))
+                        if (selectedJets[ijet]->hasUserRecord("partonFlavour"))
                         {
-                            //this jet was not matched to parton -> ignore
-                            continue;
+                            //this jet was matched to parton
+                            if (std::abs(selectedJets[ijet]->getUserRecord("partonFlavour").toInt32())==5)
+                            {
+                                nBFlavor+=1;
+                            }
+                            else if (std::abs(selectedJets[ijet]->getUserRecord("partonFlavour").toInt32())==4)
+                            {
+                                nCFlavor+=1;
+                            }
+                            else if ((std::abs(selectedJets[ijet]->getUserRecord("partonFlavour").toInt32())<4) && (selectedJets[ijet]->getUserRecord("partonFlavour").toInt32()>0))
+                            {
+                                nLFlavor+=1;
+                            }
+                            else
+                            {
+                                nGFlavor+=1;
+                            }
                         }
-                        if (std::abs(selectedJets[ijet]->getUserRecord("partonFlavour").toInt32())==5)
+                        if (_nLeadingJetsToStore>0 and ijet>=_nLeadingJetsToStore)
                         {
-                            nBFlavor+=1;
-                        }
-                        else if (std::abs(selectedJets[ijet]->getUserRecord("partonFlavour").toInt32())==4)
-                        {
-                            nCFlavor+=1;
-                        }
-                        else if ((std::abs(selectedJets[ijet]->getUserRecord("partonFlavour").toInt32())<4) && (selectedJets[ijet]->getUserRecord("partonFlavour").toInt32()>0))
-                        {
-                            nLFlavor+=1;
-                        }
-                        else
-                        {
-                            nGFlavor+=1;
+                            inputEventView->removeObject(selectedJets[ijet]);
                         }
                     }
                     

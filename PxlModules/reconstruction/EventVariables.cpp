@@ -146,7 +146,7 @@ class EventVariables:
                             eventView->setUserRecord(_prefix+"logaplanarity",std::log(esv.aplanarity()));
                             eventView->setUserRecord(_prefix+"C",esv.C());
                             eventView->setUserRecord(_prefix+"D",esv.D());
-                            
+                            /*
                             if (_foxWolframOrder>0)
                             {
                                 FoxWolfram fw(eventShapeVectors);
@@ -162,7 +162,7 @@ class EventVariables:
                                    
                                 
                                 }
-                            }
+                            }*/
                             
                             //TODO: add thrust & more crazy variables
                         }

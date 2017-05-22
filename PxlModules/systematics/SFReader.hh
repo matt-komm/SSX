@@ -146,7 +146,7 @@ struct SFReader
         {
             if (h->GetXaxis()->GetXmax()>50.0 and h->GetYaxis()->GetXmax()<5.0)
             {
-                rootHistogramPtEta.reset((TH2*)h->Clone((std::string("SF")+prefix+std::to_string(std::rand())).c_str()));
+                rootHistogramPtEta.reset((TH2*)h->Clone());
                 rootHistogramPtEta->SetDirectory(0);
             }
             else
@@ -158,7 +158,7 @@ struct SFReader
         {
             if (h->GetYaxis()->GetXmax()>50.0 and h->GetXaxis()->GetXmax()<5.0)
             {
-                rootHistogramPtEta.reset((TH2*)h->Clone((std::string("SF")+prefix+std::to_string(std::rand())).c_str()));
+                rootHistogramPtEta.reset((TH2*)h->Clone());
                 rootHistogramPtEta->SetDirectory(0);
             }
             else
