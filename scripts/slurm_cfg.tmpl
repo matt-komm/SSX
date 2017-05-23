@@ -1,0 +1,118 @@
+from CP3SlurmUtils.Configuration import Configuration
+import os
+import re
+
+config = Configuration()
+
+#--------------------------------------------------------------------------------
+# 1. SLURM sbatch command options
+#--------------------------------------------------------------------------------
+
+config.sbatch_partition = 'cp3'
+config.sbatch_qos = 'cp3'
+config.sbatch_workdir = '.'
+config.sbatch_time = '0-$HOURS:$MINUTES'
+config.sbatch_mem = '2048'
+
+config.sbatch_output = '/dev/null'
+config.sbatch_error = '/dev/null'
+
+config.sbatch_additionalOptions = ["--job-name=$JOBNAME"]
+
+config.jobType = 'cms'
+
+config.inputSandboxContent = []
+config.inputSandboxDir = config.sbatch_workdir
+config.inputSandboxFilename = ''
+
+config.batchScriptsDir = config.sbatch_workdir
+
+config.batchScriptsFilename = '$SCRIPTNAME'
+
+config.stageout = $DOSTAGEOUT
+
+config.stageoutFiles = [$STAGEOUTFILES]
+
+config.writeLogsOnWN = True
+
+config.separateStdoutStderrLogs = True
+
+config.stdoutFilename = "log$${SLURM_ARRAY_TASK_ID}.out"
+config.stderrFilename = "log$${SLURM_ARRAY_TASK_ID}.err"
+config.stageoutLogs = True
+
+config.stageoutLogsDir = config.sbatch_workdir + '/log'
+
+config.useJobArray = True
+
+config.numJobs = None
+
+config.inputParamsNames = [
+$ARGLIST
+]
+
+config.inputParams = [
+$JOBARGLIST
+]
+
+
+
+config.payload = \
+"""
+echo "------------ start -----------"
+echo "Started Job at "`date`
+number=$$RANDOM
+let "number %= 100"
+echo "sleeping for ... "$$number
+sleep $$number
+echo "HOSTNAME: $$HOSTNAME"
+echo "HOME: $$HOME"
+tries=1
+until [ "$$tries" -gt "20" ] || (ls > /dev/null && ls /storage/data/cms/store/user/mkomm > /dev/null && ls /nfs/user/mkomm > /dev/null && ls $$HOME > /dev/null && ls /cvmfs/cp3.uclouvain.be/ > /dev/null)
+do
+  sleep 10s
+  rndsleep=$$RANDOM
+  let "rndsleep %= 30"
+  sleep $$rndsleep
+  echo "Try again "$$tries"/20 "`date`
+  let "tries++"
+done
+if [ "$$tries" -gt "20" ]
+then
+    echo "Mounting problem NOT solved!!! Killing job ..." >&2
+    exit 1
+else
+    echo "Everything seems to be properly mounted."
+fi
+
+echo "------------ sourcing -----------"
+source $$HOME/.bashrc
+echo "root: `which root`"
+echo "gcc: `which gcc` (version `gcc -dumpversion`)" 
+echo "python: `which python`"
+cd $$HOME/SSX
+source setVars.sh
+echo "take pxlrun from: `which pxlrun`"
+echo "------------ scratch dir -----------"
+echo "scratch dir: $$LOCALSCRATCH"
+cd $$LOCALSCRATCH
+echo "------------ env -----------"
+env | sort
+echo "------------ dir -----------"
+pwd
+ls -lh
+echo "------------ job -----------"
+echo "execute: $EXEC $ARGSTOJOB"
+export PXL_LOG_LEVEL=2
+/usr/bin/time -v -o $$LOCALSCRATCH/perf.time $EXEC $ARGSTOJOB
+echo "done executing: $EXEC $ARGSTOJOB"
+echo "------------ timing -----------"
+cat $$LOCALSCRATCH/perf.time
+echo "------------ dir -----------"
+pwd
+for f in `find . | sort`
+        do
+        echo `du -bh $$f`
+        done
+echo "------------ finished -----------"
+"""

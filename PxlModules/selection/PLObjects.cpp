@@ -17,6 +17,15 @@ class PLObjects:
 {
     private:
     
+        struct SortByPt
+        {
+            bool operator()(const pxl::Particle* p1, const pxl::Particle* p2) const
+            {
+                //sort descending
+                return p1->getPt()>p2->getPt();
+            }
+        };
+    
         std::string _eventViewName;
 
         pxl::Source* _outputSource;
@@ -33,6 +42,8 @@ class PLObjects:
         double _jetPt;
         double _jetEta;
         double _dR;
+        
+        int64_t _maxJets;
         
         std::string _selectedBjetName;
         double _bJetEta;
@@ -56,6 +67,7 @@ class PLObjects:
             _jetPt(40.0),
             _jetEta(4.7),
             _dR(-1),
+            _maxJets(3),
             _selectedBjetName("SelectedBJet"),
             _bJetEta(2.4),
             _bHadronEta(2.4),
@@ -80,6 +92,7 @@ class PLObjects:
             addOption("jet pt", "", _jetPt);
             addOption("jet eta", "", _jetEta);
             addOption("lepton-jet dR", "", _dR);
+            addOption("max number of jets","", _maxJets);
             
             addOption("selected bjet name", "", _selectedBjetName);
             addOption("bjet eta", "", _bJetEta);
@@ -132,6 +145,7 @@ class PLObjects:
             getOption("jet pt", _jetPt);
             getOption("jet eta", _jetEta);
             getOption("lepton-jet dR", _dR);
+            getOption("max number of jets", _maxJets);
             
             getOption("selected bjet name", _selectedBjetName);
             getOption("bjet eta", _bJetEta);
@@ -241,6 +255,14 @@ class PLObjects:
                             ev->setUserRecord("n"+_selectedJetName,jets.size());
                             ev->setUserRecord("n"+_selectedBjetName,bjets.size());
                             
+                            std::sort(jets.begin(),jets.end(),PLObjects::SortByPt());
+                            for (unsigned int ijet = 0; ijet < jets.size(); ++ijet)
+                            {
+                                if (ijet>=_maxJets)
+                                {
+                                    ev->removeObject(jets[ijet]);
+                                }
+                            }
                             if (leptons.size()!=1)
                             {
                                 _noLeptonSource->setTargets(event);

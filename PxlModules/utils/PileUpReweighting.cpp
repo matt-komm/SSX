@@ -103,7 +103,7 @@ class PileUpReweighting:
             {
                 throw std::runtime_error(getName()+": PU histogram from file '"+_mcFile+"' with name '"+_mcHistName+"' contains only "+std::to_string(histMC->GetEntries())+" entires.");
             }
-            histMC->SetDirectory(0);
+            //histMC->SetDirectory(0); delete with file closing
             histMC->Rebin(_rebinMC);
             histMC->Scale(histMC->GetNbinsX()/histMC->Integral());
             
@@ -122,7 +122,7 @@ class PileUpReweighting:
                 {
                     throw std::runtime_error(getName()+": PU histogram from file '"+_dataFiles[idataFile]+"' with name '"+_dataHistName+"' contains only "+std::to_string(histData->GetEntries())+" entires.");
                 }
-                histData->SetDirectory(0);
+                //histData->SetDirectory(0); ensure deletion with file closing
                 histData->Scale(histData->GetNbinsX()/histData->Integral());
                 
                 //range checking

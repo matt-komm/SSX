@@ -138,7 +138,7 @@ class JetMETVariations:
             event->getObjectsOfType(eventViews);
             
             bool metRenamed = false;
-            bool jetRenamed = false;
+           
             
             for (pxl::EventView* eventView: eventViews)
             {
@@ -151,7 +151,6 @@ class JetMETVariations:
                         if (particle->getName()==jetName)
                         {
                             particle->setName(_renamedJet);
-                            jetRenamed = true;
                         }
                         else if (particle->getName()==metName)
                         {
@@ -163,12 +162,6 @@ class JetMETVariations:
                             metRenamed=true;
                         }
                         
-                        
-                        //remove particle if it begins with _renamedJet
-                        else if (_removeOtherVariations and std::equal(_renamedJet.begin(),_renamedJet.end(),particle->getName().begin()))
-                        {
-                            eventView->removeObject(particle);
-                        }
                         //remove particle if it begins with _renamedMET
                         else if (_removeOtherVariations and std::equal(_renamedMET.begin(),_renamedMET.end(),particle->getName().begin()))
                         {
@@ -180,10 +173,6 @@ class JetMETVariations:
                     if (not metRenamed)
                     {
                         throw std::runtime_error("No MET object found of name '"+metName+"'");
-                    }
-                    if (not jetRenamed)
-                    {
-                        throw std::runtime_error("No Jet object found of name '"+jetName+"'");
                     }
                     
                 }
