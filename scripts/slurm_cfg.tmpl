@@ -62,7 +62,7 @@ config.payload = \
 echo "------------ start -----------"
 echo "Started Job at "`date`
 number=$$RANDOM
-let "number %= 100"
+let "number %= 30"
 echo "sleeping for ... "$$number
 sleep $$number
 echo "HOSTNAME: $$HOSTNAME"

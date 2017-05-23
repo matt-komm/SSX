@@ -138,7 +138,7 @@ class JetMETVariations:
             event->getObjectsOfType(eventViews);
             
             bool metRenamed = false;
-           
+            
             
             for (pxl::EventView* eventView: eventViews)
             {
@@ -150,6 +150,7 @@ class JetMETVariations:
                     {
                         if (particle->getName()==jetName)
                         {
+                            //std::cout<<"    select Jet: "<<particle->getName()<<std::endl;
                             particle->setName(_renamedJet);
                         }
                         else if (particle->getName()==metName)
@@ -160,12 +161,23 @@ class JetMETVariations:
                                 throw std::runtime_error("Multiple MET objects found of name '"+metName+"'");
                             }
                             metRenamed=true;
+                            //std::cout<<"    select MET: "<<particle->getName()<<std::endl;
                         }
                         
-                        //remove particle if it begins with _renamedMET
+                        //remove particle if it begins with _renamedJet or _renamedMET
+                        else if (_removeOtherVariations and std::equal(_renamedJet.begin(),_renamedJet.end(),particle->getName().begin()))
+                        {
+                            //std::cout<<"    delete: "<<particle->getName()<<std::endl;
+                            eventView->removeObject(particle);
+                        }
                         else if (_removeOtherVariations and std::equal(_renamedMET.begin(),_renamedMET.end(),particle->getName().begin()))
                         {
+                            //std::cout<<"    delete: "<<particle->getName()<<std::endl;
                             eventView->removeObject(particle);
+                        }
+                        else
+                        {
+                            //std::cout<<"    keep: "<<particle->getName()<<" (!="<<_renamedMET<<"||"<<_renamedJet<<")"<<std::endl;
                         }
                         
                     }
@@ -187,6 +199,7 @@ class JetMETVariations:
                 pxl::Event *event  = dynamic_cast<pxl::Event*>(sink->get());
                 if (event)
                 {
+                    //std::cout<<"new event"<<std::endl;
                     bool success = true;
                     if (not event->getUserRecord("isRealData").toBool())
                     {
@@ -194,6 +207,7 @@ class JetMETVariations:
                         {
                             if (variation->second.active[0])
                             {
+                                //std::cout<<"  produce "<<variation->first<<"Up"<<std::endl;
                                 pxl::Event* eventShiftedUp = dynamic_cast<pxl::Event*>(event->clone());
                                 if (not eventShiftedUp)
                                 {
@@ -217,6 +231,7 @@ class JetMETVariations:
                             }
                             if (variation->second.active[1])
                             {
+                                //std::cout<<"  produce "<<variation->first<<"Down"<<std::endl;
                                 pxl::Event* eventShiftedDown = dynamic_cast<pxl::Event*>(event->clone());
                                 if (not eventShiftedDown)
                                 {
@@ -239,6 +254,7 @@ class JetMETVariations:
                                 delete eventShiftedDown;
                             }
                         }
+                        //std::cout<<"  produce "<<"Nominal"<<std::endl;
                         renameJetMET(event,_nominalJetName,_nominalMETName);
                     }
                     _nominalSource->setTargets(event);

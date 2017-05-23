@@ -264,7 +264,7 @@ if __name__=="__main__":
     
     generated = genScript.substitute({
         "JOBNAME":os.path.basename(args[0]),
-        "HOURS":"%02i"%options.hours,
+        "HOURS":"%02i"%int(options.hours),
         "MINUTES":"00",
         "EXEC":"pxlrun",
         "SCRIPTNAME":"runJob.sh",

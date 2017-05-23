@@ -42,6 +42,10 @@ class TreeAccess
             if (it==_variables.end())
             {
                 TLeaf* leaf = _tree->GetLeaf(name.c_str());
+                if (leaf==nullptr)
+                {
+                    throw std::runtime_error("Leaf with name '"+name+"' does not exists in tree '"+std::string(_tree->GetName())+"'");
+                }
                 std::string leafType = leaf->GetTypeName();
                 if (leafType=="Float_t")
                 {
