@@ -12,7 +12,7 @@ config.sbatch_partition = 'cp3'
 config.sbatch_qos = 'cp3'
 config.sbatch_workdir = '.'
 config.sbatch_time = '0-$HOURS:$MINUTES'
-config.sbatch_mem = '2048'
+config.sbatch_mem = '$RAM'
 
 config.sbatch_output = '/dev/null'
 config.sbatch_error = '/dev/null'
@@ -37,8 +37,8 @@ config.writeLogsOnWN = True
 
 config.separateStdoutStderrLogs = True
 
-config.stdoutFilename = "log$${SLURM_ARRAY_TASK_ID}.out"
-config.stderrFilename = "log$${SLURM_ARRAY_TASK_ID}.err"
+config.stdoutFilename = "${JOBNAME}_log$${SLURM_ARRAY_TASK_ID}.out"
+config.stderrFilename = "${JOBNAME}_log$${SLURM_ARRAY_TASK_ID}.err"
 config.stageoutLogs = True
 
 config.stageoutLogsDir = config.sbatch_workdir + '/log'

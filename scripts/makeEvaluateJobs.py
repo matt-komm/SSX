@@ -11,34 +11,39 @@ from string import Template
 
 parser = OptionParser()
 parser.add_option("-i","--inputFolder",dest="inputs",action="append", default=[])
-parser.add_option("-c","--channel", dest="channel",default="mu")
 parser.add_option("-b","--batch", dest="batch",default=1)
+parser.add_option("-o","--out", dest="out")
 (options, args) = parser.parse_args()
 
 rootFiles=[]
 
-basedirSignalMC = "/nfs/user/mkomm/SSX13/signalMC/"+options.channel
 matchSignalMC = re.compile("^signalMC[A-Za-z_]*[0-9]+.root$")
-
-basedirBackgroundMC = "/nfs/user/mkomm/SSX13/backgroundMC/"+options.channel
 matchBackgroundMC = re.compile("^backgroundMC[A-Za-z_]*[0-9]+.root$")
-
-basedirData = "/nfs/user/mkomm/SSX13/data/"+options.channel
 matchData = re.compile("^data[0-9]+.root$")
 
-for f in os.listdir(basedirSignalMC):
+for f in os.listdir(options.out):
     if matchSignalMC.match(f) and f.find("veto")<0:
-        rootFiles.append(os.path.join(basedirSignalMC,f))
+        rootFiles.append(os.path.join(options.out,f))
 
-for f in os.listdir(basedirBackgroundMC):
+for f in os.listdir(options.out):
     if matchBackgroundMC.match(f) and f.find("veto")<0:
-        rootFiles.append(os.path.join(basedirBackgroundMC,f))
+        rootFiles.append(os.path.join(options.out,f))
 
-for f in os.listdir(basedirData):
+for f in os.listdir(options.out):
     if matchData.match(f) and f.find("veto")<0:
-        rootFiles.append(os.path.join(basedirData,f))
+        rootFiles.append(os.path.join(options.out,f))
         
 print "found ",len(rootFiles)," root files"
+
+'''
+for i in range(300):
+    if (os.path.join(options.out,"signalMC"+str(i)+".root") not in rootFiles):
+        print "missing ",os.path.join(options.out,"signalMC"+str(i)+".root")
+    if (os.path.join(options.out,"signalMC_train"+str(i)+".root") not in rootFiles):
+        print "missing ",os.path.join(options.out,"signalMC_train"+str(i)+".root")
+    if (os.path.join(options.out,"signalMC_test"+str(i)+".root") not in rootFiles):
+        print "missing ",os.path.join(options.out,"signalMC_test"+str(i)+".root")
+'''
 
 weightFiles = []
 weightMatch = re.compile("[A-Za-z_0-9.\-]+.weights.xml")
@@ -61,30 +66,43 @@ for ibatch, rootFilesBatch in enumerate(rootFileBatches):
 
     jobArgList = ""
     for f in rootFilesBatch:
-        args = "['"+f+"','"+weightArgs+"','"+f+".friend'],\n"
+        args = "['"+f+"','"+weightArgs+"','"+os.path.basename(f)+".friend'],\n"
         jobArgList+=args
         
+    mangeling = options.out
+    mangeling = mangeling.rsplit("/",4)
+    jobName = "mva_"+mangeling[2]+"_"+mangeling[3]
+    scriptName = "mvaEvaluate"
+    outFileName = os.path.join(options.out,"slurm_tmva")
+    
+    if (len(rootFileBatches)>1):
+        jobName +="_"+str(ibatch+1)
+        scriptName +="_"+str(ibatch+1)
+        outFileName +="_"+str(ibatch+1)
 
 
     generated = genScript.substitute({
-        "JOBNAME":"mva_"+options.channel+"_"+str(ibatch+1),
-        "HOURS":"02",
+        "JOBNAME": jobName,
+        "HOURS":"04",
         "MINUTES":"00",
+        "RAM":"2024",
         "EXEC":"$HOME/SSX/PxlModules/build/scripts/evaluateTMVA/evaluateTMVA",
         "ARGLIST":"'FILE','WEIGHTS','OUTPUT'",
         "ARGSTOJOB":"--file $FILE $WEIGHTS $OUTPUT",
         "JOBARGLIST":jobArgList,
-        "SCRIPTNAME":"tmva_"+options.channel+"_"+str(ibatch+1)+".sh",
-        "DOSTAGEOUT":"False",
-        "STAGEOUTFILES":""
+        "SCRIPTNAME":scriptName+".sh",
+        "DOSTAGEOUT":"True",
+        "STAGEOUTFILES":"'*.root.friend'"
     })
 
-    fileout = open("slurm_tmva_"+options.channel+"_"+str(ibatch+1)+".py","w")
+    
+
+    fileout = open(outFileName+".py","w")
     fileout.write(generated)
         
     filein.close()
     fileout.close()
-    print "Generated: ","slurm_tmva_"+options.channel+"_"+str(ibatch+1)+".py"
+    print "Generated: ",outFileName+".py"
 
     
     

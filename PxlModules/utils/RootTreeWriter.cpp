@@ -91,6 +91,7 @@ class RootTreeWriter:
             addOption("root file","",_outputFileName,pxl::OptionDescription::USAGE_FILE_SAVE);
             
             addOption("variables","",_selections);
+            addOption("variablesFile","","",pxl::OptionDescription::USAGE_FILE_OPEN);
         }
 
         ~RootTreeWriter()
@@ -129,6 +130,18 @@ class RootTreeWriter:
             {
                 _syntaxTree.buildTree(s);
             }
+            std::string variablesFileName;
+            getOption("variablesFile",variablesFileName);
+            std::ifstream input(variablesFileName);
+            for( std::string line; getline( input, line ); )
+            {
+                if (line.size()==0)
+                {
+                    continue;
+                }
+                _syntaxTree.buildTree(line);
+            }
+            
             //_syntaxTree->print();
         }
 

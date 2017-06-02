@@ -183,7 +183,7 @@ ROOT.gStyle.SetLineScalePS(2)
 # ROOT.gStyle.SetTimeOffset(Double_t toffset)
 # ROOT.gStyle.SetHistMinimumZero(kTRUE)
 
-ROOT.gStyle.SetPaintTextFormat("4.0f")
+ROOT.gStyle.SetPaintTextFormat("4.1f")
 ROOT.gStyle.SetPalette(1)
 #ROOT.gStyle.SetPaintTextFormat("7.4f")
 

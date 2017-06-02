@@ -616,8 +616,12 @@ class TopReconstruction:
                         for (unsigned int iparticle = 0; iparticle<particles.size(); ++iparticle)
                         {
                             pxl::Particle* particle = particles[iparticle];
-                            if (!lepton and inputEventView->getName()==_inputEventViewNameLepton and particle->getName()==_leptonName)
+                            if (inputEventView->getName()==_inputEventViewNameLepton and particle->getName()==_leptonName)
                             {
+                                if (lepton!=nullptr)
+                                {
+                                    throw std::runtime_error("Found multiple Leptons");
+                                }
                                 if (_inputEventViewNameLepton!=_outputEventViewName)
                                 {
                                     lepton=(pxl::Particle*)particle->clone();
@@ -628,8 +632,12 @@ class TopReconstruction:
                                     lepton=particle;
                                 }
                             }
-                            if (!neutrino and inputEventView->getName()==_inputEventViewNameNeutrino and particle->getName()==_neutrinoName)
+                            if (inputEventView->getName()==_inputEventViewNameNeutrino and particle->getName()==_neutrinoName)
                             {
+                                if (neutrino!=nullptr)
+                                {
+                                    throw std::runtime_error("Found multiple Leptons");
+                                }
                                 if (_inputEventViewNameNeutrino!=_outputEventViewName)
                                 {
                                     neutrino=(pxl::Particle*)particle->clone();

@@ -256,7 +256,7 @@ class ElectronSelection:
                 return false;
             }
             float scEta = particle->getUserRecord("superClusterEta").toFloat();
-            if (fabs(scEta)>1.4442 && fabs(scEta)<1.5660)
+            if (std::fabs(scEta)>1.4442 && std::fabs(scEta)<1.5660)
             {
                 return false;
             }

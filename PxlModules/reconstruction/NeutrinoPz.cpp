@@ -130,12 +130,20 @@ class NeutrinoPz:
                             for (unsigned iparticle=0; iparticle<particles.size();++iparticle)
                             {
                                 pxl::Particle* particle = particles[iparticle];
-                                if (!met &&(particle->getName()==_metName))
+                                if (particle->getName()==_metName)
                                 {
+                                    if (met!=nullptr)
+                                    {
+                                        throw std::runtime_error("Found multiple MET objects in events");
+                                    }
                                     met=particle;
                                 }
-                                if (!lepton &&(particle->getName()==_leptonName))
+                                if (particle->getName()==_leptonName)
                                 {
+                                    if (lepton!=nullptr)
+                                    {
+                                        throw std::runtime_error("Found multiple Lepton objects in events");
+                                    }
                                     lepton=particle;
                                 }
                             }

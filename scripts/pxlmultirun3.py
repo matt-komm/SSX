@@ -5,7 +5,9 @@ from optparse import OptionParser
 import re
 import stat
 import json
+import random
 import shutil
+import sys
 
 from string import Template
 
@@ -92,39 +94,66 @@ def swap(list1,list2):
 		pass
 		
 def generatePartions(fileList,N):
-    sizedFileList=[]
+    sizedFileDictList={}
+    
+    totalSize = 0.0
+    sizePerBase = {}
     for f in fileList:
-        sizedFileList.append({"file":f,"size":os.path.getsize(f)})
-
-    sizedFileList.sort(getValue)
-
+        base = os.path.dirname(f)
+        if not sizedFileDictList.has_key(base):
+            sizedFileDictList[base]=[]
+            sizePerBase[base]=0.0
+        size = os.path.getsize(f)
+        sizedFileDictList[base].append({"file":f,"size":size})
+        totalSize+=size
+        sizePerBase[base]+=size
+        
+    if N<len(sizePerBase.keys()):
+        print "ERROR - need more jobs than folders"
+        sys.exit(0)
+        
+        
+    sortedBaseBySize = []
+    for base in sizedFileDictList.keys():
+        sortedBaseBySize.append({"base":base,"size":sizePerBase[base]})
+        
+    #sort increasingly
+    sortedBaseBySize = sorted(sortedBaseBySize,key=lambda elem:elem["size"])
+    
+    partsPerBase = {}
+    partsLeft = N
+    sizeLeft = totalSize
+    tot = 0
+    for baseSizePair in sortedBaseBySize:
+        base = baseSizePair["base"]
+        random.shuffle(sizedFileDictList[base])
+        partSize = max(1,int(N*sizePerBase[base]/totalSize)-int(N*sizeLeft/totalSize)+partsLeft)
+        partsPerBase[base]=partSize
+        partsLeft-=partSize
+        sizeLeft-=sizePerBase[base]
+        #print base,partSize
+        tot+=partSize
+    #print tot
+    
+    if tot!=N:
+        print "ERROR - different number of jobs per folder ("+str(tot)+") generated than requested"
+        sys.exit(0)
+    
     divLists=[]
-    retLists=[]
-    for target in range(N):
+    for i in range(N):
         divLists.append([])
-        retLists.append([])
 
-    #fill list in zigzag
-    for cnt in range(len(sizedFileList)):
-        for target in range(N):
-	        if ((cnt/N)%2==0):
-		        if ((cnt%N)==target):
-			        #print cnt,"-> ",target
-			        divLists[target].append(sizedFileList[cnt])
-			        break
-	        else:
-		        if ((cnt%N)==target):
-			        #print cnt,"-> ",N-target -1
-			        divLists[N-target-1].append(sizedFileList[cnt])
-			        break
     
+    index = 0
+    for base in sizedFileDictList.keys():
+        for ifile in range(len(sizedFileDictList[base])):
+            subindex = index+ifile%partsPerBase[base]
+            divLists[subindex].append(sizedFileDictList[base][ifile]["file"])
+        index+=partsPerBase[base]
+        
+    #print len(divLists)
     
-    
-    for i in range(len(divLists)):
-        divList=divLists[i]
-        for elem in divList:
-            retLists[i].append(elem["file"])
-    return retLists
+    return divLists
     
 def createPartionedFileName(name,N):
     splitted=name.rsplit(".",1)
@@ -263,10 +292,11 @@ if __name__=="__main__":
         xmlList+="    ['"+analysisFile+"'],\n"
     
     generated = genScript.substitute({
-        "JOBNAME":os.path.basename(args[0]),
+        "JOBNAME":os.path.basename(args[0]).rsplit(".")[0],
         "HOURS":"%02i"%int(options.hours),
         "MINUTES":"00",
         "EXEC":"pxlrun",
+        "RAM":"2500",
         "SCRIPTNAME":"runJob.sh",
         "ARGLIST":"'XMLANAYLSIS'",
         "ARGSTOJOB":"$XMLANAYLSIS",
