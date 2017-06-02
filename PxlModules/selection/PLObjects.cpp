@@ -36,6 +36,7 @@ class PLObjects:
         int64_t _leptonPdgId;
         double _leptonPt;
         double _leptonEta;
+        int64_t _nLeptons;
         
         std::string _jetInputName;
         std::string _selectedJetName;
@@ -62,6 +63,7 @@ class PLObjects:
             _leptonPdgId(13),
             _leptonPt(26),
             _leptonEta(2.4),
+            _nLeptons(1),
             _jetInputName("Jet"),
             _selectedJetName("SelectedLJet"),
             _jetPt(40.0),
@@ -86,6 +88,7 @@ class PLObjects:
             addOption("lepton pdgId", "", _leptonPdgId);
             addOption("lepton pt", "", _leptonPt);
             addOption("lepton eta", "", _leptonEta);
+            addOption("number of leptons","", _nLeptons);
             
             addOption("jet input name", "", _jetInputName);
             addOption("selected jet name", "", _selectedJetName);
@@ -139,6 +142,7 @@ class PLObjects:
             getOption("lepton pdgId", _leptonPdgId);
             getOption("lepton pt", _leptonPt);
             getOption("lepton eta", _leptonEta);
+            getOption("number of leptons", _nLeptons);
             
             getOption("jet input name", _jetInputName);
             getOption("selected jet name", _selectedJetName);
@@ -190,7 +194,6 @@ class PLObjects:
                                     and std::fabs(particle->getEta())<_leptonEta
                                    )
                                 {
-                                    particle->setName(_selectedLeptonName);
                                     leptons.push_back(particle);
                                 }
                                 else if (particle->getName()==_jetInputName
@@ -263,13 +266,17 @@ class PLObjects:
                                     ev->removeObject(jets[ijet]);
                                 }
                             }
-                            if (leptons.size()!=1)
+                            if (leptons.size()!=_nLeptons)
                             {
                                 _noLeptonSource->setTargets(event);
                                 return _noLeptonSource->processTargets();
                             }
                             else
                             {
+                                for (unsigned int ilep = 0; ilep < leptons.size(); ++ilep)
+                                {
+                                    leptons[ilep]->setName(_selectedLeptonName);
+                                }
                                 _outputSource->setTargets(event);
                                 return _outputSource->processTargets();
                             }
