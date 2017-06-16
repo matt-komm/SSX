@@ -51,17 +51,47 @@ config.inputParamsNames = ['TMVA_SCRIPTFILE','TMVA_NAME','TMVA_CH','TMVA_CFG']
 
 scriptfile = '$HOME/SSX/analysis/BDT_tchan/TMVATraining.py'
 
+config.inputParams = []
+'''
 config.inputParams = [
-    [scriptfile,'BDTmu_tch_adaboost04_minnode010_maxvar3_ntree600_invboost','mu','BoostType=AdaBoost:AdaBoostBeta=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=3:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=1.0%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
-    [scriptfile,'BDTmu_tch_adaboost04_minnode005_maxvar3_ntree600_invboost','mu','BoostType=AdaBoost:AdaBoostBeta=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=3:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.5%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
-    [scriptfile,'BDTmu_tch_adaboost04_minnode005_maxvar5_ntree600_invboost','mu','BoostType=AdaBoost:AdaBoostBeta=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=5:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.5%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
-    [scriptfile,'BDTmu_tch_adaboost04_minnode001_maxvar5_ntree600_invboost','mu','BoostType=AdaBoost:AdaBoostBeta=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=5:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.1%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTmu_tch_adaboost04_minnode010_maxvar3_nCuts50_ntree600_invboost','mu','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=3:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=1.0%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTmu_tch_adaboost04_minnode005_maxvar3_nCuts50_ntree600_invboost','mu','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=3:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.5%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTmu_tch_adaboost04_minnode005_maxvar5_nCuts50_ntree600_invboost','mu','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=5:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.5%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTmu_tch_adaboost04_minnode001_maxvar5_nCuts50_ntree600_invboost','mu','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=5:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.1%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTmu_tch_adaboost04_minnode001_maxvar5_nCuts100_ntree600_invboost','mu','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=5:nCuts=100:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.1%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
 
-    [scriptfile,'BDTele_tch_adaboost04_minnode010_maxvar3_ntree600_invboost','ele','BoostType=AdaBoost:AdaBoostBeta=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=3:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=1.0%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
-    [scriptfile,'BDTele_tch_adaboost04_minnode005_maxvar3_ntree600_invboost','ele','BoostType=AdaBoost:AdaBoostBeta=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=3:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.5%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
-    [scriptfile,'BDTele_tch_adaboost04_minnode005_maxvar5_ntree600_invboost','ele','BoostType=AdaBoost:AdaBoostBeta=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=5:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.5%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
-    [scriptfile,'BDTele_tch_adaboost04_minnode001_maxvar5_ntree600_invboost','ele','BoostType=AdaBoost:AdaBoostBeta=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=5:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.1%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTele_tch_adaboost04_minnode010_maxvar3_nCuts50_ntree600_invboost','ele','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=3:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=1.0%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTele_tch_adaboost04_minnode005_maxvar3_nCuts50_ntree600_invboost','ele','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=3:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.5%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTele_tch_adaboost04_minnode005_maxvar5_nCuts50_ntree600_invboost','ele','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=5:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.5%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTele_tch_adaboost04_minnode001_maxvar5_nCuts50_ntree600_invboost','ele','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=5:nCuts=50:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.1%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
+    [scriptfile,'BDTele_tch_adaboost04_minnode001_maxvar5_nCuts100_ntree600_invboost','ele','BoostType=AdaBoost:AdaBoostBeta=0.4:SeparationType=CrossEntropy:MaxDepth=5:nCuts=100:NodePurityLimit=0.5:NTrees=600:MinNodeSize=0.1%:NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'],
 ]
+'''
+
+for boost in [0.4]:
+    for minNode in [5.0,1.0,0.5,0.1]:
+        for maxVar in [3,5]:
+            for nCuts in [50,75,100]:
+                config.inputParams.append([
+                    scriptfile,
+                    'BDTmu_tch_adaboost%03.0f_minnode%03.0f_maxvar%i_nCuts%i_ntree600_invboost'%(boost*100.,minNode*10.,maxVar,nCuts),
+                    'mu',
+                    'BoostType=AdaBoost:AdaBoostBeta=%4.2f:'%boost+
+                    'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
+                    'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
+                    'NTrees=600:MinNodeSize=%5.3f%%:'%minNode+
+                    'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'
+                ])
+                config.inputParams.append([
+                    scriptfile,
+                    'BDTele_tch_adaboost%03.0f_minnode%03.0f_maxvar%i_nCuts%i_ntree600_invboost'%(boost*100.,minNode*10.,maxVar,nCuts),
+                    'ele',
+                    'BoostType=AdaBoost:AdaBoostBeta=%4.2f:'%boost+
+                    'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
+                    'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
+                    'NTrees=600:MinNodeSize=%5.3f%%:'%minNode+
+                    'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'
+                ])
 
 
 

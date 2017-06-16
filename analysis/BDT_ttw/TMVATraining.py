@@ -13,11 +13,11 @@ args = parser.parse_args()
 print "train BDT with name: ",args.name
 print "train with configuration: ",args.cfg
 
-basePathTrainingBackground = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel
-basePathTestingBackground = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel
+basePathTrainingBackground = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel+"2"
+basePathTestingBackground = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel+"2"
 
-basePathTrainingSignal = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel
-basePathTestingSignal = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel
+basePathTrainingSignal = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel+"2"
+basePathTestingSignal = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel+"2"
 
 rootFilesTrain=[]
 rootFilesTest=[]
@@ -184,8 +184,8 @@ factory.AddVariable("SingleTop_1__Dijet_1__Pt")
 cut = ROOT.TCut("(formva==1)&&"+leptonSelection+"&&("+selection2j1t+"||"+selection2j0t+"||"+selection3j1t+")")
 factory.PrepareTrainingAndTestTree(cut,"")
 
-#factory.BookMethod(ROOT.TMVA.Types.kBDT,"BDT_adaboost04_minnode010_maxvar3_ntree1000_invboost","BoostType=AdaBoost:AdaBoostBeta=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=3:nCuts=40:NodePurityLimit=0.5:NTrees=1000:MinNodeSize=1%:NegWeightTreatment=InverseBoostNegWeights")
-#factory.BookMethod(ROOT.TMVA.Types.kBDT,"BDT_gradboost04_minnode010_maxvar3_ntree1000_pray","BoostType=Grad:Shrinkage=0.4:PruneMethod=CostComplexity:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=3:nCuts=40:NodePurityLimit=0.5:NTrees=1000:MinNodeSize=1%:NegWeightTreatment=Pray")
+#factory.BookMethod(ROOT.TMVA.Types.kBDT,"BDT_adaboost04_minnode010_maxvar3_ntree1000_invboost","BoostType=AdaBoost:AdaBoostBeta=0.4:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=3:nCuts=40:NodePurityLimit=0.5:NTrees=1000:MinNodeSize=1%:NegWeightTreatment=InverseBoostNegWeights")
+#factory.BookMethod(ROOT.TMVA.Types.kBDT,"BDT_gradboost04_minnode010_maxvar3_ntree1000_pray","BoostType=Grad:Shrinkage=0.4:PruneStrength=7:SeparationType=CrossEntropy:MaxDepth=3:nCuts=40:NodePurityLimit=0.5:NTrees=1000:MinNodeSize=1%:NegWeightTreatment=Pray")
 
 factory.BookMethod(ROOT.TMVA.Types.kBDT,args.name,args.cfg)
 

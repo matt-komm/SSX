@@ -6,6 +6,7 @@ import re
 import stat
 import shutil
 import numpy
+import sys
 
 from string import Template
 
@@ -23,17 +24,26 @@ matchData = re.compile("^data[0-9]+.root$")
 
 for f in os.listdir(options.out):
     if matchSignalMC.match(f) and f.find("veto")<0:
+        if os.path.exists(os.path.join(options.out,f+".friend")):
+            continue
         rootFiles.append(os.path.join(options.out,f))
 
 for f in os.listdir(options.out):
     if matchBackgroundMC.match(f) and f.find("veto")<0:
+        if os.path.exists(os.path.join(options.out,f+".friend")):
+            continue
         rootFiles.append(os.path.join(options.out,f))
 
 for f in os.listdir(options.out):
     if matchData.match(f) and f.find("veto")<0:
+        if os.path.exists(os.path.join(options.out,f+".friend")):
+            continue
         rootFiles.append(os.path.join(options.out,f))
         
 print "found ",len(rootFiles)," root files"
+
+if len(rootFiles)==0:
+    sys.exit(1)
 
 '''
 for i in range(300):
@@ -61,6 +71,9 @@ print "found ",len(weightFiles)," weight files"
 rootFileBatches = numpy.array_split(rootFiles,int(options.batch))
 
 for ibatch, rootFilesBatch in enumerate(rootFileBatches):
+    if len(rootFilesBatch)==0:
+        continue
+
     filein = open(os.path.join(os.path.dirname(os.path.realpath(__file__)),"slurm_cfg.tmpl"))
     genScript = Template(filein.read())
 
@@ -83,9 +96,9 @@ for ibatch, rootFilesBatch in enumerate(rootFileBatches):
 
     generated = genScript.substitute({
         "JOBNAME": jobName,
-        "HOURS":"04",
+        "HOURS":"06",
         "MINUTES":"00",
-        "RAM":"2024",
+        "RAM":"2548",
         "EXEC":"$HOME/SSX/PxlModules/build/scripts/evaluateTMVA/evaluateTMVA",
         "ARGLIST":"'FILE','WEIGHTS','OUTPUT'",
         "ARGSTOJOB":"--file $FILE $WEIGHTS $OUTPUT",

@@ -13,11 +13,11 @@ args = parser.parse_args()
 print "train BDT with name: ",args.name
 print "train with configuration: ",args.cfg
 
-basePathTrainingBackground = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel
-basePathTestingBackground = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel
+basePathTrainingBackground = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel+"2"
+basePathTestingBackground = "/nfs/user/mkomm/SSX13/backgroundMC/"+args.channel+"2"
 
-basePathTrainingSignal = "/nfs/user/mkomm/SSX13/signalMC/"+args.channel
-basePathTestingSignal = "/nfs/user/mkomm/SSX13/signalMC/"+args.channel
+basePathTrainingSignal = "/nfs/user/mkomm/SSX13/signalMC/"+args.channel+"2"
+basePathTestingSignal = "/nfs/user/mkomm/SSX13/signalMC/"+args.channel+"2"
 
 rootFilesTrain=[]
 rootFilesTest=[]
@@ -71,25 +71,25 @@ for background in [
     ["WToLNu_1J_13TeV-amcatnloFXFX-pythia8",1.5],
     ["WToLNu_2J_13TeV-amcatnloFXFX-pythia8_ext",1.5],
     ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",1.0],
-    ["QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.05],
-    ["QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.05],
-    ["QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.05],
-    ["QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.05],
-    ["QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.05],
-    ["QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.05],
-    ["QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.05],
-    ["QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.05],
-    ["QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.05],
-    ["QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.05],
-    ["QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.05],
-    ["QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.05],
-    ["QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8",0.05],
-    ["QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",0.05],
-    ["QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",0.05],
-    ["QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.05],
-    ["QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",0.05],
-    ["QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8",0.05],
-    ["QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8",0.05],
+    ["QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.02],
+    ["QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.02],
+    ["QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.02],
+    ["QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.02],
+    ["QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.02],
+    ["QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.02],
+    ["QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.02],
+    ["QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.02],
+    ["QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.02],
+    ["QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.02],
+    ["QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.02],
+    ["QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",0.02],
+    ["QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8",0.02],
+    ["QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",0.02],
+    ["QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",0.02],
+    ["QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",0.02],
+    ["QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",0.02],
+    ["QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8",0.02],
+    ["QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8",0.02],
 ]:
     chainTrain = ROOT.TChain(background[0])
     backgroundTrainChains.append(chainTrain)

@@ -17,6 +17,7 @@ class PartonLevelReconstruction:
     private:
         pxl::Source* _outputLeptonic;
         pxl::Source* _outputHadronic;
+        pxl::Source* _outputAmbiguous;
 
         std::string _inputEventViewName;
         std::string _outputEventViewName;
@@ -77,6 +78,7 @@ class PartonLevelReconstruction:
             addSink("input", "Input");
             _outputLeptonic = addSource("leptonic", "leptonic");
             _outputHadronic = addSource("hadronic", "hadronic");
+            _outputAmbiguous = addSource("ambiguous", "ambiguous");
 
             addOption("input event view","name of the event view",_inputEventViewName);
             addOption("output event view","name of the neutrino",_outputEventViewName);
@@ -540,19 +542,24 @@ class PartonLevelReconstruction:
                             );
                             
                             
-                                        
-                         
-                    
-
-                            if ((leptonCandidates.size()+leptonCandidatesFromTaus.size())==0 or neutrinoCandidates.size()==0)
+                            bool isLeptonic = (leptonCandidates.size()+leptonCandidatesFromTaus.size())==0 or neutrinoCandidates.size()==0;
+                            
+                            if (lquarkCandidates.size()>1)
                             {
-                                outputEV->setUserRecord("isLeptonic",false);
+                                outputEV->setUserRecord("isLeptonic",isLeptonic);
+                                _outputAmbiguous->setTargets(event);
+                                return _outputAmbiguous->processTargets(); 
+                            }
+                         
+                            if (isLeptonic)
+                            {
+                                outputEV->setUserRecord("isLeptonic",isLeptonic);
                                 _outputHadronic->setTargets(event);
                                 return _outputHadronic->processTargets();
                             }
                             
                             
-                            outputEV->setUserRecord("isLeptonic",true);
+                            outputEV->setUserRecord("isLeptonic",isLeptonic);
                             _outputLeptonic->setTargets(event);
                             return _outputLeptonic->processTargets();
                         }
