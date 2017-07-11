@@ -227,7 +227,7 @@ class PartonLevelReconstruction:
                             for (unsigned int iparticle = 0; iparticle< particles.size(); ++iparticle)
                             {
                                 pxl::Particle* particle = particles[iparticle];
-                                //unpackFlags(particle);
+                                
                                 
                                 //Find Top --------------------------------------------------------
                                 if (std::abs(particle->getPdgNumber())==6 and checkFlag(particle,FromHardProcess) and checkFlag(particle,copyGenFlag))
@@ -259,7 +259,7 @@ class PartonLevelReconstruction:
                                 
                                 //Find l quarks --------------------------------------------------------
                                 //First copy flag is not always present
-                                if (std::abs(particle->getPdgNumber())<5 and checkFlag(particle,FromHardProcess))
+                                if (std::abs(particle->getPdgNumber())<5 and particle->getPdgNumber()!=0 and checkFlag(particle,FromHardProcess))
                                 {
                                     if (_lastCopies and checkFlag(particle,IsLastCopy))
                                     {
@@ -428,33 +428,79 @@ class PartonLevelReconstruction:
                                 wbosonClone->linkDaughter(neutrinoClone);
                             }
                             
-                            if (bquarkCandidates.size()==0)
-                            {
-                                throw std::runtime_error("no b quarks found in hard process");
-                            }
                             
+                            std::vector<pxl::Particle*> bFromTop;
+                            std::vector<pxl::Particle*> bFromW;
+                            std::vector<pxl::Particle*> bNotTop;
                             for (pxl::Particle* p: bquarkCandidates)
                             {
-                                if (isInDecay(top,p) and not isInDecay(wboson,p))
+                                if (isInDecay(top,p))
                                 {
-                                    bquark = p;
+                                    if (not isInDecay(wboson,p))
+                                    {
+                                        //p->setName(p->getName()+" (tb)");
+                                        bFromTop.push_back(p);
+                                    }
+                                    else
+                                    {
+                                        //p->setName(p->getName()+" (wb)");
+                                        bFromW.push_back(p);
+                                    }
                                 }
                                 else
                                 {
-                                    additionalBquarkCandidates.push_back(p);
+                                    //p->setName(p->getName()+" (ab)");
+                                    bNotTop.push_back(p);
                                 }
                             }
                             
-                            if (!bquark)
+                            std::vector<pxl::Particle*> lFromTopOrW;
+                            std::vector<pxl::Particle*> lNotTop;
+                            for (pxl::Particle* p: lquarkCandidates)
                             {
-                                throw std::runtime_error("no b quark from top decay found");
+                                //spectator cannot be mother of top
+                                if (isInDecay(p,top))
+                                {
+                                    //p->setName(p->getName()+" (ml)");
+                                }
+                                else
+                                {
+                                    if (isInDecay(top,p))
+                                    {
+                                        //p->setName(p->getName()+" (tl)");
+                                        lFromTopOrW.push_back(p);
+                                    }
+                                    else
+                                    {
+                                        p->setName(p->getName()+" (l)");
+                                        lNotTop.push_back(p);
+                                    }
+                                }
                             }
+                            
+                            
+                            if (bFromTop.size()==0)
+                            {
+                                outputEV->setUserRecord("nob",true);
+                                _outputAmbiguous->setTargets(event);
+                                return _outputAmbiguous->processTargets(); 
+                            }
+                            else if (bFromTop.size()>1)
+                            {
+                                outputEV->setUserRecord("multib",true);
+                                _outputAmbiguous->setTargets(event);
+                                return _outputAmbiguous->processTargets(); 
+                            }
+                            bquark = bFromTop[0];
+
                             pxl::Particle* bquarkClone = (pxl::Particle*)bquark->clone();
                             bquarkClone->setName("bQuark");
                             bquarkClone->setUserRecord("pdg",bquark->getPdgNumber());
                             outputEV->insertObject(bquarkClone);
                             topClone->linkDaughter(bquarkClone);
-                            for (pxl::Particle* p: additionalBquarkCandidates)
+                            
+                            
+                            for (pxl::Particle* p: bNotTop)
                             {
                                 pxl::Particle* addBquarkClone = (pxl::Particle*)p->clone();
                                 addBquarkClone->setName("bQuarkAdd");
@@ -462,9 +508,10 @@ class PartonLevelReconstruction:
                                 outputEV->insertObject(addBquarkClone);
                             }
                             
-                            if (lquarkCandidates.size()==0)
+                            
+                            if (lNotTop.size()==0)
                             {
-                                throw std::runtime_error("no light quarks found in hard process");
+                                throw std::runtime_error("no spectator quarks found in hard process");
                             }
                             
                             
@@ -472,7 +519,7 @@ class PartonLevelReconstruction:
                             //take the jet balancing top+ljet system
                             double minPt = 100000.0;
                             unsigned int lIndex = 0;
-                            for (unsigned int il = 0; il < lquarkCandidates.size(); ++il)
+                            for (unsigned int il = 0; il < lNotTop.size(); ++il)
                             {
                                 pxl::Particle* p = lquarkCandidates[il];
                                 if (!isInDecay(p,top))
@@ -486,7 +533,7 @@ class PartonLevelReconstruction:
                                     }
                                 }
                             }
-                            for (unsigned int il = 0; il < lquarkCandidates.size(); ++il)
+                            for (unsigned int il = 0; il < lNotTop.size(); ++il)
                             {
                                 if (il == lIndex)
                                 {
@@ -544,7 +591,7 @@ class PartonLevelReconstruction:
                             
                             bool isLeptonic = (leptonCandidates.size()+leptonCandidatesFromTaus.size())==0 or neutrinoCandidates.size()==0;
                             
-                            if (lquarkCandidates.size()>1)
+                            if (lNotTop.size()>1)
                             {
                                 outputEV->setUserRecord("isLeptonic",isLeptonic);
                                 _outputAmbiguous->setTargets(event);
