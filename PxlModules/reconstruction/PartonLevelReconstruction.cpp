@@ -15,6 +15,8 @@ class PartonLevelReconstruction:
     public pxl::Module
 {
     private:
+    
+    
         pxl::Source* _outputLeptonic;
         pxl::Source* _outputHadronic;
         pxl::Source* _outputAmbiguous;
@@ -161,7 +163,7 @@ class PartonLevelReconstruction:
             }
         }
         
-        bool isInDecay(const pxl::Particle* mother, const pxl::Particle* decayee) const
+        bool isInDecay(const pxl::Particle* mother, const pxl::Particle* decayee, bool fixPdgSign = false) const
         {
             if (mother->numberOfDaughters ()==0)
             {
@@ -169,12 +171,17 @@ class PartonLevelReconstruction:
             }
             for (auto d: mother->getDaughters())
             {
+                //activate flag in case of weird color reconnection between b from top and 2nd bbar
                 const pxl::Particle* daughter = dynamic_cast<const pxl::Particle*>(d);
+                if (fixPdgSign and ((mother->getPdgNumber()*daughter->getPdgNumber())<0))
+                {
+                    continue;       
+                }
                 if (daughter==decayee)
                 {
                     return true;
                 }
-                else if (isInDecay(daughter,decayee))
+                else if (isInDecay(daughter,decayee,fixPdgSign))
                 {
                     return true;
                 }
@@ -434,22 +441,22 @@ class PartonLevelReconstruction:
                             std::vector<pxl::Particle*> bNotTop;
                             for (pxl::Particle* p: bquarkCandidates)
                             {
-                                if (isInDecay(top,p))
+                                if (isInDecay(top,p,true))
                                 {
                                     if (not isInDecay(wboson,p))
                                     {
-                                        //p->setName(p->getName()+" (tb)");
+                                        p->setName(p->getName()+" (tb)");
                                         bFromTop.push_back(p);
                                     }
                                     else
                                     {
-                                        //p->setName(p->getName()+" (wb)");
+                                        p->setName(p->getName()+" (wb)");
                                         bFromW.push_back(p);
                                     }
                                 }
                                 else
                                 {
-                                    //p->setName(p->getName()+" (ab)");
+                                    p->setName(p->getName()+" (ab)");
                                     bNotTop.push_back(p);
                                 }
                             }
@@ -472,7 +479,7 @@ class PartonLevelReconstruction:
                                     }
                                     else
                                     {
-                                        p->setName(p->getName()+" (l)");
+                                        //p->setName(p->getName()+" (l)");
                                         lNotTop.push_back(p);
                                     }
                                 }
@@ -590,14 +597,14 @@ class PartonLevelReconstruction:
                             
                             
                             bool isLeptonic = (leptonCandidates.size()+leptonCandidatesFromTaus.size())==0 or neutrinoCandidates.size()==0;
-                            
+                            /*
                             if (lNotTop.size()>1)
                             {
                                 outputEV->setUserRecord("isLeptonic",isLeptonic);
                                 _outputAmbiguous->setTargets(event);
                                 return _outputAmbiguous->processTargets(); 
                             }
-                         
+                            */
                             if (isLeptonic)
                             {
                                 outputEV->setUserRecord("isLeptonic",isLeptonic);
