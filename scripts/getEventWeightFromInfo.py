@@ -38,7 +38,7 @@ N = len(os.listdir(baseFolder))
 
 for ifolder,folder in enumerate(os.listdir(baseFolder)):
     #print dirpath
-    sys.stdout.write("\r" + folder+ " ... ")
+    sys.stdout.write(folder+ " ... \r")
     sys.stdout.flush()
 
     if folder.find(args[0])!=-1:

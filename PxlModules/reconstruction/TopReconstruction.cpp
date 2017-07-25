@@ -53,6 +53,7 @@ class TopReconstruction:
     public pxl::Module
 {
 
+    const static std::vector<double> jecBins;
     private:
     
         enum Category
@@ -472,8 +473,19 @@ class TopReconstruction:
             if (lightjet)
             {
                 lightjet->setName("LightJet");
-                eventView->setUserRecord("absLEta",std::fabs(lightjet->getEta()));
+                const double absLEta = std::fabs(lightjet->getEta());
+                eventView->setUserRecord("absLEta",absLEta);
+                eventView->setUserRecord("absLEta_binned",5.2);
+                for (unsigned int ibin = 1; ibin < jecBins.size(); ++ibin)
+                { 
+                    if (absLEta>jecBins[ibin-1] and absLEta<jecBins[ibin])
+                    {
+                        eventView->setUserRecord("absLEta_binned",0.5*(jecBins[ibin-1]+jecBins[ibin]));
+                        break;
+                    }
+                }
             }
+            
             for (pxl::Particle* p: lightjets)
             {
                 pxl::Particle* pClone = nullptr;
@@ -702,6 +714,10 @@ class TopReconstruction:
         {
             delete this;
         }
+};
+
+const std::vector<double> TopReconstruction::jecBins = {
+    0.0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0,2.4,2.6,2.8,3.0,3.5,4.0,4.4,5.0,5.4
 };
 
 PXL_MODULE_INIT(TopReconstruction)

@@ -10,8 +10,8 @@ config = Configuration()
 
 config.sbatch_partition = 'cp3'
 config.sbatch_qos = 'cp3'
-config.sbatch_workdir = '.'
-config.sbatch_time = '1-00:00'
+config.sbatch_workdir = '/nfs/user/mkomm/SSX13/BDT_ttw'
+config.sbatch_time = '0-12:00'
 config.sbatch_mem = '2048'
 
 config.sbatch_output = '/dev/null'
@@ -19,7 +19,6 @@ config.sbatch_error = '/dev/null'
 
 config.sbatch_additionalOptions = ["--job-name=BDTttw"]
 
-config.jobType = 'cms'
 
 config.inputSandboxContent = []
 config.inputSandboxDir = config.sbatch_workdir
@@ -68,31 +67,55 @@ config.inputParams = [
 ]
 '''
 
-for boost in [0.4]:
-    for minNode in [5.0,1.0,0.5,0.1]:
+for boost in [0.4,0.2]:
+    for minNode in [1,0.1]:
         for maxVar in [3,5]:
-            for nCuts in [50,75,100]:
+            for nCuts in [20,40]:
+                
                 config.inputParams.append([
                     scriptfile,
-                    'BDTmu_ttw_adaboost%03.0f_minnode%03.0f_maxvar%i_nCuts%i_ntree600_invboost'%(boost*100.,minNode*10.,maxVar,nCuts),
+                    'BDTmu_ttw_adaboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
                     'mu',
                     'BoostType=AdaBoost:AdaBoostBeta=%4.2f:'%boost+
                     'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
                     'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
-                    'NTrees=600:MinNodeSize=%5.3f%%:'%minNode+
+                    'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
                     'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'
                 ])
                 config.inputParams.append([
                     scriptfile,
-                    'BDTele_ttw_adaboost%03.0f_minnode%03.0f_maxvar%i_nCuts%i_ntree600_invboost'%(boost*100.,minNode*10.,maxVar,nCuts),
+                    'BDTele_ttw_adaboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
                     'ele',
                     'BoostType=AdaBoost:AdaBoostBeta=%4.2f:'%boost+
                     'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
                     'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
-                    'NTrees=600:MinNodeSize=%5.3f%%:'%minNode+
+                    'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
                     'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'
                 ])
-
+                
+                
+                '''
+                config.inputParams.append([
+                    scriptfile,
+                    'BDTmu_ttw_gradboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
+                    'mu',
+                    'BoostType=Grad:Shrinkage=%4.2f:'%boost+
+                    'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
+                    'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
+                    'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
+                    'NegWeightTreatment=Pray:DoBoostMonitor=True'
+                ])
+                config.inputParams.append([
+                    scriptfile,
+                    'BDTele_ttw_gradboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
+                    'ele',
+                    'BoostType=Grad:Shrinkage=%4.2f:'%boost+
+                    'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
+                    'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
+                    'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
+                    'NegWeightTreatment=Pray:DoBoostMonitor=True'
+                ])
+                '''
 
 
 config.payload = \
@@ -140,7 +163,7 @@ pwd
 ls -lh
 echo "------------ job -----------"
 echo "executing: python "$TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG
-python $TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG
+python $TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG > $TMVA_NAME".log"
 echo "done executing: python "$TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG
 echo "------------ dir -----------"
 pwd
@@ -149,6 +172,7 @@ for f in `find . | sort`
     echo `du -bh $f`
     done
 echo "------------ copy output -----------"
+cp -v $LOCALSCRATCH/BDT*.log $SLURM_SUBMIT_DIR/weights/.
 cp -v $LOCALSCRATCH/*.root $SLURM_SUBMIT_DIR/weights/.
 cp -v $LOCALSCRATCH/weights/* $SLURM_SUBMIT_DIR/weights/.
 echo "------------ finished -----------"

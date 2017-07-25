@@ -488,15 +488,11 @@ class PartonLevelReconstruction:
                             
                             if (bFromTop.size()==0)
                             {
-                                outputEV->setUserRecord("nob",true);
-                                _outputAmbiguous->setTargets(event);
-                                return _outputAmbiguous->processTargets(); 
+                                throw std::runtime_error("No b from top found");
                             }
                             else if (bFromTop.size()>1)
                             {
-                                outputEV->setUserRecord("multib",true);
-                                _outputAmbiguous->setTargets(event);
-                                return _outputAmbiguous->processTargets(); 
+                                throw std::runtime_error("Multiple b's from top found"); 
                             }
                             bquark = bFromTop[0];
 

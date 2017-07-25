@@ -65,11 +65,11 @@ signalTrainChains=[]
 signalTestChains=[]
 
 for background in [
-    ["WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",1.0],
-    ["WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",1.0],
-    ["WToLNu_0J_13TeV-amcatnloFXFX-pythia8_ext",2.0],
-    ["WToLNu_1J_13TeV-amcatnloFXFX-pythia8",2.0],
-    ["WToLNu_2J_13TeV-amcatnloFXFX-pythia8_ext",2.0],
+    ["WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",0.5],
+    ["WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",0.5],
+    ["WToLNu_0J_13TeV-amcatnloFXFX-pythia8_ext",0.5],
+    ["WToLNu_1J_13TeV-amcatnloFXFX-pythia8",0.5],
+    ["WToLNu_2J_13TeV-amcatnloFXFX-pythia8_ext",0.5],
 ]:
     chainTrain = ROOT.TChain(background[0])
     backgroundTrainChains.append(chainTrain)
@@ -126,6 +126,8 @@ if args.channel=="mu":
     leptonSelection +="&&(Reconstructed_1__muoncat==0 || Reconstructed_1__muoncat==2))"
 elif args.channel=="ele":
     leptonSelection +="&&(Reconstructed_1__elecat==0 || Reconstructed_1__elecat==2))"
+elif args.channel=="comb":
+    leptonSelection +="&&(Reconstructed_1__muoncat==0 || Reconstructed_1__muoncat==2 || Reconstructed_1__elecat==0 || Reconstructed_1__elecat==2))"
 else:
     print "No channel selected!"
     sys.exit(1)
@@ -146,10 +148,11 @@ factory.AddVariable("SingleTop_1__C")
 factory.AddVariable("SingleTop_1__cosTheta_wH")
 factory.AddVariable("SingleTop_1__Dijet_1__dR")
 #factory.AddVariable("SingleTop_1__fox_1_logpz")
-factory.AddVariable("SingleTop_1__TightLepton_BJet_dR")
+factory.AddVariable("SingleTop_1__TightLepton_BJet_dEta")
 factory.AddVariable("Reconstructed_1__MET_1__Pt")
-factory.AddVariable("SingleTop_1__Shat_1__Mass")
-factory.AddVariable("SingleTop_1__Dijet_1__Pt")
+#factory.AddVariable("SingleTop_1__Shat_1__Mass")
+#factory.AddVariable("SingleTop_1__Shat_1__Pt") #mismodeled
+#factory.AddVariable("SingleTop_1__Dijet_1__Pt")
 
 
 #factory.AddVariable("SingleTop_1__Dijet_1__Mass")

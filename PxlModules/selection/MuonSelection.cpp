@@ -201,6 +201,10 @@ class MuonSelection:
                     std::sort(tightMidIsoMuons.begin(),tightMidIsoMuons.end(),MuonSelection::SortByPt());
                     std::sort(tightAntiIsoMuons.begin(),tightAntiIsoMuons.end(),MuonSelection::SortByPt());
                     
+                    //make flag that it is not ele channel
+                    eventView->setUserRecord("elecat",4);
+                    
+                    
                     //0=iso, 1=midiso, 2=looseiso, 3=other
                     
                     //N highly iso muon only

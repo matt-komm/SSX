@@ -341,6 +341,9 @@ class ElectronSelection:
                     std::sort(vetoEles.begin(),vetoEles.end(),ElectronSelection::SortByPt());
                     std::sort(antivetoEles.begin(),antivetoEles.end(),ElectronSelection::SortByPt());
                     
+                    //make flag that it is not mu channel
+                    eventView->setUserRecord("muoncat",4);
+                    
                     //0=tight, 1=veto, 2=antiveto, 3=other
                     
                     //N tight ele only
