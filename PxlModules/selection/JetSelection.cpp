@@ -213,12 +213,24 @@ class JetSelection:
             {
                 if (particle->hasUserRecord("neutralEmEnergyFraction"))
                 {
-                    if (not (particle->getUserRecord("neutralEmEnergyFraction").toFloat()<0.90))
+                    if (not (particle->getUserRecord("neutralEmEnergyFraction").toFloat()>0.01))
                     {
                         return false;
                     }
                 }
-
+                else
+                {
+                    //NEMF needs to be >0; if the entry does not exists -> NEMF=0 so do not accept this jet
+                    return false;
+                }
+                
+                if (particle->hasUserRecord("neutralHadronEnergyFraction"))
+                {
+                    if (not (particle->getUserRecord("neutralHadronEnergyFraction").toFloat()<0.98))
+                    {
+                        return false;
+                    }
+                }
                 if (not (particle->getUserRecord("neutralMultiplicity").toInt32()>2))
                 {
                     return false;

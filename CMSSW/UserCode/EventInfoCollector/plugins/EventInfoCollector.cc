@@ -28,6 +28,7 @@ class EventInfoCollector:
         edm::Service<TFileService> fs;
         
         TH1F* _genweight;
+        TH1F* _nEvents;
         
         TH1F* _nInteractions0;
         TH1F* _nInteractions1;
@@ -90,6 +91,7 @@ EventInfoCollector::beginJob()
     if (_genEventInfoProductInputTag.label().size()>0)
     {
         _genweight = fs->make<TH1F>("genweight","genweight",2,-1.5,1.5);
+        _nEvents = fs->make<TH1F>("nEvents","nEvents",2,-1.5,1.5);
     }
     if (_pileupSummaryInfoInputTag.label().size()>0)
     {
@@ -115,6 +117,7 @@ EventInfoCollector::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         edm::Handle<GenEventInfoProduct> genEventInfoProduct;
         iEvent.getByToken(_genEventInfoProductToken, genEventInfoProduct);
         _genweight->Fill(genEventInfoProduct->weight()>0.0 ? 1.0 : -1.0,genEventInfoProduct->weight());
+        _nEvents->Fill(genEventInfoProduct->weight()>0.0 ? 1.0 : -1.0);
     }
     if (_pileupSummaryInfoInputTag.label().size()>0)
     {

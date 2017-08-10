@@ -259,7 +259,7 @@ False    </option>
     <option name="dR objects"  type="string_vector" >
 <![CDATA[("TightLepton","TightMuon","TightElectron")]]>    </option>
     <option name="store n leading jets"  type="long" >
-0    </option>
+3    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
@@ -583,8 +583,8 @@ False    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2017-03-13]]>    </entry>
+<![CDATA[2017-05-24]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[17:27:40]]>    </entry>
+<![CDATA[04:44:16]]>    </entry>
   </userrecords>
 </analysis>

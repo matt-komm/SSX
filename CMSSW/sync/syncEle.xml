@@ -341,7 +341,7 @@ False    </option>
     <option name="class"  type="string" >
 <![CDATA[]]>    </option>
     <option name="ids"  type="string_vector" >
-<![CDATA[("17994066","28723757")]]>    </option>
+<![CDATA[("52537303")]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
@@ -374,9 +374,9 @@ True    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[10:12:55]]>      </entry>
       <entry name="xPos"  type="double" >
-504      </entry>
+622      </entry>
       <entry name="yPos"  type="double" >
-478      </entry>
+555      </entry>
     </userrecords>
   </module>
   <module name="MuonVeto2"  type="MuonVeto"  isEnabled="true" >
@@ -506,12 +506,6 @@ True    </option>
     </sink>
   </connection>
   <connection>
-    <source module="PyModule3"  name="out" >
-    </source>
-    <sink module="ElectronVeto2"  name="input" >
-    </sink>
-  </connection>
-  <connection>
     <source module="ElectronVeto2"  name="veto loose electrons" >
     </source>
     <sink module="PyModule4"  name="in" >
@@ -556,27 +550,33 @@ True    </option>
   <connection>
     <source module="PyModule2"  name="out" >
     </source>
+    <sink module="ElectronSelection1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule3"  name="out" >
+    </source>
     <sink module="PyModule9"  name="in" >
     </sink>
   </connection>
   <connection>
     <source module="File Output1"  name="out" >
     </source>
-    <sink module="ElectronSelection1"  name="input" >
+    <sink module="ElectronVeto2"  name="input" >
     </sink>
   </connection>
   <connection>
     <source module="PyModule9"  name="veto" >
     </source>
-    <sink module="ElectronSelection1"  name="input" >
+    <sink module="ElectronVeto2"  name="input" >
     </sink>
   </connection>
   <userrecords>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2017-03-30]]>    </entry>
+<![CDATA[2017-03-31]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[18:37:20]]>    </entry>
+<![CDATA[12:39:23]]>    </entry>
   </userrecords>
 </analysis>
