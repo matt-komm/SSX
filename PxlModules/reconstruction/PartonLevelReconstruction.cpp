@@ -445,18 +445,18 @@ class PartonLevelReconstruction:
                                 {
                                     if (not isInDecay(wboson,p))
                                     {
-                                        p->setName(p->getName()+" (tb)");
+                                        //p->setName(p->getName()+" (tb)");
                                         bFromTop.push_back(p);
                                     }
                                     else
                                     {
-                                        p->setName(p->getName()+" (wb)");
+                                        //p->setName(p->getName()+" (wb)");
                                         bFromW.push_back(p);
                                     }
                                 }
                                 else
                                 {
-                                    p->setName(p->getName()+" (ab)");
+                                    //p->setName(p->getName()+" (ab)");
                                     bNotTop.push_back(p);
                                 }
                             }

@@ -53,9 +53,13 @@ config.inputParams = [
 $JOBARGLIST
 ]
 
+config.payload = ""
 
+for extraArg,extraValue in ${EXTARGS}.iteritems():
+    config.payload += "export "+extraArg+"=\""+extraValue+"\"\n"
+    
 
-config.payload = \
+config.payload += \
 """
 echo "------------ start -----------"
 echo "Started Job at "`date`

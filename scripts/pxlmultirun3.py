@@ -302,7 +302,8 @@ if __name__=="__main__":
         "ARGSTOJOB":"$XMLANAYLSIS",
         "JOBARGLIST":xmlList,
         "DOSTAGEOUT":"True",
-        "STAGEOUTFILES":"'*.root*'"
+        "STAGEOUTFILES":"'*.root*'",
+        "EXTARGS":"{}"
     })
     
     fileout = open(os.path.join(outputFolder,"slurm_cfg.py"),"w")

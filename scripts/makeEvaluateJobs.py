@@ -79,19 +79,18 @@ for ibatch, rootFilesBatch in enumerate(rootFileBatches):
 
     jobArgList = ""
     for f in rootFilesBatch:
-        args = "['"+f+"','"+weightArgs+"','"+os.path.basename(f)+".friend'],\n"
+        args = "['"+f+"','"+os.path.basename(f)+".friend'],\n"
         jobArgList+=args
         
     mangeling = options.out
     mangeling = mangeling.rsplit("/",4)
-    jobName = "mva_"+mangeling[2]+"_"+mangeling[3]
+    jobName = "eval_"+mangeling[3]
     scriptName = "mvaEvaluate"
     outFileName = os.path.join(options.out,"slurm_tmva")
     
-    if (len(rootFileBatches)>1):
-        jobName +="_"+str(ibatch+1)
-        scriptName +="_"+str(ibatch+1)
-        outFileName +="_"+str(ibatch+1)
+
+    scriptName +="_"+str(ibatch+1)
+    outFileName +="_"+str(ibatch+1)
 
 
     generated = genScript.substitute({
@@ -100,12 +99,14 @@ for ibatch, rootFilesBatch in enumerate(rootFileBatches):
         "MINUTES":"00",
         "RAM":"2548",
         "EXEC":"$HOME/SSX/PxlModules/build/scripts/evaluateTMVA/evaluateTMVA",
-        "ARGLIST":"'FILE','WEIGHTS','OUTPUT'",
+        "ARGLIST":"'FILE','OUTPUT'",
         "ARGSTOJOB":"--file $FILE $WEIGHTS $OUTPUT",
         "JOBARGLIST":jobArgList,
         "SCRIPTNAME":scriptName+".sh",
         "DOSTAGEOUT":"True",
-        "STAGEOUTFILES":"'*.root.friend'"
+        "STAGEOUTFILES":"'*.root.friend'",
+        #"EXTARGS":"{}",
+        "EXTARGS":"{\'WEIGHTS\':\'"+weightArgs+"\'}"
     })
 
     

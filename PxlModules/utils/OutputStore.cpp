@@ -8,6 +8,11 @@ OutputStore::OutputStore(std::string filename):
 
 RootTree* OutputStore::getTree(std::string treeName)
 {
+    if (!_file or !_file->IsOpen())
+    {
+        std::cout<<"Output file unexpectedly closed"<<std::endl;
+        throw std::runtime_error("Output file unexpectedly closed");
+    }
     auto elem = _treeMap.find(treeName.c_str());
     if (elem==_treeMap.end())
     {

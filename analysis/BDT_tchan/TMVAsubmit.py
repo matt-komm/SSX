@@ -11,8 +11,8 @@ config = Configuration()
 config.sbatch_partition = 'cp3'
 config.sbatch_qos = 'cp3'
 config.sbatch_workdir = '/nfs/user/mkomm/SSX13/BDT_tchan'
-config.sbatch_time = '0-12:00'
-config.sbatch_mem = '4000'
+config.sbatch_time = '0-10:00'
+config.sbatch_mem = '8000'
 
 config.sbatch_output = '/dev/null'
 config.sbatch_error = '/dev/null'
@@ -46,7 +46,7 @@ config.useJobArray = True
 
 config.numJobs = None
 
-config.inputParamsNames = ['TMVA_SCRIPTFILE','TMVA_NAME','TMVA_CH','TMVA_CFG']
+config.inputParamsNames = ['TMVA_SCRIPTFILE','TMVA_NAME','TMVA_CH','TMVA_CFG','TMVA_MIX','TMVA_QCDMIX']
 
 scriptfile = '$HOME/SSX/analysis/BDT_tchan/TMVATraining.py'
 
@@ -67,54 +67,71 @@ config.inputParams = [
 ]
 '''
 
-for boost in [0.4,0.2]:
-    for minNode in [1,0.1]:
-        for maxVar in [3,5]:
-            for nCuts in [20,40]:
-                
-                config.inputParams.append([
-                    scriptfile,
-                    'BDTmu_tch_adaboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
-                    'mu',
-                    'BoostType=AdaBoost:AdaBoostBeta=%4.2f:'%boost+
-                    'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
-                    'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
-                    'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
-                    'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'
-                ])
-                config.inputParams.append([
-                    scriptfile,
-                    'BDTele_tch_adaboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
-                    'ele',
-                    'BoostType=AdaBoost:AdaBoostBeta=%4.2f:'%boost+
-                    'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
-                    'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
-                    'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
-                    'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'
-                ])
-                
-                '''
-                config.inputParams.append([
-                    scriptfile,
-                    'BDTmu_tch_gradboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
-                    'mu',
-                    'BoostType=Grad:Shrinkage=%4.2f:'%boost+
-                    'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
-                    'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
-                    'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
-                    'NegWeightTreatment=Pray:DoBoostMonitor=True'
-                ])
-                config.inputParams.append([
-                    scriptfile,
-                    'BDTele_tch_gradboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
-                    'ele',
-                    'BoostType=Grad:Shrinkage=%4.2f:'%boost+
-                    'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
-                    'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
-                    'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
-                    'NegWeightTreatment=Pray:DoBoostMonitor=True'
-                ])
-                '''
+for boost in [0.2,0.4]:#,0.2,0.1]:
+    for minNode in [1,5]:#5,1]:
+        for maxVar in [2,3]:
+            for nCuts in [50]:
+                for nTrees in [800]:
+                    for mix in [0.01]:
+                        for qcdmix in [0.001]:
+                            '''
+                            config.inputParams.append([
+                                scriptfile,
+                                'BDTmu_tch_adaboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
+                                'mu',
+                                'BoostType=AdaBoost:AdaBoostBeta=%4.2f:'%boost+
+                                'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
+                                'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
+                                'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
+                                'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'
+                            ])
+                            config.inputParams.append([
+                                scriptfile,
+                                'BDTele_tch_adaboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
+                                'ele',
+                                'BoostType=AdaBoost:AdaBoostBeta=%4.2f:'%boost+
+                                'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
+                                'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
+                                'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
+                                'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True'
+                            ])
+                            '''
+                            config.inputParams.append([
+                                scriptfile,
+                                'BDTcomb_tch_adaboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree%03i_mix%05i_qcdmix%05i_invboost'%(boost*100.,minNode*100.,maxVar,nCuts,nTrees,mix*10**5,qcdmix*10**5),
+                                'comb',
+                                'BoostType=AdaBoost:AdaBoostBeta=%4.2f:'%boost+
+                                'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
+                                'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
+                                'NTrees=%03i:'%nTrees+
+                                'MinNodeSize=%5.3f%%:'%minNode+
+                                'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True',
+                                mix,
+                                qcdmix
+                            ])
+                            
+                            '''
+                            config.inputParams.append([
+                                scriptfile,
+                                'BDTmu_tch_gradboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
+                                'mu',
+                                'BoostType=Grad:Shrinkage=%4.2f:'%boost+
+                                'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
+                                'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
+                                'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
+                                'NegWeightTreatment=Pray:DoBoostMonitor=True'
+                            ])
+                            config.inputParams.append([
+                                scriptfile,
+                                'BDTele_tch_gradboost%03.0f_minnode%04.0f_maxvar%i_nCuts%i_ntree800_invboost'%(boost*100.,minNode*100.,maxVar,nCuts),
+                                'ele',
+                                'BoostType=Grad:Shrinkage=%4.2f:'%boost+
+                                'SeparationType=CrossEntropy:MaxDepth=%i:'%maxVar+
+                                'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
+                                'NTrees=800:MinNodeSize=%5.3f%%:'%minNode+
+                                'NegWeightTreatment=Pray:DoBoostMonitor=True'
+                            ])
+                            '''
 
 
 
@@ -162,9 +179,9 @@ echo "------------ dir -----------"
 pwd
 ls -lh
 echo "------------ job -----------"
-echo "executing: python "$TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG
-python $TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG > $TMVA_NAME".log"
-echo "done executing: python "$TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG
+echo "executing: python "$TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG --mix $TMVA_MIX --qcdmix $TMVA_QCDMIX
+python $TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG --mix $TMVA_MIX --qcdmix $TMVA_QCDMIX > $TMVA_NAME".log"
+echo "done executing: python "$TMVA_SCRIPTFILE --name $TMVA_NAME --ch $TMVA_CH --cfg $TMVA_CFG --mix $TMVA_MIX --qcdmix $TMVA_QCDMIX
 echo "------------ dir -----------"
 pwd
 for f in `find . | sort`
