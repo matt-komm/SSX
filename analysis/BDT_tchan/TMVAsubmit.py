@@ -67,13 +67,13 @@ config.inputParams = [
 ]
 '''
 
-for boost in [0.2,0.4]:#,0.2,0.1]:
-    for minNode in [1,5]:#5,1]:
-        for maxVar in [2,3]:
+for boost in [0.2,0.4]:
+    for minNode in [0.05,0.2,1]:#,1]:
+        for maxVar in [3]:#,4]:
             for nCuts in [50]:
-                for nTrees in [800]:
-                    for mix in [0.01]:
-                        for qcdmix in [0.001]:
+                for nTrees in [1000]:
+                    for mix in [0.05]:
+                        for qcdmix in [0.005]:
                             '''
                             config.inputParams.append([
                                 scriptfile,
@@ -105,7 +105,7 @@ for boost in [0.2,0.4]:#,0.2,0.1]:
                                 'nCuts=%i:NodePurityLimit=0.5:'%nCuts+
                                 'NTrees=%03i:'%nTrees+
                                 'MinNodeSize=%5.3f%%:'%minNode+
-                                'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True',
+                                'NegWeightTreatment=InverseBoostNegWeights:DoBoostMonitor=True:PruneMethod=CostComplexity:PruneStrength=7',
                                 mix,
                                 qcdmix
                             ])

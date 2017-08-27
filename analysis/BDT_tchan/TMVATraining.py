@@ -203,7 +203,7 @@ else:
     print "No channel selected!"
     sys.exit(1)
 
-weight = "(100.*mcweight/testing_frac)*((genweight<0)*(-1)+(genweight>0)*1)"
+weight = "(100000.*mcweight/testing_frac)*genweight"
 selection2j1t = "(Reconstructed_1__nSelectedJet==2)*(Reconstructed_1__nSelectedBJetTight==1)"
 selection2j0t = "(Reconstructed_1__nSelectedJet==2)*(Reconstructed_1__nSelectedBJetTight==0)"
 #selection3j0t = "(Reconstructed_1__nSelectedJet==3)*(Reconstructed_1__nSelectedBJetTight==0)"
