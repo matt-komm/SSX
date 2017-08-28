@@ -59,7 +59,7 @@ for channel in ["mu","ele"]:
             "-m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
         ])
         #nominal/binned per obs
-        for unfoldingSetup in ["setup/TopPtParton"]:
+        for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton","setup/TopCosParton"]:
             for ibin in range(6):
                 config.inputParams.append([
                     "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c bin:"+str(ibin)
@@ -71,7 +71,9 @@ for channel in ["mu","ele"]:
             "systematics/ltagDown",
             "systematics/ltagUp",
             "systematics/enDown",
-            "systematics/enUp"
+            "systematics/enUp",
+            "systematics/puDown",
+            "systematics/puUp",
         ]:
         
             #sys/inclusive
@@ -80,7 +82,7 @@ for channel in ["mu","ele"]:
             ])
             
             #sys/binned per obs
-            for unfoldingSetup in ["setup/TopPtParton"]:
+            for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton","setup/TopCosParton"]:
                 for ibin in range(6):
                     config.inputParams.append([
                         "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c bin:"+str(ibin)

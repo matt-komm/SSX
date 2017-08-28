@@ -6,7 +6,7 @@ import numpy
 
 class TopPtParton(Module.getClass("Unfolding")):
     def __init__(self,options=[]):
-        Module.__init__(self,options)
+        TopPtParton.baseClass.__init__(self,options)
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
@@ -14,7 +14,7 @@ class TopPtParton(Module.getClass("Unfolding")):
         return "pt"
         
     def getRecoBinning(self):
-        return [0.,50.,90.,130.,180.,240.,300.]
+        return [0.,50.,85.,120.,160.,200.,300.]
         
     def getRecoVariable(self):
         return "SingleTop_1__Top_1__Pt"
@@ -29,7 +29,7 @@ class TopPtParton(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self):
-        return [0.,50.,90.,130.,180.,240.,300.]
+        return [0.,50.,85.,120.,160.,200.,300.]
         
     def getGenVariable(self):
         return "PTR_1__TopBest_1__Pt"
