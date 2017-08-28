@@ -22,8 +22,8 @@ class ThetaModel(Module):
         return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2))}}
         #return {"type":"gauss","config":{"mean": "%4.3f"%(mean), "width":"%4.3f"%(unc), "range":"(0.0,\"inf\")"}}
        
-    def makeGaus(self,mean,unc):
-        return {"type":"gauss","config":{"mean": "%4.3f"%(mean), "width":"%4.3f"%(unc), "range":"(0.02,\"inf\")"}}
+    def makeGaus(self,mean,unc,r=[-5,5]):
+        return {"type":"gauss","config":{"mean": "%4.3f"%(mean), "width":"%4.3f"%(unc), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
         
     def getUncertaintsDict(self):
         uncertaintiesBkg = {
@@ -87,17 +87,30 @@ class ThetaModel(Module):
         histDict = {}
         for observableName in self.module("ThetaModel").getObservablesDict().keys():
             histDict[observableName]={}
+            #fit components
             for fitComponentName in self.module("ThetaModel").getFitComponentsDict().keys():
                 histName = self.module("ThetaModel").getHistogramName(observableName,fitComponentName,unfoldingName,unfoldingBin,uncertainty)
                 hist = rootFile.Get(histName)
                 if not hist:
                     self._logger.critical("Histogram '"+histName+"' in file '"+fileName+"' not found")
                     sys.exit(1)
-                if hist.GetEntries()<=20:
+                if hist.GetEntries()<=20 and (not (fitComponentName.find("QCD")>=0 and fitComponentName.find(observableName)<0)):
                     self._logger.warning("Low number of events ("+str(hist.GetEntries())+") in histogram '"+histName+"' in file '"+fileName+"'")
                 histClone = hist.Clone(hist.GetName()+"_clone")
                 histClone.SetDirectory(0)
-                histDict[observableName][fitComponentName]=histClone
+                histDict[observableName][fitComponentName]={"hist":histClone,"name":histName,"file":fileName}
+            #data
+            histName = self.module("ThetaModel").getHistogramName(observableName,"data",unfoldingName,unfoldingBin)
+            hist = rootFile.Get(histName)
+            if not hist:
+                self._logger.critical("Histogram '"+histName+"' in file '"+fileName+"' not found")
+                sys.exit(1)
+            if hist.GetEntries()<=20:
+                self._logger.warning("Low number of events ("+str(hist.GetEntries())+") in histogram '"+histName+"' in file '"+fileName+"'")
+            histClone = hist.Clone(hist.GetName()+"_clone")
+            histClone.SetDirectory(0)
+            histDict[observableName]["data"]={"hist":histClone,"name":histName,"file":fileName}
+            
         return histDict
            
     
@@ -117,7 +130,7 @@ class ThetaModel(Module):
                 "weight":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1),
                 "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(("+tch+"<0.)*(100+50*"+ttw+")+("+tch+">0.)*(150+50*"+tch+")))",
                 "bins":20,
-                "range":[-200,200]
+                "range":[-200.,200.]
             },
             #"3j1t": {
             #    "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(1),
@@ -129,7 +142,7 @@ class ThetaModel(Module):
                 "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
                 "variable":charge+"*SingleTop_1__mtw_beforePz",
                 "bins":10,
-                "range":[-200,200]
+                "range":[-200.,200.]
             },
         }
         
@@ -213,9 +226,131 @@ class ThetaModel(Module):
         return Model(name, {"bb_uncertainties":"true"})
         
     
-    def makeModel(self,modelName="fit",histFiles={},fitSetupDict={},outputFile="fit",pseudo=False):
+    def makeModel(self,modelName,fitSetup,parametersDict,outputFile="fit",pseudo=False):
         self._logger.info("Creating model: "+modelName)
+        file = open(os.path.join(self.module("Utils").getOutputFolder(),modelName+".cfg"),"w",20971520)
         
+        model=self.module("ThetaModel").getModel(modelName)
+        
+        for parameterName in sorted(parametersDict.keys()):
+            parametersDict[parameterName]["dist"]=Distribution(parameterName, parametersDict[parameterName]["type"], parametersDict[parameterName]["config"])
+            file.write(parametersDict[parameterName]["dist"].toConfigString())
+
+        dataDict = {}
+        
+        for iobs,observableName in enumerate(sorted(fitSetup.keys())):
+            fitBins = fitSetup[observableName]["bins"]
+            fitRange = fitSetup[observableName]["range"]
+        
+            observable = Observable(observableName, fitBins, fitRange)
+            
+            fitComponentsDict = fitSetup[observableName]["components"]
+
+            for icomp,componentName in enumerate(sorted(fitComponentsDict.keys())):
+                componentUncertainties = fitComponentsDict[componentName]["yield"]
+                component=ObservableComponent(observableName+"__"+componentName+"__"+str(icomp))
+                coeff=CoefficientMultiplyFunction()
+                for parameterName in componentUncertainties:
+                    coeff.addDistribution(parametersDict[parameterName]["dist"],parametersDict[parameterName]["dist"].getParameterName())
+                component.setCoefficientFunction(coeff)
+                componentHist = RootHistogram(observableName+"__"+componentName,{
+                    "zerobin_fillfactor":0.001,
+                    "use_errors":"true"
+                })
+                componentHist.setFileName(fitComponentsDict[componentName]["nominal"]["file"])
+                componentHist.setHistoName(fitComponentsDict[componentName]["nominal"]["name"])
+                component.setNominalHistogram(componentHist)
+                observable.addComponent(component)
+                
+                file.write(componentHist.toConfigString())
+                
+                        
+            model.addObservable(observable)
+            
+            if not pseudo:
+                dataHist = RootHistogram(observableName+"__data",{
+                    "zerobin_fillfactor":0.001,
+                    "use_errors":"true"
+                })
+                dataDict[observableName]=dataHist
+                dataHist.setFileName(fitSetup[observableName]["data"]["file"])
+                dataHist.setHistoName(fitSetup[observableName]["data"]["name"])
+
+                file.write(dataHist.toConfigString())
+                
+            else:
+                pass
+            
+        file.write(model.toConfigString())
+        
+        file.write("\n")
+        file.write("\n")
+
+        file.write("myminimizer = {\n")
+        
+        file.write("    type = \"newton_minimizer\";\n")
+        file.write("    par_eps = 1e-5; // optional; default is 1e-4'\n")
+        file.write("    maxit = 200000; // optional; default is 10,000'\n")
+        file.write("    improve_cov = true; // optional; default is false'\n")
+        file.write("    force_cov_positive = true; // optional, default is false'\n")
+        file.write("    step_cov = 0.025; // optional; default is 0.1'\n")
+        file.write("};\n")
+        
+
+        
+        
+        file.write('pd = {\n')
+        file.write('    name= "'+modelName+'";\n')
+        file.write('    type = "mle";\n')
+        file.write('    parameters = ('+model.getParameterNames()+');\n')
+        file.write('    minimizer = \"@myminimizer\";\n')
+        file.write('    write_covariance = true;\n')
+        file.write('};\n')
+
+        file.write('main={\n')
+        
+        if pseudo:
+            file.write('    data_source = {\n')
+            file.write('        type = "model_source";\n')
+            file.write('        name="data";\n')
+            file.write('        model = "@'+model.getVarname()+'";\n')
+            file.write('        dice_poisson = true; // optional; default is true\n')
+            file.write('        dice_template_uncertainties = false; // optional; default is true\n')
+            file.write('        dice_rvobs = false; // optional; default is true\n')
+            file.write('        parameters-for-nll = {\n') 
+            for parameterName in sorted(parametersDict.keys()):
+                mean = parametersDict[parameterName]["config"]["mean"]
+                file.write('            '+parameterName+' = '+str(mean)+';\n') 
+            file.write('        }; //optional; assuming p1, p2, p3 are parameters\n')
+            file.write('        rnd_gen = { seed = 123; }; // optional\n')
+            file.write('        };\n')
+        else:
+        
+            file.write('    data_source={\n')
+            file.write('        type="histo_source";\n')
+            file.write('        name="data";\n')
+            for observableName in sorted(dataDict.keys()):
+                file.write('        obs_'+observableName+'="@'+dataDict[observableName].getVarname()+'";\n')
+            file.write('    };\n')
+
+            
+
+        file.write('    n-events=1;\n')
+        file.write('    model="@'+model.getVarname()+'";\n')
+        file.write('    output_database={\n')
+        file.write('        type="rootfile_database";\n')
+        file.write('        filename="'+outputFile+'";\n')
+        file.write('    };\n')
+        file.write('    producers=("@pd"\n')
+        file.write('    );\n')
+        file.write('};\n')
+
+        file.write('options = {\n')
+        file.write('    plugin_files = ("$THETA_DIR/lib/libplugins.so", "$THETA_DIR/lib/libroot-plugin.so", "$THETA_DIR/lib/liblibtheta.so");\n')
+        file.write('};\n')
+            
+        file.close()
+
         
         '''
         histFileName = os.path.join(self.module("Utils").getOutputFolder(),histFile+"_fitHists.root")
