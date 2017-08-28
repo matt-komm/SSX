@@ -260,9 +260,30 @@ class ThetaModel(Module):
                 componentHist.setFileName(fitComponentsDict[componentName]["nominal"]["file"])
                 componentHist.setHistoName(fitComponentsDict[componentName]["nominal"]["name"])
                 component.setNominalHistogram(componentHist)
+                file.write(componentHist.toConfigString())
+                for shapeSysDict in fitComponentsDict[componentName]["shape"]:
+                    parameterNameShape = shapeSysDict["parameter"]
+                    histUp = shapeSysDict["up"]
+                    histDown = shapeSysDict["down"]
+                    componentHistSysUp = RootHistogram(observableName+"__"+componentName+"__"+parameterNameShape+"Up",{
+                        "zerobin_fillfactor":0.001,
+                        "use_errors":"true"
+                    })
+                    componentHistSysUp.setFileName(histUp["file"])
+                    componentHistSysUp.setHistoName(histUp["name"])
+                    file.write(componentHistSysUp.toConfigString())
+                    componentHistSysDown = RootHistogram(observableName+"__"+componentName+"__"+parameterNameShape+"Down",{
+                        "zerobin_fillfactor":0.001,
+                        "use_errors":"true"
+                    })
+                    componentHistSysDown.setFileName(histDown["file"])
+                    componentHistSysDown.setHistoName(histDown["name"])
+                    file.write(componentHistSysDown.toConfigString())
+                    component.addUncertaintyHistograms(componentHistSysUp, componentHistSysDown, parametersDict[parameterNameShape]["dist"],parametersDict[parameterNameShape]["dist"].getParameterName())
+                
                 observable.addComponent(component)
                 
-                file.write(componentHist.toConfigString())
+                
                 
                         
             model.addObservable(observable)
