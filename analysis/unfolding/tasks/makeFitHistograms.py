@@ -28,6 +28,7 @@ class FitHistograms(Module.getClass("Program")):
         fitComponentsDict = self.module("ThetaModel").getFitComponentsDict()
         
         
+        
         histograms = {}
     
         for observableName in observablesDict.keys():
@@ -89,20 +90,21 @@ class FitHistograms(Module.getClass("Program")):
             self._logger.info("produced hist: "+fitHist.GetName()+", entries="+str(int(fitHist.GetEntries()))+", events="+str(round(fitHist.Integral(),1)))
         
         outputFolder = self.module("ThetaModel").getHistogramPath(
-            self.module("Utils").getUncertaintyName(),
             channel,
-            unfoldingName
+            unfoldingName,
+            self.module("Utils").getUncertaintyName()
         )
         self.module("Utils").createFolder(outputFolder)
         
         rootFileOutput = ROOT.TFile(
             self.module("ThetaModel").getHistogramFile(
-                self.module("Utils").getUncertaintyName(),
                 channel,
                 unfoldingName,
-                unfoldingBin
+                unfoldingBin,
+                self.module("Utils").getUncertaintyName()
             ),"RECREATE"
         )
+        
         for histName in histograms.keys():
             histograms[histName].SetDirectory(rootFileOutput)
             histograms[histName].Write()
