@@ -19,8 +19,8 @@ class TopCosParton(Module.getClass("Unfolding")):
     def getRecoVariable(self):
         return "SingleTop_1__cosTheta_tPLz"
         
-    def getRecoWeight(self,channel="mu"):
-        return self.module("Samples").getMCWeight(channel,iso=True)
+    def getRecoWeight(self,channel):
+        return self.module("Samples").getMCWeightReco(channel)
         
     def getRecoCut(self,channel="mu"):
         selection = self.module("Samples").getEventSelection(channel,iso=True)
@@ -32,19 +32,20 @@ class TopCosParton(Module.getClass("Unfolding")):
         return numpy.linspace(-1,1,num=7,endpoint=True)
         
     def getGenVariable(self):
-        return "PTR_1__cosTheta_tPLz"
+        return "Parton_1__cosTheta_tPLz"
         
-    def getGenWeight(self):
+    def getGenWeight(self,channel):
         return self.module("Samples").getGenWeight()
         
-    def getGenCut(self,channel="mu"):
-        selection = "(PTR_1__TopBest_1__Pt>0)*(PTR_1__nTightLepton==1)*(PTR_1__nSelectedJet==2)"
+    def getGenCut(self,channel):
+        selection = "(Parton_1__Lepton_1__Pt>0)"
         if channel == "mu":
-            selection+="*(abs(PTR_1__TightLepton_1__pdg)==13)"
+            selection+="*(abs(Parton_1__Lepton_1__pdg)==13)"
         elif channel == "ele":
-            selection+="*(abs(PTR_1__TightLepton_1__pdg)==11)"
+            selection+="*(abs(Parton_1__Lepton_1__pdg)==11)"
         else:
             self._logger.error("Unknown channel selection '"+channel+"'")
+        return selection
 
             
         

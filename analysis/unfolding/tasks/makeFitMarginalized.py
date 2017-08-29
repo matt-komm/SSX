@@ -49,6 +49,7 @@ class FitHistograms(Module.getClass("Program")):
                             self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Up"),
                             self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Down")
                         ])
+                        
         
         observableDict = self.module("ThetaModel").getObservablesDict()
         fitComponentDict = self.module("ThetaModel").getFitComponentsDict()
@@ -102,26 +103,63 @@ class FitHistograms(Module.getClass("Program")):
                 
                                     
         
-        print parametersDict
         
-        
+        fitOutput = os.path.join(
+            self.module("Utils").getOutputFolder(),
+            self.module("ThetaModel").getFitFileName(channels,unfoldingName)
+        )
         
         self.module("ThetaModel").makeModel(
-            "fit_"+unfoldingName,
+            fitOutput+".cfg",
             fitSetup,parametersDict,
-            outputFile=os.path.join(self.module("Utils").getOutputFolder(),"fit.root"),
+            outputFile=fitOutput+".root",
             pseudo=False
         )
+        self.module("ThetaFit").run(fitOutput+".cfg")
+        fitResult = self.module("ThetaFit").readFitResult(
+            fitOutput+".root",
+            unfoldingName,
+            parametersDict
+        )
         '''
-        else:
-            nbins = len(self.module("Unfolding").getRecoBinning())-1
-            for ibin in range(nbins):
-                fitSetup[channel+"_"+obserableName+"_"+unfoldingName+str(ibin)] = {}
-                for componentName in fitComponentDict.keys():
-                    pass
+        ROOT.gStyle.SetPaintTextFormat("4.0f")
+        cv = ROOT.TCanvas("corr","",1000,900)
+        cv.SetLeftMargin(0.32)
+        cv.SetRightMargin(0.15)
+        cv.SetBottomMargin(0.36)
+        fitResult["correlations"]["hist"].SetMarkerSize(1.)
+        fitResult["correlations"]["hist"].Scale(100.)
+        fitResult["correlations"]["hist"].GetXaxis().SetTitleSize(0.5)
+        fitResult["correlations"]["hist"].GetXaxis().LabelsOption("v")
+        fitResult["correlations"]["hist"].GetYaxis().SetTitleSize(0.5)
+        fitResult["correlations"]["hist"].GetZaxis().SetTitle("Correlation (%)")
+        fitResult["correlations"]["hist"].GetZaxis().SetTitleSize(0.5)
+        fitResult["correlations"]["hist"].Draw("colztext")
+        cv.Print(os.path.join(
+            self.module("Utils").getOutputFolder(),
+            self.module("ThetaModel").getFitFileName(channels,unfoldingName)+"_correlation.pdf"
+        ))
         '''
+        #print fitResult["covariances"]["values"]["tChannel_neg_bin0"]["tChannel_pos_bin0"]
+        #print fitResult["parameters"]["tChannel_neg_bin0"]
         
-
+        self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_yield.pdf",
+            selection=["tChannel_*_bin*","WZjets_bin*","TopBkg_bin*","QCD_*_bin*_*"],
+            ranges = [0,1.5],
+            default=1,
+        )
+        
+        self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_ratios.pdf",
+            selection=["WZjets_ratio_bin*","TopBkg_ratio_bin*","QCD_*_ratio_bin*_*"],
+            ranges = [0.975,1.025],
+            default=1,
+        )
+        
+        self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_sys.pdf",
+            selection=uncertaintyList,
+            ranges = [-1.5,1.5],
+            default=0
+        )
 
         
         

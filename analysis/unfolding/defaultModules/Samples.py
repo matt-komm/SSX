@@ -86,21 +86,21 @@ class Samples(Module):
         return "genweight*"+self.module("Samples").getLumi()+"*mcweight"
         
         
-    def getMCWeight(self,channel="mu"):
-        mcweight = self.module("Samples").getGenWeight()
+    def getMCWeight(self,channel):
+        return self.module("Samples").getGenWeight()+"*"+self.module("Samples").getMCWeightReco(channel)
+        
+    def getMCWeightReco(self,channel):
         
         if channel=="mu":
-            mcweight+="*"+self.module("Samples").getMuMCWeight()
+            return self.module("Samples").getMuMCWeight()
         elif channel=="ele":
-            mcweight+="*"+self.module("Samples").getEleMCWeight()
+            return self.module("Samples").getEleMCWeight()
         else:
             self._logger.critical("Channel '"+channel+"' invalid")
-            raise Exception("Channel '"+channel+"' invalid")
-            
-        return mcweight
+            sys.exit(1)
         
             
-    def getDataWeight(self,channel="mu"):
+    def getDataWeight(self,channel):
         dataweight = "(Reconstructed_1__passMuVeto==1)*(Reconstructed_1__passEleVeto==1)"
         
         if channel=="mu":
@@ -114,7 +114,7 @@ class Samples(Module):
         return dataweight
         
         
-    def getEventSelection(self,channel="mu",iso=True):
+    def getEventSelection(self,channel,iso=True):
         selection = "(Reconstructed_1__passMuVeto==1)*(Reconstructed_1__passEleVeto==1)"
         
         if channel=="mu":
@@ -145,7 +145,7 @@ class Samples(Module):
         return ""
         
         
-    def makeProcessFileDict(self,channel="mu"):
+    def makeProcessFileDict(self,channel):
         rootFiles = self.module("Files").getMCSignal(channel,requireFriends=True)
         rootFiles += self.module("Files").getMCBackground(channel,requireFriends=True)
         rootFiles += self.module("Files").getDataFiles(channel,requireFriends=True)
@@ -203,16 +203,18 @@ class Samples(Module):
         sampleDict = self.module("Samples").getSample(sampleName,channel)
         sampleWeight = sampleDict["weight"]
         for processName in sampleDict["processes"]:
-            self.module("Utils").getHist1D(hist,processName,channel,variableName,weight+"*"+sampleWeight,addUnderOverflows)
+            for fileName in self.module("Samples").getProcessFiles(processName,channel):
+                self.module("Utils").getHist1D(hist,fileName,processName,variableName,weight+"*"+sampleWeight,addUnderOverflows)
         
         
-    def getSample(self,name,channel="mu"):
+    def getSample(self,name,channel="mu",sys=None):
         mcweightIso = self.module("Samples").getMCWeight(channel)+"*"+self.module("Samples").getEventSelection(channel,iso=True)
         mcweightAntiiso = self.module("Samples").getMCWeight(channel)+"*"+self.module("Samples").getEventSelection(channel,iso=False)
         dataweightIso = self.module("Samples").getDataWeight(channel)+"*"+self.module("Samples").getEventSelection(channel,iso=True)
         dataweightAntiiso = self.module("Samples").getDataWeight(channel)+"*"+self.module("Samples").getEventSelection(channel,iso=False)
-
-        sys = self.module("Samples").getSystematicPostFix()
+        
+        if sys==None:
+            sys = self.module("Samples").getSystematicPostFix()
         
         sampleDict = {
             "tChannel":

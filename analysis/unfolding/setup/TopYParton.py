@@ -14,13 +14,13 @@ class TopYParton(Module.getClass("Unfolding")):
         return "y"
         
     def getRecoBinning(self):
-        return [0.,0.15,0.45,0.7,1.1,1.5,2.4]
+        return numpy.array([0.,0.15,0.45,0.7,1.1,1.5,2.4])
         
     def getRecoVariable(self):
         return "fabs(SingleTop_1__Top_1__Y)"
         
-    def getRecoWeight(self,channel="mu"):
-        return self.module("Samples").getMCWeight(channel,iso=True)
+    def getRecoWeight(self,channel):
+        return self.module("Samples").getMCWeightReco(channel)
         
     def getRecoCut(self,channel="mu"):
         selection = self.module("Samples").getEventSelection(channel,iso=True)
@@ -29,22 +29,24 @@ class TopYParton(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self):
-        return [0.,0.15,0.45,0.7,1.1,1.5,2.4]
+        return numpy.array([0.,0.15,0.45,0.7,1.1,1.5,2.4])
         
     def getGenVariable(self):
-        return "fabs(PTR_1__TopBest_1__Y)"
+        return "fabs(Parton_1__Top_1__y)"
         
-    def getGenWeight(self):
+    def getGenWeight(self,channel):
         return self.module("Samples").getGenWeight()
         
-    def getGenCut(self,channel="mu"):
-        selection = "(PTR_1__TopBest_1__Pt>0)*(PTR_1__nTightLepton==1)*(PTR_1__nSelectedJet==2)"
+    def getGenCut(self,channel):
+        selection = "(Parton_1__Lepton_1__Pt>0)"
         if channel == "mu":
-            selection+="*(abs(PTR_1__TightLepton_1__pdg)==13)"
+            selection+="*(abs(Parton_1__Lepton_1__pdg)==13)"
         elif channel == "ele":
-            selection+="*(abs(PTR_1__TightLepton_1__pdg)==11)"
+            selection+="*(abs(Parton_1__Lepton_1__pdg)==11)"
         else:
             self._logger.error("Unknown channel selection '"+channel+"'")
+        return selection
+
 
             
         

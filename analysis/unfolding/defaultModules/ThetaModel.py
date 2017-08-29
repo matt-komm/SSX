@@ -17,7 +17,7 @@ class ThetaModel(Module):
         
     def makeLogNormal(self,mean,unc):
         sigma2 = math.log(1+unc**2/mean**2)
-        mu = math.log(mean)-0.5*sigma2
+        mu = math.log(mean**2/math.sqrt(unc**2+mean**2))
         #mu = 0.0
         return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2))}}
         #return {"type":"gauss","config":{"mean": "%4.3f"%(mean), "width":"%4.3f"%(unc), "range":"(0.0,\"inf\")"}}
@@ -25,19 +25,30 @@ class ThetaModel(Module):
     def makeGaus(self,mean,unc,r=[-5,5]):
         return {"type":"gauss","config":{"mean": "%4.3f"%(mean), "width":"%4.3f"%(unc), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
         
+    def getMeanAndUncertainty(self,dist):
+        if dist["type"]=="gauss":
+            return [float(dist["config"]["mean"]),float(dist["config"]["width"])]
+        elif dist["type"]=="log_normal":
+            mu = float(dist["config"]["mu"])
+            sigma = float(dist["config"]["sigma"])
+            return [math.exp(mu+0.5*sigma**2),math.exp(mu+0.5*sigma**2)*math.sqrt(math.exp(sigma**2)-1)]
+        else:
+            self._logger.critical("Unknown distribution type '"+dist["type"]+"'")
+            sys.exit(1)
+        
     def getUncertaintsDict(self):
         uncertaintiesBkg = {
             "WZjets":self.module("ThetaModel").makeLogNormal(1.0,0.3),
             "TopBkg":self.module("ThetaModel").makeLogNormal(1.0,0.1),
-            "QCD_2j1t":self.module("ThetaModel").makeLogNormal(1.,1.),
+            "QCD_2j1t":self.module("ThetaModel").makeLogNormal(1.0,1.),
             #"QCD_3j1t":self.module("ThetaModel").makeGaus(0.2,0.5),
-            "QCD_3j2t":self.module("ThetaModel").makeLogNormal(1.,1.),
+            "QCD_3j2t":self.module("ThetaModel").makeLogNormal(1.0,1.),
             
             #"lumi":{"type":"gauss","config":{"mean": "1.0", "width":"0.1", "range":"(0.0,\"inf\")"}}
         }
         uncertainties = {
-            "tChannel":self.module("ThetaModel").makeGaus(1.0,10.0),
-            "tChannel_ratio":self.module("ThetaModel").makeGaus(1.0,10.0),
+            "tChannel_pos":self.module("ThetaModel").makeGaus(1.0,10.0),
+            "tChannel_neg":self.module("ThetaModel").makeGaus(1.0,10.0),
         }
         
         for uncName in uncertaintiesBkg.keys():
@@ -45,6 +56,17 @@ class ThetaModel(Module):
             # set 1% conservative charge confusion - might be far too high!!!
             uncertainties[uncName+"_ratio"]=self.module("ThetaModel").makeGaus(1.0,0.01)
         return uncertainties
+        
+    def getFitFileName(self,channels,unfoldingName,postfix="marginalized"):
+        fitName = ""
+        if len(channels)==1 and channels[0]=="mu":
+            fitName="mu"
+        if len(channels)==1 and channels[0]=="ele":
+            fitName="ele"
+        if "mu" in channels and "ele" in channels:
+            fitName = "comb"
+        fitName+="__"+unfoldingName+"__"+postfix
+        return fitName
         
     def getHistogramPath(self,channel,unfoldingName,uncertainty=None):
         if not uncertainty:
@@ -198,14 +220,14 @@ class ThetaModel(Module):
             "tChannel_pos":
             {
                 "sets":["tChannel"],
-                "uncertainties":["tChannel","tChannel_ratio"],
+                "uncertainties":["tChannel_pos"],
                 "weight":self.module("Samples").getGenChargeSelection(1),
                 "color":ROOT.kMagenta+1
             },
             "tChannel_neg":
             {
                 "sets":["tChannel"],
-                "uncertainties":["tChannel"],
+                "uncertainties":["tChannel_neg"],
                 "weight":self.module("Samples").getGenChargeSelection(-1),
                 "color":ROOT.kMagenta+1
             }
@@ -226,9 +248,9 @@ class ThetaModel(Module):
         return Model(name, {"bb_uncertainties":"true"})
         
     
-    def makeModel(self,modelName,fitSetup,parametersDict,outputFile="fit",pseudo=False):
+    def makeModel(self,cfgPath,fitSetup,parametersDict,modelName="fit",outputFile="fit",pseudo=False):
         self._logger.info("Creating model: "+modelName)
-        file = open(os.path.join(self.module("Utils").getOutputFolder(),modelName+".cfg"),"w",20971520)
+        file = open(cfgPath,"w",20971520)
         
         model=self.module("ThetaModel").getModel(modelName)
         
@@ -323,7 +345,12 @@ class ThetaModel(Module):
         file.write('pd = {\n')
         file.write('    name= "'+modelName+'";\n')
         file.write('    type = "mle";\n')
-        file.write('    parameters = ('+model.getParameterNames()+');\n')
+        
+        parametersCfg = ""
+        for parameterName in sorted(parametersDict.keys()):
+            parametersCfg+='"'+parameterName+'",'
+        parametersCfg=parametersCfg[:-1]
+        file.write('    parameters = ('+parametersCfg+');\n')
         file.write('    minimizer = \"@myminimizer\";\n')
         file.write('    write_covariance = true;\n')
         file.write('};\n')

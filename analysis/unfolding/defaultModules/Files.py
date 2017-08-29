@@ -22,7 +22,7 @@ class Files(Module):
         return ""
 
 
-    def getMCSignal(self,channel="mu",requireFriends=True):
+    def getMCSignal(self,channel,requireFriends=True):
         rootFiles = []
         nFriends = 0
     
@@ -47,7 +47,7 @@ class Files(Module):
         return rootFiles
         
 
-    def getMCBackground(self,channel="mu",requireFriends=True):
+    def getMCBackground(self,channel,requireFriends=True):
         rootFiles = []
         nFriends = 0
 
@@ -72,7 +72,7 @@ class Files(Module):
         return rootFiles
 
 
-    def getDataFiles(self,channel="mu",requireFriends=True):
+    def getDataFiles(self,channel,requireFriends=True):
         rootFiles = []
         nFriends = 0
 
@@ -98,17 +98,16 @@ class Files(Module):
         
         
                
-    def getEfficiencyFiles(self,channel="mu"):
+    def getEfficiencyFiles(self,channel):
         rootFiles = []
-        nFriends = 0
     
-        basedirSignalMC = "/nfs/user/mkomm/SSX13/signalMC/"+channel+getVersion()
+        basedirSignalMC = "/nfs/user/mkomm/SSX13/signalMC/"+channel+self.module("Files").getVersion()
         matchSignalMC = re.compile("^signalMC_veto[0-9]+.root$")
         
         for f in os.listdir(basedirSignalMC):
             if matchSignalMC.match(f) and f.find("veto")>=0:
-                rootFiles.append(os.path.join(basedirSignalMC,f))
+                rootFiles.append([os.path.join(basedirSignalMC,f)])
                         
-        self._logger.debug("found efficiency files "+str(len(rootFiles))+"/"+nFriends+" in "+basedirSignalMC)
+        self._logger.debug("found efficiency files "+str(len(rootFiles))+" in "+basedirSignalMC)
         return rootFiles
         

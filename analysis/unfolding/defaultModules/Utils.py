@@ -55,34 +55,32 @@ class Utils(Module):
         hist.SetBinContent(N+1,0)
         hist.SetEntries(hist.GetEntries()-4)
         
-    def getHist1D(self,hist,processName,channel,variableName,weight,addUnderOverflows=False):
+    def getHist1D(self,hist,fileName,processName,variableName,weight,addUnderOverflows=False):
         hist.SetDirectory(0)
-        
-        for fileName in self.module("Samples").getProcessFiles(processName,channel):
-            rootFile = ROOT.TFile(fileName[0])
-            tree = rootFile.Get(processName)
-            tempHist=hist.Clone()
-            tempHist.Scale(0)
-            tempHist.SetEntries(0)
-            tempHist.SetName("hist_"+processName+str(random.random()))
-            if (tree):
-                for fileNameExtra in fileName[1:]:  
-                    tree.AddFriend(processName,fileNameExtra)
-                #self._logger.debug("projecting 1D: "+hist.GetName()+", "+processName+", "+variableName+", "+weight)
-                tree.Project(tempHist.GetName(),variableName,weight)
-                tempHist.SetDirectory(0)
-                if addUnderOverflows:
-                    self.module("Utils").addUnderflowOverflow(tempHist)
-                else:
-                    tempHist.SetBinContent(0,0)
-                    tempHist.SetBinContent(tempHist.GetNbinsX()+1,0)
-                    tempHist.SetEntries(tempHist.GetEntries()-2)
-                hist.Add(tempHist)
-            rootFile.Close()
+        rootFile = ROOT.TFile(fileName[0])
+        tree = rootFile.Get(processName)
+        tempHist=hist.Clone()
+        tempHist.Scale(0)
+        tempHist.SetEntries(0)
+        tempHist.SetName("hist_"+processName+str(random.random()))
+        if (tree):
+            for fileNameExtra in fileName[1:]:  
+                tree.AddFriend(processName,fileNameExtra)
+            #self._logger.debug("projecting 1D: "+hist.GetName()+", "+processName+", "+variableName+", "+weight)
+            tree.Project(tempHist.GetName(),variableName,weight)
+            tempHist.SetDirectory(0)
+            if addUnderOverflows:
+                self.module("Utils").addUnderflowOverflow(tempHist)
+            else:
+                tempHist.SetBinContent(0,0)
+                tempHist.SetBinContent(tempHist.GetNbinsX()+1,0)
+                tempHist.SetEntries(tempHist.GetEntries()-2)
+            hist.Add(tempHist)
+        rootFile.Close()
         
     def getHist2D(self,hist,fileName,processName,variableNameX,variableNameY,weight):
         hist.SetDirectory(0)
-        rootFile = ROOT.TFile(fileName)
+        rootFile = ROOT.TFile(fileName[0])
         tree = rootFile.Get(processName)
         tempHist=hist.Clone()
         tempHist.Scale(0)

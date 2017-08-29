@@ -27,10 +27,10 @@ class Unfolding(Module):
     def getRecoVariable(self):
         raise NotImplementedError()
         
-    def getRecoWeight(self):
+    def getRecoWeight(self,channel):
         raise NotImplementedError()
         
-    def getRecoCut(self):
+    def getRecoCut(self,channel):
         raise NotImplementedError()
         
         
@@ -40,10 +40,10 @@ class Unfolding(Module):
     def getGenVariable(self):
         raise NotImplementedError()
         
-    def getGenWeight(self):
+    def getGenWeight(self,channel):
         raise NotImplementedError()
         
-    def getGenCut(self):
+    def getGenCut(self,channel):
         raise NotImplementedError()
         
         
