@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <regex>
 #include <unordered_map>
 
 static pxl::Logger logger("JetMETVariations");
@@ -38,6 +39,9 @@ class JetMETVariations:
         pxl::Source* _nominalSource;
         std::unordered_map<std::string, Variation> _variations;
         
+        std::vector<std::string> _ignoreNames;
+        std::vector<std::regex> _ignoreNamesRegex;
+        
     public:
         JetMETVariations():
             Module(),
@@ -47,7 +51,16 @@ class JetMETVariations:
             _renamedJet("Jet"),
             _renamedMET("MET"),
             _removeOtherVariations(true),
-            _variationNames({"Res","En","Unc"})
+            _variationNames({"Res","En","Unc"}),
+            _ignoreNames({
+                "\\S+hdamp\\S+",
+                "\\S+herwig\\S+",
+                "\\S+mtop\\S+",
+                "\\S+scale\\S+",
+                "\\S+colourFlip\\S+",
+                "\\S+fsr\\S+",
+                "\\S+isr\\S+"
+            })
         {
             addSink("input", "input");
             
@@ -60,6 +73,8 @@ class JetMETVariations:
             addOption("rename MET","",_renamedMET);
             
             addOption("remove other variations","",_removeOtherVariations);
+            
+            addOption("ignore processes","",_ignoreNames);
 
             for (const std::string& name: _variationNames)
             {
@@ -120,6 +135,13 @@ class JetMETVariations:
             getOption("rename MET",_renamedMET);
 
             getOption("remove other variations",_removeOtherVariations);
+            
+            getOption("ignore processes",_ignoreNames);
+            
+            for (const std::string& s: _ignoreNames)
+            {
+                _ignoreNamesRegex.emplace_back(s);
+            }
 
             for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
             {
