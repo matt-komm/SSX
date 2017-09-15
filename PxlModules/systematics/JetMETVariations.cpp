@@ -212,6 +212,17 @@ class JetMETVariations:
                 }
             }
         }
+        
+        bool isIgnored(const pxl::Event* event) const
+        {
+            bool ignore = false;
+            const std::string processName = event->getUserRecord("ProcessName").toString();
+            for (auto it = _ignoreNamesRegex.cbegin(); it!=_ignoreNamesRegex.cend() and !ignore; ++it)
+            {
+                ignore = ignore || std::regex_match(processName,*it);
+            }
+            return ignore;
+        }
 
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)
         {
@@ -223,7 +234,7 @@ class JetMETVariations:
                 {
                     //std::cout<<"new event"<<std::endl;
                     bool success = true;
-                    if (not event->getUserRecord("isRealData").toBool())
+                    if (not event->getUserRecord("isRealData").toBool() and not isIgnored(event))
                     {
                         for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
                         {
