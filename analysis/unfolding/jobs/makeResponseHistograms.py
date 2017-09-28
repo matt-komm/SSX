@@ -55,12 +55,16 @@ config.inputParams = []
 
 for channel in ["mu","ele"]:
     for charge in [-1,0,1]:
-        for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton","setup/TopCosParton"]:
+        for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton","setup/TopCosParton","setup/TopPtParticle","setup/TopYParticle","setup/TopCosParticle"]:
             config.inputParams.append([
                 "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c charge:"+str(charge)
             ])
             
             for systModule in [
+                "systematics/muEffDown",
+                "systematics/muEffUp",
+                "systematics/eleEffDown",
+                "systematics/eleEffUp",
                 "systematics/btagDown",
                 "systematics/btagUp",
                 "systematics/ltagDown",
@@ -69,6 +73,12 @@ for channel in ["mu","ele"]:
                 "systematics/enUp",
                 "systematics/puDown",
                 "systematics/puUp",
+                "systematics/uncDown",
+                "systematics/uncUp",
+                "systematics/muMultiDown",
+                "systematics/muMultiUp",
+                "systematics/eleMultiDown",
+                "systematics/eleMultiUp",
             ]:
         
                 #sys

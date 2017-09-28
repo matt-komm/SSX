@@ -66,6 +66,10 @@ for channel in ["mu","ele"]:
                 ])
             
         for systModule in [
+            "systematics/muEffDown",
+            "systematics/muEffUp",
+            "systematics/eleEffDown",
+            "systematics/eleEffUp",
             "systematics/btagDown",
             "systematics/btagUp",
             "systematics/ltagDown",
@@ -74,6 +78,12 @@ for channel in ["mu","ele"]:
             "systematics/enUp",
             "systematics/puDown",
             "systematics/puUp",
+            "systematics/uncDown",
+            "systematics/uncUp",
+            "systematics/muMultiDown",
+            "systematics/muMultiUp",
+            "systematics/eleMultiDown",
+            "systematics/eleMultiUp",
         ]:
         
             #sys/inclusive

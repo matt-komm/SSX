@@ -43,8 +43,7 @@ class Utils(Module):
                 os.makedirs(self.module("Utils").getOutputFolder(folderName))
             
         except Exception,e:
-            self._logger.critical(str(e))
-            sys.exit(1)
+            self._logger.error(str(e))
             
 
     def addUnderflowOverflow(self,hist):

@@ -22,7 +22,7 @@ class FitHistograms(Module.getClass("Program")):
         unfoldingName = self.module("Unfolding").getUnfoldingName()
         
         
-        eventSelection = self.module("Samples").getEventSelection()
+        eventSelection = self.module("Samples").getEventSelection(channel)
         
         observablesDict = self.module("ThetaModel").getObservablesDict()
         fitComponentsDict = self.module("ThetaModel").getFitComponentsDict()

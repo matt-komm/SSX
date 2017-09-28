@@ -234,57 +234,60 @@ class JetMETVariations:
                 {
                     //std::cout<<"new event"<<std::endl;
                     bool success = true;
-                    if (not event->getUserRecord("isRealData").toBool() and not isIgnored(event))
+                    if (not event->getUserRecord("isRealData").toBool())
                     {
-                        for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
+                        if (not isIgnored(event))
                         {
-                            if (variation->second.active[0])
+                            for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
                             {
-                                //std::cout<<"  produce "<<variation->first<<"Up"<<std::endl;
-                                pxl::Event* eventShiftedUp = dynamic_cast<pxl::Event*>(event->clone());
-                                if (not eventShiftedUp)
+                                if (variation->second.active[0])
                                 {
-                                    throw std::runtime_error("cloning of Event failed");
+                                    //std::cout<<"  produce "<<variation->first<<"Up"<<std::endl;
+                                    pxl::Event* eventShiftedUp = dynamic_cast<pxl::Event*>(event->clone());
+                                    if (not eventShiftedUp)
+                                    {
+                                        throw std::runtime_error("cloning of Event failed");
+                                    }
+                                    eventShiftedUp->setUserRecord("ProcessName",eventShiftedUp->getUserRecord("ProcessName").toString()+"_"+variation->first+"Up");
+                                    std::string jetName = variation->second.inputJetName+"Up";
+                                    if (variation->second.inputJetName=="")
+                                    {
+                                        jetName=_nominalJetName;
+                                    }
+                                    std::string metName = variation->second.inputMETName+"Up";
+                                    if (variation->second.inputMETName=="")
+                                    {
+                                        metName=_nominalMETName;
+                                    }
+                                    renameJetMET(eventShiftedUp,jetName,metName);
+                                    variation->second.sources[0]->setTargets(eventShiftedUp);
+                                    success &= variation->second.sources[0]->processTargets();
+                                    delete eventShiftedUp;
                                 }
-                                eventShiftedUp->setUserRecord("ProcessName",eventShiftedUp->getUserRecord("ProcessName").toString()+"_"+variation->first+"Up");
-                                std::string jetName = variation->second.inputJetName+"Up";
-                                if (variation->second.inputJetName=="")
+                                if (variation->second.active[1])
                                 {
-                                    jetName=_nominalJetName;
+                                    //std::cout<<"  produce "<<variation->first<<"Down"<<std::endl;
+                                    pxl::Event* eventShiftedDown = dynamic_cast<pxl::Event*>(event->clone());
+                                    if (not eventShiftedDown)
+                                    {
+                                        throw std::runtime_error("cloning of Event failed");
+                                    }
+                                    eventShiftedDown->setUserRecord("ProcessName",eventShiftedDown->getUserRecord("ProcessName").toString()+"_"+variation->first+"Down");
+                                    std::string jetName = variation->second.inputJetName+"Down";
+                                    if (variation->second.inputJetName=="")
+                                    {
+                                        jetName=_nominalJetName;
+                                    }
+                                    std::string metName = variation->second.inputMETName+"Down";
+                                    if (variation->second.inputMETName=="")
+                                    {
+                                        metName=_nominalMETName;
+                                    }
+                                    renameJetMET(eventShiftedDown,jetName,metName);
+                                    variation->second.sources[1]->setTargets(eventShiftedDown);
+                                    success &= variation->second.sources[1]->processTargets();
+                                    delete eventShiftedDown;
                                 }
-                                std::string metName = variation->second.inputMETName+"Up";
-                                if (variation->second.inputMETName=="")
-                                {
-                                    metName=_nominalMETName;
-                                }
-                                renameJetMET(eventShiftedUp,jetName,metName);
-                                variation->second.sources[0]->setTargets(eventShiftedUp);
-                                success &= variation->second.sources[0]->processTargets();
-                                delete eventShiftedUp;
-                            }
-                            if (variation->second.active[1])
-                            {
-                                //std::cout<<"  produce "<<variation->first<<"Down"<<std::endl;
-                                pxl::Event* eventShiftedDown = dynamic_cast<pxl::Event*>(event->clone());
-                                if (not eventShiftedDown)
-                                {
-                                    throw std::runtime_error("cloning of Event failed");
-                                }
-                                eventShiftedDown->setUserRecord("ProcessName",eventShiftedDown->getUserRecord("ProcessName").toString()+"_"+variation->first+"Down");
-                                std::string jetName = variation->second.inputJetName+"Down";
-                                if (variation->second.inputJetName=="")
-                                {
-                                    jetName=_nominalJetName;
-                                }
-                                std::string metName = variation->second.inputMETName+"Down";
-                                if (variation->second.inputMETName=="")
-                                {
-                                    metName=_nominalMETName;
-                                }
-                                renameJetMET(eventShiftedDown,jetName,metName);
-                                variation->second.sources[1]->setTargets(eventShiftedDown);
-                                success &= variation->second.sources[1]->processTargets();
-                                delete eventShiftedDown;
                             }
                         }
                         //std::cout<<"  produce "<<"Nominal"<<std::endl;

@@ -141,8 +141,9 @@ class FitHistograms(Module.getClass("Program")):
         ))
         '''
         #print fitResult["covariances"]["values"]["tChannel_neg_bin0"]["tChannel_pos_bin0"]
-        #print fitResult["parameters"]["tChannel_neg_bin0"]
-        
+        print fitResult["parameters"]["tChannel_neg_bin0"]
+        print fitResult["parameters"]["tChannel_pos_bin0"]
+        #print fitResult["parameters"]["en"]
         self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_yield.pdf",
             selection=["tChannel_*_bin*","WZjets_bin*","TopBkg_bin*","QCD_*_bin*_*"],
             ranges = [0,1.5],
@@ -151,7 +152,7 @@ class FitHistograms(Module.getClass("Program")):
         
         self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_ratios.pdf",
             selection=["WZjets_ratio_bin*","TopBkg_ratio_bin*","QCD_*_ratio_bin*_*"],
-            ranges = [0.975,1.025],
+            ranges = [0.85,1.15],
             default=1,
         )
         

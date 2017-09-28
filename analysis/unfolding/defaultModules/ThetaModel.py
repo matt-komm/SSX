@@ -53,8 +53,8 @@ class ThetaModel(Module):
         
         for uncName in uncertaintiesBkg.keys():
             uncertainties[uncName]=copy.deepcopy(uncertaintiesBkg[uncName])
-            # set 1% conservative charge confusion - might be far too high!!!
-            uncertainties[uncName+"_ratio"]=self.module("ThetaModel").makeGaus(1.0,0.01)
+            # set 10% conservative charge confusion - might be far too high!!!
+            uncertainties[uncName+"_ratio"]=self.module("ThetaModel").makeGaus(1.0,0.1)
         return uncertainties
         
     def getFitFileName(self,channels,unfoldingName,postfix="marginalized"):
@@ -137,7 +137,7 @@ class ThetaModel(Module):
            
     
     def getBDTtchan(self):
-        return "(TMath::TanH(3.5*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost+0.0)))"
+        return "(TMath::TanH(3.*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.07)))"
         
     def getBDTttw(self):
         return "(TMath::TanH(4.5*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.07)))"
@@ -151,7 +151,7 @@ class ThetaModel(Module):
             "2j1t": {
                 "weight":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1),
                 "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(("+tch+"<0.)*(100+50*"+ttw+")+("+tch+">0.)*(150+50*"+tch+")))",
-                "bins":20,
+                "bins":32,
                 "range":[-200.,200.]
             },
             #"3j1t": {
@@ -163,7 +163,7 @@ class ThetaModel(Module):
             "3j2t": {
                 "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
                 "variable":charge+"*SingleTop_1__mtw_beforePz",
-                "bins":10,
+                "bins":20,
                 "range":[-200.,200.]
             },
         }
@@ -328,7 +328,45 @@ class ThetaModel(Module):
         
         file.write("\n")
         file.write("\n")
-
+        
+        file.write('''
+myminimizer = {
+    type = "minimizer_chain";
+    minimizers = (
+        {
+            type = "mcmc_minimizer";
+            iterations = 100000;
+            burn-in = 20000;
+            name = "mcmc_min20";
+            stepsize_factor = 2.0;
+        },
+        {
+            type = "mcmc_minimizer";
+            iterations = 100000;
+            burn-in = 20000;
+            name = "mcmc_min10";
+            stepsize_factor = 1.0;
+        },
+        {
+            type = "mcmc_minimizer";
+            iterations = 100000;
+            burn-in = 20000;
+            name = "mcmc_min05";
+            stepsize_factor = 0.5;
+        }
+    );
+    last_minimizer = {
+        type = "newton_minimizer";
+        par_eps = 1e-5; // optional; default is 1e-4'
+        maxit = 200000; // optional; default is 10,000'
+        improve_cov = true; // optional; default is false'
+        force_cov_positive = true; // optional, default is false'
+        step_cov = 0.025; // optional; default is 0.1'
+    };
+};
+        ''')
+        
+        '''
         file.write("myminimizer = {\n")
         
         file.write("    type = \"newton_minimizer\";\n")
@@ -338,7 +376,7 @@ class ThetaModel(Module):
         file.write("    force_cov_positive = true; // optional, default is false'\n")
         file.write("    step_cov = 0.025; // optional; default is 0.1'\n")
         file.write("};\n")
-        
+        '''        
 
         
         

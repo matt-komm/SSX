@@ -53,7 +53,7 @@ class Samples(Module):
             
 
     def getMuMCWeight(self):
-        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_nominal*Reconstructed_1__PU69000_weight*Reconstructed_1__muISO_SF_nominal*Reconstructed_1__muID_SF_nominal*Reconstructed_1__muTRIGGER_SF_nominal)"
+        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_nominal*Reconstructed_1__PU69000_weight*Reconstructed_1__muISO06_SF_nominal*Reconstructed_1__muID06_SF_nominal*Reconstructed_1__muTRIGGER06_SF_nominal)"
         
     def getMuDataWeight(self):
         return "1"
@@ -66,7 +66,7 @@ class Samples(Module):
         
         
     def getEleMCWeight(self):
-        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_nominal*Reconstructed_1__PU69000_weight*Reconstructed_1__eleRECO_SF_nominal*Reconstructed_1__eleID_SF_nominal)"
+        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_nominal*Reconstructed_1__PU69000_weight*Reconstructed_1__eleRECO_SF_nominal*Reconstructed_1__eleID_SF_nominal*Reconstructed_1__eleTRIGGER_SF_nominal)"
         
     def getEleDataWeight(self):
         return "1"
@@ -240,7 +240,7 @@ class Samples(Module):
                 "processes":[
                     "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8"+sys
                 ],
-                "weight":mcweightIso
+                "weight":mcweightIso+"*(Generated_1__top_pt_rew)"
             },
             
             "WJetsAMC":
