@@ -53,11 +53,11 @@ class ThetaModel(Module):
         
         for uncName in uncertaintiesBkg.keys():
             uncertainties[uncName]=copy.deepcopy(uncertaintiesBkg[uncName])
-            # set 10% conservative charge confusion - might be far too high!!!
-            uncertainties[uncName+"_ratio"]=self.module("ThetaModel").makeGaus(1.0,0.1)
+            # set 1% conservative charge confusion - might be far too high!!!
+            uncertainties[uncName+"_ratio"]=self.module("ThetaModel").makeGaus(1.0,0.01)
         return uncertainties
         
-    def getFitFileName(self,channels,unfoldingName,postfix="marginalized"):
+    def getFitFileName(self,channels,unfoldingName,postfix="profiled"):
         fitName = ""
         if len(channels)==1 and channels[0]=="mu":
             fitName="mu"

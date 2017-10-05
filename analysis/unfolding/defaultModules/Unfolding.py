@@ -1,5 +1,5 @@
 import ROOT
-#import pyTool
+import pyfit
 import numpy
 import math
 import os
@@ -20,6 +20,9 @@ class Unfolding(Module):
         
     def getUnfoldingName(self):
         return "inc"
+        
+    def getUnfoldingLevel(self):
+        raise NotImplementedError()
         
     def getRecoBinning(self):
         raise NotImplementedError()
@@ -117,7 +120,7 @@ class Unfolding(Module):
         cv.Print(os.path.join(self.module("Utils").getOutputFolder(),output+".png"))
         
         
-        
+    
     def unfold(self,responseMatrix,data,genBinning,scan=None,fixedTau=None):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
 

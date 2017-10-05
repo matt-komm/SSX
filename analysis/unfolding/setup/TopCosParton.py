@@ -13,6 +13,9 @@ class TopCosParton(Module.getClass("Unfolding")):
     def getUnfoldingName(self):
         return "cos"
         
+    def getUnfoldingLevel(self):
+        return "parton"
+        
     def getRecoBinning(self):
         return numpy.linspace(-1,1,num=7,endpoint=True)
         

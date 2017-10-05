@@ -15,13 +15,13 @@ class FitHistograms(Module.getClass("Program")):
     def execute(self):
         #mu,ele,comb
         channels = self.getOption("channels").split(",")
-       
+        self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
         histogramsPerChannelAndUncertainty = {}
         
         unfoldingName = self.module("Unfolding").getUnfoldingName()
         uncertaintyList = self.getOption("systematics").split(",") if len(self.getOption("systematics"))>0 else []
-
+        self._logger.info("profile systematics: "+str(uncertaintyList))
         for channel in channels:
             histogramsPerChannelAndUncertainty[channel]={}
             histogramsPerChannelAndUncertainty[channel]["nominal"]=[]
@@ -103,9 +103,9 @@ class FitHistograms(Module.getClass("Program")):
                 
                                     
         
-        
+        self.module("Utils").createFolder("fit")
         fitOutput = os.path.join(
-            self.module("Utils").getOutputFolder(),
+            self.module("Utils").getOutputFolder("fit"),
             self.module("ThetaModel").getFitFileName(channels,unfoldingName)
         )
         
@@ -116,11 +116,11 @@ class FitHistograms(Module.getClass("Program")):
             pseudo=False
         )
         self.module("ThetaFit").run(fitOutput+".cfg")
-        fitResult = self.module("ThetaFit").readFitResult(
+        fitResult = self.module("ThetaFit").parseFitResult(
             fitOutput+".root",
-            unfoldingName,
             parametersDict
         )
+        self.module("ThetaFit").saveFitResult(fitOutput+".json",fitResult)
         '''
         ROOT.gStyle.SetPaintTextFormat("4.0f")
         cv = ROOT.TCanvas("corr","",1000,900)

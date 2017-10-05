@@ -5,6 +5,7 @@ import ROOT
 import subprocess
 import math
 import os
+import json
 import csv
 import sys
 
@@ -36,7 +37,7 @@ class ThetaFit(Module):
             return self.module("ThetaFit").readFitResult(modelName,fileName)
         return None
                 
-    def readFitResult(self,fullPath,unfoldingName,parameterDict,modelName="fit"):
+    def parseFitResult(self,fullPath,parameterDict,modelName="fit"):
         f = ROOT.TFile(fullPath)
         tree = f.Get("products")
         if tree==None or tree.GetEntries()==0:
@@ -67,8 +68,12 @@ class ThetaFit(Module):
         correlations = ROOT.TH2D("correlations","",Npar,0,Npar,Npar,0,Npar)
         correlations.SetDirectory(0)
         
-        result["covariances"]={"hist":covariances,"values":{}}
-        result["correlations"]={"hist":correlations,"values":{}}
+        #result["covariances"]={"hist":covariances,"values":{}}
+        #result["correlations"]={"hist":correlations,"values":{}}
+        
+        #store only plain values for saving to file
+        result["covariances"]={"values":{}}
+        result["correlations"]={"values":{}}
         
         for ibin,ibinLabel in enumerate(sorted(parameterDict.keys())):
             for jbin,jbinLabel in enumerate(sorted(parameterDict.keys())):
@@ -112,6 +117,19 @@ class ThetaFit(Module):
         f.Close()
         
         return result
+        
+    def saveFitResult(self,fullPath,fitResult):
+        f = open(fullPath,"w")
+        json.dump(fitResult,f)
+        f.close()
+        
+    def loadFitResult(self,fullPath):
+        f = open(fullPath)
+        fitResult = json.load(f)
+        f.close()
+        return fitResult
+        
+    
         
    
         
