@@ -13,6 +13,9 @@ class TopYParticle(Module.getClass("Unfolding")):
     def getUnfoldingName(self):
         return "y"
         
+    def getUnfoldingLevel(self):
+        return "particle"
+        
     def getRecoBinning(self):
         return numpy.array([0.,0.15,0.45,0.7,1.1,1.5,2.4])
         

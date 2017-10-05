@@ -26,10 +26,10 @@ class Response(Module):
             uncertaintyName
         )
 
-    def getOutputResponseFile(self,channel,unfoldingName,uncertaintyName,genCharge):
+    def getOutputResponseFile(self,channel,unfoldingName,unfoldingLevel,uncertaintyName,genCharge):
         return os.path.join(
             self.module("Response").getOutputFolder(channel,unfoldingName,uncertaintyName),
-            "response_"+self.module("Samples").getChargeName(genCharge)+".root"
+            "response_"+unfoldingLevel+"_"+self.module("Samples").getChargeName(genCharge)+".root"
         )
         
     
