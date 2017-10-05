@@ -18,9 +18,14 @@ class ResponseHistograms(Module.getClass("Program")):
     
         channel = self.getOption("channel")
         genCharge = int(self.getOption("charge"))
-       
+        
         unfoldingName = self.module("Unfolding").getUnfoldingName()
         unfoldingLevel = self.module("Unfolding").getUnfoldingLevel()
+        
+        self._logger.info("Select channel: "+channel)
+        self._logger.info("Select gen charge: "+str(genCharge))
+        self._logger.info("Unfolding name: "+unfoldingName)
+        self._logger.info("Unfolding level: "+unfoldingLevel)
         
         outputFolder = self.module("Response").getOutputFolder(channel,unfoldingName,self.module("Utils").getUncertaintyName())
         self.module("Utils").createFolder(outputFolder)
