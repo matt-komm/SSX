@@ -13,6 +13,9 @@ class TopPtParticle(Module.getClass("Unfolding")):
     def getUnfoldingName(self):
         return "pt"
         
+    def getUnfoldingLevel(self):
+        return "particle"
+        
     def getRecoBinning(self):
         return numpy.array([0.,50.,85.,120.,160.,200.,300.])
         
