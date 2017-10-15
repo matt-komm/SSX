@@ -3,6 +3,8 @@ from defaultModules.Module import Module
 import logging
 import ROOT
 import os
+import sys
+import math
 
 # this generates the histograms (compound variable) for fitting
 
@@ -20,6 +22,17 @@ class FitHistograms(Module.getClass("Program")):
         unfoldingBin = int(self.getOption("bin"))
        
         unfoldingName = self.module("Unfolding").getUnfoldingName()
+        
+        
+        histFilePath = self.module("ThetaModel").getHistogramFile(
+            channel,
+            unfoldingName,
+            unfoldingBin,
+            self.module("Utils").getUncertaintyName()
+        )
+        if os.path.exists(histFilePath):
+            self._logger.info("Output file '"+histFilePath+"' already exists! -> skip")
+            sys.exit(0)
         
         
         eventSelection = self.module("Samples").getEventSelection(channel)
@@ -67,7 +80,17 @@ class FitHistograms(Module.getClass("Program")):
                         True,
                     )
                 self._logger.info("produced hist: "+fitHist.GetName()+", entries="+str(int(fitHist.GetEntries()))+", events="+str(round(fitHist.Integral(),1)))
-            
+                if fitHist.GetEntries()>0:
+                    avgWeight = math.fabs(fitHist.Integral()/fitHist.GetEntries())
+                    for ibin in range(fitHist.GetNbinsX()):
+                        if fitHist.GetBinContent(ibin+1)<0:
+                            fitHist.SetBinContent(ibin+1,avgWeight*0.01)
+                            fitHist.SetBinError(ibin+1,math.sqrt(avgWeight))
+                else:
+                    for ibin in range(fitHist.GetNbinsX()):
+                        fitHist.SetBinContent(ibin+1,0.01)
+                        fitHist.SetBinError(ibin+1,0.1)
+                        
             dataHist = ROOT.TH1F(
                 self.module("ThetaModel").getHistogramName(observableName,"data",unfoldingName,unfoldingBin),
                 ";"+fitVariable+";",
@@ -96,13 +119,10 @@ class FitHistograms(Module.getClass("Program")):
         )
         self.module("Utils").createFolder(outputFolder)
         
+        
+        
         rootFileOutput = ROOT.TFile(
-            self.module("ThetaModel").getHistogramFile(
-                channel,
-                unfoldingName,
-                unfoldingBin,
-                self.module("Utils").getUncertaintyName()
-            ),"RECREATE"
+            histFilePath,"RECREATE"
         )
         
         for histName in histograms.keys():

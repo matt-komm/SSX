@@ -96,9 +96,9 @@ class ThetaModel(Module):
                 return observableName+"__"+fitComponentName+"__"+unfoldingName
         else:
             if uncertainty:
-                return observableName+"__"+fitComponentName+"__"+unfoldingName+str(unfoldingBin+1)+"__"+uncertainty
+                return observableName+"__"+fitComponentName+"__"+unfoldingName+str(unfoldingBin)+"__"+uncertainty
             else:
-                return observableName+"__"+fitComponentName+"__"+unfoldingName+str(unfoldingBin+1)
+                return observableName+"__"+fitComponentName+"__"+unfoldingName+str(unfoldingBin)
                                 
     def getHistsFromFiles(self,channel,unfoldingName,unfoldingBin=-1,uncertainty=None):
         fileName = self.module("ThetaModel").getHistogramFile(channel,unfoldingName,unfoldingBin,uncertainty)
@@ -150,9 +150,9 @@ class ThetaModel(Module):
         observables = {
             "2j1t": {
                 "weight":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1),
-                "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(("+tch+"<0.)*(100+50*"+ttw+")+("+tch+">0.)*(150+50*"+tch+")))",
-                "bins":32,
-                "range":[-200.,200.]
+                "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*((0.5*"+tch+"+0.5*"+ttw+"<0.)*(80.+30.*"+ttw+")+(0.5*"+tch+"+0.5*"+ttw+">0.)*(110.+30.*"+tch+")))",
+                "bins":28,
+                "range":[-140.,140.]
             },
             #"3j1t": {
             #    "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(1),
@@ -163,7 +163,7 @@ class ThetaModel(Module):
             "3j2t": {
                 "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
                 "variable":charge+"*SingleTop_1__mtw_beforePz",
-                "bins":20,
+                "bins":10,
                 "range":[-200.,200.]
             },
         }

@@ -17,7 +17,7 @@ class TopCosParticle(Module.getClass("Unfolding")):
         return "particle"
         
     def getRecoBinning(self):
-        return numpy.linspace(-1,1,num=7,endpoint=True)
+        return numpy.array([-1.0,-0.5,-0.25,0.0,0.25,0.5,1.0])
         
     def getRecoVariable(self):
         return "SingleTop_1__cosTheta_tPLz"
@@ -32,7 +32,7 @@ class TopCosParticle(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self):
-        return numpy.linspace(-1,1,num=7,endpoint=True)
+        return numpy.array([-1.0,-0.5,-0.25,0.0,0.25,0.5,1.0])
         
     def getGenVariable(self):
         return "PTR_1__best_cosTheta_tPLz"
