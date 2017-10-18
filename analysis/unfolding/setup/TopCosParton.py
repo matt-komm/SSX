@@ -13,6 +13,12 @@ class TopCosParton(Module.getClass("Unfolding")):
     def getUnfoldingName(self):
         return "cos"
         
+    def getUnfoldingVariableName(self):
+        return "cos#kern[0.1]{#theta}#scale[0.7]{#lower[0.28]{pol.}}#kern[-1.1]{*}"
+        
+    def getUnfoldingVariableUnit(self):
+        return ""
+        
     def getUnfoldingLevel(self):
         return "parton"
         

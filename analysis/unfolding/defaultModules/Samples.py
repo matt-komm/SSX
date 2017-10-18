@@ -24,6 +24,18 @@ class Samples(Module):
         else:
             self._logger.critical("charge '"+str(charge)+"' invalid")
             raise Exception("charge '"+str(charge)+"' invalid")
+            
+    def getChannelName(self,channels):
+        if len(channels)==1 and channels[0]=="mu":
+            return "mu"
+        elif len(channels)==1 and channels[0]=="ele":
+            return "ele"
+        elif "mu" in channels and "ele" in channels:
+            return "comb"
+        else:
+            self._logger.critical("Do not understand channels '"+str(channels)+"'")
+            sys.exit(1)
+        
         
     def getRecoCharge(self):
         return "SingleTop_1__TightLepton_1__Charge"

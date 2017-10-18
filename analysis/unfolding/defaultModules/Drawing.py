@@ -89,6 +89,49 @@ class Drawing(Module):
        
         cv.Print(outputFile)
         
+        
+    def plotDataHistogram(self,nominalHist,measuredHist,title,output):
+        
+        cvHist = ROOT.TCanvas("cvHist","",800,700)
+        axis = ROOT.TH2F("axis"+str(random.random()),";"+title+";Events",
+            50,nominalHist.GetXaxis().GetXmin(),nominalHist.GetXaxis().GetXmax(),
+            50,0.,1.3*max(nominalHist.GetMaximum(),measuredHist.GetMaximum())
+        )
+        axis.Draw("AXIS")
+        
+        nominalHist.SetLineColor(ROOT.kRed+1)
+        nominalHist.SetLineWidth(3)
+        nominalHist.SetFillStyle(0)
+        nominalHist.Draw("HISTSame")
+        
+        measuredHist.SetLineColor(ROOT.kBlack)
+        measuredHist.SetMarkerColor(ROOT.kBlack)
+        measuredHist.SetMarkerStyle(20)
+        measuredHist.SetLineWidth(2)
+        measuredHist.SetMarkerSize(1.5)
+        measuredHist.Draw("PESame")
+        
+        pCMS=ROOT.TPaveText(1-cvHist.GetRightMargin()-0.25,0.94,1-cvHist.GetRightMargin()-0.25,0.94,"NDC")
+        pCMS.SetFillColor(ROOT.kWhite)
+        pCMS.SetBorderSize(0)
+        pCMS.SetTextFont(63)
+        pCMS.SetTextSize(30)
+        pCMS.SetTextAlign(11)
+        pCMS.AddText("CMS")
+        pCMS.Draw("Same")
+        
+        pPreliminary=ROOT.TPaveText(1-cvHist.GetRightMargin()-0.165,0.94,1-cvHist.GetRightMargin()-0.165,0.94,"NDC")
+        pPreliminary.SetFillColor(ROOT.kWhite)
+        pPreliminary.SetBorderSize(0)
+        pPreliminary.SetTextFont(53)
+        pPreliminary.SetTextSize(30)
+        pPreliminary.SetTextAlign(11)
+        pPreliminary.AddText("Preliminary")
+        pPreliminary.Draw("Same")
+        
+        cvHist.Print(output+".pdf")
+        cvHist.Print(output+".png")
+        
     '''
     def drawResponseMatrix(self,responseMatrix, varTitle, outputName):
         ROOT.gStyle.SetPaintTextFormat("3.0f")

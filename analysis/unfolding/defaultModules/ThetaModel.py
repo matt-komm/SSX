@@ -58,15 +58,7 @@ class ThetaModel(Module):
         return uncertainties
         
     def getFitFileName(self,channels,unfoldingName,postfix="profiled"):
-        fitName = ""
-        if len(channels)==1 and channels[0]=="mu":
-            fitName="mu"
-        if len(channels)==1 and channels[0]=="ele":
-            fitName="ele"
-        if "mu" in channels and "ele" in channels:
-            fitName = "comb"
-        fitName+="__"+unfoldingName+"__"+postfix
-        return fitName
+        return self.module("Samples").getChannelName(channels)+"__"+unfoldingName+"__"+postfix
         
     def getHistogramPath(self,channel,unfoldingName,uncertainty=None):
         if not uncertainty:
@@ -361,7 +353,7 @@ myminimizer = {
         maxit = 200000; // optional; default is 10,000'
         improve_cov = true; // optional; default is false'
         force_cov_positive = true; // optional, default is false'
-        step_cov = 0.025; // optional; default is 0.1'
+        step_cov = 0.01; // optional; default is 0.1'
     };
 };
         ''')

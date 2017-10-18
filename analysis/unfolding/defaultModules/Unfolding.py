@@ -21,6 +21,12 @@ class Unfolding(Module):
     def getUnfoldingName(self):
         return "inc"
         
+    def getUnfoldingVariableName(self):
+        raise NotImplementedError()
+        
+    def getUnfoldingVariableUnit(self):
+        raise NotImplementedError()
+        
     def getUnfoldingLevel(self):
         raise NotImplementedError()
         
@@ -75,18 +81,22 @@ class Unfolding(Module):
             return "(("+self.module("Unfolding").getGenVariable()+">="+str(binning[ibin])+")*("+self.module("Unfolding").getGenVariable()+"<"+str(binning[ibin+1])+"))"
             
         
-    '''    
-    def doScan(self,tunfold,genBins,output):
+     
+    def doScan(self,tunfold,genBins,output=None):
         N=100
         xvalues = numpy.logspace(-8,-2,N)
         yvalues = numpy.zeros((len(genBins)-1,N))
+        bestTauAtMinCorrelation = xvalues[0]
+        minGlobalCorrlation = 1.0
         for i in range(N):
-            bestTau = xvalues[i]
             covariance = ROOT.TH2D("correlation","",len(genBins)-1,genBins,len(genBins)-1,genBins)
             unfoldedHist = ROOT.TH1D("unfoldedHist","",len(genBins)-1,genBins)
             unfoldedHist.Sumw2()
-            tunfold.doUnfolding(bestTau,unfoldedHist,covariance)
-            rhos = ROOT.PyUtils.getBinByBinCorrelations(covariance)
+            tunfold.doUnfolding(xvalues[i],unfoldedHist,covariance)
+            rhos = ROOT.PyUtils.getBinByBinCorrelations(covariance) #rho[0] -> global correlation
+            if rhos[0]<minGlobalCorrlation:
+                bestTauAtMinCorrelation=xvalues[i]
+                minGlobalCorrlation=rhos[0]
             for ibin in range(len(genBins)-1):
                 yvalues[ibin][i]=rhos[ibin]
         cv = ROOT.TCanvas("cvScan","",800,600)
@@ -116,16 +126,18 @@ class Unfolding(Module):
         legend.Draw("Same")
         #cv.Update()
         #cv.WaitPrimitive()
-        cv.Print(os.path.join(self.module("Utils").getOutputFolder(),output+".pdf"))
-        cv.Print(os.path.join(self.module("Utils").getOutputFolder(),output+".png"))
-        
+        if output:
+            cv.Print(output+".pdf")
+            cv.Print(output+".png")
+        return bestTauAtMinCorrelation
         
     
-    def unfold(self,responseMatrix,data,genBinning,scan=None,fixedTau=None):
+    
+    def unfold(self,responseMatrix,data,genBinning,scanOutput=None,fixedTau=None):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
 
         responseMatrixReweighted = responseMatrix.Clone(responseMatrix.GetName()+"Reweighted")
-
+        '''
         for ibin in range(responseMatrix.GetNbinsX()):
             w = 1.0/genHist.GetBinContent(ibin+1)*genHist.Integral()/genHist.GetNbinsX()
             responseMatrixReweighted.SetBinContent(
@@ -133,15 +145,13 @@ class Unfolding(Module):
                     0,
                     responseMatrix.GetBinContent(ibin+1,0)*w
             )
-
+        '''
         
         tunfold = ROOT.PyUnfold(responseMatrixReweighted)
         tunfold.setData(data)
 
-        if scan:
-            self.module("Unfolding").doScan(tunfold,genBinning,scan)
         if fixedTau==None:
-            bestTau = tunfold.scanTau()
+            bestTau = self.module("Unfolding").doScan(tunfold,genBinning,scanOutput)
         else:
             bestTau=fixedTau
 
@@ -152,7 +162,7 @@ class Unfolding(Module):
         unfoldedHist = ROOT.TH1D("unfoldedHist","",len(genBinning)-1,genBinning)
         unfoldedHist.Sumw2()
         tunfold.doUnfolding(bestTau,unfoldedHist,covariance,True,False,False)
-
+        '''
         for ibin in range(unfoldedHist.GetNbinsX()):
             w = 1.0/genHist.GetBinContent(ibin+1)*genHist.Integral()/genHist.GetNbinsX()
             unfoldedHist.SetBinContent(
@@ -163,7 +173,7 @@ class Unfolding(Module):
                 ibin+1,
                 unfoldedHist.GetBinError(ibin+1)/w
             )
-
+        '''
         return unfoldedHist,covariance,bestTau
-    '''
+
         

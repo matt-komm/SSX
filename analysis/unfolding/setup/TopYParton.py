@@ -13,6 +13,12 @@ class TopYParton(Module.getClass("Unfolding")):
     def getUnfoldingName(self):
         return "y"
         
+    def getUnfoldingVariableName(self):
+        return "top quark |y|"
+        
+    def getUnfoldingVariableUnit(self):
+        return ""
+        
     def getUnfoldingLevel(self):
         return "parton"
         

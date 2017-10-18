@@ -13,6 +13,12 @@ class TopPtParticle(Module.getClass("Unfolding")):
     def getUnfoldingName(self):
         return "pt"
         
+    def getUnfoldingVariableName(self):
+        return "top quark p#scale[0.7]{#lower[0.3]{T}}"
+        
+    def getUnfoldingVariableUnit(self):
+        return "GeV"
+        
     def getUnfoldingLevel(self):
         return "particle"
         
