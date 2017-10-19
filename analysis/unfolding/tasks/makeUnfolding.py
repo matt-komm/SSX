@@ -59,6 +59,13 @@ class RunUnfolding(Module.getClass("Program")):
                 else:
                     responseMatrices[charge].Add(responseMatrix)
                 rootResponseFile.Close()
+            self.module("Drawing").drawHistogramMatrix(
+                self.module("Utils").normalizeByTransistionProbability(responseMatrices[charge]), 
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_response"), 
+                xaxis=unfoldingLevel+" "+self.module("Unfolding").getUnfoldingVariableName(),
+                yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+                zaxis="transition"
+            )
             
         nominalRecoHists = {}
         nominalGenHists = {}
@@ -70,6 +77,7 @@ class RunUnfolding(Module.getClass("Program")):
         for charge in responseMatrices.keys():
             nominalRecoHists[charge] = responseMatrices[charge].ProjectionY()
             nominalGenHists[charge] = responseMatrices[charge].ProjectionX()
+            unfoldedHists[charge] = nominalGenHists[charge].Clone(nominalGenHists[charge].GetName()+"meas")
             measuredRecoHists[charge] = nominalRecoHists[charge].Clone(nominalRecoHists[charge].GetName()+"meas")
             measuredRecoCovariances[charge] = ROOT.TH2F(
                 "covariance"+str(charge),"",
@@ -108,32 +116,224 @@ class RunUnfolding(Module.getClass("Program")):
                 yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
                 zaxis="correlation"
             )
-            #unfolding
-            unfoldedHist,unfoldedCovariance,bestTau = self.module("Unfolding").unfold(
-                responseMatrices[charge],
-                measuredRecoHists[charge],
-                self.module("Unfolding").getGenBinning(),
-                dataCovariance=measuredRecoCovariances[charge],
-                scanOutput=os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_tauScan"),
-                fixedTau=None
+            
+        combinedRecoBinning = numpy.linspace(0,2*len(genBinning)-2,num=2*len(recoBinning)-1)
+        combinedGenBinning = numpy.linspace(0,2*len(genBinning)-2,num=2*len(genBinning)-1)
+        
+        combinedNominalRecoHist = ROOT.TH1F("combinedNominalRecoHist","",len(combinedRecoBinning)-1,combinedRecoBinning)
+        combinedNominalGenHist = ROOT.TH1F("combinedNominalRecoHist","",len(combinedRecoBinning)-1,combinedRecoBinning)
+        combinedMeasuredRecoHist = ROOT.TH1F("combinedMeasuredRecoHist","",len(combinedRecoBinning)-1,combinedRecoBinning)
+        combinedCovarianceMatrix = ROOT.TH2F("combinedResponseMatrix","",
+            len(combinedRecoBinning)-1,combinedRecoBinning,
+            len(combinedRecoBinning)-1,combinedRecoBinning
+        )
+        combinedResponseMatrix = ROOT.TH2F("combinedResponseMatrix","",
+            len(combinedGenBinning)-1,combinedGenBinning,
+            len(combinedRecoBinning)-1,combinedRecoBinning
+        )
+        for ibin in range(len(recoBinning)-1):
+            #merge nominal hists
+            combinedNominalRecoHist.SetBinContent(
+                ibin+1,
+                nominalRecoHists[1].GetBinContent(ibin+1)
             )
-            #draw unfolded hists
-            self.module("Drawing").plotDataHistogram(nominalGenHists[charge],unfoldedHist,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            combinedNominalRecoHist.SetBinContent(
+                ibin+1+(len(genBinning)-1),
+                nominalRecoHists[-1].GetBinContent(ibin+1)
+            )
+        
+            #merge measured hists with errors
+            combinedMeasuredRecoHist.SetBinContent(
+                ibin+1,
+                measuredRecoHists[1].GetBinContent(ibin+1)
+            )
+            combinedMeasuredRecoHist.SetBinContent(
+                ibin+1+(len(genBinning)-1),
+                measuredRecoHists[-1].GetBinContent(ibin+1)
+            )
+            combinedMeasuredRecoHist.SetBinError(
+                ibin+1,
+                measuredRecoHists[1].GetBinError(ibin+1)
+            )
+            combinedMeasuredRecoHist.SetBinError(
+                ibin+1+(len(genBinning)-1),
+                measuredRecoHists[-1].GetBinError(ibin+1)
+            )
+            
+            #merge response matrices
+            for jbin in range(len(genBinning)-1):
+                #migration
+                combinedResponseMatrix.SetBinContent(
+                    jbin+1,
+                    ibin+1,
+                    responseMatrices[1].GetBinContent(jbin+1,ibin+1)
+                )
+                combinedResponseMatrix.SetBinContent(
+                    jbin+1+(len(genBinning)-1),
+                    ibin+1+(len(recoBinning)-1),
+                    responseMatrices[-1].GetBinContent(jbin+1,ibin+1)
+                )
+                #efficiencies
+                combinedResponseMatrix.SetBinContent(
+                    jbin+1,
+                    0,
+                    responseMatrices[1].GetBinContent(jbin+1,0)
+                )
+                combinedResponseMatrix.SetBinContent(
+                    jbin+1+(len(genBinning)-1),
+                    0,
+                    responseMatrices[-1].GetBinContent(jbin+1,0)
+                )
+            
+            #covariance (need loop over reco binning here)
+            for jbin in range(len(recoBinning)-1):
+                signalFitResultCovPP = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(ibin)]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(jbin)]
+                signalFitResultCovPN = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(ibin)]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(jbin)]
+                signalFitResultCovNP = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(ibin)]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(jbin)]
+                signalFitResultCovNN = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(ibin)]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(jbin)]
+                combinedCovarianceMatrix.SetBinContent(
+                    ibin+1,
+                    jbin+1,
+                    nominalRecoHists[1].GetBinContent(ibin+1)*nominalRecoHists[1].GetBinContent(jbin+1)*signalFitResultCovPP
+                )
+                combinedCovarianceMatrix.SetBinContent(
+                    ibin+1+(len(recoBinning)-1),
+                    jbin+1,
+                    nominalRecoHists[1].GetBinContent(ibin+1)*nominalRecoHists[-1].GetBinContent(jbin+1)*signalFitResultCovPN
+                )
+                combinedCovarianceMatrix.SetBinContent(
+                    ibin+1,
+                    jbin+1+(len(recoBinning)-1),
+                    nominalRecoHists[-1].GetBinContent(ibin+1)*nominalRecoHists[1].GetBinContent(jbin+1)*signalFitResultCovNP
+                )
+                combinedCovarianceMatrix.SetBinContent(
+                    ibin+1+(len(recoBinning)-1),
+                    jbin+1+(len(recoBinning)-1),
+                    nominalRecoHists[-1].GetBinContent(ibin+1)*nominalRecoHists[-1].GetBinContent(jbin+1)*signalFitResultCovNN
+                )
+        for ibin in range(len(genBinning)-1):
+            #merge nominal hists
+            combinedNominalGenHist.SetBinContent(
+                ibin+1,
+                nominalGenHists[1].GetBinContent(ibin+1)
+            )
+            combinedNominalGenHist.SetBinContent(
+                ibin+1+(len(genBinning)-1),
+                nominalGenHists[-1].GetBinContent(ibin+1)
+            )
+                    
+            
+        self.module("Drawing").plotDataHistogram(combinedNominalRecoHist,combinedMeasuredRecoHist,"reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_recoHist")
+        )
+        self.module("Drawing").drawHistogramMatrix(
+            self.module("Utils").normalizeByTransistionProbability(combinedResponseMatrix), 
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_response"), 
+            xaxis=unfoldingLevel+" "+self.module("Unfolding").getUnfoldingVariableName(),
+            yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+            zaxis="transition"
+        )
+        self.module("Drawing").drawHistogramMatrix(
+            combinedCovarianceMatrix, 
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_recoCovariance"), 
+            xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+            yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+            zaxis="covariance"
+        )
+        self.module("Drawing").drawHistogramMatrix(
+            self.module("Utils").calculateCorrelations(combinedCovarianceMatrix), 
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_recoCorrelation"), 
+            xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+            yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+            zaxis="correlation"
+        )
+        
+        
+        #unfolding
+        combinedUnfoldedHist,combinedUnfoldedCovariance,bestTau = self.module("Unfolding").unfold(
+            combinedResponseMatrix,
+            combinedMeasuredRecoHist,
+            combinedGenBinning,
+            #regularize only between the two merged histograms
+            regularizations=range(1,len(genBinning)-2)+range(1+(len(genBinning)-1),len(genBinning)-2+(len(genBinning)-1)),
+            dataCovariance=combinedCovarianceMatrix,
+            scanOutput=os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_tauScan"),
+            fixedTau=None
+        )
+        #draw unfolded hist
+        self.module("Drawing").plotDataHistogram(combinedNominalGenHist,combinedUnfoldedHist,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_unfoldedHist")
+        )
+        self.module("Drawing").drawHistogramMatrix(
+            combinedUnfoldedCovariance, 
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_unfoldedCovariance"), 
+            xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            yaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            zaxis="covariance"
+        )
+        combinedUnfoldedCorrelation = self.module("Utils").calculateCorrelations(combinedUnfoldedCovariance)
+        self.module("Drawing").drawHistogramMatrix(
+            combinedUnfoldedCorrelation,
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_unfoldedCorrelation"), 
+            xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            yaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            zaxis="correlation"
+        )
+        
+        
+        for ibin in range(len(genBinning)-1):
+            unfoldedHists[1].SetBinContent(ibin+1,combinedUnfoldedHist.GetBinContent(ibin+1))
+            unfoldedHists[1].SetBinError(ibin+1,combinedUnfoldedHist.GetBinError(ibin+1))
+            unfoldedHists[-1].SetBinContent(ibin+1,combinedUnfoldedHist.GetBinContent(ibin+1+(len(genBinning)-1)))
+            unfoldedHists[-1].SetBinError(ibin+1,combinedUnfoldedHist.GetBinError(ibin+1+(len(genBinning)-1)))
+        
+        for charge in unfoldedHists.keys():
+            self.module("Drawing").plotDataHistogram(nominalGenHists[charge],unfoldedHists[charge],"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_unfoldedHist")
             )
-            #draw unfolded covariance/correlation
-            self.module("Drawing").drawHistogramMatrix(
-                unfoldedCovariance, 
-                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_unfoldedCovariance"), 
-                xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-                yaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-                zaxis="covariance"
-            )
-            unfoldedCorrelation = self.module("Utils").calculateCorrelations(unfoldedCovariance)
-            self.module("Drawing").drawHistogramMatrix(
-                unfoldedCorrelation, 
-                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_unfoldedCorrelation"), 
-                xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-                yaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-                zaxis="correlation"
-            )
+            
+            
+        genSum = nominalGenHists[1].Clone("sumGen")
+        genSum.Add(nominalGenHists[-1])
+        
+        histSum = self.module("Unfolding").calculateSum(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
+        self.module("Drawing").plotDataHistogram(genSum,histSum,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_sum_unfoldedHist")
+        )
+        histSumAlt = unfoldedHists[1].Clone("sumHistAlt")
+        histSumAlt.Add(unfoldedHists[-1])
+        self.module("Drawing").plotDataHistogram(genSum,histSumAlt,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_sumalt_unfoldedHist")
+        )
+        
+        
+        
+        '''
+        genRatio= nominalGenHists[-1].Clone("ratioGen")
+        genRatio.Divide(nominalGenHists[1])
+        histRatio = self.module("Unfolding").calculateRatio(unfoldedHists[-1],unfoldedHists[1],combinedUnfoldedCovariance)
+        self.module("Drawing").plotDataHistogram(genRatio,histRatio,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratio_unfoldedHist")
+        )
+        histRatioAlt = unfoldedHists[-1].Clone("ratioHistAlt")
+        histRatioAlt.Divide(unfoldedHists[1])
+        self.module("Drawing").plotDataHistogram(genRatio,histRatioAlt,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratioalt_unfoldedHist")
+        )
+        '''
+        
+        genRatio= nominalGenHists[1].Clone("ratioGen")
+        genRatio.Divide(genSum)
+        histRatioAlt = unfoldedHists[1].Clone("ratioHistAlt")
+        histRatioAlt.Divide(histSum)
+        self.module("Drawing").plotDataHistogram(genRatio,histRatioAlt,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratioalt_unfoldedHist")
+        )
+        
+        
+        
+        
+        
+        
+        
+        

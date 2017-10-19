@@ -100,20 +100,21 @@ class Unfolding(Module):
                 minGlobalCorrlation=rhos[0]
             for ibin in range(len(genBins)-1):
                 yvalues[ibin][i]=rhos[ibin]
-        cv = ROOT.TCanvas("cvScan","",800,600)
+        cv = ROOT.TCanvas("cvScan","",800,700)
         cv.SetLogx()
         cv.SetRightMargin(0.18)
         axis = ROOT.TH2F("axisScan",";#tau;#rho",50,xvalues[0],xvalues[-1],50,-1.1,1.1)
         axis.Draw("AXIS")
         rootObj =[]
-        legend = ROOT.TLegend(0.83,0.9,0.99,0.5)
+        legend = ROOT.TLegend(0.83,0.9,0.99,0.9-0.055*len(genBins))
         legend.SetFillColor(ROOT.kWhite)
         legend.SetBorderSize(0)
         legend.SetTextFont(42)
         for ibin in range(len(genBins)-2):
             graph = ROOT.TGraph(N,xvalues,yvalues[ibin+1])
-            graph.SetLineWidth(len(genBins)-ibin)
-            graph.SetLineColor(ROOT.kBlue-ibin+2)
+            graph.SetLineWidth(len(genBins)/2-ibin/2)
+            graph.SetLineColor(ROOT.kBlue-ibin/2+2)
+            graph.SetLineStyle(1+ibin%3)
             rootObj.append(graph)
             graph.Draw("SameL")
             legend.AddEntry(graph,"#rho (1,"+str(ibin+2)+")","L")
@@ -122,6 +123,12 @@ class Unfolding(Module):
         graph.SetLineColor(ROOT.kOrange+10)
         graph.SetLineStyle(2)
         rootObj.append(graph)
+        bestTauLine = ROOT.TLine(bestTauAtMinCorrelation,-1.1,bestTauAtMinCorrelation,1.1)
+        rootObj.append(bestTauLine)
+        bestTauLine.SetLineWidth(2)
+        bestTauLine.SetLineStyle(2)
+        bestTauLine.SetLineColor(ROOT.kGray+1)
+        bestTauLine.Draw("SameL")
         graph.Draw("SameL")
         legend.AddEntry(graph,"#bar{#rho}","L")
         legend.Draw("Same")
@@ -132,9 +139,86 @@ class Unfolding(Module):
             cv.Print(output+".png")
         return bestTauAtMinCorrelation
         
+        
+    def calculateSum(self,hist1,hist2,covariance):
+        if hist1.GetNbinsX()!=hist2.GetNbinsX():
+            self._logger.critical("Cannot sum histograms - different number of bins")
+            sys.exit(1)
+        if covariance.GetNbinsX()!=2*hist1.GetNbinsX() or covariance.GetNbinsY()!=2*hist1.GetNbinsX():
+            self._logger.critical("Cannot sum histograms - covariance matrix has wrong binning")
+            sys.exit(1)
+        N = hist1.GetNbinsX()
+        means = numpy.zeros(2*N)
+        cov = numpy.zeros((2*N,2*N))
+        for i in range(N):
+            means[i] = hist1.GetBinContent(i+1)
+            means[i+N] = hist2.GetBinContent(i+1)
+            
+        for i in range(2*N):
+            for j in range(2*N):
+                cov[i][j]=covariance.GetBinContent(i+1,j+1)
+                
+        NTOYS = 5000
+        numpy.random.seed(seed=12345)
+        toys = numpy.zeros((NTOYS,N))
+        
+
+        for itoy in range(NTOYS):
+            diced=numpy.random.multivariate_normal(mean=means,cov=cov)
+            for i in range(N):
+                toys[itoy][i]=diced[i]+diced[i+N]
+                
+        histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName())
+                
+        meanResult = numpy.mean(toys,axis=0)
+        covResult = numpy.cov(toys,rowvar=False)
+        
+        for i in range(N):
+            histResult.SetBinContent(i+1,meanResult[i])
+            histResult.SetBinError(i+1,math.sqrt(covResult[i][i]))
+        return histResult
+        
     
+    def calculateRatio(self,hist1,hist2,covariance):
+        if hist1.GetNbinsX()!=hist2.GetNbinsX():
+            self._logger.critical("Cannot sum histograms - different number of bins")
+            sys.exit(1)
+        if covariance.GetNbinsX()!=2*hist1.GetNbinsX() or covariance.GetNbinsY()!=2*hist1.GetNbinsX():
+            self._logger.critical("Cannot sum histograms - covariance matrix has wrong binning")
+            sys.exit(1)
+        N = hist1.GetNbinsX()
+        means = numpy.zeros(2*N)
+        cov = numpy.zeros((2*N,2*N))
+        for i in range(N):
+            means[i] = hist1.GetBinContent(i+1)
+            means[i+N] = hist2.GetBinContent(i+1)
+            
+        for i in range(2*N):
+            for j in range(2*N):
+                cov[i][j]=covariance.GetBinContent(i+1,j+1)
+                
+        NTOYS = 5000
+        numpy.random.seed(seed=12345)
+        toys = numpy.zeros((NTOYS,N))
+        
+
+        for itoy in range(NTOYS):
+            diced=numpy.random.multivariate_normal(mean=means,cov=cov)
+            for i in range(N):
+                toys[itoy][i]=diced[i]/diced[i+N]
+                
+        histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName())
+                
+        meanResult = numpy.mean(toys,axis=0)
+        covResult = numpy.cov(toys,rowvar=False)
+        
+        for i in range(N):
+            histResult.SetBinContent(i+1,meanResult[i])
+            histResult.SetBinError(i+1,math.sqrt(covResult[i][i]))
+        return histResult
+            
     
-    def unfold(self,responseMatrix,data,genBinning,dataCovariance=None,scanOutput=None,fixedTau=None):
+    def unfold(self,responseMatrix,data,genBinning,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
 
         responseMatrixReweighted = responseMatrix.Clone(responseMatrix.GetName()+"Reweighted")
@@ -149,6 +233,10 @@ class Unfolding(Module):
         '''
         
         tunfold = ROOT.PyUnfold(responseMatrixReweighted)
+        self._logger.info("Regularize the following bins: "+str(regularizations))
+        for reg in regularizations:
+            tunfold.addRegularization(reg)
+            
         if (tunfold.setData(data,dataCovariance)>=10000):
             self._logger.critical("TUnfold indicates a fatal error")
             sys.exit(1)

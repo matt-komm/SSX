@@ -36,7 +36,7 @@ class PyUnfold
     public:
 
         PyUnfold(TH2* responseHist):
-            _tunfold(responseHist,TUnfold::kHistMapOutputHoriz,TUnfold::kRegModeCurvature),
+            _tunfold(responseHist,TUnfold::kHistMapOutputHoriz,TUnfold::kRegModeNone),
             _responseHist(responseHist),
             _dataCovariance(nullptr),
             _dataCovarianceInv(nullptr)
@@ -44,6 +44,15 @@ class PyUnfold
             _tunfold.SetBias(responseHist->ProjectionX());
         }
         
+        void addRegularization(int binCenter)
+        {
+            _tunfold.RegularizeCurvature(
+                binCenter-1, //left
+	            binCenter, //center
+	            binCenter+1 //right
+            );
+        }
+                
         void addBackground(const TH1* background, const char* name, double scale=1.0, double error=0.00001)
         {
             _backgroundNames.push_back(name);

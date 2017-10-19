@@ -135,9 +135,10 @@ class Drawing(Module):
         
     
     def drawHistogramMatrix(self,histMatrix, output, xaxis="",yaxis="",zaxis="",autoscaling=True):
-        ROOT.gStyle.SetPaintTextFormat("3.1f")
+        ROOT.gStyle.SetPaintTextFormat("3.0f")
         cvResponse = ROOT.TCanvas("cvResponse","",800,700)
         cvResponse.SetRightMargin(0.19)
+        
         cvResponse.SetLeftMargin(0.14)
         cvResponse.SetBottomMargin(0.125)
         
@@ -159,12 +160,12 @@ class Drawing(Module):
         order = 0
         if autoscaling:
             order = math.floor(math.log10(hist.GetMaximum()))-2
-            print hist,hist.GetMaximum(),order
             hist.Scale(10**(-order))
             
         ymax = 1.1*hist.GetMaximum()
-        hist.GetZaxis().Set(50,0,ymax)
-        hist.GetZaxis().SetRangeUser(0,ymax)
+        ymin = hist.GetMinimum()
+        hist.GetZaxis().Set(50,ymin,ymax)
+        hist.GetZaxis().SetRangeUser(ymin,ymax)
         hist.SetMarkerSize(1.9)
         hist.Draw("colz text")
         
