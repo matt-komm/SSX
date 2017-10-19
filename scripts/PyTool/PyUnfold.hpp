@@ -18,16 +18,6 @@
 #include <string>
 #include <stdexcept>
 
-class Utils
-{
-    private:
-        Utils() {}
-        virtual ~Utils() {}
-    public:
-        static TMatrixD convert2DHistToMatrix(const TH2* hist);
-        static std::vector<double> getBinByBinCorrelations(const TH2* hist);
-
-};
 
 class PyUnfold
 {
@@ -38,6 +28,8 @@ class PyUnfold
         std::vector<const TH1*> _backgroundHists;
         
         const TH1* _dataHist;
+        const TH2* _dataCovariance;
+        TH2* _dataCovarianceInv;
         const TH2* _responseHist;
     
 
@@ -45,7 +37,9 @@ class PyUnfold
 
         PyUnfold(TH2* responseHist):
             _tunfold(responseHist,TUnfold::kHistMapOutputHoriz,TUnfold::kRegModeCurvature),
-            _responseHist(responseHist)
+            _responseHist(responseHist),
+            _dataCovariance(nullptr),
+            _dataCovarianceInv(nullptr)
         {
             _tunfold.SetBias(responseHist->ProjectionX());
         }
@@ -57,11 +51,36 @@ class PyUnfold
             _tunfold.SubtractBackground(background,name,scale,error);
         }
         
-        void setData(const TH1* data)
+        double setData(const TH1* data, const TH2* dataCovariance=nullptr)
         {
             _dataHist=data;
-            _tunfold.SetInput(data);
-            
+            _dataCovariance = dataCovariance;
+            if (_dataCovarianceInv)
+            {
+                delete _dataCovarianceInv;
+            }
+            _dataCovarianceInv = nullptr;
+            if (_dataCovariance!=nullptr)
+            {
+                TMatrixD covarianceMatrix = PyUtils::convert2DHistToMatrix(dataCovariance);
+                TMatrixD covarianceMatrixInv = covarianceMatrix.Invert();
+                _dataCovarianceInv = (TH2*)dataCovariance->Clone();
+                for (int ibin = 0; ibin < _dataCovarianceInv->GetXaxis()->GetNbins(); ++ibin)
+                {
+                    for (int jbin = 0; jbin < _dataCovarianceInv->GetYaxis()->GetNbins(); ++jbin)
+                    {
+                        _dataCovarianceInv->SetBinContent(ibin+1,jbin+1,covarianceMatrixInv[ibin][jbin]);
+                    }
+                }
+            }
+            /*SetInput(
+                const TH1 *input, 
+                Double_t scaleBias,
+                Double_t oneOverZeroError,
+                const TH2 *hist_vyy,
+                const TH2 *hist_vyy_inv
+            )*/
+            return _tunfold.SetInput(data,1.0,0.0,_dataCovariance,_dataCovarianceInv);
         }
         
         inline int getNRecoBins() const
@@ -101,14 +120,23 @@ class PyUnfold
                 throw std::runtime_error("Given output histogram to store the result is null");
             }
         
-            _tunfold.DoUnfold(tau,_dataHist,1.0);
+            _tunfold.DoUnfold(tau);
             _tunfold.GetOutput(output);
             
             if (covariance!=nullptr)
             {
 	            if (includeStat)
 	            {
-	                _tunfold.GetEmatrixInput(covariance, 0, false);
+	                /*
+	                TMatrixDSparse dataCovarianceMatrix = PyUtils::convert2DHistToMatrixSparse(_dataCovariance);
+	                _tunfold.GetEmatrixFromVyy(
+	                    &dataCovarianceMatrix,
+		                covariance,
+		                0,
+		                false
+	                );
+	                */
+	                _tunfold.GetEmatrixInput(covariance);
 	            }
 	            if (includeMCStat)
 	            {

@@ -132,33 +132,41 @@ class Drawing(Module):
         cvHist.Print(output+".pdf")
         cvHist.Print(output+".png")
         
-    '''
-    def drawResponseMatrix(self,responseMatrix, varTitle, outputName):
-        ROOT.gStyle.SetPaintTextFormat("3.0f")
+        
+    
+    def drawHistogramMatrix(self,histMatrix, output, xaxis="",yaxis="",zaxis="",autoscaling=True):
+        ROOT.gStyle.SetPaintTextFormat("3.1f")
         cvResponse = ROOT.TCanvas("cvResponse","",800,700)
         cvResponse.SetRightMargin(0.19)
         cvResponse.SetLeftMargin(0.14)
         cvResponse.SetBottomMargin(0.125)
-        responseMatrixNorm = self.module("Utils").normalizeByTransistionProbability(responseMatrix)
-        responseMatrixNorm.GetXaxis().SetTitle("Parton-level "+varTitle)
-        responseMatrixNorm.GetYaxis().SetTitle("Reconstructed "+varTitle)
-        responseMatrixNorm.GetZaxis().SetTitle("Transition probability (%)")
+        
+        hist = histMatrix.Clone(histMatrix.GetName()+"drawing")
+        
+        hist.GetXaxis().SetTitle(xaxis)
+        hist.GetYaxis().SetTitle(yaxis)
+        hist.GetZaxis().SetTitle(zaxis)
         
         
-        responseMatrixNorm.GetXaxis().SetTitleSize(36)
-        responseMatrixNorm.GetYaxis().SetTitleSize(36)
-        responseMatrixNorm.GetZaxis().SetTitleSize(36)
+        hist.GetXaxis().SetTitleSize(36)
+        hist.GetYaxis().SetTitleSize(36)
+        hist.GetZaxis().SetTitleSize(36)
         
-        responseMatrixNorm.GetXaxis().SetLabelSize(33)
-        responseMatrixNorm.GetYaxis().SetLabelSize(33)
-        responseMatrixNorm.GetZaxis().SetLabelSize(33)
-        
-        responseMatrixNorm.Scale(100.0)
-        responseMatrixNorm.SetMarkerSize(1.9)
-        responseMatrixNorm.GetZaxis().Set(50,0,50)
-        responseMatrixNorm.GetZaxis().SetRangeUser(0,50)
-        #responseMatrixNorm.SetMarkerColor(ROOT.kWhite)
-        responseMatrixNorm.Draw("colz text")
+        hist.GetXaxis().SetLabelSize(33)
+        hist.GetYaxis().SetLabelSize(33)
+        hist.GetZaxis().SetLabelSize(33)
+
+        order = 0
+        if autoscaling:
+            order = math.floor(math.log10(hist.GetMaximum()))-2
+            print hist,hist.GetMaximum(),order
+            hist.Scale(10**(-order))
+            
+        ymax = 1.1*hist.GetMaximum()
+        hist.GetZaxis().Set(50,0,ymax)
+        hist.GetZaxis().SetRangeUser(0,ymax)
+        hist.SetMarkerSize(1.9)
+        hist.Draw("colz text")
         
         pCMS=ROOT.TPaveText(cvResponse.GetLeftMargin(),0.94,cvResponse.GetLeftMargin(),0.94,"NDC")
         pCMS.SetFillColor(ROOT.kWhite)
@@ -178,12 +186,23 @@ class Drawing(Module):
         pPreliminary.AddText("Simulation")
         pPreliminary.Draw("Same")
         
+        pOrder=None
+        if autoscaling and order!=0.:
+            pOrder=ROOT.TPaveText(1-cvResponse.GetRightMargin(),0.94,1-cvResponse.GetRightMargin(),0.94,"NDC")
+            pOrder.SetFillColor(ROOT.kWhite)
+            pOrder.SetBorderSize(0)
+            pOrder.SetTextFont(43)
+            pOrder.SetTextSize(36)
+            pOrder.SetTextAlign(31)
+            pOrder.AddText("#times10#lower[-0.7]{#scale[0.7]{%2.0f}}"%(order))
+            pOrder.Draw("Same")
+        
         cvResponse.Update()
         
-        cvResponse.Print(os.path.join(self.module("Utils").getOutputFolder(),outputName+".png"))
-        cvResponse.Print(os.path.join(self.module("Utils").getOutputFolder(),outputName+".pdf"))
+        cvResponse.Print(output+".png")
+        cvResponse.Print(output+".pdf")
         
-        
+    '''
     def drawBiasTest(self,unfoldedHist,genHist,varTitle,outputName):
         cvUnfold = ROOT.TCanvas("cvUnfold","",800,700)
 

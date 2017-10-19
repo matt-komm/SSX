@@ -4,6 +4,7 @@
 #include "TObject.h"
 #include "TH2.h"
 #include "TMatrixD.h"
+#include "TMatrixDSparse.h"
 #include "TMath.h"
 
 #include <vector>

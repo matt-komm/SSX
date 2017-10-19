@@ -88,9 +88,10 @@ class Unfolding(Module):
         yvalues = numpy.zeros((len(genBins)-1,N))
         bestTauAtMinCorrelation = xvalues[0]
         minGlobalCorrlation = 1.0
+        self._logger.info("Scan for regularization: ["+str(xvalues[0])+", "+str(xvalues[-1])+"]")
         for i in range(N):
-            covariance = ROOT.TH2D("correlation","",len(genBins)-1,genBins,len(genBins)-1,genBins)
-            unfoldedHist = ROOT.TH1D("unfoldedHist","",len(genBins)-1,genBins)
+            covariance = ROOT.TH2D("correlation"+str(random.random())+str(i),"",len(genBins)-1,genBins,len(genBins)-1,genBins)
+            unfoldedHist = ROOT.TH1D("unfoldedHist"+str(random.random())+str(i),"",len(genBins)-1,genBins)
             unfoldedHist.Sumw2()
             tunfold.doUnfolding(xvalues[i],unfoldedHist,covariance)
             rhos = ROOT.PyUtils.getBinByBinCorrelations(covariance) #rho[0] -> global correlation
@@ -133,7 +134,7 @@ class Unfolding(Module):
         
     
     
-    def unfold(self,responseMatrix,data,genBinning,scanOutput=None,fixedTau=None):
+    def unfold(self,responseMatrix,data,genBinning,dataCovariance=None,scanOutput=None,fixedTau=None):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
 
         responseMatrixReweighted = responseMatrix.Clone(responseMatrix.GetName()+"Reweighted")
@@ -148,7 +149,9 @@ class Unfolding(Module):
         '''
         
         tunfold = ROOT.PyUnfold(responseMatrixReweighted)
-        tunfold.setData(data)
+        if (tunfold.setData(data,dataCovariance)>=10000):
+            self._logger.critical("TUnfold indicates a fatal error")
+            sys.exit(1)
 
         if fixedTau==None:
             bestTau = self.module("Unfolding").doScan(tunfold,genBinning,scanOutput)
@@ -158,10 +161,16 @@ class Unfolding(Module):
         self._logger.info("Found tau for regularization: "+str(bestTau))
         
         
-        covariance = ROOT.TH2D("correlation","",len(genBinning)-1,genBinning,len(genBinning)-1,genBinning)
+        covariance = ROOT.TH2D("covariance","",len(genBinning)-1,genBinning,len(genBinning)-1,genBinning)
         unfoldedHist = ROOT.TH1D("unfoldedHist","",len(genBinning)-1,genBinning)
         unfoldedHist.Sumw2()
+        if (tunfold.setData(data,dataCovariance)>=10000):
+            self._logger.critical("TUnfold indicates a fatal error")
+            sys.exit(1)
         tunfold.doUnfolding(bestTau,unfoldedHist,covariance,True,False,False)
+        
+        for ibin in range(unfoldedHist.GetNbinsX()):
+            unfoldedHist.SetBinError(ibin+1,math.sqrt(covariance.GetBinContent(ibin+1,ibin+1)))
         '''
         for ibin in range(unfoldedHist.GetNbinsX()):
             w = 1.0/genHist.GetBinContent(ibin+1)*genHist.Integral()/genHist.GetNbinsX()

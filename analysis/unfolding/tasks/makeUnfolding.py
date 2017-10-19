@@ -63,26 +63,57 @@ class RunUnfolding(Module.getClass("Program")):
         nominalRecoHists = {}
         nominalGenHists = {}
         measuredRecoHists = {}
+        measuredRecoCovariances = {}
         unfoldedHists = {}
+        recoBinning = self.module("Unfolding").getRecoBinning()
+        genBinning = self.module("Unfolding").getGenBinning()
         for charge in responseMatrices.keys():
             nominalRecoHists[charge] = responseMatrices[charge].ProjectionY()
             nominalGenHists[charge] = responseMatrices[charge].ProjectionX()
             measuredRecoHists[charge] = nominalRecoHists[charge].Clone(nominalRecoHists[charge].GetName()+"meas")
+            measuredRecoCovariances[charge] = ROOT.TH2F(
+                "covariance"+str(charge),"",
+                len(recoBinning)-1,recoBinning,
+                len(recoBinning)-1,recoBinning
+            )
             #scale to fit result
-            for ibin in range(len(self.module("Unfolding").getRecoBinning())-1):
+            for ibin in range(len(recoBinning)-1):
                 signalFitResult = fitResult["parameters"]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(ibin)]
                 measuredRecoHists[charge].SetBinContent(ibin+1,nominalRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["mean_fit"])
                 measuredRecoHists[charge].SetBinError(ibin+1,nominalRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["unc_fit"])
+                for jbin in range(len(recoBinning)-1):
+                    signalFitResultCov = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(ibin)]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(jbin)]
+                    measuredRecoCovariances[charge].SetBinContent(ibin+1,jbin+1,nominalRecoHists[charge].GetBinContent(ibin+1)*nominalRecoHists[charge].GetBinContent(jbin+1)*signalFitResultCov)
+                    #sanity check
+                    if ibin==jbin and math.fabs(measuredRecoHists[charge].GetBinError(ibin+1)**2-measuredRecoCovariances[charge].GetBinContent(ibin+1,jbin+1))/measuredRecoCovariances[charge].GetBinContent(ibin+1,jbin+1)>0.0001:
+                        self._logger.critical("Diagonal elements of covariance matrix do not align with histogram errors")
+                        sys.exit(1)
             #draw reco hists
             self.module("Drawing").plotDataHistogram(nominalRecoHists[charge],measuredRecoHists[charge],"reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoHist")
             )
+            #draw input covariance,correlation
+            self.module("Drawing").drawHistogramMatrix(
+                measuredRecoCovariances[charge], 
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoCovariance"), 
+                xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+                yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+                zaxis="covariance"
+            )
+            measuredRecoCorrelations = self.module("Utils").calculateCorrelations(measuredRecoCovariances[charge])
+            self.module("Drawing").drawHistogramMatrix(
+                measuredRecoCorrelations, 
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoCorrelation"), 
+                xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+                yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+                zaxis="correlation"
+            )
             #unfolding
-            
-            unfoldedHist,covariance,bestTau = self.module("Unfolding").unfold(
+            unfoldedHist,unfoldedCovariance,bestTau = self.module("Unfolding").unfold(
                 responseMatrices[charge],
                 measuredRecoHists[charge],
                 self.module("Unfolding").getGenBinning(),
+                dataCovariance=measuredRecoCovariances[charge],
                 scanOutput=os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_tauScan"),
                 fixedTau=None
             )
@@ -90,4 +121,19 @@ class RunUnfolding(Module.getClass("Program")):
             self.module("Drawing").plotDataHistogram(nominalGenHists[charge],unfoldedHist,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_unfoldedHist")
             )
-        
+            #draw unfolded covariance/correlation
+            self.module("Drawing").drawHistogramMatrix(
+                unfoldedCovariance, 
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_unfoldedCovariance"), 
+                xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+                yaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+                zaxis="covariance"
+            )
+            unfoldedCorrelation = self.module("Utils").calculateCorrelations(unfoldedCovariance)
+            self.module("Drawing").drawHistogramMatrix(
+                unfoldedCorrelation, 
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_unfoldedCorrelation"), 
+                xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+                yaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+                zaxis="correlation"
+            )
