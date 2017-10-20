@@ -205,7 +205,7 @@ class Unfolding(Module):
         for itoy in range(NTOYS):
             diced=numpy.random.multivariate_normal(mean=means,cov=cov)
             for i in range(N):
-                toys[itoy][i]=diced[i]/diced[i+N]
+                toys[itoy][i]=diced[i]/(diced[i]+diced[i+N])
                 
         histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName())
                 

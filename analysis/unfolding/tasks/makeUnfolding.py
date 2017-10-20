@@ -308,20 +308,20 @@ class RunUnfolding(Module.getClass("Program")):
         
         
         
-        '''
-        genRatio= nominalGenHists[-1].Clone("ratioGen")
-        genRatio.Divide(nominalGenHists[1])
-        histRatio = self.module("Unfolding").calculateRatio(unfoldedHists[-1],unfoldedHists[1],combinedUnfoldedCovariance)
+        
+        genRatio= nominalGenHists[1].Clone("ratioGen")
+        genRatio.Divide(genSum)
+        histRatio = self.module("Unfolding").calculateRatio(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
         self.module("Drawing").plotDataHistogram(genRatio,histRatio,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratio_unfoldedHist")
         )
-        histRatioAlt = unfoldedHists[-1].Clone("ratioHistAlt")
-        histRatioAlt.Divide(unfoldedHists[1])
+        histRatioAlt = unfoldedHists[1].Clone("ratioHistAlt")
+        histRatioAlt.Divide(histSumAlt)
         self.module("Drawing").plotDataHistogram(genRatio,histRatioAlt,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratioalt_unfoldedHist")
         )
-        '''
         
+        '''
         genRatio= nominalGenHists[1].Clone("ratioGen")
         genRatio.Divide(genSum)
         histRatioAlt = unfoldedHists[1].Clone("ratioHistAlt")
@@ -329,7 +329,7 @@ class RunUnfolding(Module.getClass("Program")):
         self.module("Drawing").plotDataHistogram(genRatio,histRatioAlt,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratioalt_unfoldedHist")
         )
-        
+        '''
         
         
         
