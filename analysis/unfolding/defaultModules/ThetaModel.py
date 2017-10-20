@@ -129,7 +129,7 @@ class ThetaModel(Module):
            
     
     def getBDTtchan(self):
-        return "(TMath::TanH(3.*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.07)))"
+        return "(TMath::TanH(4.*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.07)))"
         
     def getBDTttw(self):
         return "(TMath::TanH(4.5*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.07)))"
@@ -142,9 +142,9 @@ class ThetaModel(Module):
         observables = {
             "2j1t": {
                 "weight":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1),
-                "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*((0.5*"+tch+"+0.5*"+ttw+"<0.)*(80.+30.*"+ttw+")+(0.5*"+tch+"+0.5*"+ttw+">0.)*(110.+30.*"+tch+")))",
-                "bins":28,
-                "range":[-140.,140.]
+                "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*((1.0*"+tch+"+0.0*"+ttw+"<0.)*(100.+50.*"+ttw+")+(1.0*"+tch+"+0.0*"+ttw+">0.)*(150.+50.*"+tch+")))",
+                "bins":32,
+                "range":[-200.,200.]
             },
             #"3j1t": {
             #    "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(1),
@@ -155,7 +155,7 @@ class ThetaModel(Module):
             "3j2t": {
                 "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
                 "variable":charge+"*SingleTop_1__mtw_beforePz",
-                "bins":10,
+                "bins":20,
                 "range":[-200.,200.]
             },
         }
