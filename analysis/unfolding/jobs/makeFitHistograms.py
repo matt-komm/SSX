@@ -36,8 +36,8 @@ config.writeLogsOnWN = True
 
 config.separateStdoutStderrLogs = True
 
-config.stdoutFilename = "log${SLURM_ARRAY_TASK_ID}.out"
-config.stderrFilename = "log${SLURM_ARRAY_TASK_ID}.err"
+config.stdoutFilename = "log_fitHists${SLURM_ARRAY_TASK_ID}.out"
+config.stderrFilename = "log_fitHists${SLURM_ARRAY_TASK_ID}.err"
 config.stageoutLogs = True
 
 config.stageoutLogsDir = config.sbatch_workdir + '/log'
@@ -59,7 +59,12 @@ for channel in ["mu","ele"]:
             "-m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
         ])
         #nominal/binned per obs
-        for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton","setup/TopCosParton"]:
+        for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton"]:
+            for ibin in range(5):
+                config.inputParams.append([
+                    "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c bin:"+str(ibin)
+                ])
+        for unfoldingSetup in ["setup/TopCosParton"]:
             for ibin in range(6):
                 config.inputParams.append([
                     "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c bin:"+str(ibin)
@@ -92,7 +97,12 @@ for channel in ["mu","ele"]:
             ])
             
             #sys/binned per obs
-            for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton","setup/TopCosParton"]:
+            for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton"]:
+                for ibin in range(5):
+                    config.inputParams.append([
+                        "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c bin:"+str(ibin)
+                    ])
+            for unfoldingSetup in ["setup/TopCosParton"]:
                 for ibin in range(6):
                     config.inputParams.append([
                         "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c bin:"+str(ibin)

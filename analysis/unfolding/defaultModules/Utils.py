@@ -18,15 +18,6 @@ class Utils(Module):
     def getUncertaintyName(self):
         return "nominal"
         
-    def maginalizedUncertainties(self):
-        return [
-            ["qcdUp","qcdDown"]
-        ]
-        
-    def externalizedUncertainties(self):
-        return [
-            #["qcdUp","qcdDown"]
-        ]
         
     def getOutputFolder(self,subFolder=""):
         return os.path.join(os.getcwd(),"result",subFolder)
