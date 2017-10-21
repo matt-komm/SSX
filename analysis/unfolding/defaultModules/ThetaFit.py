@@ -122,7 +122,10 @@ class ThetaFit(Module):
         f = open(fullPath,"w")
         json.dump(fitResult,f)
         f.close()
-        
+        f = open(fullPath+".yields","w")
+        for p in sorted(fitResult["parameters"].keys()):
+            f.write("%30s: %6.3f +- %6.3f\n"%(p,fitResult["parameters"][p]["mean_fit"],fitResult["parameters"][p]["unc_fit"]))
+        f.close()
     def loadFitResult(self,fullPath):
         f = open(fullPath)
         fitResult = json.load(f)
