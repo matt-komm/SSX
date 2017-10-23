@@ -31,64 +31,131 @@ class Drawing(Module):
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
-    def drawPosterior(self,fitResult,outputFile,selection=[],ranges=[-2,2],default=None):
+    def drawPosterior(self,fitResultDict,outputFile,selection=[],ranges=[-2,2],default=None):
+        colors = {"comb":ROOT.kTeal+4,"mu":ROOT.kAzure+2,"ele":ROOT.kOrange+7}
+        fitResultSelectedDict = {}
+        Nfits = len(fitResultDict.keys())
+        parameters = []
+        for fitName in fitResultDict.keys():
+            fitResultSelectedDict[fitName] = {"parameters": {}}
+            if len(selection)==0:
+                fitResultSelectedDict[fitName] = fitResultDict[fitName]
+                parameterName+=fitResultDict[fitName]["parameters"].keys()
+            else:
+                for ipar,parameterName in enumerate(sorted(fitResultDict[fitName]["parameters"].keys())):
+                    for select in selection:
+                        regex = re.compile(select.replace("*","[A-Za-z0-9]*"))
+                        if regex.match(parameterName):
+                            parameters+=[parameterName]
+                            fitResultSelectedDict[fitName]["parameters"][parameterName]=fitResultDict[fitName]["parameters"][parameterName]
+                            break
+        parameters = sorted(list(set(parameters)))
+        Npar = len(parameters)
         
-        fitResultSelected = {"parameters": {}}
-        if len(selection)==0:
-            fitResultSelected = fitResult
-        else:
-            for ipar,parameterName in enumerate(sorted(fitResult["parameters"].keys())):
-                for select in selection:
-                    regex = re.compile(select.replace("*","[A-Za-z0-9]*"))
-                    if regex.match(parameterName):
-                        fitResultSelected["parameters"][parameterName]=fitResult["parameters"][parameterName]
-                        break
-        
-        Npar = len(fitResultSelected["parameters"].keys())
             
         ROOT.gStyle.SetPaintTextFormat("4.0f")
-        cv = ROOT.TCanvas("corr","",800,400+Npar*25)
+        cv = ROOT.TCanvas("corr","",800,150+Npar*50)
+        cv.SetTopMargin(50./(150+Npar*50))
         cv.SetLeftMargin(0.35)
         cv.SetRightMargin(0.04)
-        cv.SetBottomMargin(100./(400+Npar*25))
-        axis = ROOT.TH2F("axis",";Parameter;",50,ranges[0],ranges[1],Npar,0,Npar)
-        axis.GetXaxis().SetTickLength(30./(400+Npar*25))
+        cv.SetBottomMargin(100./(150+Npar*50))
+        axis = ROOT.TH2F("axis",";Fit parameter;",50,ranges[0],ranges[1],Npar,0,Npar)
+        axis.GetXaxis().SetTickLength(30./(150+Npar*50))
         axis.GetYaxis().SetTickLength(0.02)
-        for ipar,parameterName in enumerate(sorted(fitResultSelected["parameters"].keys())):
+        for ipar,parameterName in enumerate(sorted(parameters)):
             axis.GetYaxis().SetBinLabel(ipar+1,parameterName.replace("_"," "))
             
         axis.Draw("AXIS")
         rootObj = []
-        for ipar,parameterName in enumerate(sorted(fitResultSelected["parameters"].keys())):
-            priorMean = fitResultSelected["parameters"][parameterName]["mean_prior"]
-            priorUnc = fitResultSelected["parameters"][parameterName]["unc_prior"]
-            priorBox = ROOT.TBox(max(ranges[0],priorMean-priorUnc),ipar+0.25,min(ranges[1],priorMean+priorUnc),ipar+0.75)
-            priorBox.SetFillColor(ROOT.kGray)
-            rootObj.append(priorBox)
-            priorBox.Draw("FSame")
-            
+        for ifit, fitName in enumerate(sorted(fitResultSelectedDict.keys())):
+            for ipar,parameterName in enumerate(parameters):
+                if not fitResultSelectedDict[fitName]["parameters"].has_key(parameterName):
+                    continue
+                priorMean = fitResultSelectedDict[fitName]["parameters"][parameterName]["mean_prior"]
+                priorUnc = fitResultSelectedDict[fitName]["parameters"][parameterName]["unc_prior"]
+                priorBox = ROOT.TBox(
+                    max(ranges[0],priorMean-priorUnc),
+                    ipar+0.15,
+                    min(ranges[1],priorMean+priorUnc),
+                    ipar+0.85
+                )
+                priorBox.SetFillColor(ROOT.kGray)
+                rootObj.append(priorBox)
+                priorBox.Draw("FSame")
+                
         if default!=None:
             defaultLine = ROOT.TLine(default,0,default,Npar)
-            defaultLine.SetLineColor(ROOT.kOrange+7)
+            defaultLine.SetLineColor(ROOT.kBlack)
             defaultLine.SetLineWidth(2)
+            defaultLine.SetLineStyle(2)
             defaultLine.Draw("LSame")
             rootObj.append(defaultLine)
         ROOT.gPad.RedrawAxis()
 
-        for ipar,parameterName in enumerate(sorted(fitResultSelected["parameters"].keys())):
-            fitMean = fitResultSelected["parameters"][parameterName]["mean_fit"]
-            fitUnc = fitResultSelected["parameters"][parameterName]["unc_fit"]
-            fitLine = ROOT.TLine(max(ranges[0],fitMean-fitUnc),ipar+0.5,min(ranges[1],fitMean+fitUnc),ipar+0.5)
-            fitLine.SetLineWidth(1)
+        for ifit, fitName in enumerate(sorted(fitResultSelectedDict.keys())):
+            for ipar,parameterName in enumerate(parameters):
+                if not fitResultSelectedDict[fitName]["parameters"].has_key(parameterName):
+                    continue
+                fitMean = fitResultSelectedDict[fitName]["parameters"][parameterName]["mean_fit"]
+                fitUnc = fitResultSelectedDict[fitName]["parameters"][parameterName]["unc_fit"]
+                fitLine = ROOT.TLine(
+                    max(ranges[0],fitMean-fitUnc),
+                    ipar+0.5+0.7*(ifit-(Nfits-1)/2.)/Nfits,
+                    min(ranges[1],fitMean+fitUnc),
+                    ipar+0.5+0.7*(ifit-(Nfits-1)/2.)/Nfits
+                )
+                fitLine.SetLineWidth(2)
+                fitLine.SetLineColor(colors[fitName])
+                rootObj.append(fitLine)
+                fitLine.Draw("LSame")
+                fitMarker = ROOT.TMarker(
+                    fitMean,
+                    ipar+0.5+0.7*(ifit-(Nfits-1)/2.)/Nfits,
+                    20
+                )
+                fitMarker.SetMarkerSize(1.3)
+                fitMarker.SetMarkerColor(colors[fitName])
+                rootObj.append(fitMarker)
+                fitMarker.Draw("PSame")
+       
+        
+        
+        for ifit, fitName in enumerate(sorted(fitResultSelectedDict.keys())): 
+            fitLine = ROOT.TLine(
+                ranges[0]+(ifit+0.15)*(ranges[1]-ranges[0])/3.-0.1*(ranges[1]-ranges[0])/3.,
+                len(parameters)+0.5,
+                ranges[0]+(ifit+0.15)*(ranges[1]-ranges[0])/3.+0.1*(ranges[1]-ranges[0])/3.,
+                len(parameters)+0.5,
+            )
+            fitLine.SetLineWidth(2)
+            fitLine.SetLineColor(colors[fitName])
             rootObj.append(fitLine)
             fitLine.Draw("LSame")
-            fitMarker = ROOT.TMarker(fitMean,ipar+0.5,20)
+            fitMarker = ROOT.TMarker(
+                ranges[0]+(ifit+0.15)*(ranges[1]-ranges[0])/3.,
+                len(parameters)+0.5,
+                20
+            )
             fitMarker.SetMarkerSize(1.3)
+            fitMarker.SetMarkerColor(colors[fitName])
             rootObj.append(fitMarker)
             fitMarker.Draw("PSame")
-       
+            
+            pText = ROOT.TPaveText(
+                ranges[0]+(ifit+0.15)*(ranges[1]-ranges[0])/3.+0.15*(ranges[1]-ranges[0])/3.,
+                len(parameters)+0.5,
+                ranges[0]+(ifit+0.15)*(ranges[1]-ranges[0])/3.+0.15*(ranges[1]-ranges[0])/3.,
+                len(parameters)+0.5,
+            )
+            rootObj.append(pText)
+            pText.SetFillStyle(0)
+            pText.SetTextFont(43)
+            pText.SetTextSize(30)
+            pText.SetTextAlign(12)
+            pText.AddText(fitName)
+            pText.Draw("Same")
+            
         cv.Print(outputFile)
-        
         
     def plotDataHistogram(self,nominalHist,measuredHist,title,output):
         
@@ -131,6 +198,145 @@ class Drawing(Module):
         
         cvHist.Print(output+".pdf")
         cvHist.Print(output+".png")
+        
+        
+        
+    def drawHistogramResponseAndEfficiency(self,histMatrix, output, title="",xaxis="",yaxis="",zaxis="transition probability (%)"):
+        ROOT.gStyle.SetPaintTextFormat("3.0f")
+        cvResponse = ROOT.TCanvas("cvResponse","",800,700)
+        cvResponse.Divide(1,2,0,0)
+        
+        cvResponse.GetPad(1).SetPad(0.0, 0.0, 1.0, 1.0)
+        cvResponse.GetPad(1).SetFillStyle(4000)
+        cvResponse.GetPad(2).SetPad(0.0, 0.00, 1.0,1.0)
+        cvResponse.GetPad(2).SetFillStyle(4000)
+        
+        cvxmin=0.14
+        cvxmax=0.74
+        cvymin=0.14
+        cvymax=0.92
+        resHeight=0.35
+            
+        for i in range(1,3):
+            #for the canvas:
+            cvResponse.GetPad(i).SetBorderMode(0)
+            cvResponse.GetPad(i).SetGridx(False)
+            cvResponse.GetPad(i).SetGridy(False)
+
+
+            #For the frame:
+            cvResponse.GetPad(i).SetFrameBorderMode(0)
+            cvResponse.GetPad(i).SetFrameBorderSize(1)
+            cvResponse.GetPad(i).SetFrameFillColor(0)
+            cvResponse.GetPad(i).SetFrameFillStyle(0)
+            cvResponse.GetPad(i).SetFrameLineColor(1)
+            cvResponse.GetPad(i).SetFrameLineStyle(1)
+            cvResponse.GetPad(i).SetFrameLineWidth(int(1))
+
+            # Margins:
+            cvResponse.GetPad(i).SetLeftMargin(cvxmin)
+            cvResponse.GetPad(i).SetRightMargin(1-cvxmax)
+            
+            # For the Global title:
+            cvResponse.GetPad(i).SetTitle("")
+            
+            # For the axis:
+            cvResponse.GetPad(i).SetTickx(1)  # To get tick marks on the opposite side of the frame
+            cvResponse.GetPad(i).SetTicky(1)
+
+            # Change for log plots:
+            cvResponse.GetPad(i).SetLogx(0)
+            cvResponse.GetPad(i).SetLogy(0)
+            cvResponse.GetPad(i).SetLogz(0)
+        
+        cvResponse.GetPad(2).SetTopMargin(1-cvymax)
+        cvResponse.GetPad(2).SetBottomMargin(resHeight+0.004)
+        cvResponse.GetPad(1).SetTopMargin(1-resHeight+0.004)
+        cvResponse.GetPad(1).SetBottomMargin(cvymin)
+        
+        cvResponse.cd(2)
+        #histMatrixGenAll = histMatrix.ProjectionX(histMatrix.GetName()+"all",0,-1)
+        histMatrixGenSelected = histMatrix.ProjectionX(histMatrix.GetName()+"sel",1,-1)
+        
+        for ibin in range(histMatrix.GetNbinsX()):
+            genSum = histMatrix.GetBinContent(ibin+1,0)
+            selSum = 0.0
+            for jbin in range(histMatrix.GetNbinsY()):
+                selSum+=histMatrix.GetBinContent(ibin+1,jbin+1)
+            print selSum,genSum
+            histMatrixGenSelected.SetBinContent(ibin+1,selSum/(genSum+selSum))
+        
+        #histMatrixGenSelected.Divide(histMatrixGenAll)
+        histMatrixGenSelected.Scale(100.)
+        hist = self.module("Utils").normalizeByTransistionProbability(histMatrix)
+        
+        histMatrixGenSelected.GetYaxis().SetTickLength(0.03/resHeight)
+        histMatrixGenSelected.GetYaxis().Set(50,0,1.2*histMatrixGenSelected.GetMaximum())
+        histMatrixGenSelected.GetYaxis().SetRangeUser(0,1.2*histMatrixGenSelected.GetMaximum())
+        histMatrixGenSelected.GetYaxis().SetNdivisions(804)
+        
+        hist.GetXaxis().SetTitle("")
+        histMatrixGenSelected.GetXaxis().SetTitle(xaxis)
+        histMatrixGenSelected.GetYaxis().SetTitle("eff. (%)")
+        hist.GetYaxis().SetTitle(yaxis)
+        hist.GetZaxis().SetTitle(zaxis)
+        
+        
+        histMatrixGenSelected.GetXaxis().SetTitleSize(36)
+        histMatrixGenSelected.GetYaxis().SetTitleSize(36)
+        hist.GetYaxis().SetTitleSize(36)
+        hist.GetZaxis().SetTitleSize(36)
+        
+        hist.GetXaxis().SetLabelSize(0)
+        histMatrixGenSelected.GetXaxis().SetLabelSize(33)
+        histMatrixGenSelected.GetYaxis().SetLabelSize(33)
+        hist.GetYaxis().SetLabelSize(33)
+        hist.GetZaxis().SetLabelSize(33)
+
+        hist.Scale(100.)
+            
+        ymax = 1.1*hist.GetMaximum()
+        ymin = hist.GetMinimum()
+        hist.GetZaxis().Set(50,ymin,ymax)
+        hist.GetZaxis().SetRangeUser(ymin,ymax)
+        hist.SetMarkerSize(1.9)
+        hist.Draw("colz text")
+        
+        pCMS=ROOT.TPaveText(cvxmin,0.94,cvxmin,0.94,"NDC")
+        pCMS.SetFillColor(ROOT.kWhite)
+        pCMS.SetBorderSize(0)
+        pCMS.SetTextFont(63)
+        pCMS.SetTextSize(36)
+        pCMS.SetTextAlign(11)
+        pCMS.AddText("CMS")
+        pCMS.Draw("Same")
+        
+        pPreliminary=ROOT.TPaveText(cvxmin+0.12,0.94,cvxmin+0.12,0.94,"NDC")
+        pPreliminary.SetFillColor(ROOT.kWhite)
+        pPreliminary.SetBorderSize(0)
+        pPreliminary.SetTextFont(53)
+        pPreliminary.SetTextSize(36)
+        pPreliminary.SetTextAlign(11)
+        pPreliminary.AddText("Simulation")
+        pPreliminary.Draw("Same")
+        
+
+        pTitle=ROOT.TPaveText(cvxmax,0.94,cvxmax,0.94,"NDC")
+        pTitle.SetFillColor(ROOT.kWhite)
+        pTitle.SetBorderSize(0)
+        pTitle.SetTextFont(43)
+        pTitle.SetTextSize(36)
+        pTitle.SetTextAlign(31)
+        pTitle.AddText(title)
+        pTitle.Draw("Same")
+        
+        cvResponse.cd(1)
+        histMatrixGenSelected.Draw("SameHIST")
+        
+        cvResponse.Update()
+        
+        cvResponse.Print(output+".png")
+        cvResponse.Print(output+".pdf") 
         
         
     

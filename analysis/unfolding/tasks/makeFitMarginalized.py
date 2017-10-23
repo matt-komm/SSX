@@ -15,6 +15,7 @@ class FitHistograms(Module.getClass("Program")):
     def execute(self):
         #mu,ele,comb
         channels = self.getOption("channels").split(",")
+        channelName = self.module("Samples").getChannelName(channels)
         self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
         histogramsPerChannelAndUncertainty = {}
@@ -109,18 +110,22 @@ class FitHistograms(Module.getClass("Program")):
             self.module("ThetaModel").getFitFileName(channels,unfoldingName)
         )
         
+        
         self.module("ThetaModel").makeModel(
             fitOutput+".cfg",
             fitSetup,parametersDict,
             outputFile=fitOutput+".root",
             pseudo=False
         )
+        
         self.module("ThetaFit").run(fitOutput+".cfg")
         fitResult = self.module("ThetaFit").parseFitResult(
             fitOutput+".root",
             parametersDict
         )
         self.module("ThetaFit").saveFitResult(fitOutput+".json",fitResult)
+        
+        #fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         '''
         ROOT.gStyle.SetPaintTextFormat("4.0f")
         cv = ROOT.TCanvas("corr","",1000,900)
@@ -144,23 +149,63 @@ class FitHistograms(Module.getClass("Program")):
         print fitResult["parameters"]["tChannel_neg_bin0"]
         print fitResult["parameters"]["tChannel_pos_bin0"]
         #print fitResult["parameters"]["en"]
-        self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_yield.pdf",
+        self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_yield.pdf",
             selection=["tChannel_*_bin*","WZjets_bin*","TopBkg_bin*","QCD_*_bin*_*"],
+            ranges = [0.5,1.5],
+            default=1,
+        )
+        
+        self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_qcd.pdf",
+            selection=["QCD_*_bin*_*"],
             ranges = [0,1.5],
             default=1,
         )
         
-        self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_ratios.pdf",
+        self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_ratios.pdf",
             selection=["WZjets_ratio_bin*","TopBkg_ratio_bin*","QCD_*_ratio_bin*_*"],
             ranges = [0.85,1.15],
             default=1,
         )
         
-        self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_sys.pdf",
+        self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_sys.pdf",
             selection=uncertaintyList,
             ranges = [-1.5,1.5],
             default=0
         )
 
+        if channelName==self.module("Samples").getChannelName(["ele","mu"]):
+            fitOutputEle = os.path.join(
+                self.module("Utils").getOutputFolder("fit"),
+                self.module("ThetaModel").getFitFileName(["ele"],unfoldingName)
+            )
+            fitOutputMu = os.path.join(
+                self.module("Utils").getOutputFolder("fit"),
+                self.module("ThetaModel").getFitFileName(["mu"],unfoldingName)
+            )
+            if os.path.exists(fitOutputEle+".json") and os.path.exists(fitOutputMu+".json"):
+                fitResultEle = self.module("ThetaFit").loadFitResult(fitOutputEle+".json")
+                fitResultMu = self.module("ThetaFit").loadFitResult(fitOutputMu+".json")
         
-        
+                self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_yield_comparison.pdf",
+                    selection=["tChannel_*_bin*","WZjets_bin*","TopBkg_bin*"],
+                    ranges = [0.5,1.5],
+                    default=1,
+                )
+                
+                self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_qcd_comparison.pdf",
+                    selection=["QCD_*_bin*_*"],
+                    ranges = [0,1.5],
+                    default=1,
+                )
+                
+                self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_ratios_comparison.pdf",
+                    selection=["WZjets_ratio_bin*","TopBkg_ratio_bin*","QCD_*_ratio_bin*_*"],
+                    ranges = [0.85,1.15],
+                    default=1,
+                )
+                
+                self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_sys_comparison.pdf",
+                    selection=uncertaintyList,
+                    ranges = [-1.5,1.5],
+                    default=0
+                )

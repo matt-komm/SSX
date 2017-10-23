@@ -59,12 +59,12 @@ class RunUnfolding(Module.getClass("Program")):
                 else:
                     responseMatrices[charge].Add(responseMatrix)
                 rootResponseFile.Close()
-            self.module("Drawing").drawHistogramMatrix(
-                self.module("Utils").normalizeByTransistionProbability(responseMatrices[charge]), 
+            self.module("Drawing").drawHistogramResponseAndEfficiency(
+                responseMatrices[charge], 
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_response"), 
-                xaxis=unfoldingLevel+" "+self.module("Unfolding").getUnfoldingVariableName(),
-                yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
-                zaxis="transition"
+                title=channel+" "+self.module("Samples").getChargeName(charge),
+                xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName(),
+                yaxis="reco. "+self.module("Unfolding").getUnfoldingVariableName(),
             )
             
         nominalRecoHists = {}
