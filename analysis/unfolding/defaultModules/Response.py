@@ -69,6 +69,18 @@ class Response(Module):
             len(genBinning)-1,
             genBinning
         )
+        efficiencyHistMatrix = ROOT.TH1F(
+            "efficiencyMatrix",
+            ";"+self.module("Unfolding").getGenVariable()+";",
+            len(genBinning)-1,
+            genBinning
+        )
+        efficiencyHistVeto = ROOT.TH1F(
+            "efficiencyVeto",
+            ";"+self.module("Unfolding").getGenVariable()+";",
+            len(genBinning)-1,
+            genBinning
+        )
         #will automatically get the sys varied samples names
         for processName in self.module("Samples").getSample("tChannel",channel)["processes"]:
             self._logger.info("Projecting events from '"+processName+"'")
@@ -76,19 +88,24 @@ class Response(Module):
                 self.module("Utils").getHist2D(responseHist,fileName,processName,genVariable,recoVariable,
                     genWeight+"*"+genSelection+"*"+recoWeight+"*"+recoSelection
                 )
-                self.module("Utils").getHist1D(efficiencyHist,fileName,processName,genVariable,
-                    genWeight+"*"+genSelection+"*(!("+recoSelection+"))*"+recoWeight
+                self.module("Utils").getHist1D(efficiencyHistMatrix,fileName,processName,genVariable,
+                    genWeight+"*"+genSelection+"*"+recoWeight+"*(!("+recoSelection+"))"
                 )
         self._logger.info("Projected selected events "+str(responseHist.Integral())+" in response matrix") 
-        self._logger.info("Projected unselected events "+str(efficiencyHist.Integral())+" in efficiency hist")
+        self._logger.info("Projected unselected events "+str(efficiencyHistMatrix.Integral())+" in efficiency hist")
         #force no sys samples !
         for processName in self.module("Samples").getSample("tChannel",channel,sys="")["processes"]:
              self._logger.info("Projecting events from '"+processName+"'")
              for fileName in self.module("Files").getEfficiencyFiles(channel):
-                self.module("Utils").getHist1D(efficiencyHist,fileName,processName,genVariable,
+                self.module("Utils").getHist1D(efficiencyHistVeto,fileName,processName,genVariable,
                     genWeight+"*"+genSelection+"*(1./veto_frac)"
                 )
-        self._logger.info("Projected unselected events from veto "+str(efficiencyHist.Integral())+" in efficiency hist")
+        self._logger.info("Projected unselected events from veto "+str(efficiencyHistVeto.Integral())+" in efficiency hist")
+        efficiencyHist.Add(efficiencyHistMatrix)
+        efficiencyHist.Add(efficiencyHistVeto)
+        
+        self._logger.info("Average selection efficiency: "+str(responseHist.Integral()/efficiencyHist.Integral()))
+
         #put efficiencies in underflow
         for i in range(responseHist.GetNbinsX()):
             responseHist.SetBinContent(i+1,0,efficiencyHist.GetBinContent(i+1))

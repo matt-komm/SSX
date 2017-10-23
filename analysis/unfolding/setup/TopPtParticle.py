@@ -29,7 +29,7 @@ class TopPtParticle(Module.getClass("Unfolding")):
         return "SingleTop_1__Top_1__Pt"
         
     def getRecoWeight(self,channel="mu"):
-        return self.module("Samples").getMCWeight(channel)
+        return self.module("Samples").getMCWeightReco(channel)
         
     def getRecoCut(self,channel="mu"):
         selection = self.module("Samples").getEventSelection(channel,iso=True)
