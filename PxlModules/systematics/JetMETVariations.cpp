@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <regex>
 #include <unordered_map>
 
 static pxl::Logger logger("JetMETVariations");
@@ -38,6 +39,9 @@ class JetMETVariations:
         pxl::Source* _nominalSource;
         std::unordered_map<std::string, Variation> _variations;
         
+        std::vector<std::string> _ignoreNames;
+        std::vector<std::regex> _ignoreNamesRegex;
+        
     public:
         JetMETVariations():
             Module(),
@@ -47,7 +51,16 @@ class JetMETVariations:
             _renamedJet("Jet"),
             _renamedMET("MET"),
             _removeOtherVariations(true),
-            _variationNames({"Res","En","Unc"})
+            _variationNames({"Res","En","Unc"}),
+            _ignoreNames({
+                "\\S+hdamp\\S+",
+                "\\S+herwig\\S+",
+                "\\S+mtop\\S+",
+                "\\S+scale\\S+",
+                "\\S+colourFlip\\S+",
+                "\\S+fsr\\S+",
+                "\\S+isr\\S+"
+            })
         {
             addSink("input", "input");
             
@@ -60,6 +73,8 @@ class JetMETVariations:
             addOption("rename MET","",_renamedMET);
             
             addOption("remove other variations","",_removeOtherVariations);
+            
+            addOption("ignore processes","",_ignoreNames);
 
             for (const std::string& name: _variationNames)
             {
@@ -120,6 +135,13 @@ class JetMETVariations:
             getOption("rename MET",_renamedMET);
 
             getOption("remove other variations",_removeOtherVariations);
+            
+            getOption("ignore processes",_ignoreNames);
+            
+            for (const std::string& s: _ignoreNames)
+            {
+                _ignoreNamesRegex.emplace_back(s);
+            }
 
             for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
             {
@@ -190,6 +212,17 @@ class JetMETVariations:
                 }
             }
         }
+        
+        bool isIgnored(const pxl::Event* event) const
+        {
+            bool ignore = false;
+            const std::string processName = event->getUserRecord("ProcessName").toString();
+            for (auto it = _ignoreNamesRegex.cbegin(); it!=_ignoreNamesRegex.cend() and !ignore; ++it)
+            {
+                ignore = ignore || std::regex_match(processName,*it);
+            }
+            return ignore;
+        }
 
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)
         {
@@ -203,55 +236,58 @@ class JetMETVariations:
                     bool success = true;
                     if (not event->getUserRecord("isRealData").toBool())
                     {
-                        for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
+                        if (not isIgnored(event))
                         {
-                            if (variation->second.active[0])
+                            for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
                             {
-                                //std::cout<<"  produce "<<variation->first<<"Up"<<std::endl;
-                                pxl::Event* eventShiftedUp = dynamic_cast<pxl::Event*>(event->clone());
-                                if (not eventShiftedUp)
+                                if (variation->second.active[0])
                                 {
-                                    throw std::runtime_error("cloning of Event failed");
+                                    //std::cout<<"  produce "<<variation->first<<"Up"<<std::endl;
+                                    pxl::Event* eventShiftedUp = dynamic_cast<pxl::Event*>(event->clone());
+                                    if (not eventShiftedUp)
+                                    {
+                                        throw std::runtime_error("cloning of Event failed");
+                                    }
+                                    eventShiftedUp->setUserRecord("ProcessName",eventShiftedUp->getUserRecord("ProcessName").toString()+"_"+variation->first+"Up");
+                                    std::string jetName = variation->second.inputJetName+"Up";
+                                    if (variation->second.inputJetName=="")
+                                    {
+                                        jetName=_nominalJetName;
+                                    }
+                                    std::string metName = variation->second.inputMETName+"Up";
+                                    if (variation->second.inputMETName=="")
+                                    {
+                                        metName=_nominalMETName;
+                                    }
+                                    renameJetMET(eventShiftedUp,jetName,metName);
+                                    variation->second.sources[0]->setTargets(eventShiftedUp);
+                                    success &= variation->second.sources[0]->processTargets();
+                                    delete eventShiftedUp;
                                 }
-                                eventShiftedUp->setUserRecord("ProcessName",eventShiftedUp->getUserRecord("ProcessName").toString()+"_"+variation->first+"Up");
-                                std::string jetName = variation->second.inputJetName+"Up";
-                                if (variation->second.inputJetName=="")
+                                if (variation->second.active[1])
                                 {
-                                    jetName=_nominalJetName;
+                                    //std::cout<<"  produce "<<variation->first<<"Down"<<std::endl;
+                                    pxl::Event* eventShiftedDown = dynamic_cast<pxl::Event*>(event->clone());
+                                    if (not eventShiftedDown)
+                                    {
+                                        throw std::runtime_error("cloning of Event failed");
+                                    }
+                                    eventShiftedDown->setUserRecord("ProcessName",eventShiftedDown->getUserRecord("ProcessName").toString()+"_"+variation->first+"Down");
+                                    std::string jetName = variation->second.inputJetName+"Down";
+                                    if (variation->second.inputJetName=="")
+                                    {
+                                        jetName=_nominalJetName;
+                                    }
+                                    std::string metName = variation->second.inputMETName+"Down";
+                                    if (variation->second.inputMETName=="")
+                                    {
+                                        metName=_nominalMETName;
+                                    }
+                                    renameJetMET(eventShiftedDown,jetName,metName);
+                                    variation->second.sources[1]->setTargets(eventShiftedDown);
+                                    success &= variation->second.sources[1]->processTargets();
+                                    delete eventShiftedDown;
                                 }
-                                std::string metName = variation->second.inputMETName+"Up";
-                                if (variation->second.inputMETName=="")
-                                {
-                                    metName=_nominalMETName;
-                                }
-                                renameJetMET(eventShiftedUp,jetName,metName);
-                                variation->second.sources[0]->setTargets(eventShiftedUp);
-                                success &= variation->second.sources[0]->processTargets();
-                                delete eventShiftedUp;
-                            }
-                            if (variation->second.active[1])
-                            {
-                                //std::cout<<"  produce "<<variation->first<<"Down"<<std::endl;
-                                pxl::Event* eventShiftedDown = dynamic_cast<pxl::Event*>(event->clone());
-                                if (not eventShiftedDown)
-                                {
-                                    throw std::runtime_error("cloning of Event failed");
-                                }
-                                eventShiftedDown->setUserRecord("ProcessName",eventShiftedDown->getUserRecord("ProcessName").toString()+"_"+variation->first+"Down");
-                                std::string jetName = variation->second.inputJetName+"Down";
-                                if (variation->second.inputJetName=="")
-                                {
-                                    jetName=_nominalJetName;
-                                }
-                                std::string metName = variation->second.inputMETName+"Down";
-                                if (variation->second.inputMETName=="")
-                                {
-                                    metName=_nominalMETName;
-                                }
-                                renameJetMET(eventShiftedDown,jetName,metName);
-                                variation->second.sources[1]->setTargets(eventShiftedDown);
-                                success &= variation->second.sources[1]->processTargets();
-                                delete eventShiftedDown;
                             }
                         }
                         //std::cout<<"  produce "<<"Nominal"<<std::endl;

@@ -13,8 +13,17 @@ class TopYParton(Module.getClass("Unfolding")):
     def getUnfoldingName(self):
         return "y"
         
+    def getUnfoldingVariableName(self):
+        return "top quark |y|"
+        
+    def getUnfoldingVariableUnit(self):
+        return ""
+        
+    def getUnfoldingLevel(self):
+        return "parton"
+        
     def getRecoBinning(self):
-        return numpy.array([0.,0.15,0.45,0.7,1.1,1.5,2.4])
+        return numpy.array([0.,0.15,0.45,0.7,1.3,2.4])
         
     def getRecoVariable(self):
         return "fabs(SingleTop_1__Top_1__Y)"
@@ -29,7 +38,7 @@ class TopYParton(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self):
-        return numpy.array([0.,0.15,0.45,0.7,1.1,1.5,2.4])
+        return numpy.array([0.,0.15,0.45,0.7,1.3,2.4])
         
     def getGenVariable(self):
         return "fabs(Parton_1__Top_1__y)"

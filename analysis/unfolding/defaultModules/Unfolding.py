@@ -1,5 +1,5 @@
 import ROOT
-#import pyTool
+import pyfit
 import numpy
 import math
 import os
@@ -20,6 +20,15 @@ class Unfolding(Module):
         
     def getUnfoldingName(self):
         return "inc"
+        
+    def getUnfoldingVariableName(self):
+        raise NotImplementedError()
+        
+    def getUnfoldingVariableUnit(self):
+        raise NotImplementedError()
+        
+    def getUnfoldingLevel(self):
+        raise NotImplementedError()
         
     def getRecoBinning(self):
         raise NotImplementedError()
@@ -72,34 +81,40 @@ class Unfolding(Module):
             return "(("+self.module("Unfolding").getGenVariable()+">="+str(binning[ibin])+")*("+self.module("Unfolding").getGenVariable()+"<"+str(binning[ibin+1])+"))"
             
         
-    '''    
-    def doScan(self,tunfold,genBins,output):
+     
+    def doScan(self,tunfold,genBins,output=None):
         N=100
         xvalues = numpy.logspace(-8,-2,N)
         yvalues = numpy.zeros((len(genBins)-1,N))
+        bestTauAtMinCorrelation = xvalues[0]
+        minGlobalCorrlation = 1.0
+        self._logger.info("Scan for regularization: ["+str(xvalues[0])+", "+str(xvalues[-1])+"]")
         for i in range(N):
-            bestTau = xvalues[i]
-            covariance = ROOT.TH2D("correlation","",len(genBins)-1,genBins,len(genBins)-1,genBins)
-            unfoldedHist = ROOT.TH1D("unfoldedHist","",len(genBins)-1,genBins)
+            covariance = ROOT.TH2D("correlation"+str(random.random())+str(i),"",len(genBins)-1,genBins,len(genBins)-1,genBins)
+            unfoldedHist = ROOT.TH1D("unfoldedHist"+str(random.random())+str(i),"",len(genBins)-1,genBins)
             unfoldedHist.Sumw2()
-            tunfold.doUnfolding(bestTau,unfoldedHist,covariance)
-            rhos = ROOT.PyUtils.getBinByBinCorrelations(covariance)
+            tunfold.doUnfolding(xvalues[i],unfoldedHist,covariance)
+            rhos = ROOT.PyUtils.getBinByBinCorrelations(covariance) #rho[0] -> global correlation
+            if rhos[0]<minGlobalCorrlation:
+                bestTauAtMinCorrelation=xvalues[i]
+                minGlobalCorrlation=rhos[0]
             for ibin in range(len(genBins)-1):
                 yvalues[ibin][i]=rhos[ibin]
-        cv = ROOT.TCanvas("cvScan","",800,600)
+        cv = ROOT.TCanvas("cvScan","",800,700)
         cv.SetLogx()
         cv.SetRightMargin(0.18)
         axis = ROOT.TH2F("axisScan",";#tau;#rho",50,xvalues[0],xvalues[-1],50,-1.1,1.1)
         axis.Draw("AXIS")
         rootObj =[]
-        legend = ROOT.TLegend(0.83,0.9,0.99,0.5)
+        legend = ROOT.TLegend(0.83,0.9,0.99,0.9-0.055*len(genBins))
         legend.SetFillColor(ROOT.kWhite)
         legend.SetBorderSize(0)
         legend.SetTextFont(42)
         for ibin in range(len(genBins)-2):
             graph = ROOT.TGraph(N,xvalues,yvalues[ibin+1])
-            graph.SetLineWidth(len(genBins)-ibin)
-            graph.SetLineColor(ROOT.kBlue-ibin+2)
+            graph.SetLineWidth(len(genBins)/2-ibin/2)
+            graph.SetLineColor(ROOT.kBlue-ibin/2+2)
+            graph.SetLineStyle(1+ibin%3)
             rootObj.append(graph)
             graph.Draw("SameL")
             legend.AddEntry(graph,"#rho (1,"+str(ibin+2)+")","L")
@@ -108,21 +123,106 @@ class Unfolding(Module):
         graph.SetLineColor(ROOT.kOrange+10)
         graph.SetLineStyle(2)
         rootObj.append(graph)
+        bestTauLine = ROOT.TLine(bestTauAtMinCorrelation,-1.1,bestTauAtMinCorrelation,1.1)
+        rootObj.append(bestTauLine)
+        bestTauLine.SetLineWidth(2)
+        bestTauLine.SetLineStyle(2)
+        bestTauLine.SetLineColor(ROOT.kGray+1)
+        bestTauLine.Draw("SameL")
         graph.Draw("SameL")
         legend.AddEntry(graph,"#bar{#rho}","L")
         legend.Draw("Same")
         #cv.Update()
         #cv.WaitPrimitive()
-        cv.Print(os.path.join(self.module("Utils").getOutputFolder(),output+".pdf"))
-        cv.Print(os.path.join(self.module("Utils").getOutputFolder(),output+".png"))
+        if output:
+            cv.Print(output+".pdf")
+            cv.Print(output+".png")
+        return bestTauAtMinCorrelation
         
         
+    def calculateSum(self,hist1,hist2,covariance):
+        if hist1.GetNbinsX()!=hist2.GetNbinsX():
+            self._logger.critical("Cannot sum histograms - different number of bins")
+            sys.exit(1)
+        if covariance.GetNbinsX()!=2*hist1.GetNbinsX() or covariance.GetNbinsY()!=2*hist1.GetNbinsX():
+            self._logger.critical("Cannot sum histograms - covariance matrix has wrong binning")
+            sys.exit(1)
+        N = hist1.GetNbinsX()
+        means = numpy.zeros(2*N)
+        cov = numpy.zeros((2*N,2*N))
+        for i in range(N):
+            means[i] = hist1.GetBinContent(i+1)
+            means[i+N] = hist2.GetBinContent(i+1)
+            
+        for i in range(2*N):
+            for j in range(2*N):
+                cov[i][j]=covariance.GetBinContent(i+1,j+1)
+                
+        NTOYS = 5000
+        numpy.random.seed(seed=12345)
+        toys = numpy.zeros((NTOYS,N))
         
-    def unfold(self,responseMatrix,data,genBinning,scan=None,fixedTau=None):
+
+        for itoy in range(NTOYS):
+            diced=numpy.random.multivariate_normal(mean=means,cov=cov)
+            for i in range(N):
+                toys[itoy][i]=diced[i]+diced[i+N]
+                
+        histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName())
+                
+        meanResult = numpy.mean(toys,axis=0)
+        covResult = numpy.cov(toys,rowvar=False)
+        
+        for i in range(N):
+            histResult.SetBinContent(i+1,meanResult[i])
+            histResult.SetBinError(i+1,math.sqrt(covResult[i][i]))
+        return histResult
+        
+    
+    def calculateRatio(self,hist1,hist2,covariance):
+        if hist1.GetNbinsX()!=hist2.GetNbinsX():
+            self._logger.critical("Cannot sum histograms - different number of bins")
+            sys.exit(1)
+        if covariance.GetNbinsX()!=2*hist1.GetNbinsX() or covariance.GetNbinsY()!=2*hist1.GetNbinsX():
+            self._logger.critical("Cannot sum histograms - covariance matrix has wrong binning")
+            sys.exit(1)
+        N = hist1.GetNbinsX()
+        means = numpy.zeros(2*N)
+        cov = numpy.zeros((2*N,2*N))
+        for i in range(N):
+            means[i] = hist1.GetBinContent(i+1)
+            means[i+N] = hist2.GetBinContent(i+1)
+            
+        for i in range(2*N):
+            for j in range(2*N):
+                cov[i][j]=covariance.GetBinContent(i+1,j+1)
+                
+        NTOYS = 5000
+        numpy.random.seed(seed=12345)
+        toys = numpy.zeros((NTOYS,N))
+        
+
+        for itoy in range(NTOYS):
+            diced=numpy.random.multivariate_normal(mean=means,cov=cov)
+            for i in range(N):
+                toys[itoy][i]=diced[i]/(diced[i]+diced[i+N])
+                
+        histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName())
+                
+        meanResult = numpy.mean(toys,axis=0)
+        covResult = numpy.cov(toys,rowvar=False)
+        
+        for i in range(N):
+            histResult.SetBinContent(i+1,meanResult[i])
+            histResult.SetBinError(i+1,math.sqrt(covResult[i][i]))
+        return histResult
+            
+    
+    def unfold(self,responseMatrix,data,genBinning,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
 
         responseMatrixReweighted = responseMatrix.Clone(responseMatrix.GetName()+"Reweighted")
-
+        '''
         for ibin in range(responseMatrix.GetNbinsX()):
             w = 1.0/genHist.GetBinContent(ibin+1)*genHist.Integral()/genHist.GetNbinsX()
             responseMatrixReweighted.SetBinContent(
@@ -130,26 +230,36 @@ class Unfolding(Module):
                     0,
                     responseMatrix.GetBinContent(ibin+1,0)*w
             )
-
+        '''
         
         tunfold = ROOT.PyUnfold(responseMatrixReweighted)
-        tunfold.setData(data)
+        self._logger.info("Regularize the following bins: "+str(regularizations))
+        for reg in regularizations:
+            tunfold.addRegularization(reg)
+            
+        if (tunfold.setData(data,dataCovariance)>=10000):
+            self._logger.critical("TUnfold indicates a fatal error")
+            sys.exit(1)
 
-        if scan:
-            self.module("Unfolding").doScan(tunfold,genBinning,scan)
         if fixedTau==None:
-            bestTau = tunfold.scanTau()
+            bestTau = self.module("Unfolding").doScan(tunfold,genBinning,scanOutput)
         else:
             bestTau=fixedTau
 
         self._logger.info("Found tau for regularization: "+str(bestTau))
         
         
-        covariance = ROOT.TH2D("correlation","",len(genBinning)-1,genBinning,len(genBinning)-1,genBinning)
+        covariance = ROOT.TH2D("covariance","",len(genBinning)-1,genBinning,len(genBinning)-1,genBinning)
         unfoldedHist = ROOT.TH1D("unfoldedHist","",len(genBinning)-1,genBinning)
         unfoldedHist.Sumw2()
+        if (tunfold.setData(data,dataCovariance)>=10000):
+            self._logger.critical("TUnfold indicates a fatal error")
+            sys.exit(1)
         tunfold.doUnfolding(bestTau,unfoldedHist,covariance,True,False,False)
-
+        
+        for ibin in range(unfoldedHist.GetNbinsX()):
+            unfoldedHist.SetBinError(ibin+1,math.sqrt(covariance.GetBinContent(ibin+1,ibin+1)))
+        '''
         for ibin in range(unfoldedHist.GetNbinsX()):
             w = 1.0/genHist.GetBinContent(ibin+1)*genHist.Integral()/genHist.GetNbinsX()
             unfoldedHist.SetBinContent(
@@ -160,7 +270,7 @@ class Unfolding(Module):
                 ibin+1,
                 unfoldedHist.GetBinError(ibin+1)/w
             )
-
+        '''
         return unfoldedHist,covariance,bestTau
-    '''
+
         

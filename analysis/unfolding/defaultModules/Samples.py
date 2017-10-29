@@ -24,6 +24,18 @@ class Samples(Module):
         else:
             self._logger.critical("charge '"+str(charge)+"' invalid")
             raise Exception("charge '"+str(charge)+"' invalid")
+            
+    def getChannelName(self,channels):
+        if len(channels)==1 and channels[0]=="mu":
+            return "mu"
+        elif len(channels)==1 and channels[0]=="ele":
+            return "ele"
+        elif "mu" in channels and "ele" in channels:
+            return "comb"
+        else:
+            self._logger.critical("Do not understand channels '"+str(channels)+"'")
+            sys.exit(1)
+        
         
     def getRecoCharge(self):
         return "SingleTop_1__TightLepton_1__Charge"
@@ -53,7 +65,7 @@ class Samples(Module):
             
 
     def getMuMCWeight(self):
-        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_nominal*Reconstructed_1__PU69000_weight*Reconstructed_1__muISO_SF_nominal*Reconstructed_1__muID_SF_nominal*Reconstructed_1__muTRIGGER_SF_nominal)"
+        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_nominal*Reconstructed_1__PU69000_weight*Reconstructed_1__muISO06_SF_nominal*Reconstructed_1__muID06_SF_nominal*Reconstructed_1__muTRIGGER06_SF_nominal)"
         
     def getMuDataWeight(self):
         return "1"
@@ -66,7 +78,7 @@ class Samples(Module):
         
         
     def getEleMCWeight(self):
-        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_nominal*Reconstructed_1__PU69000_weight*Reconstructed_1__eleRECO_SF_nominal*Reconstructed_1__eleID_SF_nominal)"
+        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_nominal*Reconstructed_1__PU69000_weight*Reconstructed_1__eleRECO_SF_nominal*Reconstructed_1__eleID_SF_nominal*Reconstructed_1__eleTRIGGER_SF_nominal)"
         
     def getEleDataWeight(self):
         return "1"
@@ -240,7 +252,7 @@ class Samples(Module):
                 "processes":[
                     "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8"+sys
                 ],
-                "weight":mcweightIso
+                "weight":mcweightIso+"*(Generated_1__top_pt_rew)"
             },
             
             "WJetsAMC":

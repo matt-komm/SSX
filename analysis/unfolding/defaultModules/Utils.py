@@ -4,6 +4,7 @@ import ROOT
 import random
 import shutil
 import sys
+import math
 from Module import Module
 
 import logging
@@ -17,15 +18,6 @@ class Utils(Module):
     def getUncertaintyName(self):
         return "nominal"
         
-    def maginalizedUncertainties(self):
-        return [
-            ["qcdUp","qcdDown"]
-        ]
-        
-    def externalizedUncertainties(self):
-        return [
-            #["qcdUp","qcdDown"]
-        ]
         
     def getOutputFolder(self,subFolder=""):
         return os.path.join(os.getcwd(),"result",subFolder)
@@ -43,8 +35,7 @@ class Utils(Module):
                 os.makedirs(self.module("Utils").getOutputFolder(folderName))
             
         except Exception,e:
-            self._logger.critical(str(e))
-            sys.exit(1)
+            self._logger.error(str(e))
             
 
     def addUnderflowOverflow(self,hist):
@@ -101,6 +92,21 @@ class Utils(Module):
                 tempHist.SetEntries(tempHist.GetEntries()-2)
             hist.Add(tempHist)
         rootFile.Close()
+        
+    def calculateCorrelations(self,hist):
+        histCorr = hist.Clone(hist.GetName()+"correlations")
+        for ibin in range(histCorr.GetNbinsX()):
+            for jbin in range(histCorr.GetNbinsY()):
+                covij = hist.GetBinContent(ibin+1,jbin+1)
+                covii = hist.GetBinContent(ibin+1,ibin+1)
+                covjj = hist.GetBinContent(jbin+1,jbin+1)
+                histCorr.SetBinContent(
+                    ibin+1,
+                    jbin+1,
+                    covij/math.sqrt(covii*covjj)
+                )
+        return histCorr
+                    
         
     def normalizeByBinWidth(self,hist):
         hist.Scale(1./hist.Integral())

@@ -4,9 +4,9 @@ import logging
 import ROOT
 import numpy
 
-class TopCosParton(Module.getClass("Unfolding")):
+class TopCosParticle(Module.getClass("Unfolding")):
     def __init__(self,options=[]):
-        TopCosParton.baseClass.__init__(self,options)
+        TopCosParticle.baseClass.__init__(self,options)
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
@@ -20,7 +20,7 @@ class TopCosParton(Module.getClass("Unfolding")):
         return ""
         
     def getUnfoldingLevel(self):
-        return "parton"
+        return "particle"
         
     def getRecoBinning(self):
         return numpy.array([-1.0,-0.5,-0.25,0.0,0.25,0.5,1.0])
@@ -41,13 +41,13 @@ class TopCosParton(Module.getClass("Unfolding")):
         return numpy.array([-1.0,-0.5,-0.25,0.0,0.25,0.5,1.0])
         
     def getGenVariable(self):
-        return "Parton_1__cosTheta_tPLz"
+        return "PTR_1__best_cosTheta_tPLz"
         
     def getGenWeight(self,channel):
         return self.module("Samples").getGenWeight()
         
     def getGenCut(self,channel):
-        selection = "(Parton_1__Lepton_1__Pt>0)"
+        selection = "(PTR_1__TopBest_1__Pt>0)*(PTR_1__nTightLepton==1)*(PTR_1__nSelectedJet==2)"
         if channel == "mu":
             selection+="*(abs(Parton_1__Lepton_1__pdg)==13)"
         elif channel == "ele":

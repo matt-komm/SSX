@@ -35,7 +35,7 @@ class TopPtReweighting:
         {
             addSink("input", "input");
             
-            addOption("processNames", "", std::vector<std::string>({"TT_[A-Za-z0-9_\\-]*"}));
+            addOption("processNames", "", std::vector<std::string>({"TT[A-Za-z0-9_\\-]*"}));
             
             _outputSource = addSource("output","output");
 
@@ -115,7 +115,7 @@ class TopPtReweighting:
         
         double getSF(double pt)
         {
-            return std::exp(0.199-0.00166*pt);
+            return std::exp(0.0615-0.0005*pt);
         }
         
         bool analyse(pxl::Sink *sink) throw (std::runtime_error)

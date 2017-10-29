@@ -47,7 +47,7 @@ class PartonLevelReconstruction:
             FromHardProcessBeforeFSR=11,
             IsFirstCopy=12, 
             IsLastCopy=13, 
-            IsLastCopyBeforeFSR=14 
+            IsLastCopyBeforeFSR=14
         };
         const std::vector<std::string> _flagNames = {
             "IsPrompt", 
@@ -511,10 +511,11 @@ class PartonLevelReconstruction:
                                 outputEV->insertObject(addBquarkClone);
                             }
                             
-                            
                             if (lNotTop.size()==0)
                             {
-                                throw std::runtime_error("no spectator quarks found in hard process");
+                                logger.log(pxl::LOG_LEVEL_ERROR,"no spectator quarks found in hard process @event: "+std::to_string(event->getUserRecord("Event number").toUInt64()));
+                                _outputAmbiguous->setTargets(event);
+                                return _outputAmbiguous->processTargets();
                             }
                             
                             
