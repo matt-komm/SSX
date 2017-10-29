@@ -1,5 +1,5 @@
 #!/bin/bash
-for i in {8..16};
+for i in {16..24};
     do
     echo
     sleep 2s
