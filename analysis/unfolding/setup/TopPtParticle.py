@@ -28,10 +28,10 @@ class TopPtParticle(Module.getClass("Unfolding")):
     def getRecoVariable(self):
         return "SingleTop_1__Top_1__Pt"
         
-    def getRecoWeight(self,channel="mu"):
-        return self.module("Samples").getMCWeight(channel)
+    def getRecoWeight(self,channel):
+        return self.module("Samples").getMCWeightReco(channel)
         
-    def getRecoCut(self,channel="mu"):
+    def getRecoCut(self,channel):
         selection = self.module("Samples").getEventSelection(channel,iso=True)
         selection += "*"+self.module("Samples").getNjets(2)
         selection += "*"+self.module("Samples").getNbjets(1)
@@ -46,7 +46,7 @@ class TopPtParticle(Module.getClass("Unfolding")):
     def getGenWeight(self,channel):
         return self.module("Samples").getGenWeight()
         
-    def getGenCut(self,channel="mu"):
+    def getGenCut(self,channel):
         selection = "(PTR_1__TopBest_1__Pt>0)*(PTR_1__nTightLepton==1)*(PTR_1__nSelectedJet==2)"
         if channel == "mu":
             selection+="*(abs(Parton_1__Lepton_1__pdg)==13)"

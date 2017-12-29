@@ -157,15 +157,72 @@ class Drawing(Module):
             
         cv.Print(outputFile)
         
-    def plotDataHistogram(self,nominalHist,measuredHist,title,output):
+    def plotDataHistogram(self,nominalHistA,measuredHistA,output,title="",xaxis="",yaxis="Events",yrange=None,normalizeByBinWidth=False,normalizeByCrossSection=False,uncBand=None):
+        nominalHist = nominalHistA.Clone()
+        measuredHist = measuredHistA.Clone()
         
-        cvHist = ROOT.TCanvas("cvHist","",800,700)
-        axis = ROOT.TH2F("axis"+str(random.random()),";"+title+";Events",
+        if normalizeByBinWidth:
+            self.module("Utils").normalizeByBinWidth(nominalHist)
+            self.module("Utils").normalizeByBinWidth(measuredHist)
+        elif normalizeByCrossSection:
+            self.module("Utils").normalizeByBinWidth(nominalHist)
+            self.module("Utils").normalizeByBinWidth(measuredHist)
+            nominalHist.Scale(1./self.module("Samples").getLumi())
+            measuredHist.Scale(1./self.module("Samples").getLumi())
+            totXsec = 0.0
+            for ibin in range(nominalHist.GetNbinsX()):
+                totXsec+=nominalHist.GetBinContent(ibin+1)*nominalHist.GetBinWidth(ibin+1)
+            self._logger.info("Calculated theo. xsec: "+str(totXsec)+" pb")
+        
+        cvxmin=0.165
+        cvxmax=0.96
+        cvymin=0.14
+        cvymax=0.92
+        
+        cvHist = ROOT.TCanvas("cvHist","",750,700)
+        cvHist.SetLeftMargin(cvxmin)
+        cvHist.SetBottomMargin(cvymin)
+        cvHist.SetTopMargin(1-cvymax)
+        cvHist.SetRightMargin(1-cvxmax)
+
+        ymin = 0
+        ymax = 1.3*max(nominalHist.GetMaximum(),measuredHist.GetMaximum())
+        if yrange:
+            ymin = yrange[0]
+            ymax = yrange[1]
+        
+        axis = ROOT.TH2F("axis"+str(random.random()),";"+xaxis+";"+yaxis,
             50,nominalHist.GetXaxis().GetXmin(),nominalHist.GetXaxis().GetXmax(),
-            50,0.,1.3*max(nominalHist.GetMaximum(),measuredHist.GetMaximum())
+            50,ymin,ymax
         )
+        axis.GetXaxis().SetTickLength(0.015/(1-cvHist.GetLeftMargin()-cvHist.GetRightMargin()))
+        axis.GetYaxis().SetTickLength(0.015/(1-cvHist.GetTopMargin()-cvHist.GetBottomMargin()))
+        axis.GetXaxis().SetLabelFont(43)
+        axis.GetXaxis().SetLabelSize(32)
+        axis.GetYaxis().SetLabelFont(43)
+        axis.GetYaxis().SetLabelSize(32)
+        axis.GetXaxis().SetTitleFont(43)
+        axis.GetXaxis().SetTitleSize(36)
+        axis.GetYaxis().SetTitleFont(43)
+        axis.GetYaxis().SetTitleSize(36)
+        
+        axis.GetYaxis().SetTitleOffset(1.6)
         axis.Draw("AXIS")
         
+        
+        rootObj = []
+        
+        if uncBand!=None:
+            for ibin in range(nominalHist.GetNbinsX()):
+                c = nominalHist.GetBinCenter(ibin+1)
+                w = nominalHist.GetBinWidth(ibin+1)
+                box = ROOT.TBox(c-0.5*w,uncBand[ibin][0],c+0.5*w,uncBand[ibin][2])
+                rootObj.append(box)
+                box.SetFillStyle(1001)
+                box.SetLineColor(ROOT.kOrange+1)
+                box.SetFillColor(ROOT.kOrange+1)
+                box.Draw("SameF")
+                
         nominalHist.SetLineColor(ROOT.kRed+1)
         nominalHist.SetLineWidth(3)
         nominalHist.SetFillStyle(0)
@@ -178,23 +235,36 @@ class Drawing(Module):
         measuredHist.SetMarkerSize(1.5)
         measuredHist.Draw("PESame")
         
-        pCMS=ROOT.TPaveText(1-cvHist.GetRightMargin()-0.25,0.94,1-cvHist.GetRightMargin()-0.25,0.94,"NDC")
+        pCMS=ROOT.TPaveText(cvxmin+0.025,cvymax-0.065,cvxmin+0.025,cvymax-0.065,"NDC")
         pCMS.SetFillColor(ROOT.kWhite)
         pCMS.SetBorderSize(0)
         pCMS.SetTextFont(63)
-        pCMS.SetTextSize(30)
+        pCMS.SetTextSize(34)
         pCMS.SetTextAlign(11)
         pCMS.AddText("CMS")
         pCMS.Draw("Same")
         
-        pPreliminary=ROOT.TPaveText(1-cvHist.GetRightMargin()-0.165,0.94,1-cvHist.GetRightMargin()-0.165,0.94,"NDC")
+        pPreliminary=ROOT.TPaveText(cvxmin+0.025+0.1,cvymax-0.065,cvxmin+0.025+0.1,cvymax-0.065,"NDC")
         pPreliminary.SetFillColor(ROOT.kWhite)
         pPreliminary.SetBorderSize(0)
         pPreliminary.SetTextFont(53)
-        pPreliminary.SetTextSize(30)
+        pPreliminary.SetTextSize(34)
         pPreliminary.SetTextAlign(11)
         pPreliminary.AddText("Preliminary")
         pPreliminary.Draw("Same")
+    
+        
+        pLumi=ROOT.TPaveText(cvxmax,0.94,cvxmax,0.94,"NDC")
+        pLumi.SetFillColor(ROOT.kWhite)
+        pLumi.SetBorderSize(0)
+        pLumi.SetTextFont(43)
+        pLumi.SetTextSize(36)
+        pLumi.SetTextAlign(31)
+        if title!="":
+            pLumi.AddText(title+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)")
+        else:
+            pLumi.AddText("36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)")
+        pLumi.Draw("Same")
         
         cvHist.Print(output+".pdf")
         cvHist.Print(output+".png")
@@ -250,8 +320,8 @@ class Drawing(Module):
             cvResponse.GetPad(i).SetLogz(0)
         
         cvResponse.GetPad(2).SetTopMargin(1-cvymax)
-        cvResponse.GetPad(2).SetBottomMargin(resHeight+0.004)
-        cvResponse.GetPad(1).SetTopMargin(1-resHeight+0.004)
+        cvResponse.GetPad(2).SetBottomMargin(resHeight+0.02)
+        cvResponse.GetPad(1).SetTopMargin(1-resHeight+0.015)
         cvResponse.GetPad(1).SetBottomMargin(cvymin)
         
         cvResponse.cd(2)
@@ -263,11 +333,12 @@ class Drawing(Module):
             selSum = 0.0
             for jbin in range(histMatrix.GetNbinsY()):
                 selSum+=histMatrix.GetBinContent(ibin+1,jbin+1)
-            print selSum,genSum
             histMatrixGenSelected.SetBinContent(ibin+1,selSum/(genSum+selSum))
         
         #histMatrixGenSelected.Divide(histMatrixGenAll)
         histMatrixGenSelected.Scale(100.)
+        histMatrixGenSelected.SetLineWidth(2)
+        histMatrixGenSelected.SetLineColor(ROOT.kRed+1)
         hist = self.module("Utils").normalizeByTransistionProbability(histMatrix)
         
         histMatrixGenSelected.GetYaxis().SetTickLength(0.03/resHeight)
@@ -321,14 +392,15 @@ class Drawing(Module):
         pPreliminary.Draw("Same")
         
 
-        pTitle=ROOT.TPaveText(cvxmax,0.94,cvxmax,0.94,"NDC")
-        pTitle.SetFillColor(ROOT.kWhite)
-        pTitle.SetBorderSize(0)
-        pTitle.SetTextFont(43)
-        pTitle.SetTextSize(36)
-        pTitle.SetTextAlign(31)
-        pTitle.AddText(title)
-        pTitle.Draw("Same")
+        pLumi=ROOT.TPaveText(cvxmax,0.94,cvxmax,0.94,"NDC")
+        pLumi.SetFillColor(ROOT.kWhite)
+        pLumi.SetBorderSize(0)
+        pLumi.SetTextFont(43)
+        pLumi.SetTextSize(36)
+        pLumi.SetTextAlign(31)
+        if title!="":
+            pLumi.AddText(title)
+        pLumi.Draw("Same")
         
         cvResponse.cd(1)
         histMatrixGenSelected.Draw("SameHIST")
@@ -340,7 +412,7 @@ class Drawing(Module):
         
         
     
-    def drawHistogramMatrix(self,histMatrix, output, xaxis="",yaxis="",zaxis="",autoscaling=True):
+    def drawHistogramMatrix(self,histMatrix, output, title="", xaxis="",yaxis="",zaxis="",autoscaling=True):
         ROOT.gStyle.SetPaintTextFormat("3.0f")
         cvResponse = ROOT.TCanvas("cvResponse","",800,700)
         cvResponse.SetRightMargin(0.19)
@@ -395,7 +467,7 @@ class Drawing(Module):
         
         pOrder=None
         if autoscaling and order!=0.:
-            pOrder=ROOT.TPaveText(1-cvResponse.GetRightMargin(),0.94,1-cvResponse.GetRightMargin(),0.94,"NDC")
+            pOrder=ROOT.TPaveText(1-cvResponse.GetRightMargin()+0.1,0.94,1-cvResponse.GetRightMargin()+0.1,0.94,"NDC")
             pOrder.SetFillColor(ROOT.kWhite)
             pOrder.SetBorderSize(0)
             pOrder.SetTextFont(43)
@@ -403,6 +475,16 @@ class Drawing(Module):
             pOrder.SetTextAlign(31)
             pOrder.AddText("#times10#lower[-0.7]{#scale[0.7]{%2.0f}}"%(order))
             pOrder.Draw("Same")
+            
+        pLumi=ROOT.TPaveText(1-cvResponse.GetRightMargin()-0.05,0.94,1-cvResponse.GetRightMargin()-0.05,0.94,"NDC")
+        pLumi.SetFillColor(ROOT.kWhite)
+        pLumi.SetBorderSize(0)
+        pLumi.SetTextFont(43)
+        pLumi.SetTextSize(36)
+        pLumi.SetTextAlign(31)
+        if title!="":
+            pLumi.AddText(title)
+        pLumi.Draw("Same")
         
         cvResponse.Update()
         

@@ -35,6 +35,19 @@ class Samples(Module):
         else:
             self._logger.critical("Do not understand channels '"+str(channels)+"'")
             sys.exit(1)
+            
+    def getPlotTitle(self,channels,charge=None):
+        chargeTitle = "t#kern[-0.5]{ }+#kern[-0.5]{ }#bar{t}#kern[-0.65]{ }"
+        if charge == -1:
+            chargeTitle = "#bar{t}#kern[-0.65]{ }"
+        elif charge == 1:
+            chargeTitle = "t#kern[-0.65]{ }"
+        if len(channels)==1 and channels[0]=="mu":
+            return chargeTitle+", #mu#kern[-0.65]{ }"
+        elif len(channels)==1 and channels[0]=="ele":
+            return chargeTitle+", e#kern[-0.65]{ }"
+        elif "mu" in channels and "ele" in channels:
+            return chargeTitle+", e#kern[-0.5]{ }/#kern[-0.5]{ }#mu#kern[-0.65]{ }"
         
         
     def getRecoCharge(self):
@@ -91,11 +104,11 @@ class Samples(Module):
         
  
     def getLumi(self):
-        return "35.822*1000.0"
+        return 35.822*1000.0
         
         
     def getGenWeight(self):
-        return "genweight*"+self.module("Samples").getLumi()+"*mcweight"
+        return "genweight*"+str(self.module("Samples").getLumi())+"*mcweight"
         
         
     def getMCWeight(self,channel):

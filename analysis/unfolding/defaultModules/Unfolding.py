@@ -81,6 +81,75 @@ class Unfolding(Module):
             return "(("+self.module("Unfolding").getGenVariable()+">="+str(binning[ibin])+")*("+self.module("Unfolding").getGenVariable()+"<"+str(binning[ibin+1])+"))"
             
         
+    def calculateGenUncertaintyBandRatio(self,channels,uncertainties):
+        ratiosPerUncertainty = numpy.zeros((len(uncertainties),len(self.module("Unfolding").getGenBinning())-1))
+        for iunc, uncertaintyName in enumerate(uncertainties):
+            genPos = None
+            genNeg = None
+            for channel in channels:
+                responseFileNamePos = self.module("Response").getOutputResponseFile(
+                    channel,
+                    self.module("Unfolding").getUnfoldingName(),
+                    self.module("Unfolding").getUnfoldingLevel(),
+                    uncertaintyName,
+                    1
+                )
+                rootFilePos = ROOT.TFile(responseFileNamePos)
+                if not rootFilePos:
+                    self._logger.critical("Response file '"+responseFileNamePos+"' does not exist")
+                    sys.exit(1)
+                if not rootFilePos.Get("gen"):
+                    self._logger.critical("Histogram 'gen' does not exist in response file '"+responseFileNamePos+"'")
+                    sys.exit(1)
+                    
+                if genPos==None:
+                    genPos = rootFilePos.Get("gen").Clone()
+                    genPos.SetDirectory(0)
+                else:
+                    genPos.Add(rootFilePos.Get("gen"))
+                rootFilePos.Close()
+                
+                responseFileNameNeg = self.module("Response").getOutputResponseFile(
+                    channel,
+                    self.module("Unfolding").getUnfoldingName(),
+                    self.module("Unfolding").getUnfoldingLevel(),
+                    uncertaintyName,
+                    -1
+                )
+                rootFileNeg = ROOT.TFile(responseFileNameNeg)
+                if not rootFileNeg:
+                    self._logger.critical("Response file '"+responseFileNameNeg+"' does not exist")
+                    sys.exit(1)
+                if not rootFileNeg.Get("gen"):
+                    self._logger.critical("Histogram 'gen' does not exist in response file '"+responseFileNameNeg+"'")
+                    sys.exit(1)
+                if genNeg==None:
+                    genNeg = rootFileNeg.Get("gen").Clone()
+                    genNeg.SetDirectory(0)
+                else:
+                    genNeg.Add(rootFileNeg.Get("gen"))
+                rootFileNeg.Close()
+            
+            for ibin in range(genPos.GetNbinsX()):
+                if numpy.isinf(genPos.GetBinContent(ibin+1)) or numpy.isinf(genNeg.GetBinContent(ibin+1)):
+                    ratiosPerUncertainty[iunc][ibin] = float('NaN')
+                else:
+                    if genPos.GetBinContent(ibin+1)>0 and genNeg.GetBinContent(ibin+1)>0:
+                        ratiosPerUncertainty[iunc][ibin]=genPos.GetBinContent(ibin+1)/(genPos.GetBinContent(ibin+1)+genNeg.GetBinContent(ibin+1))
+                    else:
+                        ratiosPerUncertainty[iunc][ibin] = float('NaN')
+                #print "%3i %3i %8.0f %8.0f %5.3f"%(iunc,ibin,genPos.GetBinContent(ibin+1),genNeg.GetBinContent(ibin+1),ratiosPerUncertainty[iunc][ibin])
+        meanResult = numpy.nanmean(ratiosPerUncertainty,axis=0)
+        sigResult = numpy.nanstd(ratiosPerUncertainty,axis=0)
+        
+ 
+        result = numpy.zeros((len(self.module("Unfolding").getGenBinning())-1,3))     
+        for ibin in range(len(self.module("Unfolding").getGenBinning())-1):
+            result[ibin][0]=meanResult[ibin]-sigResult[ibin]
+            result[ibin][1]=meanResult[ibin]
+            result[ibin][2]=meanResult[ibin]+sigResult[ibin]
+        return result
+        
      
     def doScan(self,tunfold,genBins,output=None):
         N=100
