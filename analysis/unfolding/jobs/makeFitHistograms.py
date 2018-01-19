@@ -11,7 +11,7 @@ config = Configuration()
 config.sbatch_partition = 'cp3'
 config.sbatch_qos = 'cp3'
 config.sbatch_workdir = '/home/ucl/cp3/mkomm/SSX/analysis/unfolding/jobs'
-config.sbatch_time = '0-4:00'
+config.sbatch_time = '0-6:00'
 config.sbatch_mem = '1000'
 
 config.sbatch_output = '/dev/null'
@@ -55,21 +55,25 @@ config.inputParams = []
 
 for channel in ["mu","ele"]:
         #nominal/inclusive
+        '''
         config.inputParams.append([
             "-m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
         ])
+        '''
         #nominal/binned per obs
-        for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton"]:
+        #for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton","setup/LeptonPtParton"]:
+        for unfoldingSetup in ["setup/LeptonPtParton"]:
             for ibin in range(5):
                 config.inputParams.append([
                     "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c bin:"+str(ibin)
                 ])
+        '''
         for unfoldingSetup in ["setup/TopCosParton"]:
             for ibin in range(6):
                 config.inputParams.append([
                     "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c bin:"+str(ibin)
                 ])
-            
+        '''
         for systModule in [
             "systematics/muEffDown",
             "systematics/muEffUp",
@@ -97,17 +101,19 @@ for channel in ["mu","ele"]:
             ])
             
             #sys/binned per obs
-            for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton"]:
+            #for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton"]:
+            for unfoldingSetup in ["setup/LeptonPtParton"]:
                 for ibin in range(5):
                     config.inputParams.append([
                         "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c bin:"+str(ibin)
                     ])
+            '''
             for unfoldingSetup in ["setup/TopCosParton"]:
                 for ibin in range(6):
                     config.inputParams.append([
                         "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c bin:"+str(ibin)
                     ])
-                
+            '''
 config.payload = \
 """
 echo "------------ start -----------"
