@@ -15,8 +15,6 @@ class RunUnfolding(Module.getClass("Program")):
         self._logger.setLevel(logging.DEBUG)
         
     def execute(self):
-    
-        
         #mu,ele
         channels = self.getOption("channels").split(",")
         #inc,pt,y,cos
@@ -62,10 +60,19 @@ class RunUnfolding(Module.getClass("Program")):
             self.module("Drawing").drawHistogramResponseAndEfficiency(
                 responseMatrices[charge], 
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_response"), 
-                title=channel+" "+self.module("Samples").getChargeName(charge),
+                title=self.module("Samples").getChannelName(channels)+" "+self.module("Samples").getChargeName(charge),
                 xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName(),
                 yaxis="reco. "+self.module("Unfolding").getUnfoldingVariableName(),
             )
+        
+        responseMatricesBoth = responseMatrices[1].Clone()
+        responseMatricesBoth.Add(responseMatrices[-1])
+        self.module("Drawing").drawStabilityPurity(
+            responseMatricesBoth,
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ps"), 
+            title=self.module("Samples").getChannelName(channels),
+            xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName()
+        )
             
         nominalRecoHists = {}
         nominalGenHists = {}

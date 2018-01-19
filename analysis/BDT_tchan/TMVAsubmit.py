@@ -11,7 +11,7 @@ config = Configuration()
 config.sbatch_partition = 'cp3'
 config.sbatch_qos = 'cp3'
 config.sbatch_workdir = '/nfs/user/mkomm/SSX13/BDT_tchan'
-config.sbatch_time = '0-10:00'
+config.sbatch_time = '0-12:00'
 config.sbatch_mem = '8000'
 
 config.sbatch_output = '/dev/null'
@@ -69,8 +69,8 @@ config.inputParams = [
 
 for boost in [0.2,0.4]:
     for minNode in [0.05,0.2,1]:#,1]:
-        for maxVar in [3]:#,4]:
-            for nCuts in [50]:
+        for maxVar in [3,4]:
+            for nCuts in [50,100]:
                 for nTrees in [1000]:
                     for mix in [0.05]:
                         for qcdmix in [0.005]:

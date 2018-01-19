@@ -111,73 +111,17 @@ class WeightPerPartonInfo:
 
 
 const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = {
-    {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //xtotal=33219691.0 eff=33219691.0 - 0.0 = 33219691.0
-            33219691.0, //xsec from weight =  1.0  (matching eff = 0.00137931034483)
-            725.0 // xsec for process 'DY1JetsToLL_M-10to50'
-        )
-    },
-    {"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //xtotal=61629627.0 eff=61629627.0 - 0.0 = 61629627.0
-            61629627.0, //xsec from weight =  1.0  (matching eff = 0.000984251968504)
-            1016.0 // xsec for process 'DY1JetsToLL_M-50'
-        )
-    },
-    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //xtotal=19442927.0 eff=19442927.0 - 0.0 = 19442927.0
-            19442927.0, //xsec from weight =  1.0  (matching eff = 0.00253485424588)
-            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
-        )
-    },
-    {"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //xtotal=19970551.0 eff=19970551.0 - 0.0 = 19970551.0
-            19970551.0, //xsec from weight =  1.0  (matching eff = 0.00302114803625)
-            331.0 // xsec for process 'DY2JetsToLL_M-50'
-        )
-    },
-    {"DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //xtotal=4531019.0 eff=4531019.0 - 0.0 = 4531019.0
-            4531019.0, //xsec from weight =  1.0  (matching eff = 0.0103659168653)
-            96.47 // xsec for process 'DY3JetsToLL_M-10to50'
-        )
-    },
-    {"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //xtotal=5449236.0 eff=5449236.0 - 0.0 = 5449236.0
-            5449236.0, //xsec from weight =  1.0  (matching eff = 0.0104166666667)
-            96.0 // xsec for process 'DY3JetsToLL_M-50'
-        )
-    },
-    {"DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //xtotal=2087849.0 eff=2087849.0 - 0.0 = 2087849.0
-            2087849.0, //xsec from weight =  1.0  (matching eff = 0.0287026406429)
-            34.84 // xsec for process 'DY4JetsToLL_M-10to50'
-        )
-    },
-    {"DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //xtotal=4197868.0 eff=4197868.0 - 0.0 = 4197868.0
-            4197868.0, //xsec from weight =  1.0  (matching eff = 0.0196078431373)
-            51.0 // xsec for process 'DY4JetsToLL_M-50'
-        )
-    },
     {"DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
         new SimpleWeightInfo(
-            //xtotal=34092958.0 eff=34092958.0 - 0.0 = 34092958.0
-            34092958.0, //xsec from weight =  1.0  (matching eff = 5.37345513165e-05)
+            //xtotal=35291566.0 eff=35291566.0 - 0.0 = 35291566.0
+            35291566.0, //xsec from weight =  1.0  (matching eff = 5.37345513165e-05)
             18610.0 // xsec for process 'DYJetsToLL_M-10to50'
         )
     },
     {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=43554876.0 eff=43554876.0 - 0.0 = 43554876.0
-            43554876.0, //xsec from weight =  1.0  (matching eff = 0.000204290091931)
+            //xtotal=49144274.0 eff=49144274.0 - 0.0 = 49144274.0
+            49144274.0, //xsec from weight =  1.0  (matching eff = 0.000204290091931)
             4895.0 // xsec for process 'DYJetsToLL_M-50'
         )
     },
@@ -190,15 +134,15 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
     },
     {"QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=40377565.0 eff=40377565.0 - 0.0 = 40377565.0
-            40378025.1719, //xsec from weight =  1.00001139672  (matching eff = 1.58822723576e-05)
+            //xtotal=41954035.0 eff=41954035.0 - 0.0 = 41954035.0
+            41954512.3281, //xsec from weight =  1.00001137741  (matching eff = 1.58822720508e-05)
             62964.0 // xsec for process 'QCD_Pt-120to170_EMEnriched'
         )
     },
     {"QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         new SimpleWeightInfo(
-            //xtotal=11288657.0 eff=11288657.0 - 0.0 = 11288657.0
-            11288949.8359, //xsec from weight =  1.00002594072  (matching eff = 3.96985109342e-05)
+            //xtotal=11938140.0 eff=11938140.0 - 0.0 = 11938140.0
+            11938449.7109, //xsec from weight =  1.00002594298  (matching eff = 3.96985110238e-05)
             25190.51514 // xsec for process 'QCD_Pt-120to170_MuEnrichedPt5'
         )
     },
@@ -232,8 +176,8 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
     },
     {"QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         new SimpleWeightInfo(
-            //xtotal=30789588.0 eff=30789588.0 - 0.0 = 30789588.0
-            30789969.4688, //xsec from weight =  1.00001238954  (matching eff = 3.37819380464e-07)
+            //xtotal=31475157.0 eff=31475157.0 - 0.0 = 31475157.0
+            31475545.9688, //xsec from weight =  1.00001235796  (matching eff = 3.37819369796e-07)
             2960198.4 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
         )
     },
@@ -253,8 +197,8 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
     },
     {"QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=5710280.0 eff=5710280.0 - 0.0 = 5710280.0
-            5710288.51562, //xsec from weight =  1.00000149128  (matching eff = 1.00725371805e-07)
+            //xtotal=6768384.0 eff=6768384.0 - 0.0 = 6768384.0
+            6768393.70312, //xsec from weight =  1.0000014336  (matching eff = 1.00725365995e-07)
             9928000.0 // xsec for process 'QCD_Pt-30to50_EMEnriched'
         )
     },
@@ -267,29 +211,29 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
     },
     {"QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=9526325.0 eff=9526325.0 - 0.0 = 9526325.0
-            9526360.625, //xsec from weight =  1.00000373964  (matching eff = 0.0126547334618)
+            //xtotal=9847664.0 eff=9847664.0 - 0.0 = 9847664.0
+            9847701.0625, //xsec from weight =  1.00000376358  (matching eff = 0.0126547337648)
             79.02211 // xsec for process 'QCD_Pt-470to600_MuEnrichedPt5'
         )
     },
     {"QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=19969074.0 eff=19969074.0 - 0.0 = 19969074.0
-            19969074.0, //xsec from weight =  1.0  (matching eff = 3.45925003459e-07)
+            //xtotal=23474171.0 eff=23474171.0 - 0.0 = 23474171.0
+            23474171.0, //xsec from weight =  1.0  (matching eff = 3.45925003459e-07)
             2890800.0 // xsec for process 'QCD_Pt-50to80_EMEnriched'
         )
     },
     {"QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         new SimpleWeightInfo(
-            //xtotal=18289390.0 eff=18289390.0 - 0.0 = 18289390.0
-            18289390.0, //xsec from weight =  1.0  (matching eff = 2.28569286551e-06)
+            //xtotal=19806915.0 eff=19806915.0 - 0.0 = 19806915.0
+            19806915.0, //xsec from weight =  1.0  (matching eff = 2.28569286551e-06)
             437504.1 // xsec for process 'QCD_Pt-50to80_MuEnrichedPt5'
         )
     },
     {"QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
         new SimpleWeightInfo(
-            //xtotal=9130791.0 eff=9130791.0 - 0.0 = 9130791.0
-            9130791.0, //xsec from weight =  1.0  (matching eff = 0.0398482686318)
+            //xtotal=9756853.0 eff=9756853.0 - 0.0 = 9756853.0
+            9756853.0, //xsec from weight =  1.0  (matching eff = 0.0398482686318)
             25.0951932 // xsec for process 'QCD_Pt-600to800_MuEnrichedPt5'
         )
     },
@@ -309,8 +253,8 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
     },
     {"QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=8972682.0 eff=8972682.0 - 0.0 = 8972682.0
-            8973547.23828, //xsec from weight =  1.00009643028  (matching eff = 9.43187649103e-06)
+            //xtotal=9797244.0 eff=9797244.0 - 0.0 = 9797244.0
+            9798187.48828, //xsec from weight =  1.0000963014  (matching eff = 9.43187527549e-06)
             106033.6648 // xsec for process 'QCD_Pt-80to120_MuEnrichedPt5'
         )
     },
@@ -349,17 +293,17 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
             80.95 // xsec for process 'ST_t-channel_antitop_4f'
         )
     },
-    {"ST_t-channel_antitop_4f_mtop1695_inclusiveDecays_13TeV-powhegV2-madspin-pythia8",
+    {"ST_t-channel_antitop_4f_mtop1715_inclusiveDecays_13TeV-powhegV2-madspin-pythia8",
         new SimpleWeightInfo(
-            //xtotal=3991785.0 eff=3991785.0 - 0.0 = 3991785.0
-            3991785.0, //xsec from weight =  1.0  (matching eff = 0.012353304509)
+            //xtotal=3961753.0 eff=3961753.0 - 0.0 = 3961753.0
+            3961753.0, //xsec from weight =  1.0  (matching eff = 0.012353304509)
             80.95 // xsec for process 'ST_t-channel_antitop_4f'
         )
     },
-    {"ST_t-channel_antitop_4f_mtop1755_inclusiveDecays_13TeV-powhegV2-madspin-pythia8",
+    {"ST_t-channel_antitop_4f_mtop1735_inclusiveDecays_13TeV-powhegV2-madspin-pythia8",
         new SimpleWeightInfo(
-            //xtotal=3994974.0 eff=3994974.0 - 0.0 = 3994974.0
-            3994974.0, //xsec from weight =  1.0  (matching eff = 0.012353304509)
+            //xtotal=3984536.0 eff=3984536.0 - 0.0 = 3984536.0
+            3984536.0, //xsec from weight =  1.0  (matching eff = 0.012353304509)
             80.95 // xsec for process 'ST_t-channel_antitop_4f'
         )
     },
@@ -412,17 +356,17 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
             136.02 // xsec for process 'ST_t-channel_top_4f'
         )
     },
-    {"ST_t-channel_top_4f_mtop1695_inclusiveDecays_13TeV-powhegV2-madspin-pythia8",
+    {"ST_t-channel_top_4f_mtop1715_inclusiveDecays_13TeV-powhegV2-madspin-pythia8",
         new SimpleWeightInfo(
-            //xtotal=5988478.0 eff=5988478.0 - 0.0 = 5988478.0
-            5988478.0, //xsec from weight =  1.0  (matching eff = 0.00735186002059)
+            //xtotal=5981826.0 eff=5981826.0 - 0.0 = 5981826.0
+            5981826.0, //xsec from weight =  1.0  (matching eff = 0.00735186002059)
             136.02 // xsec for process 'ST_t-channel_top_4f'
         )
     },
-    {"ST_t-channel_top_4f_mtop1755_inclusiveDecays_13TeV-powhegV2-madspin-pythia8",
+    {"ST_t-channel_top_4f_mtop1735_inclusiveDecays_13TeV-powhegV2-madspin-pythia8",
         new SimpleWeightInfo(
-            //xtotal=5990049.0 eff=5990049.0 - 0.0 = 5990049.0
-            5990049.0, //xsec from weight =  1.0  (matching eff = 0.00735186002059)
+            //xtotal=5970340.0 eff=5970340.0 - 0.0 = 5970340.0
+            5970340.0, //xsec from weight =  1.0  (matching eff = 0.00735186002059)
             136.02 // xsec for process 'ST_t-channel_top_4f'
         )
     },
@@ -510,401 +454,104 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
             35.6 // xsec for process 'ST_tW_top'
         )
     },
-    {"TT_TuneCUETP8M2T4_13TeV-powheg-colourFlip-pythia8",
-        new SimpleWeightInfo(
-            //xtotal=11087535.0 eff=11087535.0 - 0.0 = 11087535.0
-            11087535.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
-            831.76 // xsec for process 'TT'
-        )
-    },
     {"TT_TuneCUETP8M2T4_13TeV-powheg-fsrdown-pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=29264084.0 eff=29264084.0 - 0.0 = 29264084.0
-            29264084.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            //xtotal=29590326.0 eff=29590326.0 - 0.0 = 29590326.0
+            29590326.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
             831.76 // xsec for process 'TT'
         )
     },
     {"TT_TuneCUETP8M2T4_13TeV-powheg-fsrup-pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=28062430.0 eff=28062430.0 - 0.0 = 28062430.0
-            28062430.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            //xtotal=29453411.0 eff=29453411.0 - 0.0 = 29453411.0
+            29453411.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
             831.76 // xsec for process 'TT'
         )
     },
     {"TT_TuneCUETP8M2T4_13TeV-powheg-isrdown-pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=29417010.0 eff=29417010.0 - 0.0 = 29417010.0
-            29417010.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            //xtotal=29915551.0 eff=29915551.0 - 0.0 = 29915551.0
+            29915551.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
             831.76 // xsec for process 'TT'
         )
     },
     {"TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=58611096.0 eff=58611096.0 - 0.0 = 58611096.0
-            58611096.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            //xtotal=59033604.0 eff=59033604.0 - 0.0 = 59033604.0
+            59033604.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
             831.76 // xsec for process 'TT'
         )
     },
     {"TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",
         new SimpleWeightInfo(
-            //xtotal=76577327.0 eff=76577327.0 - 0.0 = 76577327.0
-            76577327.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            //xtotal=77081156.0 eff=77081156.0 - 0.0 = 77081156.0
+            77081156.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            831.76 // xsec for process 'TT'
+        )
+    },
+    {"TT_TuneCUETP8M2T4_mtop1715_13TeV-powheg-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=19578812.0 eff=19578812.0 - 0.0 = 19578812.0
+            19578812.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            831.76 // xsec for process 'TT'
+        )
+    },
+    {"TT_TuneCUETP8M2T4_mtop1735_13TeV-powheg-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=19419050.0 eff=19419050.0 - 0.0 = 19419050.0
+            19419050.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            831.76 // xsec for process 'TT'
+        )
+    },
+    {"TT_hdampDOWN_TuneCUETP8M2T4_13TeV-powheg-pythia8_ext",
+        new SimpleWeightInfo(
+            //xtotal=29046156.0 eff=29046156.0 - 0.0 = 29046156.0
+            29046156.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            831.76 // xsec for process 'TT'
+        )
+    },
+    {"TT_hdampUP_TuneCUETP8M2T4_13TeV-powheg-pythia8_ext",
+        new SimpleWeightInfo(
+            //xtotal=29169226.0 eff=29169226.0 - 0.0 = 29169226.0
+            29169226.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
             831.76 // xsec for process 'TT'
         )
     },
     {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
         new SimpleWeightInfo(
-            //xtotal=23840185.0 eff=20079594.0 - 3760591.0 = 16319003.0
-            3.6946726615e+12, //xsec from weight =  154976.677467  (matching eff = 2.51885242451)
+            //xtotal=23712175.0 eff=19971756.0 - 3740419.0 = 16231337.0
+            3.67487479808e+12, //xsec from weight =  154978.39393  (matching eff = 2.51888032236)
             61526.7 // xsec for process 'WJetsToLNu'
         )
     },
     {"WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=55190961.0 eff=55190961.0 - 0.0 = 55190961.0
-            55190961.0, //xsec from weight =  1.0  (matching eff = 1.6253106375e-05)
+            //xtotal=57026058.0 eff=57026058.0 - 0.0 = 57026058.0
+            57026058.0, //xsec from weight =  1.0  (matching eff = 1.6253106375e-05)
             61526.7 // xsec for process 'WJetsToLNu'
         )
     },
     {"WToLNu_0J_13TeV-amcatnloFXFX-pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=46358101.0 eff=42018685.0 - 4339416.0 = 37679269.0
-            2.69672599968e+12, //xsec from weight =  58171.623546  (matching eff = 1.17116214105)
+            //xtotal=49142195.0 eff=44541889.0 - 4600306.0 = 39941583.0
+            2.85874737542e+12, //xsec from weight =  58172.9687781  (matching eff = 1.17118922444)
             49670.0 // xsec for process 'WToLNu_0J_13TeV'
         )
     },
     {"WToLNu_1J_13TeV-amcatnloFXFX-pythia8",
         new SimpleWeightInfo(
-            //xtotal=40250522.0 eff=29542656.0 - 10707866.0 = 18834790.0
-            1.74928783117e+12, //xsec from weight =  43460.0036036  (matching eff = 5.25895493752)
+            //xtotal=40739942.0 eff=29901704.0 - 10838238.0 = 19063466.0
+            1.77050199104e+12, //xsec from weight =  43458.6281699  (matching eff = 5.25878850071)
             8264.0 // xsec for process 'WToLNu_1J_13TeV'
         )
     },
     {"WToLNu_2J_13TeV-amcatnloFXFX-pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=47123857.0 eff=30460768.0 - 16663089.0 = 13797679.0
-            9.78799391232e+11, //xsec from weight =  20770.7826469  (matching eff = 6.43855630717)
+            //xtotal=53135013.0 eff=34346729.0 - 18788284.0 = 15558445.0
+            1.10371902208e+12, //xsec from weight =  20771.9723731  (matching eff = 6.43892510015)
             3226.0 // xsec for process 'WToLNu_2J_13TeV'
         )
     }
-
-    /*
-    {"DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //total=39840774.0 eff=39840774.0 - 0.0 = 39840774.0
-            39840774.0,
-            725.0 // xsec for process 'DY1JetsToLL_M-10to50'
-        )
-    },
-    {"DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //total=62627174.0 eff=62627174.0 - 0.0 = 62627174.0
-            62627174.0,
-            1016.0 // xsec for process 'DY1JetsToLL_M-50'
-        )
-    },
-    {"DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //total=19442927.0 eff=19442927.0 - 0.0 = 19442927.0
-            19442927.0,
-            394.5 // xsec for process 'DY2JetsToLL_M-10to50'
-        )
-    },
-    {"DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //total=19970551.0 eff=19970551.0 - 0.0 = 19970551.0
-            19970551.0,
-            331.0 // xsec for process 'DY2JetsToLL_M-50'
-        )
-    },
-    {"DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //total=4964197.0 eff=4964197.0 - 0.0 = 4964197.0
-            4964197.0,
-            96.47 // xsec for process 'DY3JetsToLL_M-10to50'
-        )
-    },
-    {"DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //total=5856110.0 eff=5856110.0 - 0.0 = 5856110.0
-            5856110.0,
-            96.0 // xsec for process 'DY3JetsToLL_M-50'
-        )
-    },
-    {"DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //total=2087849.0 eff=2087849.0 - 0.0 = 2087849.0
-            2087849.0,
-            34.84 // xsec for process 'DY4JetsToLL_M-10to50'
-        )
-    },
-    {"DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //total=4197868.0 eff=4197868.0 - 0.0 = 4197868.0
-            4197868.0,
-            51.0 // xsec for process 'DY4JetsToLL_M-50'
-        )
-    },
-    {"DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-        new SimpleWeightInfo(
-            //total=35291566.0 eff=35291566.0 - 0.0 = 35291566.0
-            35291566.0,
-            18610.0 // xsec for process 'DYJetsToLL_M-10to50'
-        )
-    },
-    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
-        new SimpleWeightInfo(
-            //total=49144274.0 eff=49144274.0 - 0.0 = 49144274.0
-            49144274.0,
-            4895.0 // xsec for process 'DYJetsToLL_M-50'
-        )
-    },
-    {"QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=3566646.0 eff=3566646.0 - 0.0 = 3566646.0
-            3566646.0,
-            1.6212392 // xsec for process 'QCD_Pt-1000toInf_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
-        new SimpleWeightInfo(
-            //total=40964345.0 eff=40964345.0 - 0.0 = 40964345.0
-            40964345.0,
-            62964.0 // xsec for process 'QCD_Pt-120to170_EMEnriched'
-        )
-    },
-    {"QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=11938140.0 eff=11938140.0 - 0.0 = 11938140.0
-            11938140.0,
-            25190.51514 // xsec for process 'QCD_Pt-120to170_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=4141251.0 eff=4141251.0 - 0.0 = 4141251.0
-            4141251.0,
-            3819570.0 // xsec for process 'QCD_Pt-15to20_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=11136483.0 eff=11136483.0 - 0.0 = 11136483.0
-            11136483.0,
-            18810.0 // xsec for process 'QCD_Pt-170to300_EMEnriched'
-        )
-    },
-    {"QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=19607777.0 eff=19607777.0 - 0.0 = 19607777.0
-            19607777.0,
-            8654.49315 // xsec for process 'QCD_Pt-170to300_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=9218954.0 eff=9218954.0 - 0.0 = 9218954.0
-            9218954.0,
-            5352960.0 // xsec for process 'QCD_Pt-20to30_EMEnriched'
-        )
-    },
-    {"QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=31475157.0 eff=31475157.0 - 0.0 = 31475157.0
-            31475157.0,
-            2960198.4 // xsec for process 'QCD_Pt-20to30_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        new SimpleWeightInfo(
-            //total=24605508.0 eff=24605508.0 - 0.0 = 24605508.0
-            24605508.0,
-            797.35269 // xsec for process 'QCD_Pt-300to470_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=7373633.0 eff=7373633.0 - 0.0 = 7373633.0
-            7373633.0,
-            1350.0 // xsec for process 'QCD_Pt-300toInf_EMEnriched'
-        )
-    },
-    {"QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
-        new SimpleWeightInfo(
-            //total=6768384.0 eff=6768384.0 - 0.0 = 6768384.0
-            6768384.0,
-            9928000.0 // xsec for process 'QCD_Pt-30to50_EMEnriched'
-        )
-    },
-    {"QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=29252006.0 eff=29252006.0 - 0.0 = 29252006.0
-            29252006.0,
-            1652471.46 // xsec for process 'QCD_Pt-30to50_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        new SimpleWeightInfo(
-            //total=9847664.0 eff=9847664.0 - 0.0 = 9847664.0
-            9847664.0,
-            79.02211 // xsec for process 'QCD_Pt-470to600_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
-        new SimpleWeightInfo(
-            //total=22820109.0 eff=22820109.0 - 0.0 = 22820109.0
-            22820109.0,
-            2890800.0 // xsec for process 'QCD_Pt-50to80_EMEnriched'
-        )
-    },
-    {"QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=19806915.0 eff=19806915.0 - 0.0 = 19806915.0
-            19806915.0,
-            437504.1 // xsec for process 'QCD_Pt-50to80_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",
-        new SimpleWeightInfo(
-            //total=9756853.0 eff=9756853.0 - 0.0 = 9756853.0
-            9756853.0,
-            25.0951932 // xsec for process 'QCD_Pt-600to800_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        new SimpleWeightInfo(
-            //total=9966149.0 eff=9966149.0 - 0.0 = 9966149.0
-            9966149.0,
-            4.707572 // xsec for process 'QCD_Pt-800to1000_MuEnrichedPt5'
-        )
-    },
-    {"QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",
-        new SimpleWeightInfo(
-            //total=39985821.0 eff=39985821.0 - 0.0 = 39985821.0
-            39985821.0,
-            350000.0 // xsec for process 'QCD_Pt-80to120_EMEnriched'
-        )
-    },
-    {"QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",
-        new SimpleWeightInfo(
-            //total=9797244.0 eff=9797244.0 - 0.0 = 9797244.0
-            9797244.0,
-            106033.6648 // xsec for process 'QCD_Pt-80to120_MuEnrichedPt5'
-        )
-    },
-    {"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
-        new SimpleWeightInfo(
-            //total=38811017.0 eff=38811017.0 - 0.0 = 38811017.0
-            38811017.0,
-            80.95 // xsec for process 'ST_t-channel_antitop_4f'
-        )
-    },
-    {"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
-        new SimpleWeightInfo(
-            //total=67240808.0 eff=67240808.0 - 0.0 = 67240808.0
-            67240808.0,
-            136.02 // xsec for process 'ST_t-channel_top_4f'
-        )
-    },
-    {"ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1_ext",
-        new SimpleWeightInfo(
-            //total=3256407.0 eff=3256407.0 - 0.0 = 3256407.0
-            3256407.0,
-            35.6 // xsec for process 'ST_tW_antitop'
-        )
-    },
-    {"ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_ext",
-        new SimpleWeightInfo(
-            //total=6933094.0 eff=6933094.0 - 0.0 = 6933094.0
-            6933094.0,
-            35.6 // xsec for process 'ST_tW_antitop'
-        )
-    },
-    {"ST_tW_top_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1_ext",
-        new SimpleWeightInfo(
-            //total=3256650.0 eff=3256650.0 - 0.0 = 3256650.0
-            3256650.0,
-            35.6 // xsec for process 'ST_tW_top'
-        )
-    },
-    {"ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_ext",
-        new SimpleWeightInfo(
-            //total=6952830.0 eff=6952830.0 - 0.0 = 6952830.0
-            6952830.0,
-            35.6 // xsec for process 'ST_tW_top'
-        )
-    },
-    {"TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",
-        new SimpleWeightInfo(
-            //total=77229341.0 eff=77229341.0 - 0.0 = 77229341.0
-            77229341.0,
-            831.76 // xsec for process 'TT'
-        )
-    },
-    {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-        new SimpleWeightInfo(
-            //total=23712175.0 eff=19971756.0 - 3740419.0 = 16231337.0
-            16231337.0,
-            61526.7 // xsec for process 'WJetsToLNu'
-        )
-    },
-    {"WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
-        new SimpleWeightInfo(
-            //total=57026058.0 eff=57026058.0 - 0.0 = 57026058.0
-            57026058.0,
-            61526.7 // xsec for process 'WJetsToLNu'
-        )
-    },
-    {"WToLNu_0J_13TeV-amcatnloFXFX-pythia8_ext",
-        new SimpleWeightInfo(
-            //total=48648355.0 eff=44094225.0 - 4554130.0 = 39540095.0
-            39540095.0,
-            49670.0 // xsec for process 'WToLNu_0J_13TeV'
-        )
-    },
-    {"WToLNu_1J_13TeV-amcatnloFXFX-pythia8",
-        new SimpleWeightInfo(
-            //total=40739942.0 eff=29901704.0 - 10838238.0 = 19063466.0
-            19063466.0,
-            8264.0 // xsec for process 'WToLNu_1J_13TeV'
-        )
-    },
-    {"WToLNu_2J_13TeV-amcatnloFXFX-pythia8_ext",
-        new SimpleWeightInfo(
-            //total=53135013.0 eff=34346729.0 - 18788284.0 = 15558445.0
-            15558445.0,
-            3226.0 // xsec for process 'WToLNu_2J_13TeV'
-        )
-    },
-    {"WW_TuneCUETP8M1_13TeV-pythia8_ext",
-        new SimpleWeightInfo(
-            //total=6987124.0 eff=6987124.0 - 0.0 = 6987124.0
-            6987124.0,
-            63.7 // xsec for process 'WW'
-        )
-    },
-    {"WZ_TuneCUETP8M1_13TeV-pythia8_ext",
-        new SimpleWeightInfo(
-            //total=2995828.0 eff=2995828.0 - 0.0 = 2995828.0
-            2995828.0,
-            47.13 // xsec for process 'WZ'
-        )
-    },
-    {"ZZ_TuneCUETP8M1_13TeV-pythia8_ext",
-        new SimpleWeightInfo(
-            //total=998034.0 eff=998034.0 - 0.0 = 998034.0
-            998034.0,
-            16.523 // xsec for process 'ZZ'
-        )
-    },
-    {"bTag_B2bX_t_13TeV",
-        new SimpleWeightInfo(
-            //total=21000.0 eff=21000.0 - 0.0 = 21000.0
-            21000.0,
-            0.130 //WARNING, xsec not found
-        )
-    },
-    */
 };
 
 

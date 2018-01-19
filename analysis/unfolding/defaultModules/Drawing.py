@@ -409,6 +409,101 @@ class Drawing(Module):
         cvResponse.Print(output+".png")
         cvResponse.Print(output+".pdf")
         
+    def drawStabilityPurity(self,histMatrix, output, title="", xaxis=""):
+        ROOT.gStyle.SetPaintTextFormat("3.0f")
+        cvPS = ROOT.TCanvas("cvPS","",800,700)
+        cvPS.SetRightMargin(0.04)
+        
+        cvPS.SetLeftMargin(0.14)
+        cvPS.SetBottomMargin(0.125)
+        
+        genBinning = self.module("Unfolding").getGenBinning()
+        purityHist = ROOT.TH1F("purity"+str(random.random()),"",len(genBinning)-1,genBinning)
+        stabilityHist = ROOT.TH1F("stability"+str(random.random()),"",len(genBinning)-1,genBinning)
+
+        
+        print "bins: ",
+        for recoBin in range(histMatrix.GetNbinsY()):
+            c = histMatrix.GetYaxis().GetBinCenter(recoBin+1)
+            w = histMatrix.GetYaxis().GetBinWidth(recoBin+1)
+            print "[%5.1f; %5.1f]  "%(c-0.5*w,c+0.5*w),
+        print
+        print "Stability & ",
+        for recoBin in range(histMatrix.GetNbinsY()):
+            sumGen = 0.0
+            for genBin in range(histMatrix.GetNbinsX()):
+                sumGen+=histMatrix.GetBinContent(genBin+1,recoBin+1)
+            stability = histMatrix.GetBinContent(recoBin+1,recoBin+1)/sumGen
+            stabilityHist.SetBinContent(recoBin+1,stability)
+            print "%5.0f%% & "%(stability*100.),
+        print
+        
+        print "Purity & ",
+        for genBin in range(histMatrix.GetNbinsX()):
+            sumReco = 0.0
+            for recoBin in range(histMatrix.GetNbinsY()):
+                sumReco+=histMatrix.GetBinContent(genBin+1,recoBin+1)
+            purity = histMatrix.GetBinContent(genBin+1,genBin+1)/sumReco
+            purityHist.SetBinContent(genBin+1,purity)
+            print "%5.0f%% & "%(purity*100.),
+        print
+        
+        axis = ROOT.TH2F("axis"+str(random.random()),";"+xaxis+";",50,genBinning[0],genBinning[-1],50,0,1)
+        
+        axis.GetXaxis().SetTitleSize(36)
+        axis.GetYaxis().SetTitleSize(36)
+        
+        axis.GetXaxis().SetLabelSize(33)
+        axis.GetYaxis().SetLabelSize(33)
+        axis.Draw("AXIS")
+
+        stabilityHist.SetLineWidth(3)
+        stabilityHist.SetLineColor(ROOT.kAzure-5)
+        stabilityHist.Draw("SameHIST")
+        purityHist.SetLineWidth(3)
+        purityHist.SetLineColor(ROOT.kOrange+8)
+        purityHist.Draw("SameHIST")
+        
+        legend = ROOT.TLegend(0.35,0.86,0.65,0.75)
+        legend.SetBorderSize(0)
+        legend.SetTextFont(42)
+        legend.SetFillColor(ROOT.kWhite)
+        legend.AddEntry(stabilityHist,"stability","L")
+        legend.AddEntry(purityHist,"purity","L")
+        legend.Draw("Same")
+        
+        pCMS=ROOT.TPaveText(cvPS.GetLeftMargin(),0.94,cvPS.GetLeftMargin(),0.94,"NDC")
+        pCMS.SetFillColor(ROOT.kWhite)
+        pCMS.SetBorderSize(0)
+        pCMS.SetTextFont(63)
+        pCMS.SetTextSize(36)
+        pCMS.SetTextAlign(11)
+        pCMS.AddText("CMS")
+        pCMS.Draw("Same")
+        
+        pPreliminary=ROOT.TPaveText(cvPS.GetLeftMargin()+0.12,0.94,cvPS.GetLeftMargin()+0.12,0.94,"NDC")
+        pPreliminary.SetFillColor(ROOT.kWhite)
+        pPreliminary.SetBorderSize(0)
+        pPreliminary.SetTextFont(53)
+        pPreliminary.SetTextSize(36)
+        pPreliminary.SetTextAlign(11)
+        pPreliminary.AddText("Simulation")
+        pPreliminary.Draw("Same")
+        
+        pTitle=ROOT.TPaveText(1-cvPS.GetRightMargin(),0.94,1-cvPS.GetRightMargin(),0.94,"NDC")
+        pTitle.SetFillColor(ROOT.kWhite)
+        pTitle.SetBorderSize(0)
+        pTitle.SetTextFont(43)
+        pTitle.SetTextSize(36)
+        pTitle.SetTextAlign(31)
+        pTitle.AddText(title)
+        pTitle.Draw("Same")
+
+        cvPS.Update()
+        
+        cvPS.Print(output+".png")
+        cvPS.Print(output+".pdf")
+        
     '''
     def drawBiasTest(self,unfoldedHist,genHist,varTitle,outputName):
         cvUnfold = ROOT.TCanvas("cvUnfold","",800,700)
