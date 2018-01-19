@@ -36,8 +36,8 @@ config.writeLogsOnWN = True
 
 config.separateStdoutStderrLogs = True
 
-config.stdoutFilename = "log${SLURM_ARRAY_TASK_ID}.out"
-config.stderrFilename = "log${SLURM_ARRAY_TASK_ID}.err"
+config.stdoutFilename = "log_responseHists${SLURM_ARRAY_TASK_ID}.out"
+config.stderrFilename = "log_responseHists${SLURM_ARRAY_TASK_ID}.err"
 config.stageoutLogs = True
 
 config.stageoutLogsDir = config.sbatch_workdir + '/log'
@@ -55,7 +55,12 @@ config.inputParams = []
 
 for channel in ["mu","ele"]:
     for charge in [-1,0,1]:
-        for unfoldingSetup in ["setup/TopPtParton","setup/TopYParton","setup/TopCosParton","setup/TopPtParticle","setup/TopYParticle","setup/TopCosParticle"]:
+        for unfoldingSetup in [
+            #"setup/TopPtParton","setup/TopPtParticle",
+            #"setup/TopYParton","setup/TopYParticle",
+            "setup/LeptonPtParton","setup/LeptonPtParticle",
+            "setup/WCosParton","setup/WCosParticle",
+        ]:
             config.inputParams.append([
                 "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c charge:"+str(charge)
             ])
