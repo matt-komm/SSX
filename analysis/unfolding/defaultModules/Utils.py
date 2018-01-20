@@ -106,7 +106,7 @@ class Utils(Module):
                     covij/math.sqrt(covii*covjj)
                 )
         return histCorr
-                    
+                  
         
     def normalizeByBinWidth(self,hist):
         #hist.Scale(1./hist.Integral())
