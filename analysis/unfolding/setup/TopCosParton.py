@@ -22,25 +22,25 @@ class TopCosParton(Module.getClass("Unfolding")):
     def getUnfoldingLevel(self):
         return "parton"
         
-    def getRecoBinning(self):
+    def getRecoBinning(self,channel):
         return numpy.array([-1.0,-0.5,-0.25,0.0,0.25,0.5,1.0])
         
-    def getRecoVariable(self):
+    def getRecoVariable(self,channel):
         return "SingleTop_1__cosTheta_tPLz"
         
     def getRecoWeight(self,channel):
         return self.module("Samples").getMCWeightReco(channel)
         
-    def getRecoCut(self,channel="mu"):
+    def getRecoCut(self,channel):
         selection = self.module("Samples").getEventSelection(channel,iso=True)
         selection += "*"+self.module("Samples").getNjets(2)
         selection += "*"+self.module("Samples").getNbjets(1)
         return selection        
         
-    def getGenBinning(self):
+    def getGenBinning(self,channel):
         return numpy.array([-1.0,-0.5,-0.25,0.0,0.25,0.5,1.0])
         
-    def getGenVariable(self):
+    def getGenVariable(self,channel):
         return "Parton_1__cosTheta_tPLz"
         
     def getGenWeight(self,channel):

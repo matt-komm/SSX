@@ -22,10 +22,10 @@ class TopPtParton(Module.getClass("Unfolding")):
     def getUnfoldingLevel(self):
         return "parton"
         
-    def getRecoBinning(self):
+    def getRecoBinning(self,channel):
         return numpy.array([0.,50.,80.,110.,160.,300.])
         
-    def getRecoVariable(self):
+    def getRecoVariable(self,channel):
         return "SingleTop_1__Top_1__Pt"
         
     def getRecoWeight(self,channel):
@@ -37,10 +37,10 @@ class TopPtParton(Module.getClass("Unfolding")):
         selection += "*"+self.module("Samples").getNbjets(1)
         return selection        
         
-    def getGenBinning(self):
+    def getGenBinning(self,channel):
         return numpy.array([0.,50.,80.,110.,160.,300.])
         
-    def getGenVariable(self):
+    def getGenVariable(self,channel):
         return "Parton_1__Top_1__Pt"
         
     def getGenWeight(self,channel):

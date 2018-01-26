@@ -22,31 +22,31 @@ class LeptonPtParton(Module.getClass("Unfolding")):
     def getUnfoldingLevel(self):
         return "parton"
         
-    def getRecoBinning(self):
+    def getRecoBinning(self,channel):
         return numpy.array([30.,50.,60.,70.,90.,200.])
         
-    def getRecoVariable(self):
+    def getRecoVariable(self,channel):
         return "SingleTop_1__TightLepton_1__Pt"
         
-    def getRecoWeight(self,channel="mu"):
+    def getRecoWeight(self,channel):
         return self.module("Samples").getMCWeightReco(channel)
         
-    def getRecoCut(self,channel="mu"):
+    def getRecoCut(self,channel):
         selection = self.module("Samples").getEventSelection(channel,iso=True)
         selection += "*"+self.module("Samples").getNjets(2)
         selection += "*"+self.module("Samples").getNbjets(1)
         return selection        
         
-    def getGenBinning(self):
+    def getGenBinning(self,channel):
         return numpy.array([30.,50.,60.,70.,90.,200.])
         
-    def getGenVariable(self):
+    def getGenVariable(self,channel):
         return "Parton_1__Lepton_1__Pt"
         
     def getGenWeight(self,channel):
         return self.module("Samples").getGenWeight()
         
-    def getGenCut(self,channel="mu"):
+    def getGenCut(self,channel):
         selection = "(Parton_1__Lepton_1__Pt>0)"
         if channel == "mu":
             selection+="*(abs(Parton_1__Lepton_1__pdg)==13)"

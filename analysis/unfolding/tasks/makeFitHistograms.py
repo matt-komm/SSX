@@ -52,7 +52,7 @@ class FitHistograms(Module.getClass("Program")):
             
             
             #no selection in case unfoldingBin<0
-            binSelection = self.module("Unfolding").getRecoBinSelection(unfoldingBin)
+            binSelection = self.module("Unfolding").getRecoBinSelection(unfoldingBin,channel)
             
             for fitComponentName in fitComponentsDict.keys():
                 componentWeight = fitComponentsDict[fitComponentName]["weight"]

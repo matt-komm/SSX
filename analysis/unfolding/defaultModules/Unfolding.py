@@ -30,10 +30,10 @@ class Unfolding(Module):
     def getUnfoldingLevel(self):
         raise NotImplementedError()
         
-    def getRecoBinning(self):
+    def getRecoBinning(self,channel):
         raise NotImplementedError()
         
-    def getRecoVariable(self):
+    def getRecoVariable(self,channel):
         raise NotImplementedError()
         
     def getRecoWeight(self,channel):
@@ -43,10 +43,10 @@ class Unfolding(Module):
         raise NotImplementedError()
         
         
-    def getGenBinning(self):
+    def getGenBinning(self,channel):
         raise NotImplementedError()
         
-    def getGenVariable(self):
+    def getGenVariable(self,channel):
         raise NotImplementedError()
         
     def getGenWeight(self,channel):
@@ -56,29 +56,29 @@ class Unfolding(Module):
         raise NotImplementedError()
         
         
-    def getRecoBinSelection(self,ibin):
+    def getRecoBinSelection(self,ibin,channel):
         if ibin<0:
             return "1"
-        binning = self.module("Unfolding").getRecoBinning()
+        binning = self.module("Unfolding").getRecoBinning(channel)
         if ibin>=len(binning):
             self._logger.critical("Requested unfolding bin '"+str(ibin)+"' out of binning range")
             sys.exit(1)
             
         if ibin>=0:
-            return "(("+self.module("Unfolding").getRecoVariable()+">="+str(binning[ibin])+")*("+self.module("Unfolding").getRecoVariable()+"<"+str(binning[ibin+1])+"))"
+            return "(("+self.module("Unfolding").getRecoVariable(channel)+">="+str(binning[ibin])+")*("+self.module("Unfolding").getRecoVariable(channel)+"<"+str(binning[ibin+1])+"))"
 
             
     
-    def getGenBinSelection(self,ibin):
+    def getGenBinSelection(self,ibin,channel):
         if ibin<0:
             return "1"
-        binning = self.module("Unfolding").getGenBinning()
+        binning = self.module("Unfolding").getGenBinning(channel)
         if ibin>=len(binning):
             self._logger.critical("Requested unfolding bin '"+str(ibin)+"' out of binning range")
             sys.exit(1)
             
         if ibin>=0:
-            return "(("+self.module("Unfolding").getGenVariable()+">="+str(binning[ibin])+")*("+self.module("Unfolding").getGenVariable()+"<"+str(binning[ibin+1])+"))"
+            return "(("+self.module("Unfolding").getGenVariable(channel)+">="+str(binning[ibin])+")*("+self.module("Unfolding").getGenVariable(channel)+"<"+str(binning[ibin+1])+"))"
             
         
      

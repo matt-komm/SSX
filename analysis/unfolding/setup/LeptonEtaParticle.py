@@ -4,29 +4,29 @@ import logging
 import ROOT
 import numpy
 
-class TopYParton(Module.getClass("Unfolding")):
+class LeptonEtaParticle(Module.getClass("Unfolding")):
     def __init__(self,options=[]):
-        TopYParton.baseClass.__init__(self,options)
+        LeptonEtaParticle.baseClass.__init__(self,options)
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
     def getUnfoldingName(self):
-        return "y"
+        return "leta"
         
     def getUnfoldingVariableName(self):
-        return "top quark |y|"
+        return "lepton |#eta|"
         
     def getUnfoldingVariableUnit(self):
         return ""
         
     def getUnfoldingLevel(self):
-        return "parton"
+        return "particle"
         
     def getRecoBinning(self,channel):
-        return numpy.array([0.,0.15,0.45,0.7,1.3,2.4])
+        return numpy.array([0.0,0.3,0.7,1.5,1.8,2.4])
         
     def getRecoVariable(self,channel):
-        return "fabs(SingleTop_1__Top_1__Y)"
+        return "fabs(SingleTop_1__TightLepton_1__Eta)"
         
     def getRecoWeight(self,channel):
         return self.module("Samples").getMCWeightReco(channel)
@@ -38,15 +38,15 @@ class TopYParton(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self,channel):
-        return numpy.array([0.,0.15,0.45,0.7,1.3,2.4])
+        return numpy.array([0.0,0.3,0.7,1.5,1.8,2.4])
         
     def getGenVariable(self,channel):
-        return "fabs(Parton_1__Top_1__y)"
+        return "fabs(PTR_1__TightLepton_1__Eta)"
         
     def getGenWeight(self,channel):
         return self.module("Samples").getGenWeight()
         
-    def getGenCut(self,channel):
+    def getGenCut(self,channel="mu"):
         selection = "(Parton_1__Lepton_1__Pt>0)"
         if channel == "mu":
             selection+="*(abs(Parton_1__Lepton_1__pdg)==13)"
@@ -55,8 +55,6 @@ class TopYParton(Module.getClass("Unfolding")):
         else:
             self._logger.error("Unknown channel selection '"+channel+"'")
         return selection
-
-
             
         
             

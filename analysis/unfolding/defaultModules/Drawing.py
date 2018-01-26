@@ -417,7 +417,8 @@ class Drawing(Module):
         cvPS.SetLeftMargin(0.14)
         cvPS.SetBottomMargin(0.125)
         
-        genBinning = self.module("Unfolding").getGenBinning()
+        genBinning = numpy.zeros(histMatrix.GetNbinsX()+1)
+        histMatrix.GetLowEdge(genBinning)
         purityHist = ROOT.TH1F("purity"+str(random.random()),"",len(genBinning)-1,genBinning)
         stabilityHist = ROOT.TH1F("stability"+str(random.random()),"",len(genBinning)-1,genBinning)
 

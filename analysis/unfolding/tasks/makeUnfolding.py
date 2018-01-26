@@ -65,6 +65,8 @@ class RunUnfolding(Module.getClass("Program")):
                 yaxis="reco. "+self.module("Unfolding").getUnfoldingVariableName(),
             )
         
+        
+        #TODO: account here for different binning between channels!!!!
         responseMatricesBoth = responseMatrices[1].Clone()
         responseMatricesBoth.Add(responseMatrices[-1])
         self.module("Drawing").drawStabilityPurity(
@@ -73,6 +75,7 @@ class RunUnfolding(Module.getClass("Program")):
             title=self.module("Samples").getChannelName(channels),
             xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName()
         )
+            
             
         nominalRecoHists = {}
         nominalGenHists = {}

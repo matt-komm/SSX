@@ -34,14 +34,14 @@ class Response(Module):
         
     
     def makeResponse(self,channel,genCharge,output):
-        recoBinning = self.module("Unfolding").getRecoBinning()
+        recoBinning = self.module("Unfolding").getRecoBinning(channel)
         self._logger.info("Reco binning: "+str(recoBinning))
-        genBinning = self.module("Unfolding").getGenBinning()
+        genBinning = self.module("Unfolding").getGenBinning(channel)
         self._logger.info("Gen binning: "+str(genBinning))
         
-        recoVariable = self.module("Unfolding").getRecoVariable()
+        recoVariable = self.module("Unfolding").getRecoVariable(channel)
         self._logger.info("Reco variable: "+recoVariable)
-        genVariable = self.module("Unfolding").getGenVariable()
+        genVariable = self.module("Unfolding").getGenVariable(channel)
         self._logger.info("Gen variable: "+genVariable)
         
         recoSelection = self.module("Unfolding").getRecoCut(channel)
@@ -57,7 +57,7 @@ class Response(Module):
         
         responseHist = ROOT.TH2F(
             "response",
-            ";"+self.module("Unfolding").getGenVariable()+";"+self.module("Unfolding").getRecoVariable(),
+            ";"+self.module("Unfolding").getGenVariable(channel)+";"+self.module("Unfolding").getRecoVariable(channel),
             len(genBinning)-1,
             genBinning,
             len(recoBinning)-1,
@@ -65,19 +65,19 @@ class Response(Module):
         )
         efficiencyHist = ROOT.TH1F(
             "efficiency",
-            ";"+self.module("Unfolding").getGenVariable()+";",
+            ";"+self.module("Unfolding").getGenVariable(channel)+";",
             len(genBinning)-1,
             genBinning
         )
         efficiencyHistMatrix = ROOT.TH1F(
             "efficiencyMatrix",
-            ";"+self.module("Unfolding").getGenVariable()+";",
+            ";"+self.module("Unfolding").getGenVariable(channel)+";",
             len(genBinning)-1,
             genBinning
         )
         efficiencyHistVeto = ROOT.TH1F(
             "efficiencyVeto",
-            ";"+self.module("Unfolding").getGenVariable()+";",
+            ";"+self.module("Unfolding").getGenVariable(channel)+";",
             len(genBinning)-1,
             genBinning
         )

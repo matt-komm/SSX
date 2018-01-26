@@ -22,25 +22,25 @@ class TopYParticle(Module.getClass("Unfolding")):
     def getUnfoldingLevel(self):
         return "particle"
         
-    def getRecoBinning(self):
+    def getRecoBinning(self,channel):
         return numpy.array([0.,0.15,0.45,0.7,1.3,2.4])
         
-    def getRecoVariable(self):
+    def getRecoVariable(self,channel):
         return "fabs(SingleTop_1__Top_1__Y)"
         
     def getRecoWeight(self,channel):
         return self.module("Samples").getMCWeightReco(channel)
         
-    def getRecoCut(self,channel="mu"):
+    def getRecoCut(self,channel):
         selection = self.module("Samples").getEventSelection(channel,iso=True)
         selection += "*"+self.module("Samples").getNjets(2)
         selection += "*"+self.module("Samples").getNbjets(1)
         return selection        
         
-    def getGenBinning(self):
+    def getGenBinning(self,channel):
         return numpy.array([0.,0.15,0.45,0.7,1.3,2.4])
         
-    def getGenVariable(self):
+    def getGenVariable(self,channel):
         return "fabs(PTR_1__TopBest_1__Y)"
         
     def getGenWeight(self,channel):

@@ -31,7 +31,7 @@ class FitHistograms(Module.getClass("Program")):
                     self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,"nominal")
                 )
             else:
-                nbins = len(self.module("Unfolding").getRecoBinning())-1
+                nbins = len(self.module("Unfolding").getRecoBinning(channel))-1
                 for ibin in range(nbins):
                     histogramsPerChannelAndUncertainty[channel]["nominal"].append(
                         self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,"nominal")
@@ -44,7 +44,7 @@ class FitHistograms(Module.getClass("Program")):
                         self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,sysName+"Down")
                     ])
                 else:
-                    nbins = len(self.module("Unfolding").getRecoBinning())-1
+                    nbins = len(self.module("Unfolding").getRecoBinning(channel))-1
                     for ibin in range(nbins):
                         histogramsPerChannelAndUncertainty[channel][sysName].append([
                             self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Up"),
@@ -63,7 +63,7 @@ class FitHistograms(Module.getClass("Program")):
                 #make a separate observable per channel (and bin) 
                 binRanges = [0]
                 if unfoldingName!="inc":
-                    binRanges=range(len(self.module("Unfolding").getRecoBinning())-1)
+                    binRanges=range(len(self.module("Unfolding").getRecoBinning(channel))-1)
                     
                 for ibinRange in binRanges:
                     fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange)] = {
