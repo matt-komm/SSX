@@ -109,7 +109,7 @@ class Utils(Module):
                   
         
     def normalizeByBinWidth(self,hist):
-        hist.Scale(1./hist.Integral())
+        #hist.Scale(1./hist.Integral())
         
         for ibin in range(hist.GetNbinsX()):
             hist.SetBinContent(ibin+1,hist.GetBinContent(ibin+1)/hist.GetBinWidth(ibin+1))

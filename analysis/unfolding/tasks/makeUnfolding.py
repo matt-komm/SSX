@@ -60,9 +60,9 @@ class RunUnfolding(Module.getClass("Program")):
             self.module("Drawing").drawHistogramResponseAndEfficiency(
                 responseMatrices[charge], 
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_response"), 
-                title=self.module("Samples").getChannelName(channels)+" "+self.module("Samples").getChargeName(charge),
                 xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName(),
                 yaxis="reco. "+self.module("Unfolding").getUnfoldingVariableName(),
+                title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
             )
         
         
@@ -72,7 +72,7 @@ class RunUnfolding(Module.getClass("Program")):
         self.module("Drawing").drawStabilityPurity(
             responseMatricesBoth,
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ps"), 
-            title=self.module("Samples").getChannelName(channels),
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
             xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName()
         )
             
@@ -107,8 +107,10 @@ class RunUnfolding(Module.getClass("Program")):
                         self._logger.critical("Diagonal elements of covariance matrix do not align with histogram errors")
                         sys.exit(1)
             #draw reco hists
-            self.module("Drawing").plotDataHistogram(nominalRecoHists[charge],measuredRecoHists[charge],"reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
-                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoHist")
+            self.module("Drawing").plotDataHistogram(nominalRecoHists[charge],measuredRecoHists[charge],
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoHist"),
+                xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
+                title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
             )
             #draw input covariance,correlation
             self.module("Drawing").drawHistogramMatrix(
@@ -116,7 +118,8 @@ class RunUnfolding(Module.getClass("Program")):
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoCovariance"), 
                 xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
                 yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
-                zaxis="covariance"
+                zaxis="covariance",
+                title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
             )
             measuredRecoCorrelations = self.module("Utils").calculateCorrelations(measuredRecoCovariances[charge])
             self.module("Drawing").drawHistogramMatrix(
@@ -124,7 +127,8 @@ class RunUnfolding(Module.getClass("Program")):
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoCorrelation"), 
                 xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
                 yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
-                zaxis="correlation"
+                zaxis="correlation",
+                title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
             )
             
         combinedRecoBinning = numpy.linspace(0,2*len(genBinning)-2,num=2*len(recoBinning)-1)
@@ -233,29 +237,33 @@ class RunUnfolding(Module.getClass("Program")):
             )
                     
             
-        self.module("Drawing").plotDataHistogram(combinedNominalRecoHist,combinedMeasuredRecoHist,"reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
-            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_recoHist")
+        self.module("Drawing").plotDataHistogram(combinedNominalRecoHist,combinedMeasuredRecoHist,
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_recoHist"),
+            xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
         )
         self.module("Drawing").drawHistogramMatrix(
             self.module("Utils").normalizeByTransistionProbability(combinedResponseMatrix), 
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_response"), 
             xaxis=unfoldingLevel+" "+self.module("Unfolding").getUnfoldingVariableName(),
             yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
-            zaxis="transition"
+            zaxis="transition",
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
         )
         self.module("Drawing").drawHistogramMatrix(
             combinedCovarianceMatrix, 
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_recoCovariance"), 
             xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
             yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
-            zaxis="covariance"
+            zaxis="covariance",
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
         )
         self.module("Drawing").drawHistogramMatrix(
             self.module("Utils").calculateCorrelations(combinedCovarianceMatrix), 
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_recoCorrelation"), 
             xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
             yaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
-            zaxis="correlation"
+            zaxis="correlation",
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
         )
         
         
@@ -271,15 +279,18 @@ class RunUnfolding(Module.getClass("Program")):
             fixedTau=None
         )
         #draw unfolded hist
-        self.module("Drawing").plotDataHistogram(combinedNominalGenHist,combinedUnfoldedHist,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_unfoldedHist")
+        self.module("Drawing").plotDataHistogram(combinedNominalGenHist,combinedUnfoldedHist,
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_unfoldedHist"),
+            xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
         )
         self.module("Drawing").drawHistogramMatrix(
             combinedUnfoldedCovariance, 
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_unfoldedCovariance"), 
             xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
             yaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-            zaxis="covariance"
+            zaxis="covariance",
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
         )
         combinedUnfoldedCorrelation = self.module("Utils").calculateCorrelations(combinedUnfoldedCovariance)
         self.module("Drawing").drawHistogramMatrix(
@@ -287,7 +298,8 @@ class RunUnfolding(Module.getClass("Program")):
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_comb_unfoldedCorrelation"), 
             xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
             yaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-            zaxis="correlation"
+            zaxis="correlation",
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
         )
         
         
@@ -298,8 +310,10 @@ class RunUnfolding(Module.getClass("Program")):
             unfoldedHists[-1].SetBinError(ibin+1,combinedUnfoldedHist.GetBinError(ibin+1+(len(genBinning)-1)))
         
         for charge in unfoldedHists.keys():
-            self.module("Drawing").plotDataHistogram(nominalGenHists[charge],unfoldedHists[charge],"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_unfoldedHist")
+            self.module("Drawing").plotDataHistogram(nominalGenHists[charge],unfoldedHists[charge],
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_unfoldedHist"),
+                title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis="#LTEvents#GT",normalizeByBinWidth=True
+                
             )
             
             
@@ -307,28 +321,36 @@ class RunUnfolding(Module.getClass("Program")):
         genSum.Add(nominalGenHists[-1])
         
         histSum = self.module("Unfolding").calculateSum(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
-        self.module("Drawing").plotDataHistogram(genSum,histSum,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_sum_unfoldedHist")
+        self.module("Drawing").plotDataHistogram(genSum,histSum,
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_sum_unfoldedHist"),
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis="#LTEvents#GT",normalizeByBinWidth=True
         )
         histSumAlt = unfoldedHists[1].Clone("sumHistAlt")
         histSumAlt.Add(unfoldedHists[-1])
-        self.module("Drawing").plotDataHistogram(genSum,histSumAlt,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_sumalt_unfoldedHist")
+        self.module("Drawing").plotDataHistogram(genSum,histSumAlt,
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_sumalt_unfoldedHist"),
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis="#LTEvents#GT",normalizeByBinWidth=True
         )
         
         
-        
+        uncertaintyList = ["lheWeight_"+str(i) for i in range(2001,2103)]#+["lheWeight_"+str(i) for i in range(1001,1010)]
+        ratioUncBand = self.module("Unfolding").calculateGenUncertaintyBandRatio(channels,uncertaintyList)
+        #print ratioUncBand
         
         genRatio= nominalGenHists[1].Clone("ratioGen")
         genRatio.Divide(genSum)
         histRatio = self.module("Unfolding").calculateRatio(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
-        self.module("Drawing").plotDataHistogram(genRatio,histRatio,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratio_unfoldedHist")
+        self.module("Drawing").plotDataHistogram(genRatio,histRatio,
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratio_unfoldedHist"),
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis="#sigma(t)#kern[-0.5]{ }/#kern[-0.5]{ }#sigma(t+#bar{t})",yrange=[0.2,1.],
+            #uncBand=ratioUncBand
         )
         histRatioAlt = unfoldedHists[1].Clone("ratioHistAlt")
         histRatioAlt.Divide(histSumAlt)
-        self.module("Drawing").plotDataHistogram(genRatio,histRatioAlt,"unfolded "+self.module("Unfolding").getUnfoldingVariableName(),
-            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratioalt_unfoldedHist")
+        self.module("Drawing").plotDataHistogram(genRatio,histRatioAlt,
+            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ratioalt_unfoldedHist"),
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis="#sigma(t)#kern[-0.5]{ }/#kern[-0.5]{ }#sigma(t+#bar{t})",yrange=[0.2,1.],
+            #uncBand=ratioUncBand
         )
         
         '''
