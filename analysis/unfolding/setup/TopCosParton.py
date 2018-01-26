@@ -23,7 +23,7 @@ class TopCosParton(Module.getClass("Unfolding")):
         return "parton"
         
     def getRecoBinning(self,channel):
-        return numpy.array([-1.0,-0.5,-0.25,0.0,0.25,0.5,1.0])
+        return numpy.array([-1.0,-0.6,-0.3,0.0,0.3,0.6,1.0])
         
     def getRecoVariable(self,channel):
         return "SingleTop_1__cosTheta_tPLz"
@@ -38,7 +38,7 @@ class TopCosParton(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self,channel):
-        return numpy.array([-1.0,-0.5,-0.25,0.0,0.25,0.5,1.0])
+        return numpy.array([-1.0,-0.6,-0.3,0.0,0.3,0.6,1.0])
         
     def getGenVariable(self,channel):
         return "Parton_1__cosTheta_tPLz"

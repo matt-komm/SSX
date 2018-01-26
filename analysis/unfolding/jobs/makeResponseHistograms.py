@@ -52,15 +52,25 @@ scriptfile = '$HOME/SSX/analysis/unfolding/driver.py'
 
 config.inputParams = []
 
+setupBins = {
+    "setup/TopPtParton":{"ele":5,"mu":5},
+    "setup/TopYParton":{"ele":5,"mu":5},
+    "setup/LeptonPtParton":{"ele":4,"mu":5},
+    "setup/LeptonEtaParton":{"ele":3,"mu":5},
+    "setup/TopCosParton":{"ele":6,"mu":6},
+    "setup/WCosParton":{"ele":6,"mu":6},
+    
+    "setup/TopPtParticle":{"ele":5,"mu":5},
+    "setup/TopYParticle":{"ele":5,"mu":5},
+    "setup/LeptonPtParticle":{"ele":4,"mu":5},
+    "setup/LeptonEtaParticle":{"ele":3,"mu":5},
+    "setup/TopCosParticle":{"ele":6,"mu":6},
+    "setup/WCosParticle":{"ele":6,"mu":6},
+}
 
 for channel in ["mu","ele"]:
     for charge in [-1,0,1]:
-        for unfoldingSetup in [
-            #"setup/TopPtParton","setup/TopPtParticle",
-            #"setup/TopYParton","setup/TopYParticle",
-            "setup/LeptonPtParton","setup/LeptonPtParticle",
-            "setup/WCosParton","setup/WCosParticle",
-        ]:
+        for unfoldingSetup in sorted(setupBins.keys()):
             config.inputParams.append([
                 "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c charge:"+str(charge)
             ])
@@ -84,11 +94,33 @@ for channel in ["mu","ele"]:
                 "systematics/muMultiUp",
                 "systematics/eleMultiDown",
                 "systematics/eleMultiUp",
+                
+                "systematics/topMassDown",
+                "systematics/topMassUp",
+                
+                "systematics/ttbarHdampPSDown",
+                "systematics/ttbarHdampPSUp",
+                "systematics/ttbarScaleISRPSDown",
+                "systematics/ttbarScaleISRPSUp",
+                "systematics/ttbarScaleFSRPSDown",
+                "systematics/ttbarScaleFSRPSUp",
+                
+                "systematics/tchanHdampPSDown",
+                "systematics/tchanHdampPSUp",
+                "systematics/tchanScalePSDown",
+                "systematics/tchanScalePSUp",
+                
+                "systematics/tchanScaleTmpl -c qscale:ND",
+                "systematics/tchanScaleTmpl -c qscale:NU",
+                "systematics/tchanScaleTmpl -c qscale:DN",
+                "systematics/tchanScaleTmpl -c qscale:UN",
+                "systematics/tchanScaleTmpl -c qscale:UU",
+                "systematics/tchanScaleTmpl -c qscale:DD",
             ]:
         
                 #sys
                 config.inputParams.append([
-                    "-m tasks/makeResponseHistograms -m "+systModule+" -m "+unfoldingSetup+" -c channel:"+channel+" -c charge:"+str(charge)
+                    "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c charge:"+str(charge)
                 ])
             
             

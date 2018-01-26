@@ -23,7 +23,12 @@ class LeptonEtaParton(Module.getClass("Unfolding")):
         return "parton"
         
     def getRecoBinning(self,channel):
-        return numpy.array([0.0,0.3,0.7,1.5,1.8,2.4])
+        if channel=="mu":
+            return numpy.array([0.0,0.3,0.7,1.5,1.8,2.4])
+        elif channel=="ele":
+            return numpy.array([0.0,0.3,0.7,1.5])
+        else:
+            return numpy.array([0.0,0.3,0.7,1.5,1.8,2.4])
         
     def getRecoVariable(self,channel):
         return "fabs(SingleTop_1__TightLepton_1__Eta)"
@@ -38,7 +43,12 @@ class LeptonEtaParton(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self,channel):
-        return numpy.array([0.0,0.3,0.7,1.5,1.8,2.4])
+        if channel=="mu":
+            return numpy.array([0.0,0.3,0.7,1.5,1.8,2.4])
+        elif channel=="ele":
+            return numpy.array([0.0,0.3,0.7,1.5])
+        else:
+            return numpy.array([0.0,0.3,0.7,1.5,1.8,2.4])
         
     def getGenVariable(self,channel):
         return "fabs(Parton_1__Lepton_1__Eta)"

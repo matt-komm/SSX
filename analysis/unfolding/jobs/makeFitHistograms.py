@@ -52,35 +52,29 @@ scriptfile = '$HOME/SSX/analysis/unfolding/driver.py'
 
 config.inputParams = []
 
+setupBins = {
+    "setup/TopPtParton":{"ele":5,"mu":5},
+    "setup/TopYParton":{"ele":5,"mu":5},
+    "setup/LeptonPtParton":{"ele":4,"mu":5},
+    "setup/LeptonEtaParton":{"ele":3,"mu":5},
+    "setup/TopCosParton":{"ele":6,"mu":6},
+    "setup/WCosParton":{"ele":6,"mu":6},
+}
+
 
 for channel in ["mu","ele"]:
-        '''
+        
         #nominal/inclusive
         config.inputParams.append([
             "-m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
         ])
-        '''
-        #nominal/binned per obs
-        for unfoldingSetup in [
-            #"setup/TopPtParton",
-            #"setup/TopYParton",
-            "setup/LeptonPtParton"
-        ]:
-            for ibin in range(5):
+        
+        for unfoldingSetup in sorted(setupBins.keys()):
+            for ibin in range(setupBins[unfoldingSetup][channel]):
                 config.inputParams.append([
                     "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c bin:"+str(ibin)
                 ])
-        
-        
-        for unfoldingSetup in [
-            #"setup/TopCosParton",
-            "setup/WCosParton"
-        ]:
-            for ibin in range(6):
-                config.inputParams.append([
-                    "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c bin:"+str(ibin)
-                ])
-        
+
         for systModule in [
             "systematics/muEffDown",
             "systematics/muEffUp",
@@ -100,32 +94,42 @@ for channel in ["mu","ele"]:
             "systematics/muMultiUp",
             "systematics/eleMultiDown",
             "systematics/eleMultiUp",
+            
+            "systematics/topMassDown",
+            "systematics/topMassUp",
+            
+            "systematics/ttbarHdampPSDown",
+            "systematics/ttbarHdampPSUp",
+            "systematics/ttbarScaleISRPSDown",
+            "systematics/ttbarScaleISRPSUp",
+            "systematics/ttbarScaleFSRPSDown",
+            "systematics/ttbarScaleFSRPSUp",
+            
+            "systematics/tchanHdampPSDown",
+            "systematics/tchanHdampPSUp",
+            "systematics/tchanScalePSDown",
+            "systematics/tchanScalePSUp",
+            
+            "systematics/tchanScaleTmpl -c qscale:ND",
+            "systematics/tchanScaleTmpl -c qscale:NU",
+            "systematics/tchanScaleTmpl -c qscale:DN",
+            "systematics/tchanScaleTmpl -c qscale:UN",
+            "systematics/tchanScaleTmpl -c qscale:UU",
+            "systematics/tchanScaleTmpl -c qscale:DD",
         ]:
-            '''
+            
             #sys/inclusive
             config.inputParams.append([
                 "-m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
             ])
-            '''
+            
             #sys/binned per obs
-            for unfoldingSetup in [
-                #"setup/TopPtParton",
-                #"setup/TopYParton",
-                "setup/LeptonPtParton"
-            ]:
-                for ibin in range(5):
+            for unfoldingSetup in sorted(setupBins.keys()):
+                for ibin in range(setupBins[unfoldingSetup][channel]):
                     config.inputParams.append([
                         "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c bin:"+str(ibin)
                     ])
             
-            for unfoldingSetup in [
-                #"setup/TopCosParton",
-                "setup/WCosParton"
-            ]:
-                for ibin in range(6):
-                    config.inputParams.append([
-                        "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c bin:"+str(ibin)
-                    ])
             
 config.payload = \
 """
