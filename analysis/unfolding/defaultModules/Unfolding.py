@@ -54,7 +54,47 @@ class Unfolding(Module):
         
     def getGenCut(self,channel):
         raise NotImplementedError()
+         
+    def getRecoBinCenters(self,channel):
+        binning = self.module("Unfolding").getRecoBinning(channel)
+        result = numpy.zeros(len(binning)-1)
+        for i in range(len(result)):
+            result[i]=0.5*(binning[i]+binning[i+1])
+        return result
         
+    def getGenBinCenters(self,channel):
+        binning = self.module("Unfolding").getGenBinning(channel)
+        result = numpy.zeros(len(binning)-1)
+        for i in range(len(result)):
+            result[i]=0.5*(binning[i]+binning[i+1])
+        return result
+        
+        
+    def buildGlobalBinMap(self,channels):
+        #need to associate bin numbers to actual values!!!
+        channelToGlobalBins = {"ele":{},"mu":{}}
+        globalBinning = self.module("Unfolding").getRecoBinCenters("comb")
+        eleBinning = self.module("Unfolding").getRecoBinCenters("ele")
+        muBinning = self.module("Unfolding").getRecoBinCenters("mu")
+        for ieleBin, eleBin in enumerate(eleBinning):
+            for iglobal,globalBin in enumerate(globalBinning):
+                if math.fabs(globalBin-eleBin)<0.00001:
+                    channelToGlobalBins["ele"][ieleBin]="bin"+str(iglobal+1)
+                    break
+        if len(channelToGlobalBins["ele"].keys())!=len(eleBinning):
+            self._logger.critical("Not all bins of ele channel could be associated to the global binning scheme")
+            sys.exit(1)
+        self._logger.info("Ele to global binning map: "+str(channelToGlobalBins["ele"]))
+        for imuBin, muBin in enumerate(muBinning):
+            for iglobal,globalBin in enumerate(globalBinning):
+                if math.fabs(globalBin-muBin)<0.00001:
+                    channelToGlobalBins["mu"][imuBin]="bin"+str(iglobal+1)
+                    break
+        self._logger.info("Mu to global binning map: "+str(channelToGlobalBins["mu"]))
+        if len(channelToGlobalBins["mu"].keys())!=len(muBinning):
+            self._logger.critical("Not all bins of mu channel could be associated to the global binning scheme")
+            sys.exit(1)
+        return channelToGlobalBins
         
     def getRecoBinSelection(self,ibin,channel):
         if ibin<0:
