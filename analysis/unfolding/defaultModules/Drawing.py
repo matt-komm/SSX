@@ -4,6 +4,7 @@ import os
 import random
 import math
 import re
+import numpy
 from Module import Module
 
 colors=[]
@@ -51,8 +52,7 @@ class Drawing(Module):
                             break
         parameters = sorted(list(set(parameters)))
         Npar = len(parameters)
-        
-            
+       
         ROOT.gStyle.SetPaintTextFormat("4.0f")
         cv = ROOT.TCanvas("corr","",800,150+Npar*50)
         cv.SetTopMargin(50./(150+Npar*50))
@@ -273,7 +273,7 @@ class Drawing(Module):
         
     def drawHistogramResponseAndEfficiency(self,histMatrix, output, title="",xaxis="",yaxis="",zaxis="transition probability (%)"):
         ROOT.gStyle.SetPaintTextFormat("3.0f")
-        cvResponse = ROOT.TCanvas("cvResponse","",800,700)
+        cvResponse = ROOT.TCanvas("cvResponse","",800,800)
         cvResponse.Divide(1,2,0,0)
         
         cvResponse.GetPad(1).SetPad(0.0, 0.0, 1.0, 1.0)
@@ -282,10 +282,10 @@ class Drawing(Module):
         cvResponse.GetPad(2).SetFillStyle(4000)
         
         cvxmin=0.14
-        cvxmax=0.74
-        cvymin=0.14
+        cvxmax=0.8
+        cvymin=0.12
         cvymax=0.92
-        resHeight=0.35
+        resHeight=0.3
             
         for i in range(1,3):
             #for the canvas:
@@ -332,8 +332,15 @@ class Drawing(Module):
             genSum = histMatrix.GetBinContent(ibin+1,0)
             selSum = 0.0
             for jbin in range(histMatrix.GetNbinsY()):
-                selSum+=histMatrix.GetBinContent(ibin+1,jbin+1)
-            histMatrixGenSelected.SetBinContent(ibin+1,selSum/(genSum+selSum))
+                c=histMatrix.GetBinContent(ibin+1,jbin+1)
+                if c<0.000000000000001:
+                    histMatrix.SetBinContent(ibin+1,jbin+1,0.000000000000001)
+                selSum+=c
+                
+            if selSum>0:
+                histMatrixGenSelected.SetBinContent(ibin+1,selSum/(genSum+selSum))
+            else:
+                histMatrixGenSelected.SetBinContent(ibin+1,0)
         
         #histMatrixGenSelected.Divide(histMatrixGenAll)
         histMatrixGenSelected.Scale(100.)
@@ -355,6 +362,10 @@ class Drawing(Module):
         
         histMatrixGenSelected.GetXaxis().SetTitleSize(36)
         histMatrixGenSelected.GetYaxis().SetTitleSize(36)
+        histMatrixGenSelected.GetXaxis().SetTitleOffset(1.3)
+        histMatrixGenSelected.GetYaxis().SetTitleOffset(1.5)
+        hist.GetYaxis().SetTitleOffset(1.5)
+        hist.GetZaxis().SetTitleOffset(1.5)
         hist.GetYaxis().SetTitleSize(36)
         hist.GetZaxis().SetTitleSize(36)
         
@@ -500,7 +511,8 @@ class Drawing(Module):
         cvPS.SetBottomMargin(0.125)
         
         genBinning = numpy.zeros(histMatrix.GetNbinsX()+1)
-        histMatrix.GetLowEdge(genBinning)
+        for ibin in range(histMatrix.GetNbinsX()+1):
+            genBinning[ibin]=histMatrix.GetXaxis().GetBinLowEdge(ibin+1)
         purityHist = ROOT.TH1F("purity"+str(random.random()),"",len(genBinning)-1,genBinning)
         stabilityHist = ROOT.TH1F("stability"+str(random.random()),"",len(genBinning)-1,genBinning)
 

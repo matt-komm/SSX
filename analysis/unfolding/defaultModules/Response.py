@@ -32,6 +32,45 @@ class Response(Module):
             "response_"+unfoldingLevel+"_"+self.module("Samples").getChargeName(genCharge)+".root"
         )
         
+    def transformResponseToGlobalBinning(self,responseMatrix,channel):
+        globalRecoBinning = self.module("Unfolding").getRecoBinning("comb")
+        globalGenBinning = self.module("Unfolding").getGenBinning("comb")
+        tranformedResponse = ROOT.TH2F(
+            "tranformedResponse"+responseMatrix.GetName(),
+            responseMatrix.GetTitle()+";"+responseMatrix.GetXaxis().GetTitle()+";"+responseMatrix.GetYaxis().GetTitle(),
+            len(globalGenBinning)-1,
+            globalGenBinning,
+            len(globalRecoBinning)-1,
+            globalRecoBinning
+        )
+        tranformedResponse.SetDirectory(0)
+        recoBinMap  = self.module("Unfolding").buildGlobalRecoBinMap()
+        genBinMap = self.module("Unfolding").buildGlobalRecoBinMap()
+        for genBin in range(responseMatrix.GetNbinsX()):
+            tranformedResponse.SetBinContent(
+                genBinMap[channel][genBin]+1,
+                0,
+                responseMatrix.GetBinContent(genBin+1,0)
+            )
+            tranformedResponse.SetBinError(
+                genBinMap[channel][genBin]+1,
+                0,
+                responseMatrix.GetBinError(genBin+1,0)
+            )
+            for recoBin in range(responseMatrix.GetNbinsY()):
+                tranformedResponse.SetBinContent(
+                    genBinMap[channel][genBin]+1,
+                    recoBinMap[channel][recoBin]+1,
+                    responseMatrix.GetBinContent(genBin+1,recoBin+1)+0.000000000001
+                )
+                tranformedResponse.SetBinError(
+                    genBinMap[channel][genBin]+1,
+                    recoBinMap[channel][recoBin]+1,
+                    responseMatrix.GetBinError(genBin+1,recoBin+1)
+                )
+                
+        return tranformedResponse
+                
     
     def makeResponse(self,channel,genCharge,output):
         recoBinning = self.module("Unfolding").getRecoBinning(channel)

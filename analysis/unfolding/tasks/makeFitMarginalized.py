@@ -28,7 +28,7 @@ class FitHistograms(Module.getClass("Program")):
         
         
         #maps channel bins to global bins for combinations
-        binMap = self.module("Unfolding").buildGlobalBinMap(channels)
+        binMap = self.module("Unfolding").buildGlobalRecoBinMap()
             
         for channel in channels:
             histogramsPerChannelAndUncertainty[channel]={}
@@ -41,7 +41,7 @@ class FitHistograms(Module.getClass("Program")):
                 nbins = len(self.module("Unfolding").getRecoBinning(channel))-1
 
                 for ibin in range(nbins):
-                    histogramsPerChannelAndUncertainty[channel]["nominal"][binMap[channel][ibin]] = \
+                    histogramsPerChannelAndUncertainty[channel]["nominal"]["bin"+str(1+binMap[channel][ibin])] = \
                         self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,"nominal")
                     
             for sysName in uncertaintyList:
@@ -54,7 +54,7 @@ class FitHistograms(Module.getClass("Program")):
                 else:
                     nbins = len(self.module("Unfolding").getRecoBinning(channel))-1
                     for ibin in range(nbins):
-                        histogramsPerChannelAndUncertainty[channel][sysName][binMap[channel][ibin]] = [
+                        histogramsPerChannelAndUncertainty[channel][sysName]["bin"+str(1+binMap[channel][ibin])] = [
                             self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Up"),
                             self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Down")
                         ]

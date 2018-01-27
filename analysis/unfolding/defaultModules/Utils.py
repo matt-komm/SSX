@@ -125,6 +125,9 @@ class Utils(Module):
                 s+=responseMatrixSelectedNormalized.GetBinContent(genBin+1,recoBin+1)
             for recoBin in range(responseMatrixSelectedNormalized.GetNbinsY()):
                 c = responseMatrixSelectedNormalized.GetBinContent(genBin+1,recoBin+1)
-                responseMatrixSelectedNormalized.SetBinContent(genBin+1,recoBin+1,c/s)
+                if s>0:
+                    responseMatrixSelectedNormalized.SetBinContent(genBin+1,recoBin+1,c/s)
+                else:
+                    responseMatrixSelectedNormalized.SetBinContent(genBin+1,recoBin+1,0)
         return responseMatrixSelectedNormalized
             

@@ -33,15 +33,11 @@ class RunUnfolding(Module.getClass("Program")):
         )
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         
-        #print fitResult["parameters"]["tChannel_neg_bin0"]
-        #print fitResult["parameters"]["tChannel_pos_bin0"]
-        #print fitResult["covariances"]["values"]["tChannel_pos_bin0"]["tChannel_neg_bin0"]
-        
-        
         #for profiled syst use nominal hist atm - later take envelop of all profiled response matrices
-        responseMatrices = {1:None,-1:None}
-        for charge in responseMatrices.keys():
-            for channel in channels:
+        responseMatrices = {"ele":{1:None,-1:None,0:None},"mu":{1:None,-1:None,0:None}}
+        
+        for channel in channels:
+            for charge in [-1,1]:
                 responseFileName = self.module("Response").getOutputResponseFile(channel,unfoldingName,unfoldingLevel,"nominal",charge)
                 rootResponseFile = ROOT.TFile(responseFileName)
                 if not rootResponseFile:
@@ -51,39 +47,63 @@ class RunUnfolding(Module.getClass("Program")):
                 if not responseMatrix:
                     self._logger.critical("Cannot find response matrix 'response' in file '"+responseFileName+"'")
                     sys.exit(1)
-                if responseMatrices[charge]==None:
-                    responseMatrices[charge] = responseMatrix.Clone("response"+str(charge)+channel+str(random.random()))
-                    responseMatrices[charge].SetDirectory(0)
+                #responseMatrix = self.module("Response").transformResponseToGlobalBinning(responseMatrix,channel)
+                responseMatrices[channel][charge] = responseMatrix.Clone("response"+str(charge)+channel+str(random.random()))
+                responseMatrices[channel][charge].SetDirectory(0)
+                if responseMatrices[channel][0]==None:
+                    responseMatrices[channel][0]=responseMatrices[channel][charge].Clone(responseMatrices[channel][charge].GetName()+"sum")
+                    responseMatrices[channel][0].SetDirectory(0)
                 else:
-                    responseMatrices[charge].Add(responseMatrix)
+                    responseMatrices[channel][0].Add(responseMatrices[channel][charge])
                 rootResponseFile.Close()
             self.module("Drawing").drawHistogramResponseAndEfficiency(
-                responseMatrices[charge], 
-                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_response"), 
+                responseMatrices[channel][0],
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName([channel])+"_response"), 
                 xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName(),
                 yaxis="reco. "+self.module("Unfolding").getUnfoldingVariableName(),
-                title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
+                title=self.module("Samples").getPlotTitle([channel])+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
             )
         
         
         #TODO: account here for different binning between channels!!!!
-        responseMatricesBoth = responseMatrices[1].Clone()
-        responseMatricesBoth.Add(responseMatrices[-1])
-        self.module("Drawing").drawStabilityPurity(
-            responseMatricesBoth,
-            os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ps"), 
-            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
-            xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName()
-        )
+        if len(channels)==2:
+            responseMatricesBoth = None
+            for channel in channels:
+                if responseMatrices[channel][0]==None:
+                    continue
+                elif responseMatricesBoth==None:
+                    responseMatricesBoth = self.module("Response").transformResponseToGlobalBinning(responseMatrices[channel][0],channel)
+                else:
+                    responseMatricesBoth.Add(
+                        self.module("Response").transformResponseToGlobalBinning(responseMatrices[channel][0],channel)
+                    )
+                
+            self.module("Drawing").drawHistogramResponseAndEfficiency(
+                responseMatrices[channel][0],
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_response"), 
+                xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName(),
+                yaxis="reco. "+self.module("Unfolding").getUnfoldingVariableName(),
+                title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
+            )
             
+            self.module("Drawing").drawStabilityPurity(
+                responseMatricesBoth,
+                os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_ps"), 
+                title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
+                xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName()
+            )
+        
+        '''
+
             
         nominalRecoHists = {}
         nominalGenHists = {}
         measuredRecoHists = {}
         measuredRecoCovariances = {}
         unfoldedHists = {}
-        recoBinning = self.module("Unfolding").getRecoBinning()
-        genBinning = self.module("Unfolding").getGenBinning()
+        recoBinning = self.module("Unfolding").getRecoBinning("comb")
+        genBinning = self.module("Unfolding").getGenBinning("comb")
+        recoBinMap = self.module("Unfolding").buildGlobalRecoBinMap()
         for charge in responseMatrices.keys():
             nominalRecoHists[charge] = responseMatrices[charge].ProjectionY()
             nominalGenHists[charge] = responseMatrices[charge].ProjectionX()
@@ -97,11 +117,22 @@ class RunUnfolding(Module.getClass("Program")):
             #scale to fit result
             for ibin in range(len(recoBinning)-1):
                 signalFitResult = fitResult["parameters"]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(ibin)]
-                measuredRecoHists[charge].SetBinContent(ibin+1,nominalRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["mean_fit"])
-                measuredRecoHists[charge].SetBinError(ibin+1,nominalRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["unc_fit"])
+                measuredRecoHists[charge].SetBinContent(
+                    ibin+1,
+                    nominalRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["mean_fit"]
+                )
+                measuredRecoHists[charge].SetBinError(
+                    ibin+1,
+                    nominalRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["unc_fit"]
+                )
                 for jbin in range(len(recoBinning)-1):
-                    signalFitResultCov = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(ibin)]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(jbin)]
-                    measuredRecoCovariances[charge].SetBinContent(ibin+1,jbin+1,nominalRecoHists[charge].GetBinContent(ibin+1)*nominalRecoHists[charge].GetBinContent(jbin+1)*signalFitResultCov)
+                    signalFitResultCov = \
+                    fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(ibin)]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(jbin)]
+                    measuredRecoCovariances[charge].SetBinContent(
+                        ibin+1,
+                        jbin+1,
+                        nominalRecoHists[charge].GetBinContent(ibin+1)*nominalRecoHists[charge].GetBinContent(jbin+1)*signalFitResultCov
+                    )
                     #sanity check
                     if ibin==jbin and math.fabs(measuredRecoHists[charge].GetBinError(ibin+1)**2-measuredRecoCovariances[charge].GetBinContent(ibin+1,jbin+1))/measuredRecoCovariances[charge].GetBinContent(ibin+1,jbin+1)>0.0001:
                         self._logger.critical("Diagonal elements of covariance matrix do not align with histogram errors")
@@ -130,7 +161,7 @@ class RunUnfolding(Module.getClass("Program")):
                 zaxis="correlation",
                 title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
             )
-            
+        
         combinedRecoBinning = numpy.linspace(0,2*len(genBinning)-2,num=2*len(recoBinning)-1)
         combinedGenBinning = numpy.linspace(0,2*len(genBinning)-2,num=2*len(genBinning)-1)
         
@@ -352,6 +383,10 @@ class RunUnfolding(Module.getClass("Program")):
             title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis="#sigma(t)#kern[-0.5]{ }/#kern[-0.5]{ }#sigma(t+#bar{t})",yrange=[0.2,1.],
             #uncBand=ratioUncBand
         )
+        '''
+        
+        
+        
         
         '''
         genRatio= nominalGenHists[1].Clone("ratioGen")
