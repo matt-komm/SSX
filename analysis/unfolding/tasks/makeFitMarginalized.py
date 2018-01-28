@@ -28,7 +28,8 @@ class FitHistograms(Module.getClass("Program")):
         
         
         #maps channel bins to global bins for combinations
-        binMap = self.module("Unfolding").buildGlobalRecoBinMap()
+        if unfoldingName!="inc":
+            binMap = self.module("Unfolding").buildGlobalRecoBinMap()
             
         for channel in channels:
             histogramsPerChannelAndUncertainty[channel]={}

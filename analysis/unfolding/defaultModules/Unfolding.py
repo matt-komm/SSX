@@ -71,7 +71,9 @@ class Unfolding(Module):
         
     def buildGlobalBinMap(self,globalBinning,eleBinning,muBinning):
         #need to associate bin numbers to actual values!!!
-        channelToGlobalBins = {"ele":{},"mu":{}}
+        channelToGlobalBins = {"ele":{},"mu":{},"comb":{}}
+        for iglobalBin in range(len(globalBinning)):
+            channelToGlobalBins["comb"][iglobalBin]=iglobalBin
         for ieleBin, eleBin in enumerate(eleBinning):
             for iglobal,globalBin in enumerate(globalBinning):
                 if math.fabs(globalBin-eleBin)<0.00001:
@@ -80,13 +82,13 @@ class Unfolding(Module):
         if len(channelToGlobalBins["ele"].keys())!=len(eleBinning):
             self._logger.critical("Not all bins of ele channel could be associated to the global binning scheme")
             sys.exit(1)
-        self._logger.info("Ele to global binning map: "+str(channelToGlobalBins["ele"]))
+        #self._logger.info("Ele to global binning map: "+str(channelToGlobalBins["ele"]))
         for imuBin, muBin in enumerate(muBinning):
             for iglobal,globalBin in enumerate(globalBinning):
                 if math.fabs(globalBin-muBin)<0.00001:
                     channelToGlobalBins["mu"][imuBin]=iglobal
                     break
-        self._logger.info("Mu to global binning map: "+str(channelToGlobalBins["mu"]))
+        #self._logger.info("Mu to global binning map: "+str(channelToGlobalBins["mu"]))
         if len(channelToGlobalBins["mu"].keys())!=len(muBinning):
             self._logger.critical("Not all bins of mu channel could be associated to the global binning scheme")
             sys.exit(1)
@@ -133,7 +135,7 @@ class Unfolding(Module):
             
         
     def calculateGenUncertaintyBandRatio(self,channels,uncertainties):
-        ratiosPerUncertainty = numpy.zeros((len(uncertainties),len(self.module("Unfolding").getGenBinning())-1))
+        ratiosPerUncertainty = numpy.zeros((len(uncertainties),len(self.module("Unfolding").getGenBinning(self.module("Samples").getChannelName(channels)))-1))
         for iunc, uncertaintyName in enumerate(uncertainties):
             genPos = None
             genNeg = None
@@ -194,8 +196,8 @@ class Unfolding(Module):
         sigResult = numpy.nanstd(ratiosPerUncertainty,axis=0)
         
  
-        result = numpy.zeros((len(self.module("Unfolding").getGenBinning())-1,3))     
-        for ibin in range(len(self.module("Unfolding").getGenBinning())-1):
+        result = numpy.zeros((len(self.module("Unfolding").getGenBinning(self.module("Samples").getChannelName(channels)))-1,3))     
+        for ibin in range(len(self.module("Unfolding").getGenBinning(self.module("Samples").getChannelName(channels)))-1):
             result[ibin][0]=meanResult[ibin]-sigResult[ibin]
             result[ibin][1]=meanResult[ibin]
             result[ibin][2]=meanResult[ibin]+sigResult[ibin]

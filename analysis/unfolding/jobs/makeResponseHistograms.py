@@ -98,6 +98,8 @@ for channel in ["mu","ele"]:
                 "systematics/topMassDown",
                 "systematics/topMassUp",
                 
+                "systematics/topPt",
+                
                 "systematics/ttbarHdampPSDown",
                 "systematics/ttbarHdampPSUp",
                 "systematics/ttbarScaleISRPSDown",

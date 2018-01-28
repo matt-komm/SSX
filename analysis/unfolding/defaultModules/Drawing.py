@@ -448,7 +448,7 @@ class Drawing(Module):
 
         order = 0
         if autoscaling:
-            order = math.floor(math.log10(hist.GetMaximum()))-2
+            order = math.ceil(math.log10(hist.GetMaximum()))-2
             hist.Scale(10**(-order))
             
         ymax = 1.1*hist.GetMaximum()
@@ -477,7 +477,7 @@ class Drawing(Module):
         pPreliminary.Draw("Same")
         
         pOrder=None
-        if autoscaling and order!=0.:
+        if autoscaling and order!=0:
             pOrder=ROOT.TPaveText(1-cvResponse.GetRightMargin()+0.1,0.94,1-cvResponse.GetRightMargin()+0.1,0.94,"NDC")
             pOrder.SetFillColor(ROOT.kWhite)
             pOrder.SetBorderSize(0)
@@ -559,7 +559,10 @@ class Drawing(Module):
         purityHist.SetLineColor(ROOT.kOrange+8)
         purityHist.Draw("SameHIST")
         
-        legend = ROOT.TLegend(0.35,0.86,0.65,0.75)
+        if min(map(lambda x: x.GetMinimum(),[stabilityHist,purityHist]))>0.5:
+            legend = ROOT.TLegend(0.35,0.46,0.65,0.35)
+        else:
+            legend = ROOT.TLegend(0.35,0.84,0.65,0.73)
         legend.SetBorderSize(0)
         legend.SetTextFont(42)
         legend.SetFillColor(ROOT.kWhite)

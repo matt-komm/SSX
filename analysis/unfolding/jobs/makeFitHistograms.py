@@ -68,6 +68,10 @@ for channel in ["mu","ele"]:
         config.inputParams.append([
             "-m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
         ])
+        #for 2j0t wjets
+        config.inputParams.append([
+            "-m setup/Wjets -m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
+        ])
         
         for unfoldingSetup in sorted(setupBins.keys()):
             for ibin in range(setupBins[unfoldingSetup][channel]):
@@ -97,6 +101,8 @@ for channel in ["mu","ele"]:
             
             "systematics/topMassDown",
             "systematics/topMassUp",
+            
+            "systematics/topPt",
             
             "systematics/ttbarHdampPSDown",
             "systematics/ttbarHdampPSUp",
