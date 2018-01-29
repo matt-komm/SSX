@@ -141,6 +141,8 @@ class Samples(Module):
         
     def getEventSelection(self,channel,iso=True):
         selection = "(Reconstructed_1__passMuVeto==1)*(Reconstructed_1__passEleVeto==1)"
+        selection += "*((fabs(SingleTop_1__BJet_1__Eta)>3.0) || (fabs(SingleTop_1__BJet_1__Eta)<2.7) || (SingleTop_1__BJet_1__Pt>50.0))"
+        selection += "*((fabs(SingleTop_1__LightJet_1__Eta)>3.0) || (fabs(SingleTop_1__LightJet_1__Eta)<2.7) || (SingleTop_1__LightJet_1__Pt>50.0))"
         
         if channel=="mu":
             if iso:

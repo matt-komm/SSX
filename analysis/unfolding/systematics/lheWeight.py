@@ -15,7 +15,7 @@ class SamplesLHEWeight(Module.getClass("Samples")):
         self._logger.setLevel(logging.DEBUG)
         
     def getGenWeight(self):
-        return "genweight*"+self.module("Samples").getLumi()+"*mcweight*(lheweight_"+self.getOption("lheWeight")+"/lheweight_1001)"
+        return "genweight*"+str(self.module("Samples").getLumi())+"*mcweight*(lheweight_"+self.getOption("lheWeight")+"/lheweight_1001)"
 
 
 class UtilsLHEWeight(Module.getClass("Utils")):

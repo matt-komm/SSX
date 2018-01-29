@@ -15,6 +15,7 @@ class FitHistograms(Module.getClass("Program")):
     def execute(self):
         #mu,ele,comb
         channels = self.getOption("channels").split(",")
+        channelName = self.module("Samples").getChannelName(channels)
         self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
         histogramsPerChannel = {}
@@ -48,7 +49,7 @@ class FitHistograms(Module.getClass("Program")):
                 binRanges = [0]
                 if unfoldingName!="inc":
                     binRanges=range(len(self.module("Unfolding").getRecoBinning(channel))-1)
-                    
+                
                 for ibinRange in binRanges:
                     fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange)] = {
                         "bins":observableDict[obserableName]["bins"],
@@ -121,13 +122,13 @@ class FitHistograms(Module.getClass("Program")):
         #print fitResult["parameters"]["tChannel_neg_bin0"]
         #print fitResult["parameters"]["tChannel_pos_bin0"]
         #print fitResult["parameters"]["en"]
-        self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_yield.pdf",
+        self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_yield.pdf",
             selection=["Other_bin*","tChannel_*_bin*","WZjets_bin*","TopBkg_bin*","QCD_*_bin*_*"],
             ranges = [0,1.5],
             default=1,
         )
         
-        self.module("Drawing").drawPosterior(fitResult,fitOutput+"__posteriors_ratios.pdf",
+        self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_ratios.pdf",
             selection=["*_ratio_bin*"],
             ranges = [0.85,1.15],
             default=1,

@@ -102,7 +102,7 @@ for channel in ["mu","ele"]:
             "systematics/topMassDown",
             "systematics/topMassUp",
             
-            "systematics/topPt",
+            "systematics/ttbarPt",
             
             "systematics/ttbarHdampPSDown",
             "systematics/ttbarHdampPSUp",

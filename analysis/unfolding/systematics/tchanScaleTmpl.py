@@ -31,29 +31,29 @@ class SamplesTchanScaleTmpl(Module.getClass("Samples")):
     def getSample(self,name,channel="mu",sys=None):
         result = SamplesTchanScaleTmpl.baseClass.getSample(self,name,channel,sys)
         if name == "tChannel":
-            result["weight"]+="*(lheweight_"+self._lheNumber+")
+            result["weight"]+="*(lheweight_"+str(self._lheNumber)+")"
         return result
         
-class SamplesTchanScaleTmpl(Module.getClass("Unfolding")):
+class UnfoldingTchanScaleTmpl(Module.getClass("Unfolding")):
     def __init__(self,options=[]):
-        SamplesTchanScaleTmpl.baseClass.__init__(self,options)
+        UnfoldingTchanScaleTmpl.baseClass.__init__(self,options)
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         self._variation = self.getOption("qscale")
         self._lheNumber = variations[self._variation]
         
     def getGenWeight(self,channel):
-        result = SamplesTchanScaleTmpl.baseClass.getGenWeight(self,channel)
-        result["weight"]+="*(lheweight_"+self._lheNumber+")
+        weight = UnfoldingTchanScaleTmpl.baseClass.getGenWeight(self,channel)
+        weight+="*(lheweight_"+str(self._lheNumber)+")"
+        return weight
     
 
-class SamplesTchanScaleTmpl(Module.getClass("Utils")):
+class UtilsTchanScaleTmpl(Module.getClass("Utils")):
     def __init__(self,options=[]):
-        SamplesTchanScaleTmpl.baseClass.__init__(self,options)
+        UtilsTchanScaleTmpl.baseClass.__init__(self,options)
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         self._variation = self.getOption("qscale")
-        self._lheNumber = variations[self._variation]
         
     def getUncertaintyName(self):
         return "tchanScaleME"+self._variation

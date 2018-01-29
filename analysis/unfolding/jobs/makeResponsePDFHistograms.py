@@ -17,7 +17,7 @@ config.sbatch_mem = '1000'
 config.sbatch_output = '/dev/null'
 config.sbatch_error = '/dev/null'
 
-config.sbatch_additionalOptions = ["--job-name=responseHists"]
+config.sbatch_additionalOptions = ["--job-name=responsePDFHists"]
 
 
 config.inputSandboxContent = []
@@ -26,7 +26,7 @@ config.inputSandboxFilename = ''
 
 config.batchScriptsDir = config.sbatch_workdir
 
-config.batchScriptsFilename = 'makeResponseHistograms.sh'
+config.batchScriptsFilename = 'makeResponsePDFHistograms.sh'
 
 config.stageout = False
 
@@ -36,8 +36,8 @@ config.writeLogsOnWN = True
 
 config.separateStdoutStderrLogs = True
 
-config.stdoutFilename = "log_responseHists${SLURM_ARRAY_TASK_ID}.out"
-config.stderrFilename = "log_responseHists${SLURM_ARRAY_TASK_ID}.err"
+config.stdoutFilename = "log_responsePDFHists${SLURM_ARRAY_TASK_ID}.out"
+config.stderrFilename = "log_responsePDFHists${SLURM_ARRAY_TASK_ID}.err"
 config.stageoutLogs = True
 
 config.stageoutLogsDir = config.sbatch_workdir + '/log'
@@ -51,6 +51,7 @@ config.inputParamsNames = ['ARGS']
 scriptfile = '$HOME/SSX/analysis/unfolding/driver.py'
 
 config.inputParams = []
+
 
 setupBins = {
     "setup/TopPtParton":{"ele":5,"mu":5},
@@ -68,61 +69,16 @@ setupBins = {
     "setup/WCosParticle":{"ele":6,"mu":6},
 }
 
+
 for channel in ["mu","ele"]:
     for charge in [-1,0,1]:
-        for unfoldingSetup in sorted(setupBins.keys()):
-            config.inputParams.append([
-                "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c charge:"+str(charge)
-            ])
+        for unfoldingSetup in sorted(setupBins.keys()):       
             
-            for systModule in [
-                "systematics/muEffDown",
-                "systematics/muEffUp",
-                "systematics/eleEffDown",
-                "systematics/eleEffUp",
-                "systematics/btagDown",
-                "systematics/btagUp",
-                "systematics/ltagDown",
-                "systematics/ltagUp",
-                "systematics/enDown",
-                "systematics/enUp",
-                "systematics/puDown",
-                "systematics/puUp",
-                "systematics/uncDown",
-                "systematics/uncUp",
-                "systematics/muMultiDown",
-                "systematics/muMultiUp",
-                "systematics/eleMultiDown",
-                "systematics/eleMultiUp",
-                
-                "systematics/topMassDown",
-                "systematics/topMassUp",
-                
-                "systematics/ttbarPt",
-                
-                "systematics/ttbarHdampPSDown",
-                "systematics/ttbarHdampPSUp",
-                "systematics/ttbarScaleISRPSDown",
-                "systematics/ttbarScaleISRPSUp",
-                "systematics/ttbarScaleFSRPSDown",
-                "systematics/ttbarScaleFSRPSUp",
-                
-                "systematics/tchanHdampPSDown",
-                "systematics/tchanHdampPSUp",
-                "systematics/tchanScalePSDown",
-                "systematics/tchanScalePSUp",
-                
-                "systematics/tchanScaleTmpl -c qscale:ND",
-                "systematics/tchanScaleTmpl -c qscale:NU",
-                "systematics/tchanScaleTmpl -c qscale:DN",
-                "systematics/tchanScaleTmpl -c qscale:UN",
-                "systematics/tchanScaleTmpl -c qscale:UU",
-                "systematics/tchanScaleTmpl -c qscale:DD",
-            ]:
+            for lheWeight in range(2001,2103):
         
                 #sys
                 config.inputParams.append([
-                    "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c charge:"+str(charge)
+                    "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -m systematics/lheWeight -c lheWeight:"+str(lheWeight)+" -c channel:"+channel+" -c charge:"+str(charge)
                 ])
             
             
