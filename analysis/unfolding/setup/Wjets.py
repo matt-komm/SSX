@@ -15,9 +15,9 @@ class ThetaModelWjets(Module.getClass("ThetaModel")):
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
-    def getObservablesDict(self):
-        tch = self.module("ThetaModel").getBDTtchan()
-        ttw = self.module("ThetaModel").getBDTttw()
+    def getObservablesDict(self,channel):
+        tch = self.module("ThetaModel").getBDTtchan(channel)
+        ttw = self.module("ThetaModel").getBDTttw(channel)
         charge = self.module("Samples").getRecoCharge()
     
         observables = {

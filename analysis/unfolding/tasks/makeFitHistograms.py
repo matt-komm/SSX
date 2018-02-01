@@ -37,7 +37,7 @@ class FitHistograms(Module.getClass("Program")):
         
         eventSelection = self.module("Samples").getEventSelection(channel)
         
-        observablesDict = self.module("ThetaModel").getObservablesDict()
+        observablesDict = self.module("ThetaModel").getObservablesDict(channel)
         fitComponentsDict = self.module("ThetaModel").getFitComponentsDict()
         
         

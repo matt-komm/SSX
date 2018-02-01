@@ -106,6 +106,23 @@ class Utils(Module):
                     covij/math.sqrt(covii*covjj)
                 )
         return histCorr
+        
+    def getHistogramFile(self,prefix,channel,unfoldingName,unfoldingBin=-1,uncertainty="nominal"):
+        if not uncertainty:
+            uncertainty = "nominal"
+        if unfoldingBin<0:
+            return os.path.join(
+                self.module("ThetaModel").getHistogramPath(channel,unfoldingName,uncertainty),
+                prefix+"__"+channel+"__"+unfoldingName+".root"
+            )
+        else:
+            return os.path.join(
+                self.module("Utils").getHistogramPath(channel,unfoldingName,uncertainty),
+                prefix+"__"+channel+"__"+unfoldingName+str(unfoldingBin)+".root"
+            )
+            
+    def getHistogramPath(self,channel,unfoldingName,uncertainty="nominal"):
+        return self.module("Utils").getOutputFolder(channel+"/"+uncertainty+"/"+unfoldingName)
                   
         
     def normalizeByBinWidth(self,hist):

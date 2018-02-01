@@ -214,7 +214,7 @@ class Samples(Module):
         if self._processDict[channel] == None:
             self.module("Samples").makeProcessFileDict(channel)
         if not self._processDict[channel].has_key(processName):
-            self._logger.error("Cannot find process '"+processName+"' for channel '"+channel+"' -> skip")
+            self._logger.info("Cannot find process '"+processName+"' for channel '"+channel+"' -> skip")
             return []
         return self._processDict[channel][processName]
         

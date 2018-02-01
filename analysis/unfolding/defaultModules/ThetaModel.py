@@ -65,21 +65,9 @@ class ThetaModel(Module):
             uncertainty = "nominal"
         return self.module("Utils").getOutputFolder(channel+"/"+uncertainty+"/"+unfoldingName)
         
-        
     def getHistogramFile(self,channel,unfoldingName,unfoldingBin=-1,uncertainty="nominal"):
-        if not uncertainty:
-            uncertainty = "nominal"
-        if unfoldingBin<0:
-            return os.path.join(
-                self.module("ThetaModel").getHistogramPath(channel,unfoldingName,uncertainty),
-                "fitHists__"+channel+"__"+unfoldingName+".root"
-            )
-        else:
-            return os.path.join(
-                self.module("ThetaModel").getHistogramPath(channel,unfoldingName,uncertainty),
-                "fitHists__"+channel+"__"+unfoldingName+str(unfoldingBin)+".root"
-            )
-        
+        return self.module("Utils").getHistogramFile("fitHists",channel,unfoldingName,unfoldingBin,uncertainty)
+
     def getHistogramName(self,observableName,fitComponentName,unfoldingName,unfoldingBin=-1,uncertainty=None):
         if unfoldingBin<0:
             if uncertainty:
@@ -128,15 +116,20 @@ class ThetaModel(Module):
         return histDict
            
     
-    def getBDTtchan(self):
-        return "(TMath::TanH(4.*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.07)))"
+    def getBDTtchan(self,channel):
+        return "(TMath::TanH(2.1*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)+6.2*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)>0.0)*TMath::Power(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.,3)-1.6*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)<-0.1)*TMath::Power(fabs(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost+0.1),2.)))"
         
-    def getBDTttw(self):
-        return "(TMath::TanH(4.5*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.07)))"
+    def getBDTttw(self,channel):
+        if channel=="mu":
+            return "(TMath::TanH(4.4*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.11)))"
+        elif channel=="ele":
+            return "(TMath::TanH(5.1*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.09)))"
+        self._logger.critical("Unknown channel: "+str(channel))
+        sys.exit(1)
         
-    def getObservablesDict(self):
-        tch = self.module("ThetaModel").getBDTtchan()
-        ttw = self.module("ThetaModel").getBDTttw()
+    def getObservablesDict(self,channel):
+        tch = self.module("ThetaModel").getBDTtchan(channel)
+        ttw = self.module("ThetaModel").getBDTttw(channel)
         charge = self.module("Samples").getRecoCharge()
     
         observables = {
