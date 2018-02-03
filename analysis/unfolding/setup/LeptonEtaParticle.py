@@ -57,7 +57,7 @@ class LeptonEtaParticle(Module.getClass("Unfolding")):
         return self.module("Samples").getGenWeight()
         
     def getGenCut(self,channel="mu"):
-        selection = "(Parton_1__Lepton_1__Pt>0)"
+        selection = "(PTR_1__TopBest_1__Pt>0)*(PTR_1__nTightLepton==1)*(PTR_1__nSelectedJet==2)"
         if channel == "mu":
             selection+="*(abs(Parton_1__Lepton_1__pdg)==13)"
         elif channel == "ele":
