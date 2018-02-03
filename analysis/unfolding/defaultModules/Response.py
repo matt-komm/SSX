@@ -199,6 +199,7 @@ class Response(Module):
         responseHist.SetDirectory(rootFile)
         responseHist.Write()
         genHist = responseHist.ProjectionX("gen")
+        self._logger.info("Cross section in bin range: "+str(genHist.Integral()/self.module("Samples").getLumi())+" pb")
         genHist.SetDirectory(rootFile)
         genHist.Write()
         recoHist = responseHist.ProjectionY("reco")
