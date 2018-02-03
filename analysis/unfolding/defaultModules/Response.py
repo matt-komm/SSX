@@ -84,6 +84,7 @@ class Response(Module):
         self._logger.info("Gen variable: "+genVariable)
         
         recoSelection = self.module("Unfolding").getRecoCut(channel)
+
         self._logger.info("Reco selection: "+recoSelection)
         genSelection = self.module("Unfolding").getGenCut(channel)+"*"+self.module("Samples").getGenChargeSelection(genCharge)
         self._logger.info("Gen selection: "+genSelection)
@@ -141,6 +142,25 @@ class Response(Module):
             len(genBinning)-1,
             genBinning
         )
+        #to cross check the cross section
+        xsecHist = ROOT.TH1F(
+            "xsec",
+            ";xsec;",
+            1,
+            numpy.array([-100.,100.])
+        )
+        xsecGenSelectionHist = ROOT.TH1F(
+            "xsecGenSelection",
+            ";xsec;",
+            1,
+            numpy.array([-100.,100.])
+        )
+        xsecGenSelectionNoTauHist = ROOT.TH1F(
+            "xsecGenSelectionNoTau",
+            ";xsec;",
+            1,
+            numpy.array([-100.,100.])
+        )
         #will automatically get the sys varied samples names
         for processName in self.module("Samples").getSample("tChannel",channel)["processes"]:
             self._logger.info("Projecting events from '"+processName+"'")
@@ -157,7 +177,19 @@ class Response(Module):
                 )
                 self.module("Utils").getHist1D(efficiencyHistMatrixUnweighted,fileName,processName,genVariable,
                     genWeight+"*"+genSelection+"*(!("+recoSelection+"))"
-                )                
+                )
+                        
+                self.module("Utils").getHist1D(xsecHist,fileName,processName,"0",
+                    genWeight
+                )   
+                self.module("Utils").getHist1D(xsecGenSelectionHist,fileName,processName,"0",
+                    genWeight+"*"+genSelection
+                )
+                self.module("Utils").getHist1D(xsecGenSelectionNoTauHist,fileName,processName,"0",
+                    genWeight+"*"+genSelection+"*(Parton_1__Lepton_1__fromTau==0)"
+                ) 
+                     
+                        
         self._logger.info("Projected selected events "+str(responseHist.Integral())+" in response matrix") 
         self._logger.info("Projected unselected events "+str(efficiencyHistMatrix.Integral())+" in efficiency hist")
         self._logger.info("Projected selected events (w/o reco weight) "+str(responseHistUnweighted.Integral())+" in response matrix") 
@@ -169,6 +201,15 @@ class Response(Module):
                 self.module("Utils").getHist1D(efficiencyHistVeto,fileName,processName,genVariable,
                     genWeight+"*"+genSelection+"*(1./veto_frac)"
                 )
+                self.module("Utils").getHist1D(xsecHist,fileName,processName,"0",
+                    genWeight+"*(1./veto_frac)"
+                )    
+                self.module("Utils").getHist1D(xsecGenSelectionHist,fileName,processName,"0",
+                    genWeight+"*"+genSelection+"*(1./veto_frac)"
+                )  
+                self.module("Utils").getHist1D(xsecGenSelectionNoTauHist,fileName,processName,"0",
+                    genWeight+"*"+genSelection+"*(Parton_1__Lepton_1__fromTau==0)"+"*(1./veto_frac)"
+                ) 
         self._logger.info("Projected unselected events from veto "+str(efficiencyHistVeto.Integral())+" in efficiency hist")
         
         efficiencyHist.Add(efficiencyHistMatrix)
@@ -178,7 +219,7 @@ class Response(Module):
         # -> projection on x axis gives unweighted gen distribution
         for ibin in range(efficiencyHist.GetNbinsX()):
             sumWeighted = efficiencyHistMatrix.GetBinContent(ibin+1)
-            sumUnweighted = efficiencyHistMatrix.GetBinContent(ibin+1)
+            sumUnweighted = efficiencyHistMatrixUnweighted.GetBinContent(ibin+1)
             for jbin in range(responseHist.GetNbinsY()):
                 sumWeighted+=responseHist.GetBinContent(ibin+1,jbin+1)
                 sumUnweighted+=responseHistUnweighted.GetBinContent(ibin+1,jbin+1)
@@ -200,6 +241,11 @@ class Response(Module):
         responseHist.Write()
         genHist = responseHist.ProjectionX("gen")
         self._logger.info("Cross section in bin range: "+str(genHist.Integral()/self.module("Samples").getLumi())+" pb")
+        self._logger.info("Cross section after gen selection: "+str(xsecGenSelectionHist.Integral()/self.module("Samples").getLumi())+" pb")
+        self._logger.info("Cross section after gen selection (no tau): "+str(xsecGenSelectionNoTauHist.Integral()/self.module("Samples").getLumi())+" pb")
+        self._logger.info("Total cross section: "+str(xsecHist.Integral()/self.module("Samples").getLumi())+" pb")
+        if math.fabs(xsecHist.Integral()/self.module("Samples").getLumi()-217.0)>1.:
+            self._logger.warning("Inclusive cross section not 217 pb. Check normalization of sample!")
         genHist.SetDirectory(rootFile)
         genHist.Write()
         recoHist = responseHist.ProjectionY("reco")
@@ -207,4 +253,5 @@ class Response(Module):
         recoHist.Write()
         efficiencyHist.SetDirectory(rootFile)
         efficiencyHist.Write()
+        
         
