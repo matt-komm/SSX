@@ -165,6 +165,7 @@ class Drawing(Module):
             self.module("Utils").normalizeByBinWidth(nominalHist)
             self.module("Utils").normalizeByBinWidth(measuredHist)
         elif normalizeByCrossSection:
+            plotRange = nominalHist.GetXaxis().GetBinUpEdge(nominalHist.GetNbinsX())-nominalHist.GetXaxis().GetBinLowEdge(1)
             self.module("Utils").normalizeByBinWidth(nominalHist)
             self.module("Utils").normalizeByBinWidth(measuredHist)
             nominalHist.Scale(1./self.module("Samples").getLumi())

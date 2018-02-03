@@ -354,10 +354,16 @@ class RunUnfolding(Module.getClass("Program")):
             unfoldedHists[-1].SetBinContent(ibin+1,combinedUnfoldedHist.GetBinContent(ibin+1+(len(genBinning)-1)))
             unfoldedHists[-1].SetBinError(ibin+1,combinedUnfoldedHist.GetBinError(ibin+1+(len(genBinning)-1)))
         
+        yunit = "#lower[-0.25]{#scale[0.9]{d#kern[-0.6]{ }#sigma}}#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{#/}}#kern[-2]{ }#lower[0.25]{#scale[0.9]{d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingVariableName()+"}}"
+        unit = self.module("Unfolding").getUnfoldingVariableUnit()
+        if unit!="":
+            yunit += " (#scale[0.6]{#frac{pb}{"+unit+"}})"
+        else:
+            yunit += " (pb)"
         for charge in unfoldedHists.keys():
             self.module("Drawing").plotDataHistogram(nominalGenHists[charge],unfoldedHists[charge],
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_unfoldedHist"),
-                title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis="#LTEvents#GT",normalizeByBinWidth=True
+                title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis=yunit,normalizeByCrossSection=True
                 
             )
             
@@ -368,8 +374,9 @@ class RunUnfolding(Module.getClass("Program")):
         histSum = self.module("Unfolding").calculateSum(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
         self.module("Drawing").plotDataHistogram(genSum,histSum,
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_sum_unfoldedHist"),
-            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis="#LTEvents#GT",normalizeByBinWidth=True
+            title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis=yunit,normalizeByCrossSection=True
         )
+        '''
         histSumAlt = unfoldedHists[1].Clone("sumHistAlt")
         histSumAlt.Add(unfoldedHists[-1])
         self.module("Drawing").plotDataHistogram(genSum,histSumAlt,
@@ -377,7 +384,7 @@ class RunUnfolding(Module.getClass("Program")):
             title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis="unfolded "+self.module("Unfolding").getUnfoldingVariableName(),yaxis="#LTEvents#GT",normalizeByBinWidth=True
         )
         
-        '''
+       
         uncertaintyList = ["lheWeight_"+str(i) for i in range(2001,2103)]#+["lheWeight_"+str(i) for i in range(1001,1010)]
         ratioUncBand = self.module("Unfolding").calculateGenUncertaintyBandRatio(channels,uncertaintyList)
         #print ratioUncBand
