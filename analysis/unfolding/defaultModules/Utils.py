@@ -93,6 +93,17 @@ class Utils(Module):
             hist.Add(tempHist)
         rootFile.Close()
         
+    def morphHist1D(nominal,systList,means,covarianceMatrix,ntoys=1000):
+        if len(means)!=(len(systList)+1):
+            self._logger.critical("Morphing requires means for each nucsiance parameters")
+            sys.exit(1)
+        toys = numpy.array((ntoys,nominal.GetNbins()))
+            
+            
+        result = nominal.Clone(nominal.GetName()+"morph")
+        result.SetDirectory(0)
+        
+        
     def calculateCorrelations(self,hist):
         histCorr = hist.Clone(hist.GetName()+"correlations")
         for ibin in range(histCorr.GetNbinsX()):

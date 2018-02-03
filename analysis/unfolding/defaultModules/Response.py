@@ -93,7 +93,7 @@ class Response(Module):
         genWeight = self.module("Unfolding").getGenWeight(channel)
         self._logger.info("Gen weight: "+genWeight)
         
-        
+        #events in reco selection
         responseHist = ROOT.TH2F(
             "response",
             ";"+self.module("Unfolding").getGenVariable(channel)+";"+self.module("Unfolding").getRecoVariable(channel),
@@ -102,20 +102,41 @@ class Response(Module):
             len(recoBinning)-1,
             recoBinning
         )
-        efficiencyHist = ROOT.TH1F(
-            "efficiency",
-            ";"+self.module("Unfolding").getGenVariable(channel)+";",
-            len(genBinning)-1,
-            genBinning
-        )
+        #events fail reco selection
         efficiencyHistMatrix = ROOT.TH1F(
             "efficiencyMatrix",
             ";"+self.module("Unfolding").getGenVariable(channel)+";",
             len(genBinning)-1,
             genBinning
         )
+        #events in reco selection w/o reco weight
+        responseHistUnweighted = ROOT.TH2F(
+            "responseUnweighted",
+            ";"+self.module("Unfolding").getGenVariable(channel)+";"+self.module("Unfolding").getRecoVariable(channel),
+            len(genBinning)-1,
+            genBinning,
+            len(recoBinning)-1,
+            recoBinning
+        )
+        #events fail reco selection w/o reco weight
+        efficiencyHistMatrixUnweighted = ROOT.TH1F(
+            "efficiencyMatrixUnweighted",
+            ";"+self.module("Unfolding").getGenVariable(channel)+";",
+            len(genBinning)-1,
+            genBinning
+        )
+        #events not selected (veto branch)
         efficiencyHistVeto = ROOT.TH1F(
             "efficiencyVeto",
+            ";"+self.module("Unfolding").getGenVariable(channel)+";",
+            len(genBinning)-1,
+            genBinning
+        )
+        
+        #final efficiency (sum of efficiencyHistMatrix and efficiencyHistVeto)
+        #and corrected by the reco weight
+        efficiencyHist = ROOT.TH1F(
+            "efficiency",
             ";"+self.module("Unfolding").getGenVariable(channel)+";",
             len(genBinning)-1,
             genBinning
@@ -130,8 +151,17 @@ class Response(Module):
                 self.module("Utils").getHist1D(efficiencyHistMatrix,fileName,processName,genVariable,
                     genWeight+"*"+genSelection+"*"+recoWeight+"*(!("+recoSelection+"))"
                 )
+                
+                self.module("Utils").getHist2D(responseHistUnweighted,fileName,processName,genVariable,recoVariable,
+                    genWeight+"*"+genSelection+"*"+recoSelection
+                )
+                self.module("Utils").getHist1D(efficiencyHistMatrixUnweighted,fileName,processName,genVariable,
+                    genWeight+"*"+genSelection+"*(!("+recoSelection+"))"
+                )                
         self._logger.info("Projected selected events "+str(responseHist.Integral())+" in response matrix") 
         self._logger.info("Projected unselected events "+str(efficiencyHistMatrix.Integral())+" in efficiency hist")
+        self._logger.info("Projected selected events (w/o reco weight) "+str(responseHistUnweighted.Integral())+" in response matrix") 
+        self._logger.info("Projected unselected events (w/o reco weight) "+str(efficiencyHistMatrixUnweighted.Integral())+" in efficiency hist")
         #force no sys samples !
         for processName in self.module("Samples").getSample("tChannel",channel,sys="")["processes"]:
              self._logger.info("Projecting events from '"+processName+"'")
@@ -140,7 +170,23 @@ class Response(Module):
                     genWeight+"*"+genSelection+"*(1./veto_frac)"
                 )
         self._logger.info("Projected unselected events from veto "+str(efficiencyHistVeto.Integral())+" in efficiency hist")
+        
         efficiencyHist.Add(efficiencyHistMatrix)
+        
+        #efficiency needs to be correct to account for the reco weight (e.g. lepton scale factors)
+        # -> projection on y axis gives weighted reco distribution
+        # -> projection on x axis gives unweighted gen distribution
+        for ibin in range(efficiencyHist.GetNbinsX()):
+            sumWeighted = efficiencyHistMatrix.GetBinContent(ibin+1)
+            sumUnweighted = efficiencyHistMatrix.GetBinContent(ibin+1)
+            for jbin in range(responseHist.GetNbinsY()):
+                sumWeighted+=responseHist.GetBinContent(ibin+1,jbin+1)
+                sumUnweighted+=responseHistUnweighted.GetBinContent(ibin+1,jbin+1)
+            scale = 1.*sumUnweighted/sumWeighted
+            self._logger.info("Bin "+str(ibin+1)+": apply reco reweighting of "+str(scale))
+            efficiencyHist.SetBinContent(ibin+1,scale*efficiencyHist.GetBinContent(ibin+1))
+            efficiencyHist.SetBinError(ibin+1,scale*efficiencyHist.GetBinError(ibin+1))
+        
         efficiencyHist.Add(efficiencyHistVeto)
         
         self._logger.info("Average selection efficiency: "+str(responseHist.Integral()/efficiencyHist.Integral()))

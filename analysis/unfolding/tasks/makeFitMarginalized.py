@@ -61,13 +61,14 @@ class FitHistograms(Module.getClass("Program")):
                         ]
                         
         
-        observableDict = self.module("ThetaModel").getObservablesDict()
-        fitComponentDict = self.module("ThetaModel").getFitComponentsDict()
-        uncertainyParameterDict = self.module("ThetaModel").getUncertaintsDict()
+        
 
         fitSetup = {}
         parametersDict = {}
         for channel in channels:
+            observableDict = self.module("ThetaModel").getObservablesDict(channel)
+            fitComponentDict = self.module("ThetaModel").getFitComponentsDict()
+            uncertainyParameterDict = self.module("ThetaModel").getUncertaintsDict()
             for obserableName in observableDict.keys():
                 #make a separate observable per channel (and bin) 
                 binNames = histogramsPerChannelAndUncertainty[channel]["nominal"].keys()

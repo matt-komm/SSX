@@ -87,7 +87,7 @@ class ThetaModel(Module):
             self._logger.critical("Histogram file '"+fileName+"' not found")
             sys.exit(1)
         histDict = {}
-        for observableName in self.module("ThetaModel").getObservablesDict().keys():
+        for observableName in self.module("ThetaModel").getObservablesDict(channel).keys():
             histDict[observableName]={}
             #fit components
             for fitComponentName in self.module("ThetaModel").getFitComponentsDict().keys():
