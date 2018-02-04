@@ -5,6 +5,7 @@ import random
 import shutil
 import sys
 import math
+import numpy
 from Module import Module
 
 import logging
@@ -95,15 +96,32 @@ class Utils(Module):
             hist.Add(tempHist)
         rootFile.Close()
         
-    def morphHist1D(nominal,systList,means,covarianceMatrix,ntoys=1000):
-        if len(means)!=(len(systList)+1):
-            self._logger.critical("Morphing requires means for each nucsiance parameters")
+    def morphHist(self,nominal,systList,nuciances,covariance):
+        if len(nuciances)!=(len(systList)):
+            self._logger.critical("Morphing requires nuciances for each systematic")
             sys.exit(1)
-        toys = numpy.array((ntoys,nominal.GetNbins()))
-            
-            
-        result = nominal.Clone(nominal.GetName()+"morph")
-        result.SetDirectory(0)
+        morphed = nominal.Clone(nominal.GetName()+"morph")
+        morphed.SetDirectory(0)
+        for ibin in range((morphed.GetNbinsX()+2)*(morphed.GetNbinsY()+2)):
+            nominal = morphed.GetBinContent(ibin)
+            resultDiced = numpy.zeros(1000)
+            for itoy in range(len(resultDiced)):
+                resultDiced[itoy] = morphed.GetBinContent(ibin)
+                pdiced = numpy.random.multivariate_normal(nuciances,covariance)
+                for isys in range(len(systList)):
+                    p = pdiced[isys]
+                    up = systList[isys][0].GetBinContent(ibin)
+                    down = systList[isys][1].GetBinContent(ibin)
+                    if p>1:
+                        resultDiced[itoy]+=(up-nominal)*math.fabs(p)
+                    elif p<-1:
+                        resultDiced[itoy]+=(down-nominal)*math.fabs(p)
+                    else:
+                        resultDiced[itoy]+=0.5*p*(up-down)+(p**2-0.5*math.fabs(p**3))*(up+down-2*nominal)
+            morphed.SetBinContent(ibin,numpy.mean(resultDiced))
+            morphed.SetBinError(ibin,numpy.std(resultDiced))
+        return morphed
+                
         
         
     def calculateCorrelations(self,hist):
