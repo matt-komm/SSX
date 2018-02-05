@@ -16,6 +16,9 @@ class TopPtParticle(Module.getClass("Unfolding")):
     def getUnfoldingVariableName(self):
         return "top quark p#scale[0.7]{#lower[0.3]{T}}"
         
+    def getUnfoldingSymbol(self):
+        return "p#scale[0.7]{#lower[0.3]{T}}"
+        
     def getUnfoldingVariableUnit(self):
         return "GeV"
         
@@ -27,6 +30,7 @@ class TopPtParticle(Module.getClass("Unfolding")):
         
     def getRecoVariable(self,channel):
         return "SingleTop_1__Top_1__Pt"
+        
         
     def getRecoWeight(self,channel):
         return self.module("Samples").getMCWeightReco(channel)

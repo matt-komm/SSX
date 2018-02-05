@@ -24,6 +24,9 @@ class Unfolding(Module):
     def getUnfoldingVariableName(self):
         raise NotImplementedError()
         
+    def getUnfoldingSymbol(self):
+        raise NotImplementedError()
+        
     def getUnfoldingVariableUnit(self):
         raise NotImplementedError()
         

@@ -157,7 +157,7 @@ class Drawing(Module):
             
         cv.Print(outputFile)
         
-    def plotDataHistogram(self,nominalHistA,measuredHistA,output,title="",xaxis="",yaxis="Events",yrange=None,normalizeByBinWidth=False,normalizeByCrossSection=False,uncBand=None):
+    def plotDataHistogram(self,nominalHistA,measuredHistA,output,title="",xaxis="",yaxis="Events",yrange=None,normalizeByBinWidth=False,normalizeByCrossSection=False,logy=False,uncBand=None):
         nominalHist = nominalHistA.Clone()
         measuredHist = measuredHistA.Clone()
         
@@ -181,6 +181,7 @@ class Drawing(Module):
         cvymax=0.92
         
         cvHist = ROOT.TCanvas("cvHist","",750,700)
+        cvHist.SetLogy(logy)
         cvHist.SetLeftMargin(cvxmin)
         cvHist.SetBottomMargin(cvymin)
         cvHist.SetTopMargin(1-cvymax)
@@ -188,6 +189,9 @@ class Drawing(Module):
 
         ymin = 0
         ymax = 1.3*max(nominalHist.GetMaximum(),measuredHist.GetMaximum())
+        if logy:
+            ymin = 0.4*min(nominalHist.GetMinimum(),measuredHist.GetMinimum())
+            ymax = math.log(1.3*math.exp(max(nominalHist.GetMaximum(),measuredHist.GetMaximum())))
         if yrange:
             ymin = yrange[0]
             ymax = yrange[1]

@@ -16,6 +16,9 @@ class LeptonPtParton(Module.getClass("Unfolding")):
     def getUnfoldingVariableName(self):
         return "lepton p#scale[0.7]{#lower[0.3]{T}}"
         
+    def getUnfoldingSymbol(self):
+        return "p#scale[0.7]{#lower[0.3]{T}}"
+        
     def getUnfoldingVariableUnit(self):
         return "GeV"
         

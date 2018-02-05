@@ -16,6 +16,9 @@ class TopPtParton(Module.getClass("Unfolding")):
     def getUnfoldingVariableName(self):
         return "top quark p#scale[0.7]{#lower[0.3]{T}}"
         
+    def getUnfoldingSymbol(self):
+        return "p#scale[0.7]{#lower[0.3]{T}}"
+        
     def getUnfoldingVariableUnit(self):
         return "GeV"
         
