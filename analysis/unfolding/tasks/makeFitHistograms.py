@@ -110,7 +110,7 @@ class FitHistograms(Module.getClass("Program")):
                 fitWeight+"*"+binSelection,
                 True,
             )
-            self._logger.info("produced hist: "+fitHist.GetName()+", entries="+str(int(fitHist.GetEntries()))+", events="+str(round(fitHist.Integral(),1)))
+            self._logger.info("produced hist: "+dataHist.GetName()+", entries="+str(int(dataHist.GetEntries()))+", events="+str(round(dataHist.Integral(),1)))
         
         outputFolder = self.module("ThetaModel").getHistogramPath(
             channel,

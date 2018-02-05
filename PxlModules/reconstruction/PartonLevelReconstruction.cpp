@@ -354,6 +354,7 @@ class PartonLevelReconstruction:
                             pxl::Particle* wbosonClone = (pxl::Particle*)wboson->clone();
                             wbosonClone->setName("W");
                             wbosonClone->setUserRecord("pdg",wboson->getPdgNumber());
+                            wbosonClone->setUserRecord("y",0.5*std::log((wbosonClone->getE()+wbosonClone->getPz())/(wbosonClone->getE()-wbosonClone->getPz())));
                             outputEV->insertObject(wbosonClone);
                             topClone->linkDaughter(wbosonClone);
                             

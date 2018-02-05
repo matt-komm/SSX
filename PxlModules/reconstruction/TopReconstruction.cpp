@@ -203,6 +203,7 @@ class TopReconstruction:
             wboson->linkDaughter(p1);
             wboson->linkDaughter(p2);
             wboson->setP4FromDaughters();
+            wboson->setUserRecord("Y",0.5*std::log((wboson->getE()+wboson->getPz())/(wboson->getE()-wboson->getPz())));
             return wboson;
         }
         

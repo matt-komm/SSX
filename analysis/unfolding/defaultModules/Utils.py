@@ -55,6 +55,8 @@ class Utils(Module):
         tempHist.Scale(0)
         tempHist.SetEntries(0)
         tempHist.SetName("hist_"+processName+str(random.random()))
+        #print weight
+        #print
         if (tree):
             for fileNameExtra in fileName[1:]:  
                 tree.AddFriend(processName,fileNameExtra)

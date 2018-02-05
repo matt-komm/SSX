@@ -56,8 +56,10 @@ class Samples(Module):
     def getRecoChargeSelection(self,charge):
         if charge == 0:
             return "1"
-        elif charge == -1 or charge == 1:
-            return "("+self.module("Samples").getRecoCharge()+"=="+str(charge)+")"
+        elif charge == -1:
+            return "("+self.module("Samples").getRecoCharge()+"<0)"
+        elif charge == 1:
+            return "("+self.module("Samples").getRecoCharge()+">0)"
         else:
             self._logger.critical("charge '"+str(charge)+"' invalid")
             raise Exception("charge '"+str(charge)+"' invalid")
@@ -70,8 +72,10 @@ class Samples(Module):
     def getGenChargeSelection(self,charge):
         if charge == 0:
             return "1"
-        elif charge == -1 or charge == 1:
-            return "("+self.module("Samples").getGenCharge()+"=="+str(charge)+")"
+        elif charge == -1:
+            return "("+self.module("Samples").getGenCharge()+"<0)"
+        elif charge == 1:
+            return "("+self.module("Samples").getGenCharge()+">0)"
         else:
             self._logger.critical("charge '"+str(charge)+"' invalid")
             raise Exception("charge '"+str(charge)+"' invalid")
