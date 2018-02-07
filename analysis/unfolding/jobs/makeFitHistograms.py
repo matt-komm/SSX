@@ -80,6 +80,10 @@ for channel in ["mu","ele"]:
                 ])
 
         for systModule in [
+            "systematics/twDown",
+            "systematics/twUp",
+            "systematics/dyDown",
+            "systematics/dyUp",
             "systematics/muEffDown",
             "systematics/muEffUp",
             "systematics/eleEffDown",
@@ -98,6 +102,7 @@ for channel in ["mu","ele"]:
             "systematics/muMultiUp",
             "systematics/eleMultiDown",
             "systematics/eleMultiUp",
+            
             
             "systematics/topMassDown",
             "systematics/topMassUp",

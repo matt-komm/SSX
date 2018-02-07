@@ -62,6 +62,10 @@ for channel in ["mu","ele"]:
         ])
 
         for systModule in [
+            "systematics/twDown",
+            "systematics/twUp",
+            "systematics/dyDown",
+            "systematics/dyUp",
             "systematics/muEffDown",
             "systematics/muEffUp",
             "systematics/eleEffDown",
