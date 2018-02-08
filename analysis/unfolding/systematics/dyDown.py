@@ -17,9 +17,9 @@ class SamplesDYDown(Module.getClass("Samples")):
     def getSample(self,name,channel="mu",sys=None):
         result = SamplesDYDown.baseClass.getSample(self,name,channel,sys)
         if name=="DYMG" or name=="DYAMC":
-            result["weight"]+="*(0.8)
+            result["weight"]+="*(0.8)"
         if name=="WJetsAMCex" or name=="WJetsAMC":
-            result["weight"]+="*(1.03)
+            result["weight"]+="*(1.03)"
         return result
 
 

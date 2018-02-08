@@ -59,6 +59,7 @@ setupBins = {
     "setup/LeptonEtaParton":{"ele":3,"mu":5},
     "setup/TopCosParton":{"ele":6,"mu":6},
     "setup/WCosParton":{"ele":6,"mu":6},
+    "setup/WPtParton":{"ele":5,"mu":5},
 }
 
 
@@ -100,9 +101,10 @@ for channel in ["mu","ele"]:
             "systematics/uncUp",
             "systematics/muMultiDown",
             "systematics/muMultiUp",
-            "systematics/eleMultiDown",
-            "systematics/eleMultiUp",
-            
+            "systematics/eleMultiIsoDown",
+            "systematics/eleMultiIsoUp",
+            "systematics/eleMultiVetoDown",
+            "systematics/eleMultiVetoUp",
             
             "systematics/topMassDown",
             "systematics/topMassUp",

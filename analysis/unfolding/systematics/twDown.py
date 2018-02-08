@@ -17,9 +17,9 @@ class SamplesTWDown(Module.getClass("Samples")):
     def getSample(self,name,channel="mu",sys=None):
         result = SamplesTWDown.baseClass.getSample(self,name,channel,sys)
         if name=="tWChannel":
-            result["weight"]+="*(0.8)
+            result["weight"]+="*(0.8)"
         if name=="TTJets":
-            result["weight"]+="*(1.022)
+            result["weight"]+="*(1.022)"
         return result
 
 

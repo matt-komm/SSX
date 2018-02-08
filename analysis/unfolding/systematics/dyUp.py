@@ -17,9 +17,9 @@ class SamplesDYUp(Module.getClass("Samples")):
     def getSample(self,name,channel="mu",sys=None):
         result = SamplesDYUp.baseClass.getSample(self,name,channel,sys)
         if name=="DYMG" or name=="DYAMC":
-            result["weight"]+="*(1.2)
+            result["weight"]+="*(1.2)"
         if name=="WJetsAMCex" or name=="WJetsAMC":
-            result["weight"]+="*(0.97)
+            result["weight"]+="*(0.97)"
         return result
 
 

@@ -17,9 +17,9 @@ class SamplesTWUp(Module.getClass("Samples")):
     def getSample(self,name,channel="mu",sys=None):
         result = SamplesTWUp.baseClass.getSample(self,name,channel,sys)
         if name=="tWChannel":
-            result["weight"]+="*(1.2)
+            result["weight"]+="*(1.2)"
         if name=="TTJets":
-            result["weight"]+="*(0.978)
+            result["weight"]+="*(0.978)"
         return result
 
 

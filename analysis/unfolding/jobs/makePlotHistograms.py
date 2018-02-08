@@ -82,8 +82,10 @@ for channel in ["mu","ele"]:
             "systematics/uncUp",
             "systematics/muMultiDown",
             "systematics/muMultiUp",
-            "systematics/eleMultiDown",
-            "systematics/eleMultiUp",
+            "systematics/eleMultiIsoDown",
+            "systematics/eleMultiIsoUp",
+            "systematics/eleMultiVetoDown",
+            "systematics/eleMultiVetoUp",
             
             "systematics/topMassDown",
             "systematics/topMassUp",
