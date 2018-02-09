@@ -190,13 +190,13 @@ class ThetaModel(Module):
             #    "color":ROOT.kGray
             #},
  
-            "QCD_3j2t":
-            {
-                "sets":["QCD_DD"],
-                "uncertainties":["QCD_3j2t"],
-                "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
-                "color":ROOT.kGray
-            }
+            #"QCD_3j2t":
+            #{
+            #    "sets":["QCD_DD"],
+            #    "uncertainties":["QCD_3j2t"],
+            #    "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
+            #    "color":ROOT.kGray
+            #}
         }
         
         
@@ -270,6 +270,10 @@ class ThetaModel(Module):
                 file.write(componentHist.toConfigString())
                 for shapeSysDict in fitComponentsDict[componentName]["shape"]:
                     parameterNameShape = shapeSysDict["parameter"]
+                    #hardcoded norm of a few systematics
+                    fixedShape = ["eleMultiIso","eleMultiVeto","muMulti","tw","dy"]
+                    if parameterNameShape in fixedShape:
+                        component.addShapeNorm(parameterNameShape)
                     histUp = shapeSysDict["up"]
                     histDown = shapeSysDict["down"]
                     componentHistSysUp = RootHistogram(observableName+"__"+componentName+"__"+parameterNameShape+"Up",{

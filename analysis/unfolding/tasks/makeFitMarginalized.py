@@ -216,3 +216,6 @@ class FitHistograms(Module.getClass("Program")):
                     ranges = [-1.5,1.5],
                     default=0
                 )
+            else:
+                self._logger.warning("Single channel fit results not found -> comparisons are not produced!")
+                

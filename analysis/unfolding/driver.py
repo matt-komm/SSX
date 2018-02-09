@@ -164,7 +164,7 @@ ROOT.gStyle.SetOptLogz(0)
 #ROOT.gStyle.SetPaperSize(ROOT.TStyle.kA4)
 #ROOT.gStyle.SetPaperSize(27., 29.7)
 #ROOT.gStyle.SetPaperSize(27., 29.7)
-ROOT.gStyle.SetPaperSize(8.0*1.6*cvscale,6.5*1.6*cvscale)
+ROOT.gStyle.SetPaperSize(8.0*1.8*cvscale,6.5*1.8*cvscale)
 ROOT.TGaxis.SetMaxDigits(3)
 ROOT.gStyle.SetLineScalePS(2)
 
