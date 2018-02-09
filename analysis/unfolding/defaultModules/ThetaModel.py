@@ -123,7 +123,7 @@ class ThetaModel(Module):
         if channel=="mu":
             return "(TMath::TanH(4.4*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.11)))"
         elif channel=="ele":
-            return "(TMath::TanH(5.1*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.09)))"
+            return "(TMath::TanH(5.4*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.06)))"
         self._logger.critical("Unknown channel: "+str(channel))
         sys.exit(1)
         
