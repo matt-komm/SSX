@@ -148,7 +148,7 @@ class ThetaModel(Module):
             "3j2t": {
                 "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
                 "variable":charge+"*SingleTop_1__mtw_beforePz",
-                "bins":20,
+                "bins":10,
                 "range":[-200.,200.]
             },
         }
@@ -190,13 +190,13 @@ class ThetaModel(Module):
             #    "color":ROOT.kGray
             #},
  
-            #"QCD_3j2t":
-            #{
-            #    "sets":["QCD_DD"],
-            #    "uncertainties":["QCD_3j2t"],
-            #    "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
-            #    "color":ROOT.kGray
-            #}
+            "QCD_3j2t":
+            {
+                "sets":["QCD_DD"],
+                "uncertainties":["QCD_3j2t"],
+                "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
+                "color":ROOT.kGray
+            }
         }
         
         
