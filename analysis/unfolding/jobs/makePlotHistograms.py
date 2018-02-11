@@ -36,8 +36,8 @@ config.writeLogsOnWN = True
 
 config.separateStdoutStderrLogs = True
 
-config.stdoutFilename = "log_fitHists${SLURM_ARRAY_TASK_ID}.out"
-config.stderrFilename = "log_fitHists${SLURM_ARRAY_TASK_ID}.err"
+config.stdoutFilename = "log_plotHists${SLURM_ARRAY_TASK_ID}.out"
+config.stderrFilename = "log_plotHists${SLURM_ARRAY_TASK_ID}.err"
 config.stageoutLogs = True
 
 config.stageoutLogsDir = config.sbatch_workdir + '/log'
@@ -114,7 +114,7 @@ for channel in ["mu","ele"]:
             
             #sys/inclusive
             config.inputParams.append([
-                "-m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
+                "-m tasks/makePlotHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
             ])
             
             

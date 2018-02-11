@@ -123,7 +123,7 @@ class ThetaModel(Module):
         if channel=="mu":
             return "(TMath::TanH(4.4*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.11)))"
         elif channel=="ele":
-            return "(TMath::TanH(5.1*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.09)))"
+            return "(TMath::TanH(5.4*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.06)))"
         self._logger.critical("Unknown channel: "+str(channel))
         sys.exit(1)
         
@@ -148,7 +148,7 @@ class ThetaModel(Module):
             "3j2t": {
                 "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
                 "variable":charge+"*SingleTop_1__mtw_beforePz",
-                "bins":20,
+                "bins":10,
                 "range":[-200.,200.]
             },
         }
@@ -190,13 +190,13 @@ class ThetaModel(Module):
             #    "color":ROOT.kGray
             #},
  
-            #"QCD_3j2t":
-            #{
-            #    "sets":["QCD_DD"],
-            #    "uncertainties":["QCD_3j2t"],
-            #    "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
-            #    "color":ROOT.kGray
-            #}
+            "QCD_3j2t":
+            {
+                "sets":["QCD_DD"],
+                "uncertainties":["QCD_3j2t"],
+                "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
+                "color":ROOT.kGray
+            }
         }
         
         
