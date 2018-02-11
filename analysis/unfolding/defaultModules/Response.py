@@ -45,7 +45,7 @@ class Response(Module):
         )
         tranformedResponse.SetDirectory(0)
         recoBinMap  = self.module("Unfolding").buildGlobalRecoBinMap()
-        genBinMap = self.module("Unfolding").buildGlobalRecoBinMap()
+        genBinMap = self.module("Unfolding").buildGlobalGenBinMap()
         for genBin in range(responseMatrix.GetNbinsX()):
             tranformedResponse.SetBinContent(
                 genBinMap[channel][genBin]+1,
@@ -70,6 +70,85 @@ class Response(Module):
                 )
                 
         return tranformedResponse
+        
+    def morphResponses(self,responseMatrices,systematics,fitResult):
+        morphedHists = {}
+        for charge in morphedHists.keys():
+            nominalHists = responseMatrices[charge]['nominal']
+            sysHists = []
+            means = []
+            covariances = []
+            for unc in systematics:
+                sysHists.append([
+                    responseMatrices[charge][unc+"Up"],
+                    responseMatrices[charge][unc+"Down"],
+                ])
+                means.append(fitResult["parameters"][unc]["mean_fit"])
+                covs = []
+                for unc2 in systematics:
+                    covs.append(fitResult["covariances"]["values"][unc][unc2])
+                covariances.append(covs)
+            #NOTE: not 100% correct - ignoring here correlations between charged bins in shape
+            #correlation in yields from the fit result is accounted for later
+            morphedHists[charge] = self.module("Utils").morphHist(nominalHists[charge],sysHists[charge],means,covariances)
+    
+        
+       
+        
+    def gatherResponse(self,unfoldingName,unfoldingLevel,channels,systematics=[]):
+        responseMatrices = {}
+        uncertainties = []
+        for unc in systematics:
+            uncertainties.append(unc+"Up")
+            uncertainties.append(unc+"Down")
+    
+        for channel in channels:
+            responseMatrices[channel] = {1:{},-1:{},0:{}}
+            for uncertainty in ["nominal"]+uncertainties:
+                responseMatrices[channel][0][uncertainty]=None
+                for charge in [-1,1]:
+                    responseFileName = self.module("Response").getOutputResponseFile(channel,unfoldingName,unfoldingLevel,uncertainty,charge)
+                    rootResponseFile = ROOT.TFile(responseFileName)
+                    if not rootResponseFile:
+                        self._logger.critical("Cannot find response file '"+responseFileName+"'")
+                        sys.exit(1)
+                    responseMatrix = rootResponseFile.Get("response")
+                    if not responseMatrix:
+                        self._logger.critical("Cannot find response matrix 'response' in file '"+responseFileName+"'")
+                        sys.exit(1)
+                    #responseMatrix = self.module("Response").transformResponseToGlobalBinning(responseMatrix,channel)
+                    responseMatrices[channel][charge][uncertainty] = responseMatrix.Clone("response"+str(charge)+channel+uncertainty+str(random.random()))
+                    responseMatrices[channel][charge][uncertainty].SetDirectory(0)
+                    if responseMatrices[channel][0][uncertainty]==None:
+                        responseMatrices[channel][0][uncertainty]=responseMatrices[channel][charge][uncertainty].Clone(responseMatrices[channel][charge][uncertainty].GetName()+"sum")
+                        responseMatrices[channel][0][uncertainty].SetDirectory(0)
+                    else:
+                        responseMatrices[channel][0][uncertainty].Add(responseMatrices[channel][charge][uncertainty])
+                    rootResponseFile.Close()
+        
+        return responseMatrices
+        
+    def combineResponseMatrices(self,responseMatrices):
+        combName = self.module("Samples").getChannelName(["ele","mu"])
+        responseMatricesCombined = {}
+        for channel in responseMatrices.keys():
+            for charge in responseMatrices[channel].keys():
+                responseMatricesCombined[charge] = {}
+                for unc in responseMatrices[channel][charge].keys():
+                    h = responseMatrices[channel][charge][unc]
+                    h = h.Clone(h.GetName()+"_comb")
+                    h.SetDirectory(0)
+                    h = self.module("Response").transformResponseToGlobalBinning(
+                        h,
+                        channel
+                    )
+                    if not responseMatricesCombined[charge].has_key(unc):
+                        responseMatricesCombined[charge][unc] = h
+                    else:
+                        responseMatricesCombined[charge][unc].Add(h)
+        responseMatrices[combName]=responseMatricesCombined
+        return responseMatrices
+                    
                 
     
     def makeResponse(self,channel,genCharge,output):

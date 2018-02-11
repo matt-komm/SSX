@@ -46,7 +46,12 @@ class LeptonPtParticle(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self,channel):
-        return numpy.array([26.,35.,45.,70.,90.,200.])
+        if channel=="mu":
+            return numpy.array([26.,35.,45.,70.,90.,200.])
+        elif channel=="ele":
+            return numpy.array([35.,45.,70.,90.,200.])
+        else:
+            return numpy.array([26.,35.,45.,70.,90.,200.])
         
     def getGenVariable(self,channel):
         return "PTR_1__TightLepton_1__Pt"

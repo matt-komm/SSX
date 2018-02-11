@@ -29,37 +29,24 @@ class RunUnfolding(Module.getClass("Program")):
         
         self.module("Utils").createFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel)
 
-        uncertainties = []
-        for unc in systematics:
-            uncertainties.append(unc+"Up")
-            uncertainties.append(unc+"Down")
+
         
         #for profiled syst use nominal hist atm - later take envelop of all profiled response matrices
-        responseMatrices = {}
+        responseMatricesPerChannel = self.module("Response").gatherResponse(
+            unfoldingName,
+            unfoldingLevel,
+            channels,
+            systematics=systematics
+        )
         
-        for channel in channels:
-            responseMatrices[channel] = {1:{},-1:{},0:{}}
-            for uncertainty in ["nominal"]+uncertainties:
-                responseMatrices[channel][0][uncertainty]=None
-                for charge in [-1,1]:
-                    responseFileName = self.module("Response").getOutputResponseFile(channel,unfoldingName,unfoldingLevel,uncertainty,charge)
-                    rootResponseFile = ROOT.TFile(responseFileName)
-                    if not rootResponseFile:
-                        self._logger.critical("Cannot find response file '"+responseFileName+"'")
-                        sys.exit(1)
-                    responseMatrix = rootResponseFile.Get("response")
-                    if not responseMatrix:
-                        self._logger.critical("Cannot find response matrix 'response' in file '"+responseFileName+"'")
-                        sys.exit(1)
-                    #responseMatrix = self.module("Response").transformResponseToGlobalBinning(responseMatrix,channel)
-                    responseMatrices[channel][charge][uncertainty] = responseMatrix.Clone("response"+str(charge)+channel+uncertainty+str(random.random()))
-                    responseMatrices[channel][charge][uncertainty].SetDirectory(0)
-                    if responseMatrices[channel][0][uncertainty]==None:
-                        responseMatrices[channel][0][uncertainty]=responseMatrices[channel][charge][uncertainty].Clone(responseMatrices[channel][charge][uncertainty].GetName()+"sum")
-                        responseMatrices[channel][0][uncertainty].SetDirectory(0)
-                    else:
-                        responseMatrices[channel][0][uncertainty].Add(responseMatrices[channel][charge][uncertainty])
-                    rootResponseFile.Close()
+        if len(channels)==2:
+            responseMatricesPerChannel = self.module("Response").combineResponseMatrices(
+                responseMatricesPerChannel
+            )
+        
+        #use either per channel or their combination - no need to keep the rest
+        responseMatrices = responseMatricesPerChannel[channelName]
+        
         
         
         fitOutput = os.path.join(
@@ -68,64 +55,16 @@ class RunUnfolding(Module.getClass("Program")):
         )
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         
-        morphedHists = {}
-        for channel in channels:
-            morphedHists[channel] = {1:None,-1:None,0:None}
-            nominalHists = {
-                -1:responseMatrices[channel][-1]['nominal'],
-                1:responseMatrices[channel][1]['nominal'],
-                0:responseMatrices[channel][0]['nominal']
-            }
-            sysHists = {-1:[],1:[],0:[]}
-            means = []
-            covariances = []
-            for unc in systematics:
-                for charge in [-1,1,0]:
-                    sysHists[charge].append([
-                        responseMatrices[channel][charge][unc+"Up"],
-                        responseMatrices[channel][charge][unc+"Down"],
-                    ])
-                means.append(fitResult["parameters"][unc]["mean_fit"])
-                covs = []
-                for unc2 in systematics:
-                    covs.append(fitResult["covariances"]["values"][unc][unc2])
-                covariances.append(covs)
-            
-            for charge in [-1,1,0]:
-                morphedHists[channel][charge] = self.module("Utils").morphHist(nominalHists[charge],sysHists[charge],means,covariances)
+        responseMatricesMorphed = self.module("Response").morphResponses(
+            responseMatrices,
+            systematics,
+            fitResult
+        )
+
         
-        
-        if len(channels)==2:
-            morphedHists["comb"] = {1:None,-1:None,0:None}
-            for channel in channels:
-                for charge in [-1,1]:
-                    if morphedHists["comb"][charge]==None:
-                        morphedHists["comb"][charge] = self.module("Response").transformResponseToGlobalBinning(
-                            morphedHists[channel][charge],
-                            channel
-                        )
-                    else:
-                        morphedHists["comb"][charge].Add(
-                            self.module("Response").transformResponseToGlobalBinning(
-                                morphedHists[channel][charge],
-                                channel
-                            )
-                        )
-                
-                if morphedHists["comb"][0]==None:
-                    morphedHists["comb"][0] = self.module("Response").transformResponseToGlobalBinning(morphedHists[channel][0],channel)
-                else:
-                    morphedHists["comb"][0].Add(
-                        self.module("Response").transformResponseToGlobalBinning(morphedHists[channel][0],channel)
-                    )
-                
-            
-        
-        #use either per channel or their combination - no need to keep the rest
-        responseMatrices = morphedHists[channelName]
-        
+
         self.module("Drawing").drawHistogramResponseAndEfficiency(
-            responseMatrices[0],
+            responseMatrices[0]["nominal"],
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_response"), 
             xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName(),
             yaxis="reco. "+self.module("Unfolding").getUnfoldingVariableName(),
@@ -133,13 +72,13 @@ class RunUnfolding(Module.getClass("Program")):
         )
         
         self.module("Drawing").drawStabilityPurity(
-            responseMatrices[0],
+            responseMatrices[0]["nominal"],
             os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_pstest"), 
             title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
             xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName()
         )
 
-        
+        '''
         nominalRecoHists = {}
         nominalGenHists = {}
         measuredRecoHists = {}
@@ -184,14 +123,7 @@ class RunUnfolding(Module.getClass("Program")):
                         jbin+1,
                         nominalRecoHists[charge].GetBinContent(ibin+1)*nominalRecoHists[charge].GetBinContent(jbin+1)*signalFitResultCov
                     )
-                    #Note: bin errors (from morphing) + covariances from fit result -> sanity check not valid
-                    '''
-                    #sanity check
-                    if ibin==jbin and math.fabs(measuredRecoHists[charge].GetBinError(ibin+1)**2-measuredRecoCovariances[charge].GetBinContent(ibin+1,jbin+1))/measuredRecoCovariances[charge].GetBinContent(ibin+1,jbin+1)>0.0001:
-                        self._logger.critical("Diagonal elements of covariance matrix do not align with histogram errors")
-                        sys.exit(1)
-                    '''
-                
+                    
             #draw reco hists
             self.module("Drawing").plotDataHistogram(nominalRecoHists[charge],measuredRecoHists[charge],
                 os.path.join(self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel),self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoHist"),
@@ -434,7 +366,7 @@ class RunUnfolding(Module.getClass("Program")):
             #uncBand=ratioUncBand
         )
         
-        
+        '''
         
         
         
