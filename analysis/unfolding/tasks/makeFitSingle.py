@@ -36,14 +36,15 @@ class FitHistograms(Module.getClass("Program")):
                         self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,uncertainty)
                     )
             
-        
-        observableDict = self.module("ThetaModel").getObservablesDict()
-        fitComponentDict = self.module("ThetaModel").getFitComponentsDict()
-        uncertainyParameterDict = self.module("ThetaModel").getUncertaintsDict()
-
         fitSetup = {}
         parametersDict = {}
+        
+        
         for channel in channels:
+            observableDict = self.module("ThetaModel").getObservablesDict(channel)
+            fitComponentDict = self.module("ThetaModel").getFitComponentsDict()
+            uncertainyParameterDict = self.module("ThetaModel").getUncertaintsDict()
+        
             for obserableName in observableDict.keys():
                 #make a separate observable per channel (and bin) 
                 binRanges = [0]
@@ -81,9 +82,9 @@ class FitHistograms(Module.getClass("Program")):
                 
                                     
         
-        self.module("Utils").createFolder("fit")
+        self.module("Utils").createFolder("fit/"+uncertainty)
         fitOutput = os.path.join(
-            self.module("Utils").getOutputFolder("fit"),
+            self.module("Utils").getOutputFolder("fit/"+uncertainty),
             self.module("ThetaModel").getFitFileName(channels,unfoldingName,postfix=uncertainty)
         )
         
@@ -134,6 +135,41 @@ class FitHistograms(Module.getClass("Program")):
             default=1,
         )
         
+
+        if channelName==self.module("Samples").getChannelName(["ele","mu"]):
+            fitOutputEle = os.path.join(
+                self.module("Utils").getOutputFolder("fit/"+uncertainty),
+                self.module("ThetaModel").getFitFileName(["ele"],unfoldingName,uncertainty)
+            )
+            fitOutputMu = os.path.join(
+                self.module("Utils").getOutputFolder("fit/"+uncertainty),
+                self.module("ThetaModel").getFitFileName(["mu"],unfoldingName,uncertainty)
+            )
+            if os.path.exists(fitOutputEle+".json") and os.path.exists(fitOutputMu+".json"):
+                fitResultEle = self.module("ThetaFit").loadFitResult(fitOutputEle+".json")
+                fitResultMu = self.module("ThetaFit").loadFitResult(fitOutputMu+".json")
+        
+                self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_yield_comparison.pdf",
+                    selection=["tChannel_*_bin*","WZjets_bin*","TopBkg_bin*"],
+                    ranges = [0.5,1.5],
+                    default=1,
+                )
+                
+                self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_qcd_comparison.pdf",
+                    selection=["QCD_*_bin*_*"],
+                    ranges = [0,1.5],
+                    default=1,
+                )
+                
+                self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_ratios_comparison.pdf",
+                    selection=["WZjets_ratio_bin*","TopBkg_ratio_bin*","QCD_*_ratio_bin*_*"],
+                    ranges = [0.85,1.15],
+                    default=1,
+                )
+                
+            else:
+                self._logger.warning("Single channel fit results not found -> comparisons are not produced!")
+                
 
         
         

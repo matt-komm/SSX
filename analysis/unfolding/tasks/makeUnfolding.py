@@ -50,7 +50,7 @@ class RunUnfolding(Module.getClass("Program")):
         
         
         fitOutput = os.path.join(
-            self.module("Utils").getOutputFolder("fit"),
+            self.module("Utils").getOutputFolder("fit/profiled"),
             self.module("ThetaModel").getFitFileName(channels,unfoldingName)
         )
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")

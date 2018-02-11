@@ -112,10 +112,10 @@ class FitHistograms(Module.getClass("Program")):
                 
                                     
         
-        self.module("Utils").createFolder("fit")
+        self.module("Utils").createFolder("fit/profiled")
         fitOutput = os.path.join(
-            self.module("Utils").getOutputFolder("fit"),
-            self.module("ThetaModel").getFitFileName(channels,unfoldingName)
+            self.module("Utils").getOutputFolder("fit/profiled"),
+            self.module("ThetaModel").getFitFileName(channels,unfoldingName,postfix="profiled")
         )
         
         
@@ -182,12 +182,12 @@ class FitHistograms(Module.getClass("Program")):
 
         if channelName==self.module("Samples").getChannelName(["ele","mu"]):
             fitOutputEle = os.path.join(
-                self.module("Utils").getOutputFolder("fit"),
-                self.module("ThetaModel").getFitFileName(["ele"],unfoldingName)
+                self.module("Utils").getOutputFolder("fit/profiled"),
+                self.module("ThetaModel").getFitFileName(["ele"],unfoldingName,"profiled")
             )
             fitOutputMu = os.path.join(
-                self.module("Utils").getOutputFolder("fit"),
-                self.module("ThetaModel").getFitFileName(["mu"],unfoldingName)
+                self.module("Utils").getOutputFolder("fit/profiled"),
+                self.module("ThetaModel").getFitFileName(["mu"],unfoldingName,"profiled")
             )
             if os.path.exists(fitOutputEle+".json") and os.path.exists(fitOutputMu+".json"):
                 fitResultEle = self.module("ThetaFit").loadFitResult(fitOutputEle+".json")

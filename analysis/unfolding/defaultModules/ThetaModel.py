@@ -57,7 +57,7 @@ class ThetaModel(Module):
             uncertainties[uncName+"_ratio"]=self.module("ThetaModel").makeGaus(1.0,0.01)
         return uncertainties
         
-    def getFitFileName(self,channels,unfoldingName,postfix="profiled"):
+    def getFitFileName(self,channels,unfoldingName,postfix):
         return self.module("Samples").getChannelName(channels)+"__"+unfoldingName+"__"+postfix
         
     def getHistogramPath(self,channel,unfoldingName,uncertainty=None):
