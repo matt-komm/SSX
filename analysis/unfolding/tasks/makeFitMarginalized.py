@@ -157,7 +157,7 @@ class FitHistograms(Module.getClass("Program")):
         print fitResult["parameters"].items()[0]
         #print fitResult["parameters"]["en"]
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_yield.pdf",
-            selection=["tChannel_*_bin*","WZjets_bin*","TopBkg_bin*","QCD_*_bin*_*"],
+            selection=["tChannel_*_bin*","WZjets_bin*","TopBkg_bin*"],
             ranges = [0.5,1.5],
             default=1,
         )

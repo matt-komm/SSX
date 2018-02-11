@@ -41,7 +41,7 @@ class Drawing(Module):
             fitResultSelectedDict[fitName] = {"parameters": {}}
             if len(selection)==0:
                 fitResultSelectedDict[fitName] = fitResultDict[fitName]
-                parameterName+=fitResultDict[fitName]["parameters"].keys()
+                parameters+=fitResultDict[fitName]["parameters"].keys()
             else:
                 for ipar,parameterName in enumerate(sorted(fitResultDict[fitName]["parameters"].keys())):
                     for select in selection:
