@@ -15,12 +15,12 @@ class ThetaModel(Module):
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
-    def makeLogNormal(self,mean,unc,r=[0,2]):
+    def makeLogNormal(self,mean,unc):
         sigma2 = math.log(1+unc**2/mean**2)
         mu = math.log(mean**2/math.sqrt(unc**2+mean**2))
         #mu = 0.0
-        #return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2))}}
-        return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2)), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
+        return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2))}}
+        #return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2)), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
        
     def makeGaus(self,mean,unc,r=[-5,5]):
         return {"type":"gauss","config":{"mean": "%4.3f"%(mean), "width":"%4.3f"%(unc), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
@@ -38,11 +38,11 @@ class ThetaModel(Module):
         
     def getUncertaintsDict(self):
         uncertaintiesBkg = {
-            "WZjets":self.module("ThetaModel").makeLogNormal(1.0,0.3,r=[0.5,2.0]),
-            "TopBkg":self.module("ThetaModel").makeLogNormal(1.0,0.1,r=[0.7,1.3]),
-            "QCD_2j1t":self.module("ThetaModel").makeLogNormal(1.0,1.,r=[0.1,1.5]),
+            "WZjets":self.module("ThetaModel").makeLogNormal(1.0,0.3),
+            "TopBkg":self.module("ThetaModel").makeLogNormal(1.0,0.1),
+            "QCD_2j1t":self.module("ThetaModel").makeLogNormal(1.0,1.),
             #"QCD_3j1t":self.module("ThetaModel").makeGaus(0.2,0.5),
-            "QCD_3j2t":self.module("ThetaModel").makeLogNormal(1.0,1.,r=[0.1,1.5]),
+            "QCD_3j2t":self.module("ThetaModel").makeLogNormal(1.0,1.),
             
             #"lumi":{"type":"gauss","config":{"mean": "1.0", "width":"0.1", "range":"(0.0,\"inf\")"}}
         }

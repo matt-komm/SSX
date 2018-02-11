@@ -270,7 +270,7 @@ class Unfolding(Module):
             self._logger.critical("Cannot sum histograms - different number of bins")
             sys.exit(1)
         if covariance.GetNbinsX()!=2*hist1.GetNbinsX() or covariance.GetNbinsY()!=2*hist1.GetNbinsX():
-            self._logger.critical("Cannot sum histograms - covariance matrix has wrong binning")
+            self._logger.critical("Cannot sum histograms - covariance matrix ("+str(covariance.GetNbinsX())+"x"+str(covariance.GetNbinsY())+") has wrong binning")
             sys.exit(1)
         N = hist1.GetNbinsX()
         means = numpy.zeros(2*N)
@@ -343,9 +343,11 @@ class Unfolding(Module):
         return histResult
             
     
-    def unfold(self,responseMatrix,data,genBinning,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None):
+    def unfold(self,responseMatrix,data,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
-
+        genBinning = numpy.zeros((genHist.GetNbinsX()+1))
+        for i in range(len(genBinning)):
+            genBinning[i]=genHist.GetXaxis().GetBinLowEdge(i+1)
         responseMatrixReweighted = responseMatrix.Clone(responseMatrix.GetName()+"Reweighted")
         '''
         for ibin in range(responseMatrix.GetNbinsX()):

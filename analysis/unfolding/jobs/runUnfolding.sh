@@ -1,4 +1,4 @@
-syst="btag,ltag,eleEff,muEff,en,pu,unc"
+syst="btag,ltag,eleEff,muEff,en,pu,unc,dy,tw,eleMultiIso,eleMultiVeto,muMulti"
 
 for channels in ele mu ele,mu
     do
