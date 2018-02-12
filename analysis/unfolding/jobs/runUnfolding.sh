@@ -1,6 +1,6 @@
 syst="btag,ltag,eleEff,muEff,en,pu,unc,dy,tw,eleMultiIso,eleMultiVeto,muMulti"
 
-for channels in ele mu ele,mu
+for channels in ele,mu
     do
     for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WCosParticle WPtParticle
         do

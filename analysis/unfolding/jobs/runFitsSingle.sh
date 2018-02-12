@@ -35,7 +35,6 @@ for channels in ele mu ele,mu
         do
         python driver.py -m tasks/makeFitSingle -m setup/$setup -c channels:$channels
         done
-    done
     for sys  in "${syst[@]}"
         do
         python driver.py -m tasks/makeFitSingle -m $sys -c channels:$channels

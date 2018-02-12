@@ -270,9 +270,15 @@ class RunUnfolding(Module.getClass("Program")):
         nominalGenHists[0] = genSum
         
         histSum = self.module("Unfolding").calculateSum(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
+        '''
         if len(channels)==2:
              self.module("Unfolding").applyEfficiencyCorrection1D(histSum)
              self.module("Unfolding").applyEfficiencyCorrection1D(genSum)
+             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[1])
+             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[-1])
+             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[1])
+             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[-1])
+        '''
         unfoldedHists[0] = histSum
         self.module("Drawing").plotDataHistogram([genSum],histSum,
             os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_sum_unfoldedHist"),
