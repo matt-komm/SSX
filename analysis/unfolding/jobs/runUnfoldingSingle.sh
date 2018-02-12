@@ -20,30 +20,19 @@ syst=(
 "systematics/tchanScaleTmpl -c qscale:DD"
 )
 
-#syst=(
-#"systematics/topMassDown"
-#"systematics/topMassUp"
-#)
-
-setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton"
-#setups="TopPtParton"
 
 for channels in ele mu ele,mu
     do
-    python driver.py -m tasks/makeFitSingle -c channels:$channels
-    for setup in $setups
+    for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WCosParticle WPtParticle
         do
-        python driver.py -m tasks/makeFitSingle -m setup/$setup -c channels:$channels
+        echo $setup $channels
+        python driver.py -m setup/$setup -m tasks/makeUnfolding -c channels:$channels -c systematics:$syst
         done
-    done
     for sys  in "${syst[@]}"
-        do
-        python driver.py -m tasks/makeFitSingle -m $sys -c channels:$channels
-        for setup in $setups
+        for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WCosParticle WPtParticle
             do
-            python driver.py -m tasks/makeFitSingle -m $sys -m setup/$setup -c channels:$channels
+            echo $setup $channels
+            python driver.py -m setup/$setup -m tasks/makeUnfolding -m $sys -c channels:$channels
             done
         done
     done
-    
-    

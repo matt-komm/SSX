@@ -217,12 +217,9 @@ class Response(Module):
             
        
         
-    def gatherResponse(self,unfoldingName,unfoldingLevel,channels,systematics=[]):
+    def gatherResponse(self,unfoldingName,unfoldingLevel,channels,uncertainties=[]):
         responseMatrices = {}
-        uncertainties = []
-        for unc in systematics:
-            uncertainties.append(unc+"Up")
-            uncertainties.append(unc+"Down")
+        
     
         for channel in channels:
             responseMatrices[channel] = {1:{},-1:{},0:{}}
@@ -245,17 +242,36 @@ class Response(Module):
                         responseMatrices[channel][0][uncertainty]=responseMatrices[channel][charge][uncertainty].Clone(responseMatrices[channel][charge][uncertainty].GetName()+"sum")
                         responseMatrices[channel][0][uncertainty].SetDirectory(0)
                     else:
-                        responseMatrices[channel][0][uncertainty].Add(responseMatrices[channel][charge][uncertainty])
+                        responseMatrices[channel][0][uncertainty].Add(
+                            responseMatrices[channel][charge][uncertainty]
+                        )
                     rootResponseFile.Close()
         
         return responseMatrices
+        
+    #properly adding orthogonal response matrices by removing overlapping events in efficiency
+    #TODO figure out how to do this correctly???
+    def addResponseMatrices(self,h1,h2):
+        result = h1.Clone(h1.GetName()+"sum")
+        result.SetDirectory(0)
+        result.Add(h2)
+        for ibin in range(h1.GetNbinsX()):
+            overlap = 0.
+            for jbin in range(h1.GetNbinsY()):
+                overlap+=h1.GetBinContent(ibin+1,jbin+1)
+                overlap+=h2.GetBinContent(ibin+1,jbin+1)
+            c = result.GetBinContent(ibin+1,0)
+            #result.SetBinContent(ibin+1,0,c-overlap)
+        return result
+        
         
     def combineResponseMatrices(self,responseMatrices):
         combName = self.module("Samples").getChannelName(["ele","mu"])
         responseMatricesCombined = {}
         for channel in responseMatrices.keys():
             for charge in responseMatrices[channel].keys():
-                responseMatricesCombined[charge] = {}
+                if not responseMatricesCombined.has_key(charge):
+                    responseMatricesCombined[charge] = {}
                 for unc in responseMatrices[channel][charge].keys():
                     h = responseMatrices[channel][charge][unc]
                     h = h.Clone(h.GetName()+"_comb")

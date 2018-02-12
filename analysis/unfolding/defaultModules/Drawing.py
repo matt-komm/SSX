@@ -195,7 +195,7 @@ class Drawing(Module):
         ymax = 1.3*max(map(lambda x: x.GetMaximum(),nominalHists+[measuredHist]))
         if logy:
             ymin = 0.4*min(map(lambda x: x.GetMinimum(),nominalHists+[measuredHist]))
-            ymax = math.log(1.3*math.exp(ymax))
+            ymax = math.log(1.3*math.exp(ymax+1))-1.
         if yrange:
             ymin = yrange[0]
             ymax = yrange[1]

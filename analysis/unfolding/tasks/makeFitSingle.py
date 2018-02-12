@@ -52,7 +52,7 @@ class FitHistograms(Module.getClass("Program")):
                     binRanges=range(len(self.module("Unfolding").getRecoBinning(channel))-1)
                 
                 for ibinRange in binRanges:
-                    fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange)] = {
+                    fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange+1)] = {
                         "bins":observableDict[obserableName]["bins"],
                         "range":observableDict[obserableName]["range"],
                         "components":{},
@@ -60,7 +60,7 @@ class FitHistograms(Module.getClass("Program")):
                     }
                     for componentName in fitComponentDict.keys():
                         uncertaintyParameters = fitComponentDict[componentName]["uncertainties"]
-                        fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange)]["components"][componentName]={
+                        fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange+1)]["components"][componentName]={
                             "nominal":histogramsPerChannel[channel]["nominal"][ibinRange][obserableName][componentName],
                             "yield":[],
                             "shape":[]
@@ -69,14 +69,14 @@ class FitHistograms(Module.getClass("Program")):
                         for uncertaintyParameter in uncertaintyParameters:
                             if uncertaintyParameter.find("QCD")>=0:
                                 #make extra parameter per channel for QCD
-                                fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange)]["components"][componentName]["yield"].append(uncertaintyParameter+"_bin"+str(ibinRange)+"_"+channel)
-                                if not parametersDict.has_key(uncertaintyParameter+"_bin"+str(ibinRange)+"_"+channel):
-                                    parametersDict[uncertaintyParameter+"_bin"+str(ibinRange)+"_"+channel]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
+                                fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange+1)]["components"][componentName]["yield"].append(uncertaintyParameter+"_bin"+str(ibinRange+1)+"_"+channel)
+                                if not parametersDict.has_key(uncertaintyParameter+"_bin"+str(ibinRange+1)+"_"+channel):
+                                    parametersDict[uncertaintyParameter+"_bin"+str(ibinRange+1)+"_"+channel]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
                             else:
                                 #take all other processes 100% correlated between channels
-                                fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange)]["components"][componentName]["yield"].append(uncertaintyParameter+"_bin"+str(ibinRange))
-                                if not parametersDict.has_key(uncertaintyParameter+"_bin"+str(ibinRange)):
-                                    parametersDict[uncertaintyParameter+"_bin"+str(ibinRange)]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
+                                fitSetup[channel+"__"+obserableName+"__bin"+str(ibinRange+1)]["components"][componentName]["yield"].append(uncertaintyParameter+"_bin"+str(ibinRange+1))
+                                if not parametersDict.has_key(uncertaintyParameter+"_bin"+str(ibinRange+1)):
+                                    parametersDict[uncertaintyParameter+"_bin"+str(ibinRange+1)]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
                         
                         
                 
@@ -85,9 +85,8 @@ class FitHistograms(Module.getClass("Program")):
         self.module("Utils").createFolder("fit/"+uncertainty)
         fitOutput = os.path.join(
             self.module("Utils").getOutputFolder("fit/"+uncertainty),
-            self.module("ThetaModel").getFitFileName(channels,unfoldingName,postfix=uncertainty)
+            self.module("ThetaModel").getFitFileName(channels,unfoldingName,uncertainty)
         )
-        
         self.module("ThetaModel").makeModel(
             fitOutput+".cfg",
             fitSetup,parametersDict,
@@ -95,6 +94,7 @@ class FitHistograms(Module.getClass("Program")):
             pseudo=False
         )
         self.module("ThetaFit").run(fitOutput+".cfg")
+       
         fitResult = self.module("ThetaFit").parseFitResult(
             fitOutput+".root",
             parametersDict

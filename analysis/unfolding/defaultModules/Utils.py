@@ -104,7 +104,7 @@ class Utils(Module):
         morphed.SetDirectory(0)
         for ibin in range((morphed.GetNbinsX()+2)*(morphed.GetNbinsY()+2)):
             nominal = morphed.GetBinContent(ibin)
-            resultDiced = numpy.zeros(100)
+            resultDiced = numpy.zeros(200)
             for itoy in range(len(resultDiced)):
                 resultDiced[itoy] = morphed.GetBinContent(ibin)
                 pdiced = numpy.random.multivariate_normal(nuciances,covariance)
