@@ -52,7 +52,7 @@ class PDFEnvelope:
         // every Module needs a unique type
         static const std::string &getStaticType()
         {
-            static std::string type ("TopPtReweighting");
+            static std::string type ("PDFEnvelope");
             return type;
         }
 
