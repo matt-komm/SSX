@@ -158,21 +158,25 @@ class Drawing(Module):
         cv.Print(outputFile)
         
     def plotDataHistogram(self,nominalHistA,measuredHistA,output,title="",xaxis="",yaxis="Events",yrange=None,normalizeByBinWidth=False,normalizeByCrossSection=False,logy=False,uncBand=None):
-        nominalHist = nominalHistA.Clone()
+        nominalHists = []
+        for h in nominalHistA:
+            nominalHists.append(h.Clone())
         measuredHist = measuredHistA.Clone()
         
         if normalizeByBinWidth:
-            self.module("Utils").normalizeByBinWidth(nominalHist)
+            for i in range(len(nominalHists)):
+                self.module("Utils").normalizeByBinWidth(nominalHists[i])
             self.module("Utils").normalizeByBinWidth(measuredHist)
         elif normalizeByCrossSection:
-            plotRange = nominalHist.GetXaxis().GetBinUpEdge(nominalHist.GetNbinsX())-nominalHist.GetXaxis().GetBinLowEdge(1)
-            self.module("Utils").normalizeByBinWidth(nominalHist)
+            plotRange = measuredHist.GetXaxis().GetBinUpEdge(measuredHist.GetNbinsX())-measuredHist.GetXaxis().GetBinLowEdge(1)
+            for i in range(len(nominalHists)):
+                self.module("Utils").normalizeByBinWidth(nominalHists[i])
+                nominalHists[i].Scale(1./self.module("Samples").getLumi())
             self.module("Utils").normalizeByBinWidth(measuredHist)
-            nominalHist.Scale(1./self.module("Samples").getLumi())
             measuredHist.Scale(1./self.module("Samples").getLumi())
             totXsec = 0.0
-            for ibin in range(nominalHist.GetNbinsX()):
-                totXsec+=nominalHist.GetBinContent(ibin+1)*nominalHist.GetBinWidth(ibin+1)
+            for ibin in range(nominalHists[0].GetNbinsX()):
+                totXsec+=nominalHists[0].GetBinContent(ibin+1)*nominalHists[0].GetBinWidth(ibin+1)
             self._logger.info("Calculated theo. xsec: "+str(totXsec)+" pb")
         
         cvxmin=0.165
@@ -188,16 +192,16 @@ class Drawing(Module):
         cvHist.SetRightMargin(1-cvxmax)
 
         ymin = 0
-        ymax = 1.3*max(nominalHist.GetMaximum(),measuredHist.GetMaximum())
+        ymax = 1.3*max(map(lambda x: x.GetMaximum(),nominalHists+[measuredHist]))
         if logy:
-            ymin = 0.4*min(nominalHist.GetMinimum(),measuredHist.GetMinimum())
-            ymax = math.log(1.3*math.exp(max(nominalHist.GetMaximum(),measuredHist.GetMaximum())))
+            ymin = 0.4*min(map(lambda x: x.GetMinimum(),nominalHists+[measuredHist]))
+            ymax = math.log(1.3*math.exp(ymax+1))-1.
         if yrange:
             ymin = yrange[0]
             ymax = yrange[1]
         
         axis = ROOT.TH2F("axis"+str(random.random()),";"+xaxis+";"+yaxis,
-            50,nominalHist.GetXaxis().GetXmin(),nominalHist.GetXaxis().GetXmax(),
+            50,measuredHist.GetXaxis().GetXmin(),measuredHist.GetXaxis().GetXmax(),
             50,ymin,ymax
         )
         axis.GetXaxis().SetTickLength(0.015/(1-cvHist.GetLeftMargin()-cvHist.GetRightMargin()))
@@ -227,11 +231,11 @@ class Drawing(Module):
                 box.SetLineColor(ROOT.kOrange+1)
                 box.SetFillColor(ROOT.kOrange+1)
                 box.Draw("SameF")
-                
-        nominalHist.SetLineColor(ROOT.kRed+1)
-        nominalHist.SetLineWidth(3)
-        nominalHist.SetFillStyle(0)
-        nominalHist.Draw("HISTSame")
+        for i in range(len(nominalHists)):
+            nominalHists[i].SetLineColor(ROOT.kRed+1)
+            nominalHists[i].SetLineWidth(3)
+            nominalHists[i].SetLineStyle(i+1)
+            nominalHists[i].Draw("HISTSame")
         
         measuredHist.SetLineColor(ROOT.kBlack)
         measuredHist.SetMarkerColor(ROOT.kBlack)

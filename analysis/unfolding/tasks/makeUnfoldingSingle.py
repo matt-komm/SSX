@@ -17,7 +17,7 @@ class RunUnfolding(Module.getClass("Program")):
     def execute(self):
         #mu,ele
         channels = self.getOption("channels").split(",")
-        systematics =self.getOption("systematics").split(",")
+        uncertainty = self.module("Utils").getUncertaintyName()
         channelName = self.module("Samples").getChannelName(channels)
         #inc,pt,y,cos
         unfoldingName = self.module("Unfolding").getUnfoldingName()
@@ -27,15 +27,11 @@ class RunUnfolding(Module.getClass("Program")):
         unfoldingLevel = self.module("Unfolding").getUnfoldingLevel()
         
         
-        self.module("Utils").createFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/profiled")
-        outputFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/profiled")
+        self.module("Utils").createFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+uncertainty)
+        outputFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+uncertainty)
 
-        
+        uncertainties = [uncertainty] if uncertainty!="nominal" else []
         #for profiled syst use nominal hist atm - later take envelop of all profiled response matrices
-        uncertainties = []
-        for unc in systematics:
-            uncertainties.append(unc+"Up")
-            uncertainties.append(unc+"Down")
         responseMatricesPerChannel = self.module("Response").gatherResponse(
             unfoldingName,
             unfoldingLevel,
@@ -43,8 +39,10 @@ class RunUnfolding(Module.getClass("Program")):
             uncertainties=uncertainties
         )
         
-        responseMatricesPerChannel = self.module("Response").combineResponseMatrices(responseMatricesPerChannel)
-       
+        if len(channels)==2:
+            responseMatricesPerChannel = self.module("Response").combineResponseMatrices(
+                responseMatricesPerChannel
+            )
         
         #use either per channel or their combination - no need to keep the rest
         responseMatrices = responseMatricesPerChannel[channelName]
@@ -52,16 +50,11 @@ class RunUnfolding(Module.getClass("Program")):
         
         
         fitOutput = os.path.join(
-            self.module("Utils").getOutputFolder("fit/profiled"),
-            self.module("ThetaModel").getFitFileName(channels,unfoldingName,"profiled")
+            self.module("Utils").getOutputFolder("fit/"+uncertainty),
+            self.module("ThetaModel").getFitFileName(channels,unfoldingName,uncertainty)
         )
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         
-        responseMatricesMorphed = self.module("Response").morphResponses(
-            responseMatrices,
-            systematics,
-            fitResult
-        )
         
 
         self.module("Drawing").drawHistogramResponseAndEfficiency(
@@ -81,7 +74,7 @@ class RunUnfolding(Module.getClass("Program")):
         
         
         nominalRecoHists = {}
-        nominalRecoHistsMorphed = {}
+        sysRecoHists= {}
         nominalGenHists = {}
         measuredRecoHists = {}
         measuredRecoCovariances = {}
@@ -93,47 +86,48 @@ class RunUnfolding(Module.getClass("Program")):
 
         for charge in [-1,1]:
             
-
             nominalGenHists[charge] = responseMatrices[charge]["nominal"].ProjectionX() 
             unfoldedHists[charge] = nominalGenHists[charge].Clone(nominalGenHists[charge].GetName()+"meas")
             
             nominalRecoHists[charge] = responseMatrices[charge]["nominal"].ProjectionY()
             
-            nominalRecoHistsMorphed[charge] = responseMatricesMorphed[charge].ProjectionY()
-            measuredRecoHists[charge] = nominalRecoHistsMorphed[charge].Clone(nominalRecoHists[charge].GetName()+"meas")
+            sysRecoHists[charge] = responseMatrices[charge][uncertainty].ProjectionY()
+            measuredRecoHists[charge] = sysRecoHists[charge].Clone(sysRecoHists[charge].GetName()+"meas")
             
             measuredRecoCovariances[charge] = ROOT.TH2F(
                 "covariance"+str(charge),"",
                 len(recoBinning)-1,recoBinning,
                 len(recoBinning)-1,recoBinning
             )
+            
             #scale to fit result
             for ibin in range(len(recoBinning)-1):
                 signalFitResult = fitResult["parameters"]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(1+binMapReco[ibin])]
                 measuredRecoHists[charge].SetBinContent(
                     ibin+1,
-                    nominalRecoHistsMorphed[charge].GetBinContent(ibin+1)*signalFitResult["mean_fit"]
+                    sysRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["mean_fit"]
                 )
                 measuredRecoHists[charge].SetBinError(
                     ibin+1,
                     math.sqrt(
-                        (nominalRecoHistsMorphed[charge].GetBinContent(ibin+1)*signalFitResult["unc_fit"])**2 + \
-                        nominalRecoHistsMorphed[charge].GetBinError(ibin+1)**2
+                        (sysRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["unc_fit"])**2 + \
+                        sysRecoHists[charge].GetBinError(ibin+1)**2
                     )
                 )
                 
                 for jbin in range(len(recoBinning)-1):
+                   
                     signalFitResultCov = \
                         fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(1+binMapReco[jbin])]
                     measuredRecoCovariances[charge].SetBinContent(
                         ibin+1,
                         jbin+1,
-                        nominalRecoHistsMorphed[charge].GetBinContent(ibin+1)*nominalRecoHistsMorphed[charge].GetBinContent(jbin+1)*signalFitResultCov
+                        sysRecoHists[charge].GetBinContent(ibin+1)*sysRecoHists[charge].GetBinContent(jbin+1)*signalFitResultCov
                     )
-                    
+                 
             #draw reco hists
-            self.module("Drawing").plotDataHistogram([nominalRecoHists[charge],nominalRecoHistsMorphed[charge]],measuredRecoHists[charge],
-               os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoHist"),
+            self.module("Drawing").plotDataHistogram([nominalRecoHists[charge],sysRecoHists[charge]],measuredRecoHists[charge],
+                os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(charge)+"_recoHist"),
                 xaxis="reconstructed "+self.module("Unfolding").getUnfoldingVariableName(),
                 title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
             )
@@ -156,14 +150,14 @@ class RunUnfolding(Module.getClass("Program")):
                 zaxis="correlation",
                 title=self.module("Samples").getPlotTitle(channels,charge)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
             )
-            
+        
         #note: nominalReco will be the morphed one!
         combinedHists = self.module("Response").buildCombinedResponseMatrix(
             genBinning,
             recoBinning,
             nominalRecoHists,
             measuredRecoHists,
-            responseMatricesMorphed,
+            {-1:responseMatrices[-1][uncertainty],1:responseMatrices[1][uncertainty]},
             nominalGenHists
         )
         
@@ -173,6 +167,7 @@ class RunUnfolding(Module.getClass("Program")):
             fitResult,
             binMapReco
         )
+        
         
         self.module("Drawing").plotDataHistogram([combinedHists["nominalReco"]],combinedHists["measuredReco"],
             os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_comb_recoHist"),
@@ -270,15 +265,6 @@ class RunUnfolding(Module.getClass("Program")):
         nominalGenHists[0] = genSum
         
         histSum = self.module("Unfolding").calculateSum(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
-        '''
-        if len(channels)==2:
-             self.module("Unfolding").applyEfficiencyCorrection1D(histSum)
-             self.module("Unfolding").applyEfficiencyCorrection1D(genSum)
-             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[1])
-             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[-1])
-             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[1])
-             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[-1])
-        '''
         unfoldedHists[0] = histSum
         self.module("Drawing").plotDataHistogram([genSum],histSum,
             os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_sum_unfoldedHist"),
@@ -321,7 +307,7 @@ class RunUnfolding(Module.getClass("Program")):
             h[1].Write()
         outputFile.Close()
         
-            
+        
         
         
         

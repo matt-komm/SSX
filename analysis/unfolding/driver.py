@@ -222,6 +222,9 @@ logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
 
 
+numpy.random.seed(seed=12345)
+ROOT.gRandom.SetSeed(12345)
+
 pluginPath = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
 config = {}

@@ -112,6 +112,20 @@ class Unfolding(Module):
         muBinning = self.module("Unfolding").getGenBinCenters("mu")
         return self.module("Unfolding").buildGlobalBinMap(globalBinning,eleBinning,muBinning)
         
+    def applyEfficiencyCorrection1D(self,hist):
+        binMap = self.module("Unfolding").buildGlobalGenBinMap()
+        eff = {}
+        for ibin in range(len(self.module("Unfolding").getGenBinning("comb"))-1):
+            eff=0.
+            for channel in ["ele","mu"]:
+                if binMap[channel].has_key(ibin):
+                    eff+=1.
+            c = hist.GetBinContent(ibin+1)
+            err = hist.GetBinError(ibin+1)
+            hist.SetBinContent(ibin+1,c/eff)
+            hist.SetBinError(ibin+1,err/eff)
+            
+        
     def getRecoBinSelection(self,ibin,channel):
         if ibin<0:
             return "1"
@@ -270,7 +284,7 @@ class Unfolding(Module):
             self._logger.critical("Cannot sum histograms - different number of bins")
             sys.exit(1)
         if covariance.GetNbinsX()!=2*hist1.GetNbinsX() or covariance.GetNbinsY()!=2*hist1.GetNbinsX():
-            self._logger.critical("Cannot sum histograms - covariance matrix has wrong binning")
+            self._logger.critical("Cannot sum histograms - covariance matrix ("+str(covariance.GetNbinsX())+"x"+str(covariance.GetNbinsY())+") has wrong binning")
             sys.exit(1)
         N = hist1.GetNbinsX()
         means = numpy.zeros(2*N)
@@ -341,11 +355,15 @@ class Unfolding(Module):
             histResult.SetBinContent(i+1,meanResult[i])
             histResult.SetBinError(i+1,math.sqrt(covResult[i][i]))
         return histResult
+       
+        
             
-    
-    def unfold(self,responseMatrix,data,genBinning,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None):
+    #TODO: assess  coverage of uncertainty by looking at 2sigma, 3sigma intervals
+    def unfold(self,responseMatrix,data,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
-
+        genBinning = numpy.zeros((genHist.GetNbinsX()+1))
+        for i in range(len(genBinning)):
+            genBinning[i]=genHist.GetXaxis().GetBinLowEdge(i+1)
         responseMatrixReweighted = responseMatrix.Clone(responseMatrix.GetName()+"Reweighted")
         '''
         for ibin in range(responseMatrix.GetNbinsX()):

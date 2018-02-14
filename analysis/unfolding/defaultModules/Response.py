@@ -73,7 +73,7 @@ class Response(Module):
         
     def morphResponses(self,responseMatrices,systematics,fitResult):
         morphedHists = {}
-        for charge in morphedHists.keys():
+        for charge in responseMatrices.keys():
             nominalHists = responseMatrices[charge]['nominal']
             sysHists = []
             means = []
@@ -87,20 +87,139 @@ class Response(Module):
                 covs = []
                 for unc2 in systematics:
                     covs.append(fitResult["covariances"]["values"][unc][unc2])
+                
                 covariances.append(covs)
             #NOTE: not 100% correct - ignoring here correlations between charged bins in shape
             #correlation in yields from the fit result is accounted for later
-            morphedHists[charge] = self.module("Utils").morphHist(nominalHists[charge],sysHists[charge],means,covariances)
-    
+            morphedHists[charge] = self.module("Utils").morphHist(nominalHists,sysHists,means,covariances)
+            
+        return morphedHists
         
+        
+    def buildCombinedConvarianceMatrix(self,recoBinning,measuredRecoHists,fitResult,binMapReco):
+        combinedRecoBinning = numpy.linspace(0,2*len(recoBinning)-2,num=2*len(recoBinning)-1)
+        combinedCovarianceMatrix = ROOT.TH2F("combinedCovarianceMatrix","",
+            len(combinedRecoBinning)-1,combinedRecoBinning,
+            len(combinedRecoBinning)-1,combinedRecoBinning
+        )
+        #covariance (need loop over reco binning here)
+        for ibin in range(len(recoBinning)-1):
+            for jbin in range(len(recoBinning)-1):
+                signalFitResultCovPP = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[jbin])]
+                signalFitResultCovPN = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[jbin])]
+                signalFitResultCovNP = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[jbin])]
+                signalFitResultCovNN = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[jbin])]
+                combinedCovarianceMatrix.SetBinContent(
+                    ibin+1,
+                    jbin+1,
+                    measuredRecoHists[1].GetBinContent(ibin+1)*measuredRecoHists[1].GetBinContent(jbin+1)*signalFitResultCovPP
+                )
+                combinedCovarianceMatrix.SetBinContent(
+                    ibin+1+(len(recoBinning)-1),
+                    jbin+1,
+                    measuredRecoHists[1].GetBinContent(ibin+1)*measuredRecoHists[-1].GetBinContent(jbin+1)*signalFitResultCovPN
+                )
+                combinedCovarianceMatrix.SetBinContent(
+                    ibin+1,
+                    jbin+1+(len(recoBinning)-1),
+                    measuredRecoHists[-1].GetBinContent(ibin+1)*measuredRecoHists[1].GetBinContent(jbin+1)*signalFitResultCovNP
+                )
+                combinedCovarianceMatrix.SetBinContent(
+                    ibin+1+(len(recoBinning)-1),
+                    jbin+1+(len(recoBinning)-1),
+                    measuredRecoHists[-1].GetBinContent(ibin+1)*measuredRecoHists[-1].GetBinContent(jbin+1)*signalFitResultCovNN
+                )
+        return combinedCovarianceMatrix
+        
+    def buildCombinedResponseMatrix(self,genBinning,recoBinning,nominalRecoHists,measuredRecoHists,responseMatrices,nominalGenHists):
+        combinedRecoBinning = numpy.linspace(0,2*len(recoBinning)-2,num=2*len(recoBinning)-1)
+        combinedGenBinning = numpy.linspace(0,2*len(genBinning)-2,num=2*len(genBinning)-1)
+        
+        combinedNominalRecoHist = ROOT.TH1F("combinedNominalRecoHist","",len(combinedRecoBinning)-1,combinedRecoBinning)
+        combinedNominalGenHist = ROOT.TH1F("combinedNominalGenHist","",len(combinedRecoBinning)-1,combinedRecoBinning)
+        combinedMeasuredRecoHist = ROOT.TH1F("combinedMeasuredRecoHist","",len(combinedRecoBinning)-1,combinedRecoBinning)
+        
+        combinedResponseMatrix = ROOT.TH2F("combinedResponseMatrix","",
+            len(combinedGenBinning)-1,combinedGenBinning,
+            len(combinedRecoBinning)-1,combinedRecoBinning
+        )
+        for ibin in range(len(recoBinning)-1):
+            #merge nominal hists
+            combinedNominalRecoHist.SetBinContent(
+                ibin+1,
+                nominalRecoHists[1].GetBinContent(ibin+1)
+            )
+            combinedNominalRecoHist.SetBinContent(
+                ibin+1+(len(genBinning)-1),
+                nominalRecoHists[-1].GetBinContent(ibin+1)
+            )
+        
+            #merge measured hists with errors
+            combinedMeasuredRecoHist.SetBinContent(
+                ibin+1,
+                measuredRecoHists[1].GetBinContent(ibin+1)
+            )
+            combinedMeasuredRecoHist.SetBinContent(
+                ibin+1+(len(genBinning)-1),
+                measuredRecoHists[-1].GetBinContent(ibin+1)
+            )
+            combinedMeasuredRecoHist.SetBinError(
+                ibin+1,
+                measuredRecoHists[1].GetBinError(ibin+1)
+            )
+            combinedMeasuredRecoHist.SetBinError(
+                ibin+1+(len(genBinning)-1),
+                measuredRecoHists[-1].GetBinError(ibin+1)
+            )
+            
+            #merge response matrices
+            for jbin in range(len(genBinning)-1):
+                #migration
+                combinedResponseMatrix.SetBinContent(
+                    jbin+1,
+                    ibin+1,
+                    responseMatrices[1].GetBinContent(jbin+1,ibin+1)
+                )
+                combinedResponseMatrix.SetBinContent(
+                    jbin+1+(len(genBinning)-1),
+                    ibin+1+(len(recoBinning)-1),
+                    responseMatrices[-1].GetBinContent(jbin+1,ibin+1)
+                )
+                #efficiencies
+                combinedResponseMatrix.SetBinContent(
+                    jbin+1,
+                    0,
+                    responseMatrices[1].GetBinContent(jbin+1,0)
+                )
+                combinedResponseMatrix.SetBinContent(
+                    jbin+1+(len(genBinning)-1),
+                    0,
+                    responseMatrices[-1].GetBinContent(jbin+1,0)
+                )
+            
+            
+        for ibin in range(len(genBinning)-1):
+            #merge nominal hists
+            combinedNominalGenHist.SetBinContent(
+                ibin+1,
+                nominalGenHists[1].GetBinContent(ibin+1)
+            )
+            combinedNominalGenHist.SetBinContent(
+                ibin+1+(len(genBinning)-1),
+                nominalGenHists[-1].GetBinContent(ibin+1)
+            )
+        return {
+            "nominalReco":combinedNominalRecoHist,
+            "measuredReco":combinedMeasuredRecoHist,
+            "response":combinedResponseMatrix,
+            "nominalGen":combinedNominalGenHist
+        }
+            
        
         
-    def gatherResponse(self,unfoldingName,unfoldingLevel,channels,systematics=[]):
+    def gatherResponse(self,unfoldingName,unfoldingLevel,channels,uncertainties=[]):
         responseMatrices = {}
-        uncertainties = []
-        for unc in systematics:
-            uncertainties.append(unc+"Up")
-            uncertainties.append(unc+"Down")
+        
     
         for channel in channels:
             responseMatrices[channel] = {1:{},-1:{},0:{}}
@@ -123,17 +242,36 @@ class Response(Module):
                         responseMatrices[channel][0][uncertainty]=responseMatrices[channel][charge][uncertainty].Clone(responseMatrices[channel][charge][uncertainty].GetName()+"sum")
                         responseMatrices[channel][0][uncertainty].SetDirectory(0)
                     else:
-                        responseMatrices[channel][0][uncertainty].Add(responseMatrices[channel][charge][uncertainty])
+                        responseMatrices[channel][0][uncertainty].Add(
+                            responseMatrices[channel][charge][uncertainty]
+                        )
                     rootResponseFile.Close()
         
         return responseMatrices
+        
+    #properly adding orthogonal response matrices by removing overlapping events in efficiency
+    #TODO figure out how to do this correctly???
+    def addResponseMatrices(self,h1,h2):
+        result = h1.Clone(h1.GetName()+"sum")
+        result.SetDirectory(0)
+        result.Add(h2)
+        for ibin in range(h1.GetNbinsX()):
+            overlap = 0.
+            for jbin in range(h1.GetNbinsY()):
+                overlap+=h1.GetBinContent(ibin+1,jbin+1)
+                overlap+=h2.GetBinContent(ibin+1,jbin+1)
+            c = result.GetBinContent(ibin+1,0)
+            #result.SetBinContent(ibin+1,0,c-overlap)
+        return result
+        
         
     def combineResponseMatrices(self,responseMatrices):
         combName = self.module("Samples").getChannelName(["ele","mu"])
         responseMatricesCombined = {}
         for channel in responseMatrices.keys():
             for charge in responseMatrices[channel].keys():
-                responseMatricesCombined[charge] = {}
+                if not responseMatricesCombined.has_key(charge):
+                    responseMatricesCombined[charge] = {}
                 for unc in responseMatrices[channel][charge].keys():
                     h = responseMatrices[channel][charge][unc]
                     h = h.Clone(h.GetName()+"_comb")

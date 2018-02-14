@@ -76,6 +76,8 @@ for channel in ["mu","ele"]:
             "systematics/ltagUp",
             "systematics/enDown",
             "systematics/enUp",
+            "systematics/resDown",
+            "systematics/resUp",
             "systematics/puDown",
             "systematics/puUp",
             "systematics/uncDown",
