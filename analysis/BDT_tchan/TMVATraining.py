@@ -78,7 +78,7 @@ for basePathTestingSignal in basePathTestingSignalList:
        
 print "found: ",len(rootFilesTrain)," (train) & ",len(rootFilesTest)," (test) files"
 
-ROOT.gSystem.Load("$HOME/SSX/PxlModules/build/internal/TMVA/libTMVA.so")
+#ROOT.gSystem.Load("$HOME/SSX/PxlModules/build/internal/TMVA/libTMVA.so")
 
 ROOT.TMVA.Tools.Instance()
 f = ROOT.TFile(args.name+".root","RECREATE")

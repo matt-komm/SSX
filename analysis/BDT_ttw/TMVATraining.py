@@ -77,7 +77,7 @@ for basePathTestingSignal in basePathTestingSignalList:
        
 print "found: ",len(rootFilesTrain)," (train) & ",len(rootFilesTest)," (test) files"
 
-ROOT.gSystem.Load("$HOME/SSX/PxlModules/build/internal/TMVA/libTMVA.so")
+#ROOT.gSystem.Load("$HOME/SSX/PxlModules/build/internal/TMVA/libTMVA.so")
 
 ROOT.TMVA.Tools.Instance()
 f = ROOT.TFile(args.name+".root","RECREATE")
@@ -162,7 +162,7 @@ else:
     print "No channel selected!"
     sys.exit(1)
 
-weight = "(100000.*mcweight/testing_frac)*genweight"
+weight = "(100000.*mcweight/testing_frac)*genweight*(1.5*fabs(Reconstructed_1__elecat==0)+1.*fabs(Reconstructed_1__muoncat==0))"
 selection2j1t = "(Reconstructed_1__nSelectedJet==2)*(Reconstructed_1__nSelectedBJetTight==1)"
 selection2j0t = "(Reconstructed_1__nSelectedJet==2)*(Reconstructed_1__nSelectedBJetTight==0)"
 #selection3j0t = "(Reconstructed_1__nSelectedJet==3)*(Reconstructed_1__nSelectedBJetTight==0)"

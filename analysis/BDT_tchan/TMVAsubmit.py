@@ -68,9 +68,9 @@ config.inputParams = [
 '''
 
 for boost in [0.2,0.4]:
-    for minNode in [0.05,0.2,1]:#,1]:
+    for minNode in [0.2,1]:#,1]:
         for maxVar in [3,4]:
-            for nCuts in [50,100]:
+            for nCuts in [50]:
                 for nTrees in [1000]:
                     for mix in [0.05]:
                         for qcdmix in [0.005]:
@@ -164,12 +164,12 @@ else
 fi
 
 echo "------------ sourcing -----------"
-source $HOME/.bashrc
+module load root/6.06.02-sl6_gcc49
+export LD_LIBRARY_PATH=$HOME:$LD_LIBRARY_PATH
 echo "root: `which root`"
 echo "gcc: `which gcc` (version `gcc -dumpversion`)" 
 echo "python: `which python`"
 cd $HOME/SSX
-source setVars.sh
 echo "------------ scratch dir -----------"
 echo "scratch dir: $LOCALSCRATCH"
 cd $LOCALSCRATCH

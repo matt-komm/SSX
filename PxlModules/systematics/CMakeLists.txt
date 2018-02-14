@@ -47,5 +47,11 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(PDFEnvelope MODULE PDFEnvelope.cpp)
+target_link_libraries(PDFEnvelope ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
+install(
+    TARGETS PDFEnvelope
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
 
 
