@@ -111,11 +111,25 @@ class WeightPerPartonInfo:
 
 
 const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = {
+    {"DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ext",
+        new SimpleWeightInfo(
+            //xtotal=40381391.0 eff=34852843.0 - 5528548.0 = 29324295.0
+            1.20912947725e+12, //xsec from weight =  29942.7396458  (matching eff = 1.60895968005)
+            18610.0 // xsec for process 'DYJetsToLL_M-10to50'
+        )
+    },
     {"DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
         new SimpleWeightInfo(
             //xtotal=35291566.0 eff=35291566.0 - 0.0 = 35291566.0
             35291566.0, //xsec from weight =  1.0  (matching eff = 5.37345513165e-05)
             18610.0 // xsec for process 'DYJetsToLL_M-10to50'
+        )
+    },
+    {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ext",
+        new SimpleWeightInfo(
+            //xtotal=121726979.0 eff=101707668.0 - 20019311.0 = 81688357.0
+            1.92055435757e+12, //xsec from weight =  15777.5570654  (matching eff = 3.22319858332)
+            4895.0 // xsec for process 'DYJetsToLL_M-50'
         )
     },
     {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",

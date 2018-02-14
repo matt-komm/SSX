@@ -76,8 +76,8 @@ class PDFEnvelope:
         {
             getOption("pdfHistFile", _histFile);
 
-            TFile rootFile(_histFile.c_str());
-            if (rootFile.IsOpen())
+            TFile rootFile(getAnalysis()->findFile(_histFile).c_str());
+            if (not rootFile.IsOpen())
             {
                 throw std::runtime_error("Cannot open file: "+_histFile);
             }
