@@ -1,7 +1,10 @@
 syst=(
 "systematics/topMassDown"
 "systematics/topMassUp"
-"systematics/ttbarPt"
+"systematics/ttbarPtUp"
+"systematics/ttbarPtDown"
+"systematics/pdfUp"
+"systematics/pdfDown"
 "systematics/ttbarHdampPSDown"
 "systematics/ttbarHdampPSUp"
 "systematics/ttbarScaleISRPSDown"

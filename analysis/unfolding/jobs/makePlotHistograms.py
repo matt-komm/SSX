@@ -98,6 +98,9 @@ for channel in ["mu","ele"]:
             "systematics/pdfUp",
             "systematics/pdfDown",
             
+            "systematics/tchanHdampPSUp",
+            "systematics/tchanHdampPSDown",
+            
             "systematics/ttbarHdampPSDown",
             "systematics/ttbarHdampPSUp",
             "systematics/ttbarScaleISRPSDown",
