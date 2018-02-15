@@ -15,10 +15,10 @@ class SamplesLtagDown(Module.getClass("Samples")):
         self._logger.setLevel(logging.DEBUG)
         
     def getMuMCWeight(self):
-        return "(Reconstructed_1__btagging_l_down*Reconstructed_1__PU69000_weight*Reconstructed_1__muISO_SF_nominal*Reconstructed_1__muID_SF_nominal*Reconstructed_1__muTRIGGER_SF_nominal)"
+        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_l_down*Reconstructed_1__PU69000_weight*Reconstructed_1__muISO_SF_nominal*Reconstructed_1__muID_SF_nominal*Reconstructed_1__muTRIGGER_SF_nominal)"
         
     def getEleMCWeight(self):
-        return "(Reconstructed_1__btagging_l_down*Reconstructed_1__PU69000_weight*Reconstructed_1__eleRECO_SF_nominal*Reconstructed_1__eleID_SF_nominal)"
+        return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_l_down*Reconstructed_1__PU69000_weight*Reconstructed_1__eleRECO_SF_nominal*Reconstructed_1__eleID_SF_nominal)"
 
 
 class UtilsLtagDown(Module.getClass("Utils")):
