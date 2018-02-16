@@ -130,7 +130,7 @@ class Samples(Module):
         
             
     def getDataWeight(self,channel):
-        dataweight = "(Reconstructed_1__passMuVeto==1)*(Reconstructed_1__passEleVeto==1)"
+        dataweight = "1"
         
         if channel=="mu":
             dataweight+="*"+self.module("Samples").getMuDataWeight()
