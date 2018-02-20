@@ -80,6 +80,24 @@ class Samples(Module):
             self._logger.critical("charge '"+str(charge)+"' invalid")
             raise Exception("charge '"+str(charge)+"' invalid")
             
+    #filters on data/MC: https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#Moriond_2017
+    def getMCMETFlags(self):
+        globalMCWeight="(Reconstructed_1__PAT_Flag_goodVertices==1)"
+        globalMCWeight+="*(Reconstructed_1__PAT_Flag_globalTightHalo2016Filter==1)"
+        globalMCWeight+="*(Reconstructed_1__PAT_Flag_HBHENoiseFilter==1)"
+        globalMCWeight+="*(Reconstructed_1__PAT_Flag_HBHENoiseIsoFilter==1)"
+        globalMCWeight+="*(Reconstructed_1__PAT_Flag_EcalDeadCellTriggerPrimitiveFilter==1)"
+        return globalMCWeight
+        
+    def getDataMETFlags(self):
+        globalDataWeight="(Reconstructed_1__RECO_Flag_goodVertices==1)"
+        globalDataWeight+="*(Reconstructed_1__RECO_Flag_globalTightHalo2016Filter==1)"
+        globalDataWeight+="*(Reconstructed_1__RECO_Flag_HBHENoiseFilter==1)"
+        globalDataWeight+="*(Reconstructed_1__RECO_Flag_HBHENoiseIsoFilter==1)"
+        globalDataWeight+="*(Reconstructed_1__RECO_Flag_EcalDeadCellTriggerPrimitiveFilter==1)"
+        globalDataWeight+="*(Reconstructed_1__RECO_Flag_eeBadScFilter==1)" #not suggested on MC
+        return globalDataWeight
+            
 
     def getMuMCWeight(self):
         return "(testing==1)*(1./testing_frac)*(Reconstructed_1__btagging_nominal*Reconstructed_1__PU69000_weight*Reconstructed_1__muISO06_SF_nominal*Reconstructed_1__muID06_SF_nominal*Reconstructed_1__muTRIGGER06_SF_nominal)"
@@ -121,21 +139,22 @@ class Samples(Module):
     def getMCWeightReco(self,channel):
         
         if channel=="mu":
-            return self.module("Samples").getMuMCWeight()
+            return self.module("Samples").getMuMCWeight()+"*"+ self.module("Samples").getMCMETFlags()
         elif channel=="ele":
-            return self.module("Samples").getEleMCWeight()
+            return self.module("Samples").getEleMCWeight()+"*"+ self.module("Samples").getMCMETFlags()
         else:
             self._logger.critical("Channel '"+channel+"' invalid")
             sys.exit(1)
         
+
             
     def getDataWeight(self,channel):
         dataweight = "1"
         
         if channel=="mu":
-            dataweight+="*"+self.module("Samples").getMuDataWeight()
+            dataweight+="*"+self.module("Samples").getMuDataWeight()+"*"+ self.module("Samples").getDataMETFlags()
         elif channel=="ele":
-            dataweight+="*"+self.module("Samples").getEleDataWeight()
+            dataweight+="*"+self.module("Samples").getEleDataWeight()+"*"+ self.module("Samples").getDataMETFlags()
         else:
             self._logger.critical("Channel '"+channel+"' invalid")
             raise Exception("Channel '"+channel+"' invalid")
