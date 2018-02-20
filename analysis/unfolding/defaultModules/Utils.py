@@ -96,6 +96,15 @@ class Utils(Module):
             hist.Add(tempHist)
         rootFile.Close()
         
+    #morph difference with nominal subtracted
+    def morphValueDiff(self,nominal,up,down,p):
+        if p>1:
+            return (up-nominal)*math.fabs(p)
+        elif p<-1:
+            return(down-nominal)*math.fabs(p)
+        else:
+            return 0.5*p*(up-down)+(p**2-0.5*math.fabs(p**3))*(up+down-2*nominal)
+        
     def morphHist(self,nominal,systList,nuciances,covariance):
         if len(nuciances)!=(len(systList)):
             self._logger.critical("Morphing requires nuciances for each systematic")
@@ -112,12 +121,7 @@ class Utils(Module):
                     p = pdiced[isys]
                     up = systList[isys][0].GetBinContent(ibin)
                     down = systList[isys][1].GetBinContent(ibin)
-                    if p>1:
-                        resultDiced[itoy]+=(up-nominal)*math.fabs(p)
-                    elif p<-1:
-                        resultDiced[itoy]+=(down-nominal)*math.fabs(p)
-                    else:
-                        resultDiced[itoy]+=0.5*p*(up-down)+(p**2-0.5*math.fabs(p**3))*(up+down-2*nominal)
+                    resultDiced[itoy]+=self.module("Utils").morphValueDiff(nominal,up,down,p)
             morphed.SetBinContent(ibin,numpy.mean(resultDiced))
             morphed.SetBinError(ibin,numpy.std(resultDiced))
         return morphed

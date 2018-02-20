@@ -125,6 +125,45 @@ class Unfolding(Module):
             hist.SetBinContent(ibin+1,c/eff)
             hist.SetBinError(ibin+1,err/eff)
             
+    def applyEfficiencyCorrection2D(self,hist):
+        #need to apply propagation of uncertainty Y=J*X*J^T=l(i)*X(ij)*l(j)
+        binMap = self.module("Unfolding").buildGlobalGenBinMap()
+        L = len(self.module("Unfolding").getGenBinning("comb"))-1
+        for ibin in range(L):
+            for jbin in range(L):
+                ieff=0.
+                jeff=0.
+                for channel in ["ele","mu"]:
+                    if binMap[channel].has_key(ibin):
+                        ieff+=1.
+                for channel in ["ele","mu"]:
+                    if binMap[channel].has_key(jbin):
+                        jeff+=1.
+                
+                
+                #diagonal
+                c = hist.GetBinContent(ibin+1,jbin+1)
+                err = hist.GetBinError(ibin+1,jbin+1)
+                hist.SetBinContent(ibin+1,jbin+1,c/(ieff*jeff))
+                hist.SetBinError(ibin+1,jbin+1,err/(ieff*jeff))
+                
+                c = hist.GetBinContent(L+ibin+1,L+jbin+1)
+                err = hist.GetBinError(L+ibin+1,L+jbin+1)
+                hist.SetBinContent(L+ibin+1,L+jbin+1,c/(ieff*jeff))
+                hist.SetBinError(L+ibin+1,L+jbin+1,err/(ieff*jeff))
+                
+                #off-diagonal
+                c = hist.GetBinContent(ibin+1,L+jbin+1)
+                err = hist.GetBinError(ibin+1,L+jbin+1)
+                hist.SetBinContent(ibin+1,L+jbin+1,c/(ieff*jeff))
+                hist.SetBinError(ibin+1,L+jbin+1,err/(ieff*jeff))
+                
+                c = hist.GetBinContent(L+ibin+1,jbin+1)
+                err = hist.GetBinError(L+ibin+1,jbin+1)
+                hist.SetBinContent(L+ibin+1,jbin+1,c/(ieff*jeff))
+                hist.SetBinError(L+ibin+1,jbin+1,err/(ieff*jeff))
+                
+            
         
     def getRecoBinSelection(self,ibin,channel):
         if ibin<0:
@@ -279,12 +318,102 @@ class Unfolding(Module):
         return bestTauAtMinCorrelation
         
         
-    def calculateSum(self,hist1,hist2,covariance):
+    #TODO: not yet working
+    def scanCoverage(self,responseMatrix,data,regularizations=[],dataCovariance=None,output=None):
+        N=10
+        xvalues = numpy.logspace(-8,-2,N)
+        bestTauAtMinCorrelation = xvalues[0]
+        minGlobalCorrlation = 1.0
+        self._logger.info("Scan for coverage: ["+str(xvalues[0])+", "+str(xvalues[-1])+"]")
+        
+        B = data.GetNbinsX()
+        means = numpy.zeros(B)
+        cov = numpy.zeros((B,B))
+        for ibin in range(B):
+            means[ibin]=data.GetBinContent(ibin+1)
+            for jbin in range(B):
+                cov[ibin][jbin]=dataCovariance.GetBinContent(ibin+1,jbin+1)
+                 
+        dataToy = data.Clone(data.GetName()+"_toy"+str(random.random()))
+        dataToy.SetDirectory(0)
+        TOYS = 100
+        
+        sigmas = [0]
+        probs = map(lambda s: 0.5+0.5*ROOT.TMath.Erf(s/math.sqrt(2)),sigmas)
+        
+        coverage = numpy.zeros((B,len(sigmas),N))
+        for i in range(N):
+            unfoldedHist,covariance,bestTau = self.module("Unfolding").unfold(
+                responseMatrix,
+                data,
+                regularizations,
+                dataCovariance,
+                scanOutput=None,
+                fixedTau=xvalues[i]
+            )
+            toyResult = numpy.zeros((B,TOYS))
+            for t in range(TOYS):
+                
+                diced = numpy.random.multivariate_normal(means,cov)
+                for ibin in range(B):
+                    dataToy.SetBinContent(ibin+1,diced[ibin])
+                
+                unfoldedHistDiced,covarianceDiced,bestTauDiced = self.module("Unfolding").unfold(
+                    responseMatrix,
+                    dataToy,
+                    regularizations,
+                    dataCovariance,
+                    scanOutput=None,
+                    fixedTau=xvalues[i]
+                )
+                for ibin in range(B):
+                    toyResult[ibin][t]=unfoldedHistDiced.GetBinContent(ibin+1)
+            resultQuantiles = numpy.percentile(toyResult, probs,axis=1)
+            
+            for ibin in range(B):
+                for s in range(len(sigmas)):
+                    estimated = unfoldedHist.GetBinContent(ibin+1)+sigmas[s]*math.sqrt(covariance.GetBinContent(ibin+1,ibin+1))
+                    diced = resultQuantiles[s][ibin]
+                    print xvalues[i],estimated,diced
+                    coverage[ibin][s][i] = (diced-estimated)/estimated+1. #<0 if diced<estimated
+        
+        cv = ROOT.TCanvas("coverage","",800,700)
+        cv.SetLogx()
+        #cv.SetLogy()
+        cv.SetRightMargin(0.18)
+        axis = ROOT.TH2F("axisScan",";#tau;coverage",50,xvalues[0],xvalues[-1],50,0.0,2)
+        axis.Draw("AXIS")
+        rootObj =[]
+        legend = ROOT.TLegend(0.83,0.9,0.99,0.9-0.055*len(sigmas))
+        legend.SetFillColor(ROOT.kWhite)
+        legend.SetBorderSize(0)
+        legend.SetTextFont(42)
+        for s in range(len(sigmas)):
+            #print sigmas[s],probs[s],coverage[0][s]
+            graph = ROOT.TGraph(N,xvalues,coverage[0][s])
+            graph.SetLineWidth(3)
+            graph.SetLineColor(ROOT.kBlue)
+            graph.SetLineStyle(1)
+            rootObj.append(graph)
+            graph.Draw("SameL")
+            legend.AddEntry(graph,"%3.1f#sigma"%sigmas[s],"L")
+        
+        
+        legend.Draw("Same")
+        if output:
+            cv.Print(output+".pdf")
+            cv.Print(output+".png")
+        
+        
+    def calculateSum(self,hist1,hist2,covariance,nominal=None,systematics=[]):
         if hist1.GetNbinsX()!=hist2.GetNbinsX():
             self._logger.critical("Cannot sum histograms - different number of bins")
             sys.exit(1)
         if covariance.GetNbinsX()!=2*hist1.GetNbinsX() or covariance.GetNbinsY()!=2*hist1.GetNbinsX():
             self._logger.critical("Cannot sum histograms - covariance matrix ("+str(covariance.GetNbinsX())+"x"+str(covariance.GetNbinsY())+") has wrong binning")
+            sys.exit(1)
+        if len(systematics)>0 and nominal==None:
+            self._logger.critical("Require nominal histogram to which relative syst. variations are calculated.")
             sys.exit(1)
         N = hist1.GetNbinsX()
         means = numpy.zeros(2*N)
@@ -304,10 +433,41 @@ class Unfolding(Module):
 
         for itoy in range(NTOYS):
             diced=numpy.random.multivariate_normal(mean=means,cov=cov)
+            nuciances = numpy.random.normal(0,1,size=(len(systematics))) #independent per sys
             for i in range(N):
-                toys[itoy][i]=diced[i]+diced[i+N]
+                diced_pos = diced[i] 
+                diced_neg = diced[i+N] 
                 
-        histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName())
+                for isys,sys in enumerate(systematics):
+                    rel_up_pos = sys[1]["Up"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
+                    rel_up_neg = sys[-1]["Up"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
+                    
+                    rel_down_pos = sys[1]["Down"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
+                    rel_down_neg = sys[-1]["Down"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
+                    
+                    nominal_pos = means[i]
+                    nominal_neg = means[i+N]
+                    
+                    up_pos = rel_up_pos*nominal_pos
+                    up_neg = rel_up_neg*nominal_neg
+                    
+                    down_pos = rel_down_pos*nominal_pos
+                    down_neg = rel_down_neg*nominal_neg
+                    
+                    print i,isys,rel_up_pos-1,rel_down_pos-1
+                    print i,isys,rel_up_neg-1,rel_down_neg-1
+                    
+                    diced_pos += self.module("Utils").morphValueDiff(
+                        nominal_pos,up_pos,down_pos,nuciances[isys]
+                    )
+                    diced_neg += self.module("Utils").morphValueDiff(
+                        nominal_neg,up_neg,down_neg,nuciances[isys]
+                    )
+                    
+                
+                toys[itoy][i]=diced_pos+diced_neg
+                
+        histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName()+str(random.random()))
                 
         meanResult = numpy.mean(toys,axis=0)
         covResult = numpy.cov(toys,rowvar=False)
@@ -358,7 +518,6 @@ class Unfolding(Module):
        
         
             
-    #TODO: assess  coverage of uncertainty by looking at 2sigma, 3sigma intervals
     def unfold(self,responseMatrix,data,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
         genBinning = numpy.zeros((genHist.GetNbinsX()+1))
@@ -392,8 +551,10 @@ class Unfolding(Module):
         self._logger.info("Found tau for regularization: "+str(bestTau))
         
         
-        covariance = ROOT.TH2D("covariance","",len(genBinning)-1,genBinning,len(genBinning)-1,genBinning)
-        unfoldedHist = ROOT.TH1D("unfoldedHist","",len(genBinning)-1,genBinning)
+        covariance = ROOT.TH2D("covariance"+data.GetName()+str(random.random()),"",len(genBinning)-1,genBinning,len(genBinning)-1,genBinning)
+        covariance.SetDirectory(0)
+        unfoldedHist = ROOT.TH1D("unfoldedHist"+data.GetName()+str(random.random()),"",len(genBinning)-1,genBinning)
+        unfoldedHist.SetDirectory(0)
         unfoldedHist.Sumw2()
         if (tunfold.setData(data,dataCovariance)>=10000):
             self._logger.critical("TUnfold indicates a fatal error")

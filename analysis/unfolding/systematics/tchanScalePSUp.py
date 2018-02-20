@@ -8,9 +8,9 @@ from defaultModules.Module import Module
 
 import logging
 
-class SamplesTchanScaleNomPSUp(Module.getClass("Samples")):
+class SamplesTchanScalePSUp(Module.getClass("Samples")):
     def __init__(self,options=[]):
-        SamplesTchanScaleNomPSUp.baseClass.__init__(self,options)
+        SamplesTchanScalePSUp.baseClass.__init__(self,options)
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
@@ -212,12 +212,12 @@ class SamplesTchanScaleNomPSUp(Module.getClass("Samples")):
 
 
 
-class UtilsTchanScaleNomPSUp(Module.getClass("Utils")):
+class UtilsTchanScalePSUp(Module.getClass("Utils")):
     def __init__(self,options=[]):
-        UtilsTchanScaleNomPSUp.baseClass.__init__(self,options)
+        UtilsTchanScalePSUp.baseClass.__init__(self,options)
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
     def getUncertaintyName(self):
-        return "tchanScaleNomPSUp"
+        return "tchanScalePSUp"
         

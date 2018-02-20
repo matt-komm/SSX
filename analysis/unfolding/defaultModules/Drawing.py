@@ -279,6 +279,130 @@ class Drawing(Module):
         cvHist.Print(output+".png")
         
         
+    def plotEnvelopeHistogram(self,nominalHistA,upHistA,downHistA,output,title="",xaxis="",yaxis="Events",yrange=None,normalizeByBinWidth=False,normalizeByCrossSection=False,logy=False,uncBand=None):
+        nominalHist = nominalHistA.Clone()
+        upHist = upHistA.Clone()
+        downHist = downHistA.Clone()
+        
+        if normalizeByBinWidth:
+            self.module("Utils").normalizeByBinWidth(nominalHist)
+            self.module("Utils").normalizeByBinWidth(upHist)
+            self.module("Utils").normalizeByBinWidth(downHist)
+        elif normalizeByCrossSection:
+            plotRange = nominalHist.GetXaxis().GetBinUpEdge(nominalHist.GetNbinsX())-nominalHist.GetXaxis().GetBinLowEdge(1)
+            self.module("Utils").normalizeByBinWidth(nominalHist)
+            nominalHist.Scale(1./self.module("Samples").getLumi())
+            self.module("Utils").normalizeByBinWidth(upHist)
+            upHist.Scale(1./self.module("Samples").getLumi())
+            self.module("Utils").normalizeByBinWidth(downHist)
+            downHist.Scale(1./self.module("Samples").getLumi())
+            
+            totXsec = 0.0
+            for ibin in range(nominalHist.GetNbinsX()):
+                totXsec+=nominalHist.GetBinContent(ibin+1)*nominalHist.GetBinWidth(ibin+1)
+            self._logger.info("Calculated theo. xsec: "+str(totXsec)+" pb")
+        
+        cvxmin=0.165
+        cvxmax=0.96
+        cvymin=0.14
+        cvymax=0.92
+        
+        cvHist = ROOT.TCanvas("cvHist","",750,700)
+        cvHist.SetLogy(logy)
+        cvHist.SetLeftMargin(cvxmin)
+        cvHist.SetBottomMargin(cvymin)
+        cvHist.SetTopMargin(1-cvymax)
+        cvHist.SetRightMargin(1-cvxmax)
+
+        ymin = 0
+        ymax = 1.3*max(map(lambda x: x.GetMaximum(),[nominalHist,upHist,downHist]))
+        if logy:
+            ymin = 0.4*min(map(lambda x: x.GetMinimum(),[nominalHist,upHist,downHist]))
+            ymax = math.log(1.3*math.exp(ymax+1))-1.
+        if yrange:
+            ymin = yrange[0]
+            ymax = yrange[1]
+        
+        axis = ROOT.TH2F("axis"+str(random.random()),";"+xaxis+";"+yaxis,
+            50,nominalHist.GetXaxis().GetXmin(),nominalHist.GetXaxis().GetXmax(),
+            50,ymin,ymax
+        )
+        axis.GetXaxis().SetTickLength(0.015/(1-cvHist.GetLeftMargin()-cvHist.GetRightMargin()))
+        axis.GetYaxis().SetTickLength(0.015/(1-cvHist.GetTopMargin()-cvHist.GetBottomMargin()))
+        axis.GetXaxis().SetLabelFont(43)
+        axis.GetXaxis().SetLabelSize(32)
+        axis.GetYaxis().SetLabelFont(43)
+        axis.GetYaxis().SetLabelSize(32)
+        axis.GetXaxis().SetTitleFont(43)
+        axis.GetXaxis().SetTitleSize(36)
+        axis.GetYaxis().SetTitleFont(43)
+        axis.GetYaxis().SetTitleSize(36)
+        
+        axis.GetYaxis().SetTitleOffset(1.6)
+        axis.Draw("AXIS")
+        
+        
+        rootObj = []
+        
+        
+
+        nominalHist.SetLineColor(ROOT.kRed+1)
+        nominalHist.SetLineWidth(3)
+        nominalHist.SetLineStyle(1)
+        nominalHist.Draw("HISTSame")
+        
+        upHist.SetLineColor(ROOT.kAzure+4)
+        upHist.SetMarkerColor(ROOT.kAzure+4)
+        upHist.SetMarkerStyle(21)
+        upHist.SetLineWidth(2)
+        upHist.SetLineStyle(2)
+        upHist.SetMarkerSize(1.1)
+        upHist.Draw("PHISTSame")
+        
+        downHist.SetLineColor(ROOT.kGreen+1)
+        downHist.SetMarkerColor(ROOT.kGreen+1)
+        downHist.SetMarkerStyle(22)
+        downHist.SetLineWidth(2)
+        downHist.SetLineStyle(2)
+        downHist.SetMarkerSize(1.1)
+        downHist.Draw("PHISTSame")
+        
+        
+        pCMS=ROOT.TPaveText(cvxmin+0.025,cvymax-0.065,cvxmin+0.025,cvymax-0.065,"NDC")
+        pCMS.SetFillColor(ROOT.kWhite)
+        pCMS.SetBorderSize(0)
+        pCMS.SetTextFont(63)
+        pCMS.SetTextSize(34)
+        pCMS.SetTextAlign(11)
+        pCMS.AddText("CMS")
+        pCMS.Draw("Same")
+        
+        pPreliminary=ROOT.TPaveText(cvxmin+0.025+0.1,cvymax-0.065,cvxmin+0.025+0.1,cvymax-0.065,"NDC")
+        pPreliminary.SetFillColor(ROOT.kWhite)
+        pPreliminary.SetBorderSize(0)
+        pPreliminary.SetTextFont(53)
+        pPreliminary.SetTextSize(34)
+        pPreliminary.SetTextAlign(11)
+        pPreliminary.AddText("Preliminary")
+        pPreliminary.Draw("Same")
+    
+        
+        pLumi=ROOT.TPaveText(cvxmax,0.94,cvxmax,0.94,"NDC")
+        pLumi.SetFillColor(ROOT.kWhite)
+        pLumi.SetBorderSize(0)
+        pLumi.SetTextFont(43)
+        pLumi.SetTextSize(36)
+        pLumi.SetTextAlign(31)
+        if title!="":
+            pLumi.AddText(title+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)")
+        else:
+            pLumi.AddText("36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)")
+        pLumi.Draw("Same")
+        
+        cvHist.Print(output+".pdf")
+        cvHist.Print(output+".png")
+        
+        
         
     def drawHistogramResponseAndEfficiency(self,histMatrix, output, title="",xaxis="",yaxis="",zaxis="transition probability (%)"):
         ROOT.gStyle.SetPaintTextFormat("3.0f")

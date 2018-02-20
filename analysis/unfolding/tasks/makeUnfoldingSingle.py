@@ -240,6 +240,15 @@ class RunUnfolding(Module.getClass("Program")):
             unfoldedHists[1].SetBinError(ibin+1,combinedUnfoldedHist.GetBinError(ibin+1))
             unfoldedHists[-1].SetBinContent(ibin+1,combinedUnfoldedHist.GetBinContent(ibin+1+(len(genBinning)-1)))
             unfoldedHists[-1].SetBinError(ibin+1,combinedUnfoldedHist.GetBinError(ibin+1+(len(genBinning)-1)))
+            
+            
+        if len(channels)==2:
+             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[1])
+             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[-1])
+             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[1])
+             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[-1])
+
+             self.module("Unfolding").applyEfficiencyCorrection2D(combinedUnfoldedCovariance)
         
         xtitle = self.module("Unfolding").getUnfoldingLevel()+" "+self.module("Unfolding").getUnfoldingVariableName()
         ytitleSum = "d#kern[-0.5]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{#/}}#kern[-2]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
@@ -289,7 +298,8 @@ class RunUnfolding(Module.getClass("Program")):
             for h in [
                 ["nominalReco_"+self.module("Samples").getChargeName(charge),nominalRecoHists[charge]],
                 ["measuredReco_"+self.module("Samples").getChargeName(charge),measuredRecoHists[charge]],
-                ["nominalGen"+self.module("Samples").getChargeName(charge),nominalGenHists[charge]],
+                ["nominalGen_"+self.module("Samples").getChargeName(charge),nominalGenHists[charge]],
+                ["unfolded_"+self.module("Samples").getChargeName(charge),unfoldedHists[charge]],
             ]:
                 h[1].SetName(h[0])
                 h[1].SetDirectory(outputFile)
@@ -297,8 +307,8 @@ class RunUnfolding(Module.getClass("Program")):
         for h in [
             ["covarianceReco",combinedCovarianceMatrix],
             ["covarianceUnfolded",combinedUnfoldedCovariance],
-            ["nominalGen"+self.module("Samples").getChargeName(0),nominalGenHists[0]],
-            ["unfolded"+self.module("Samples").getChargeName(0),unfoldedHists[0]],
+            ["nominalGen_"+self.module("Samples").getChargeName(0),nominalGenHists[0]],
+            ["unfolded_"+self.module("Samples").getChargeName(0),unfoldedHists[0]],
             ["ratioUnfolded",histRatio],
             ["ratioGen",genRatio],
         ]:            

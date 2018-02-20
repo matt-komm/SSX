@@ -23,10 +23,10 @@ syst=(
 "systematics/tchanScaleTmpl -c qscale:DD"
 )
 
-#syst=(
-#"systematics/topMassDown"
-#"systematics/topMassUp"
-#)
+syst=(
+"systematics/ttbarPtUp"
+"systematics/ttbarPtDown"
+)
 
 setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton"
 #setups="TopPtParton"

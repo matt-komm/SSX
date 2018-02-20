@@ -17,7 +17,7 @@ class RunUnfolding(Module.getClass("Program")):
     def execute(self):
         #mu,ele
         channels = self.getOption("channels").split(",")
-        systematics =self.getOption("systematics").split(",")
+        systematics = [] if self.getOption("systematics")==None else self.getOption("systematics").split(",")
         channelName = self.module("Samples").getChannelName(channels)
         #inc,pt,y,cos
         unfoldingName = self.module("Unfolding").getUnfoldingName()
@@ -205,6 +205,17 @@ class RunUnfolding(Module.getClass("Program")):
         
         
         #unfolding
+        '''
+        self.module("Unfolding").scanCoverage(
+            combinedHists["response"],
+            combinedHists["measuredReco"],
+            #regularize only between the two merged histograms
+            regularizations=range(1,len(genBinning)-2)+range(1+(len(genBinning)-1),len(genBinning)-2+(len(genBinning)-1)),
+            dataCovariance=combinedCovarianceMatrix,
+            output=os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_comb_coverageScan")
+        )
+        '''
+        
         #TODO: apply no regularization for lepton unfolding!
         combinedUnfoldedHist,combinedUnfoldedCovariance,bestTau = self.module("Unfolding").unfold(
             combinedHists["response"],
@@ -239,13 +250,21 @@ class RunUnfolding(Module.getClass("Program")):
             title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
         )
         
-        
+       
         for ibin in range(len(genBinning)-1):
             unfoldedHists[1].SetBinContent(ibin+1,combinedUnfoldedHist.GetBinContent(ibin+1))
             unfoldedHists[1].SetBinError(ibin+1,combinedUnfoldedHist.GetBinError(ibin+1))
             unfoldedHists[-1].SetBinContent(ibin+1,combinedUnfoldedHist.GetBinContent(ibin+1+(len(genBinning)-1)))
             unfoldedHists[-1].SetBinError(ibin+1,combinedUnfoldedHist.GetBinError(ibin+1+(len(genBinning)-1)))
         
+        if len(channels)==2:
+             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[1])
+             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[-1])
+             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[1])
+             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[-1])
+
+             self.module("Unfolding").applyEfficiencyCorrection2D(combinedUnfoldedCovariance)
+             
         xtitle = self.module("Unfolding").getUnfoldingLevel()+" "+self.module("Unfolding").getUnfoldingVariableName()
         ytitleSum = "d#kern[-0.5]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{#/}}#kern[-2]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
         ytitleRatio = "d#kern[-0.5]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{#/}}#kern[-2]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingVariableName()+""
@@ -264,21 +283,12 @@ class RunUnfolding(Module.getClass("Program")):
                 
             )
             
-            
         genSum = nominalGenHists[1].Clone("sumGen")
         genSum.Add(nominalGenHists[-1])
         nominalGenHists[0] = genSum
         
         histSum = self.module("Unfolding").calculateSum(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
-        '''
-        if len(channels)==2:
-             self.module("Unfolding").applyEfficiencyCorrection1D(histSum)
-             self.module("Unfolding").applyEfficiencyCorrection1D(genSum)
-             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[1])
-             self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[-1])
-             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[1])
-             self.module("Unfolding").applyEfficiencyCorrection1D(unfoldedHists[-1])
-        '''
+        
         unfoldedHists[0] = histSum
         self.module("Drawing").plotDataHistogram([genSum],histSum,
             os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_sum_unfoldedHist"),
@@ -303,7 +313,8 @@ class RunUnfolding(Module.getClass("Program")):
             for h in [
                 ["nominalReco_"+self.module("Samples").getChargeName(charge),nominalRecoHists[charge]],
                 ["measuredReco_"+self.module("Samples").getChargeName(charge),measuredRecoHists[charge]],
-                ["nominalGen"+self.module("Samples").getChargeName(charge),nominalGenHists[charge]],
+                ["nominalGen_"+self.module("Samples").getChargeName(charge),nominalGenHists[charge]],
+                ["unfolded_"+self.module("Samples").getChargeName(charge),unfoldedHists[charge]],
             ]:
                 h[1].SetName(h[0])
                 h[1].SetDirectory(outputFile)
@@ -311,8 +322,8 @@ class RunUnfolding(Module.getClass("Program")):
         for h in [
             ["covarianceReco",combinedCovarianceMatrix],
             ["covarianceUnfolded",combinedUnfoldedCovariance],
-            ["nominalGen"+self.module("Samples").getChargeName(0),nominalGenHists[0]],
-            ["unfolded"+self.module("Samples").getChargeName(0),unfoldedHists[0]],
+            ["nominalGen_"+self.module("Samples").getChargeName(0),nominalGenHists[0]],
+            ["unfolded_"+self.module("Samples").getChargeName(0),unfoldedHists[0]],
             ["ratioUnfolded",histRatio],
             ["ratioGen",genRatio],
         ]:            
