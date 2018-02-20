@@ -17,7 +17,10 @@ variations = {
     "UN":"1004",
     "DN":"1007",
     "UU":"1005",
-    "DD":"1009"
+    "DD":"1009",
+    #these are the max variations
+    "Down":"1009",
+    "Up":"1005",
 }
 
 class SamplesTchanScaleTmpl(Module.getClass("Samples")):
