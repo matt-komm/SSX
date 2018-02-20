@@ -145,9 +145,7 @@ class Samples(Module):
         else:
             self._logger.critical("Channel '"+channel+"' invalid")
             sys.exit(1)
-        
-
-            
+          
     def getDataWeight(self,channel):
         dataweight = "1"
         
