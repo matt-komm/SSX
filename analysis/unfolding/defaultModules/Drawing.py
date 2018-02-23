@@ -168,17 +168,11 @@ class Drawing(Module):
                 self.module("Utils").normalizeByBinWidth(nominalHists[i])
             self.module("Utils").normalizeByBinWidth(measuredHist)
         elif normalizeByCrossSection:
-            plotRange = measuredHist.GetXaxis().GetBinUpEdge(measuredHist.GetNbinsX())-measuredHist.GetXaxis().GetBinLowEdge(1)
             for i in range(len(nominalHists)):
-                self.module("Utils").normalizeByBinWidth(nominalHists[i])
-                nominalHists[i].Scale(1./self.module("Samples").getLumi())
-            self.module("Utils").normalizeByBinWidth(measuredHist)
-            measuredHist.Scale(1./self.module("Samples").getLumi())
-            totXsec = 0.0
-            for ibin in range(nominalHists[0].GetNbinsX()):
-                totXsec+=nominalHists[0].GetBinContent(ibin+1)*nominalHists[0].GetBinWidth(ibin+1)
-            self._logger.info("Calculated theo. xsec: "+str(totXsec)+" pb")
-        
+                xsec = self.module("Utils").normalizeByCrossSection(nominalHists[i])
+                self._logger.info("Calculated theo. xsec: "+str(xsec)+" pb")
+            self.module("Utils").normalizeByCrossSection(measuredHist)
+            
         cvxmin=0.165
         cvxmax=0.96
         cvymin=0.14
@@ -289,18 +283,11 @@ class Drawing(Module):
             self.module("Utils").normalizeByBinWidth(upHist)
             self.module("Utils").normalizeByBinWidth(downHist)
         elif normalizeByCrossSection:
-            plotRange = nominalHist.GetXaxis().GetBinUpEdge(nominalHist.GetNbinsX())-nominalHist.GetXaxis().GetBinLowEdge(1)
-            self.module("Utils").normalizeByBinWidth(nominalHist)
-            nominalHist.Scale(1./self.module("Samples").getLumi())
-            self.module("Utils").normalizeByBinWidth(upHist)
-            upHist.Scale(1./self.module("Samples").getLumi())
-            self.module("Utils").normalizeByBinWidth(downHist)
-            downHist.Scale(1./self.module("Samples").getLumi())
+            xsec = self.module("Utils").normalizeByCrossSection(nominalHist)
+            self.module("Utils").normalizeByCrossSection(upHist)
+            self.module("Utils").normalizeByCrossSection(downHist)
             
-            totXsec = 0.0
-            for ibin in range(nominalHist.GetNbinsX()):
-                totXsec+=nominalHist.GetBinContent(ibin+1)*nominalHist.GetBinWidth(ibin+1)
-            self._logger.info("Calculated theo. xsec: "+str(totXsec)+" pb")
+            self._logger.info("Calculated theo. xsec: "+str(xsec)+" pb")
         
         cvxmin=0.165
         cvxmax=0.96

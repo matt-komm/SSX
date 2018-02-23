@@ -166,6 +166,16 @@ class Utils(Module):
         for ibin in range(hist.GetNbinsX()):
             hist.SetBinContent(ibin+1,hist.GetBinContent(ibin+1)/hist.GetBinWidth(ibin+1))
             hist.SetBinError(ibin+1,hist.GetBinError(ibin+1)/hist.GetBinWidth(ibin+1))
+            
+    def normalizeByCrossSection(self,hist):
+        plotRange = hist.GetXaxis().GetBinUpEdge(hist.GetNbinsX())-hist.GetXaxis().GetBinLowEdge(1)
+        self.module("Utils").normalizeByBinWidth(hist)
+        hist.Scale(1./self.module("Samples").getLumi())
+        totXsec = 0.0
+        for ibin in range(hist.GetNbinsX()):
+            totXsec+=hist.GetBinContent(ibin+1)*hist.GetBinWidth(ibin+1)
+        #self._logger.info("Calculated theo. xsec: "+str(totXsec)+" pb")
+        return totXsec
         
             
     def normalizeByTransistionProbability(self,responseMatrix):
