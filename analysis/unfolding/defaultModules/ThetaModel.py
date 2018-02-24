@@ -22,7 +22,7 @@ class ThetaModel(Module):
         return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2))}}
         #return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2)), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
        
-    def makeGaus(self,mean,unc,r=[-5,5]):
+    def makeGaus(self,mean,unc,r=[-3,3]):
         return {"type":"gauss","config":{"mean": "%4.3f"%(mean), "width":"%4.3f"%(unc), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
         
     def getMeanAndUncertainty(self,dist):
@@ -327,7 +327,7 @@ myminimizer = {
             iterations = 100000;
             burn-in = 20000;
             name = "mcmc_min20";
-            stepsize_factor = 2.0;
+            stepsize_factor = 1.5;
         },
         {
             type = "mcmc_minimizer";
