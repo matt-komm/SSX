@@ -15,13 +15,10 @@ syst=(
 "systematics/tchanHdampPSUp"
 "systematics/tchanScalePSDown"
 "systematics/tchanScalePSUp"
-"systematics/tchanScaleTmpl -c qscale:ND"
-"systematics/tchanScaleTmpl -c qscale:NU"
-"systematics/tchanScaleTmpl -c qscale:DN"
-"systematics/tchanScaleTmpl -c qscale:UN"
-"systematics/tchanScaleTmpl -c qscale:UU"
-"systematics/tchanScaleTmpl -c qscale:DD"
+"systematics/tchanScaleTmpl -c qscale:Up"
+"systematics/tchanScaleTmpl -c qscale:Down"
 )
+
 
 
 for channels in ele mu ele,mu
@@ -34,7 +31,7 @@ for channels in ele mu ele,mu
         done
     for sys  in "${syst[@]}"
         do
-        for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WCosParticle WPtParticle
+        for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WPtParticle
             do
             echo $setup $channels
             python driver.py -m setup/$setup -m tasks/makeUnfoldingSingle -m $sys -c channels:$channels

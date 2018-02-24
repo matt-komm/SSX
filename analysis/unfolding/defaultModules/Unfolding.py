@@ -445,6 +445,10 @@ class Unfolding(Module):
                     rel_down_pos = sys[1]["Down"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
                     rel_down_neg = sys[-1]["Down"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
                     
+                    if rel_up_pos<0 or rel_down_pos<0 or rel_up_neg<0 or rel_down_neg<0:
+                        self._logger.critical("Discovered inconsitent systematic envelope for uncertainty "+str(isys+1))
+                        sys.exit(1)
+                    
                     nominal_pos = means[i]
                     nominal_neg = means[i+N]
                     
@@ -460,17 +464,26 @@ class Unfolding(Module):
                     down_pos = sys[1]["Down"].GetBinContent(i+1)
                     down_neg = sys[-1]["Down"].GetBinContent(i+1)
                     '''
+                    #print i,isys,sys[-1]["Down"].GetBinContent(i+1),sys[-1]["Up"].GetBinContent(i+1)
                     #print i,isys,rel_up_pos-1,rel_down_pos-1
                     #print i,isys,rel_up_neg-1,rel_down_neg-1
                     
+                    if nuciances[isys]>0:
+                        
+                        diced_pos += (up_pos-nominal_pos)*math.fabs(nuciances[isys])
+                        diced_neg += (up_neg-nominal_neg)*math.fabs(nuciances[isys])
+                    else:
+                        diced_pos += (down_pos-nominal_pos)*math.fabs(nuciances[isys])
+                        diced_neg += (down_neg-nominal_neg)*math.fabs(nuciances[isys])
+                    '''
                     diced_pos += self.module("Utils").morphValueDiff(
                         nominal_pos,up_pos,down_pos,nuciances[isys]
                     )
                     diced_neg += self.module("Utils").morphValueDiff(
                         nominal_neg,up_neg,down_neg,nuciances[isys]
                     )
+                    '''
                     
-                
                 toys[itoy][i]=diced_pos+diced_neg
                 
         histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName()+str(random.random()))
@@ -568,6 +581,9 @@ class Unfolding(Module):
         tunfold.doUnfolding(bestTau,unfoldedHist,covariance,True,False,False)
         
         for ibin in range(unfoldedHist.GetNbinsX()):
+            #reset bins <0 to -> 0
+            if unfoldedHist.GetBinContent(ibin+1)<0:
+                unfoldedHist.SetBinContent(ibin+1,0.1)
             unfoldedHist.SetBinError(ibin+1,math.sqrt(covariance.GetBinContent(ibin+1,ibin+1)))
         '''
         for ibin in range(unfoldedHist.GetNbinsX()):

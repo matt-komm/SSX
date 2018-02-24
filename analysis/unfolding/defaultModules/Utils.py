@@ -101,7 +101,7 @@ class Utils(Module):
         if p>1:
             return (up-nominal)*math.fabs(p)
         elif p<-1:
-            return(down-nominal)*math.fabs(p)
+            return (down-nominal)*math.fabs(p)
         else:
             return 0.5*p*(up-down)+(p**2-0.5*math.fabs(p**3))*(up+down-2*nominal)
         

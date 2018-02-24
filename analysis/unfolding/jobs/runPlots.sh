@@ -1,4 +1,4 @@
-syst="pdf,tchanHdampPS,tchanScaleME,tchanScalePS,topMass,ttbarHdampPS,ttbarPt,ttbarScaleFSRPS,ttbarScaleISRPS"
+syst="pdf,topMass,tchanHdampPS,tchanScaleME,tchanScalePS,ttbarHdampPS,ttbarPt,ttbarScaleFSRPS,ttbarScaleISRPS"
 
 for channels in ele mu ele,mu
     do
