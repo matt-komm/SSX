@@ -19,14 +19,14 @@ syst=(
 "systematics/tchanScaleTmpl -c qscale:NU"
 "systematics/tchanScaleTmpl -c qscale:DN"
 "systematics/tchanScaleTmpl -c qscale:UN"
-"systematics/tchanScaleTmpl -c qscale:UU"
-"systematics/tchanScaleTmpl -c qscale:DD"
+"systematics/tchanScaleTmpl -c qscale:Up"
+"systematics/tchanScaleTmpl -c qscale:Down"
 )
 
-syst=(
-"systematics/ttbarPtUp"
-"systematics/ttbarPtDown"
-)
+#syst=(
+#"systematics/ttbarPtUp"
+#"systematics/ttbarPtDown"
+#)
 
 setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton"
 #setups="TopPtParton"
