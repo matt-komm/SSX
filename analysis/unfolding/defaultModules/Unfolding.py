@@ -453,9 +453,15 @@ class Unfolding(Module):
                     
                     down_pos = rel_down_pos*nominal_pos
                     down_neg = rel_down_neg*nominal_neg
-                    
-                    print i,isys,rel_up_pos-1,rel_down_pos-1
-                    print i,isys,rel_up_neg-1,rel_down_neg-1
+                    '''
+                    up_pos = sys[1]["Up"].GetBinContent(i+1)
+                    up_neg = sys[-1]["Up"].GetBinContent(i+1)
+                   
+                    down_pos = sys[1]["Down"].GetBinContent(i+1)
+                    down_neg = sys[-1]["Down"].GetBinContent(i+1)
+                    '''
+                    #print i,isys,rel_up_pos-1,rel_down_pos-1
+                    #print i,isys,rel_up_neg-1,rel_down_neg-1
                     
                     diced_pos += self.module("Utils").morphValueDiff(
                         nominal_pos,up_pos,down_pos,nuciances[isys]

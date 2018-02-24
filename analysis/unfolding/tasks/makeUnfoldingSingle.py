@@ -268,7 +268,6 @@ class RunUnfolding(Module.getClass("Program")):
                 
             )
             
-            
         genSum = nominalGenHists[1].Clone("sumGen")
         genSum.Add(nominalGenHists[-1])
         nominalGenHists[0] = genSum
