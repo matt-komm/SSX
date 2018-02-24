@@ -27,7 +27,7 @@ syst=(
 for channels in ele mu ele,mu
     do
     echo $channels
-    for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WCosParticle WPtParticle
+    for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WPtParticle
         do
         echo $setup $channels
         python driver.py -m setup/$setup -m tasks/makeUnfoldingSingle -c channels:$channels -c systematics:$syst

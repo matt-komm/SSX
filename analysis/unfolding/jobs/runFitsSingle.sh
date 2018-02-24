@@ -28,7 +28,7 @@ syst=(
 #"systematics/ttbarPtDown"
 #)
 
-setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton"
+setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton"
 #setups="TopPtParton"
 
 for channels in ele mu ele,mu

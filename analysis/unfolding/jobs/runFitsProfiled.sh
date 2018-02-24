@@ -2,7 +2,7 @@ syst="btag,ltag,eleEff,muEff,en,res,pu,unc,dy,tw,eleMultiIso,eleMultiVeto,muMult
 for channels in ele mu ele,mu
     do
     python driver.py -m tasks/makeFitMarginalized -c channels:$channels -c systematics:$syst
-    for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WCosParton WPtParton
+    for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton
         do
         python driver.py -m tasks/makeFitMarginalized -m setup/$setup -c channels:$channels -c systematics:$syst
         done
