@@ -212,7 +212,7 @@ import sys
 import random
 from ModelClasses import *
 
-class RunUnfolding(Module.getClass("Program")):
+class PlotCrossSection(Module.getClass("Program")):
     def __init__(self,options=[]):
         Module.__init__(self,options)
         self._logger = logging.getLogger(__file__)
@@ -298,29 +298,38 @@ class RunUnfolding(Module.getClass("Program")):
             sysResults.append(results)
             
             self.module("Drawing").plotEnvelopeHistogram(
-                nominalResult["unfolded_pos"],results[1]["Up"],results[1]["Down"],
+                nominalResult["nominalGen_pos"],nominalResult["unfolded_pos"],results[1]["Up"],results[1]["Down"],
                 os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_pos_"+sys),
-                title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
+                title=self.module("Samples").getPlotTitle(channels,1)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
                 xaxis=xtitle,yaxis=ytitleSum,logy=logy,
                 normalizeByCrossSection=True
             )
             
+            
             self.module("Drawing").plotEnvelopeHistogram(
-                nominalResult["unfolded_neg"],results[-1]["Up"],results[-1]["Down"],
+                nominalResult["nominalGen_neg"],nominalResult["unfolded_neg"],results[-1]["Up"],results[-1]["Down"],
                 os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_neg_"+sys),
-                title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
+                title=self.module("Samples").getPlotTitle(channels,-1)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
                 xaxis=xtitle,yaxis=ytitleSum,logy=logy,
                 normalizeByCrossSection=True
             )
-    
+            
+        
         genBinning = self.module("Unfolding").getGenBinning(channelName)
         
-        
+        #this is a reflection of the stat uncertainty only
+        histSumNominal = self.module("Unfolding").calculateSum(
+            nominalResult["unfolded_pos"],
+            nominalResult["unfolded_neg"],
+            nominalResult["covarianceUnfolded"]
+        )
+        #this includes also the profiled exp. systematics
         histSumProfiled = self.module("Unfolding").calculateSum(
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
             profiledResult["covarianceUnfolded"]
         )
+        #this is the envelope of all systematics
         histSumTotal = self.module("Unfolding").calculateSum(
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
@@ -328,6 +337,12 @@ class RunUnfolding(Module.getClass("Program")):
             {1:nominalResult["unfolded_pos"],-1:nominalResult["unfolded_neg"]},
             sysResults
         )
+        
+        self.module("Drawing").plotCompareHistogram(nominalResult["nominalGen_inc"],
+            [histSumNominal,histSumProfiled,histSumTotal],
+            os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(0)+"_compareHist"),
+            title=self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis=xtitle,yaxis=ytitleSum,logy=unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt",normalizeByCrossSection=True
+        ) 
         
         self.module("Utils").normalizeByCrossSection(histSumProfiled)
         self.module("Utils").normalizeByCrossSection(histSumTotal)
@@ -489,7 +504,10 @@ class RunUnfolding(Module.getClass("Program")):
         
         
         #legend = ROOT.TLegend(0.54,cvymax-0.02,cvxmax-0.13,cvymax-0.02-0.067*2)
-        legend = ROOT.TLegend(cvxmin+0.02,resHeight+0.03,cvxmin+0.35,resHeight+0.03+0.067*2)
+        if unfoldingName=="cos":
+            legend = ROOT.TLegend(cvxmin+0.02,cvymax-0.02,cvxmin+0.35,cvymax-0.02-0.067*2)
+        else:
+            legend = ROOT.TLegend(cvxmin+0.02,resHeight+0.03,cvxmin+0.35,resHeight+0.03+0.067*2)
         #legend = ROOT.TLegend(0.54,resHeight+0.03,cvxmax-0.13,resHeight+0.03+0.067*2)
         legend.SetFillColor(0)
         legend.SetFillStyle(0)
@@ -501,11 +519,11 @@ class RunUnfolding(Module.getClass("Program")):
         legend.Draw("Same")
         
         cv.cd(1)
-        axisRes=None
-        if unit!="":
-            axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Pred./Data",50,genBinning[0],genBinning[-1],50,0.6,1.4)
+        if unfoldingName=="cos":
+            resRange = 0.8
         else:
-            axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Pred./Data",50,genBinning[0],genBinning[-1],50,0.6,1.4)
+            resRange = 0.4
+        axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Pred./Data",50,genBinning[0],genBinning[-1],50,1-resRange,1+resRange)
         axisRes.GetYaxis().SetNdivisions(406)
         axisRes.GetXaxis().SetTitle(xtitle)
         axisRes.GetXaxis().SetTickLength(0.017/(1-cv.GetPad(1).GetLeftMargin()-cv.GetPad(1).GetRightMargin()))
