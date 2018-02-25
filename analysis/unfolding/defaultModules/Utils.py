@@ -113,7 +113,7 @@ class Utils(Module):
         morphed.SetDirectory(0)
         for ibin in range((morphed.GetNbinsX()+2)*(morphed.GetNbinsY()+2)):
             nominal = morphed.GetBinContent(ibin)
-            resultDiced = numpy.zeros(200)
+            resultDiced = numpy.zeros(1000)
             for itoy in range(len(resultDiced)):
                 resultDiced[itoy] = morphed.GetBinContent(ibin)
                 pdiced = numpy.random.multivariate_normal(nuciances,covariance)
@@ -127,6 +127,27 @@ class Utils(Module):
         return morphed
                 
         
+    def morphPlotHist(self,hists,systematics,fitResult):
+        morphedHists = {}
+        for component in hists.keys():
+            nominalHist = hists[component]['nominal']
+            sysHists = []
+            means = []
+            covariances = []
+            for unc in systematics:
+                sysHists.append([
+                    hists[component][unc+"Up"],
+                    hists[component][unc+"Down"],
+                ])
+                means.append(fitResult["parameters"][unc]["mean_fit"])
+                covs = []
+                for unc2 in systematics:
+                    covs.append(fitResult["covariances"]["values"][unc][unc2])
+                
+                covariances.append(covs)
+            morphedHists[component] = self.module("Utils").morphHist(nominalHist,sysHists,means,covariances)
+            
+        return morphedHists
         
     def calculateCorrelations(self,hist):
         histCorr = hist.Clone(hist.GetName()+"correlations")
