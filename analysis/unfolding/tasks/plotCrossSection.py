@@ -361,7 +361,7 @@ class PlotCrossSection(Module.getClass("Program")):
         histSumTotal.SetMarkerColor(ROOT.kBlack)
         histSumTotal.SetMarkerSize(1.2)
         
-        genHistSum.SetLineColor(ROOT.kRed+1)
+        genHistSum.SetLineColor(ROOT.kOrange+7)
         genHistSum.SetLineWidth(2)
         
         
@@ -426,11 +426,18 @@ class PlotCrossSection(Module.getClass("Program")):
         
         cv.cd(2)
         
-        ymin = 0
-        ymax = 1.35*max(map(lambda x: x.GetMaximum(),[histSumProfiled]))
+        ymin = 100000
+        ymax = -10000
+        for ibin in range(histSumTotal.GetNbinsX()):
+            ymin = min(ymin,histSumTotal.GetBinContent(ibin+1)-histSumTotal.GetBinError(ibin+1))
+            ymax = max(ymax,histSumTotal.GetBinContent(ibin+1)+histSumTotal.GetBinError(ibin+1))
+            
         if logy:
-            ymin = 0.4*min(map(lambda x: x.GetMinimum(),[histSumProfiled]))
+            ymin = 0.7*ymin
             ymax = math.log(1.35*math.exp(ymax+1))-1.
+        else:
+            ymax = 1.1*ymax
+            ymin = 0
         
         axis = ROOT.TH2F("axis"+str(random.random()),";;",
             50,genBinning[0],genBinning[-1],
@@ -456,7 +463,7 @@ class PlotCrossSection(Module.getClass("Program")):
         histSumTotal.Draw("PESAME")
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotal.GetBinCenter(ibin+1)
-            w = (genBinning[-1]-genBinning[0])*0.01
+            w = (genBinning[-1]-genBinning[0])*0.012
             n = histSumTotal.GetBinContent(ibin+1)
             rel_sys = histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1)
             u = (1.+rel_sys)*n
@@ -502,9 +509,9 @@ class PlotCrossSection(Module.getClass("Program")):
         pLumi.AddText(self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)")
         pLumi.Draw("Same")
         
-        
-        #legend = ROOT.TLegend(0.54,cvymax-0.02,cvxmax-0.13,cvymax-0.02-0.067*2)
-        if unfoldingName=="cos":
+        if unfoldingName=="lpt":
+            legend = ROOT.TLegend(0.54,cvymax-0.02,cvxmax-0.13,cvymax-0.02-0.067*2)
+        elif unfoldingName=="cos":
             legend = ROOT.TLegend(cvxmin+0.02,cvymax-0.02,cvxmin+0.35,cvymax-0.02-0.067*2)
         else:
             legend = ROOT.TLegend(cvxmin+0.02,resHeight+0.03,cvxmin+0.35,resHeight+0.03+0.067*2)
@@ -515,14 +522,14 @@ class PlotCrossSection(Module.getClass("Program")):
         legend.SetTextFont(43)
         legend.SetTextSize(33)
         legend.AddEntry(histSumTotal,"Data","PE")
-        legend.AddEntry(genHistSum,"Powheg#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8","L")
+        legend.AddEntry(genHistSum,"POWHEG#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8","L")
         legend.Draw("Same")
         
         cv.cd(1)
-        if unfoldingName=="cos":
-            resRange = 0.8
+        if unfoldingName=="pt" or unfoldingName=="cos":
+            resRange = 1.
         else:
-            resRange = 0.4
+            resRange = 0.48
         axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Pred./Data",50,genBinning[0],genBinning[-1],50,1-resRange,1+resRange)
         axisRes.GetYaxis().SetNdivisions(406)
         axisRes.GetXaxis().SetTitle(xtitle)
@@ -570,8 +577,12 @@ class PlotCrossSection(Module.getClass("Program")):
                 genHistSum.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)
             )
             
+            
+        genHistSumRes.Draw("HISTSame")
+        histSumTotalRes.Draw("PLSame")
+        for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotalRes.GetBinCenter(ibin+1)
-            w = (genBinning[-1]-genBinning[0])*0.01
+            w = (genBinning[-1]-genBinning[0])*0.012
             n = histSumTotalRes.GetBinContent(ibin+1)
             rel_sys = histSumProfiledRes.GetBinError(ibin+1)/histSumProfiledRes.GetBinContent(ibin+1)
             u = (1.+rel_sys)*n
@@ -586,14 +597,13 @@ class PlotCrossSection(Module.getClass("Program")):
             lineDown.SetLineColor(ROOT.kBlack)
             lineDown.SetLineWidth(1)
             lineDown.Draw("SameL")
-        genHistSumRes.Draw("HISTSame")
-        histSumTotalRes.Draw("PLSame")
+        
         
         
         ROOT.gPad.RedrawAxis()
         
 
-        hidePave=ROOT.TPaveText(cvxmin-0.065,resHeight-0.028,cvxmin-0.005,resHeight+0.028,"NDC")
+        hidePave=ROOT.TPaveText(cvxmin-0.065,resHeight-0.035,cvxmin-0.005,resHeight+0.028,"NDC")
         hidePave.SetFillColor(ROOT.kWhite)
         hidePave.SetFillStyle(1001)
         hidePave.Draw("Same")
