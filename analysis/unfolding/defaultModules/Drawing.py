@@ -272,6 +272,253 @@ class Drawing(Module):
         cvHist.Print(output+".pdf")
         cvHist.Print(output+".png")
         
+    def plotCrossSection(self,genHistSum,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,legendPos,resRange,output):
+        ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
+        ROOT.TGaxis.SetMaxDigits(3)
+        ROOT.gStyle.SetLineScalePS(2)
+        
+        cv = ROOT.TCanvas("cvSum"+str(random.random()),"",800,700)
+        cv.Divide(1,2,0,0)
+        cv.GetPad(1).SetPad(0.0, 0.0, 1.0, 1.0)
+        cv.GetPad(1).SetFillStyle(4000)
+        cv.GetPad(2).SetPad(0.0, 0.00, 1.0,1.0)
+        cv.GetPad(2).SetFillStyle(4000)
+        
+        cvxmin=0.145
+        cvxmax=0.96
+        cvymin=0.13
+        cvymax=0.93
+        resHeight=0.37
+        
+        rootObj =[]
+        for i in range(1,3):
+            #for the canvas:
+            cv.GetPad(i).SetBorderMode(0)
+            cv.GetPad(i).SetGridx(False)
+            cv.GetPad(i).SetGridy(False)
+
+
+            #For the frame:
+            cv.GetPad(i).SetFrameBorderMode(0)
+            cv.GetPad(i).SetFrameBorderSize(1)
+            cv.GetPad(i).SetFrameFillColor(0)
+            cv.GetPad(i).SetFrameFillStyle(0)
+            cv.GetPad(i).SetFrameLineColor(1)
+            cv.GetPad(i).SetFrameLineStyle(1)
+            cv.GetPad(i).SetFrameLineWidth(1)
+
+            # Margins:
+            cv.GetPad(i).SetLeftMargin(cvxmin)
+            cv.GetPad(i).SetRightMargin(1-cvxmax)
+            
+            # For the Global title:
+            cv.GetPad(i).SetTitle("")
+            
+            # For the axis:
+            cv.GetPad(i).SetTickx(1)  # To get tick marks on the opposite side of the frame
+            cv.GetPad(i).SetTicky(1)
+
+            # Change for log plots:
+            cv.GetPad(i).SetLogx(0)
+            cv.GetPad(i).SetLogy(0)
+            cv.GetPad(i).SetLogz(0)
+        
+        
+        
+        cv.GetPad(2).SetTopMargin(1-cvymax)
+        cv.GetPad(2).SetBottomMargin(resHeight)
+        cv.GetPad(1).SetTopMargin(1-resHeight)
+        cv.GetPad(1).SetBottomMargin(cvymin)
+        
+        cv.GetPad(2).SetLogy(logy)
+        
+        cv.cd(2)
+        
+        
+        xmin = genHistSum.GetXaxis().GetBinLowEdge(1)
+        xmax = genHistSum.GetXaxis().GetBinUpEdge(genHistSum.GetNbinsX())
+        axis = ROOT.TH2F("axis"+str(random.random()),";;",
+            50,xmin,xmax,
+            50,ymin,ymax
+        )
+        axis.GetXaxis().SetTitle("")
+        axis.GetYaxis().SetTitle(ytitle)
+        axis.GetXaxis().SetTickLength(0.015/(1-cv.GetPad(2).GetLeftMargin()-cv.GetPad(2).GetRightMargin()))
+        axis.GetYaxis().SetTickLength(0.015/(1-cv.GetPad(2).GetTopMargin()-cv.GetPad(2).GetBottomMargin()))
+        axis.GetXaxis().SetLabelFont(43)
+        axis.GetXaxis().SetLabelSize(0)
+        axis.GetYaxis().SetLabelFont(43)
+        axis.GetYaxis().SetLabelSize(33)
+        axis.GetXaxis().SetTitleFont(43)
+        axis.GetXaxis().SetTitleSize(36)
+        axis.GetYaxis().SetTitleFont(43)
+        axis.GetYaxis().SetTitleSize(36)
+        axis.GetYaxis().SetNoExponent(not logy)
+        axis.GetYaxis().SetTitleOffset(1.45)
+        axis.Draw("AXIS")
+        
+        genHistSum.Draw("HISTSAME")
+        histSumTotal.Draw("PESAME")
+        for ibin in range(histSumTotal.GetNbinsX()):
+            c = histSumTotal.GetBinCenter(ibin+1)
+            w = (xmax-xmin)*0.012
+            n = histSumTotal.GetBinContent(ibin+1)
+            rel_sys = histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1)
+            u = (1.+rel_sys)*n
+            d = (1.-rel_sys)*n
+            lineUp = ROOT.TLine(c-w,u,c+w,u)
+            rootObj.append(lineUp)
+            lineUp.SetLineColor(ROOT.kBlack)
+            lineUp.SetLineWidth(1)
+            lineUp.Draw("SameL")
+            lineDown = ROOT.TLine(c-w,d,c+w,d)
+            rootObj.append(lineDown)
+            lineDown.SetLineColor(ROOT.kBlack)
+            lineDown.SetLineWidth(1)
+            lineDown.Draw("SameL")
+            
+            
+        #histSumProfiled.Draw("PESAME")
+        
+        pCMS=ROOT.TPaveText(cvxmin,0.95,cvxmin,0.95,"NDC")
+        pCMS.SetFillColor(ROOT.kWhite)
+        pCMS.SetBorderSize(0)
+        pCMS.SetTextFont(63)
+        pCMS.SetTextSize(37)
+        pCMS.SetTextAlign(11)
+        pCMS.AddText("CMS")
+        pCMS.Draw("Same")
+        '''
+        pPreliminary=ROOT.TPaveText(cvxmin+0.025+0.1,cvymax-0.065,cvxmin+0.025+0.1,cvymax-0.065,"NDC")
+        pPreliminary.SetFillColor(ROOT.kWhite)
+        pPreliminary.SetBorderSize(0)
+        pPreliminary.SetTextFont(53)
+        pPreliminary.SetTextSize(35)
+        pPreliminary.SetTextAlign(11)
+        pPreliminary.AddText("Preliminary")
+        pPreliminary.Draw("Same")
+        '''
+        pLumi=ROOT.TPaveText(cvxmax,0.95,cvxmax,0.95,"NDC")
+        pLumi.SetFillColor(ROOT.kWhite)
+        pLumi.SetBorderSize(0)
+        pLumi.SetTextFont(43)
+        pLumi.SetTextSize(37)
+        pLumi.SetTextAlign(31)
+        pLumi.AddText(lumi)
+        pLumi.Draw("Same")
+        
+        
+        legendXL = [cvxmin+0.02,cvxmin+0.35]
+        legendXR = [0.52,cvxmax-0.13]
+        legendYD = [resHeight+0.03,resHeight+0.03+0.067*2]
+        legendYU = [cvymax-0.02,cvymax-0.02-0.067*2]
+        
+        if legendPos[0]=="L":
+            legendX = legendXL
+        else:
+            legendX = legendXR
+            
+        if legendPos[1]=="D":
+            legendY = legendYD
+        else:
+            legendY = legendYU
+            
+        legend = ROOT.TLegend(legendX[0],legendY[0],legendX[1],legendY[1])    
+        
+        #legend = ROOT.TLegend(0.54,resHeight+0.03,cvxmax-0.13,resHeight+0.03+0.067*2)
+        legend.SetFillColor(0)
+        legend.SetFillStyle(0)
+        legend.SetBorderSize(0)
+        legend.SetTextFont(43)
+        legend.SetTextSize(31)
+        legend.AddEntry(histSumTotal,"Data","PE")
+        legend.AddEntry(genHistSum,"POWHEG#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8","L")
+        legend.Draw("Same")
+        
+        cv.cd(1)
+       
+        axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Pred./Data",50,xmin,xmax,50,1-resRange,1+resRange)
+        axisRes.GetYaxis().SetNdivisions(406)
+        axisRes.GetXaxis().SetTitle(xtitle)
+        axisRes.GetXaxis().SetTickLength(0.017/(1-cv.GetPad(1).GetLeftMargin()-cv.GetPad(1).GetRightMargin()))
+        axisRes.GetYaxis().SetTickLength(0.015/(1-cv.GetPad(1).GetTopMargin()-cv.GetPad(1).GetBottomMargin()))
+        axisRes.GetXaxis().SetLabelFont(43)
+        axisRes.GetXaxis().SetLabelSize(33)
+        axisRes.GetYaxis().SetLabelFont(43)
+        axisRes.GetYaxis().SetLabelSize(33)
+        axisRes.GetXaxis().SetTitleFont(43)
+        axisRes.GetXaxis().SetTitleSize(36)
+        axisRes.GetYaxis().SetTitleFont(43)
+        axisRes.GetYaxis().SetTitleSize(36)
+        axisRes.GetYaxis().SetNoExponent(True)
+        axisRes.GetYaxis().SetTitleOffset(1.45)
+        axisRes.Draw("AXIS")
+        
+        
+        axisLine = ROOT.TF1("axisLine"+str(random.random()),"1",xmin,xmax)
+        axisLine.SetLineColor(ROOT.kBlack)
+        axisLine.SetLineWidth(1)
+        axisLine.Draw("SameL")
+        
+        histSumTotalRes = histSumTotal.Clone(histSumTotal.GetName()+"res")
+        histSumProfiledRes = histSumProfiled.Clone(histSumProfiled.GetName()+"res")
+        genHistSumRes = genHistSum.Clone(genHistSum.GetName()+"res")
+        
+        for ibin in range(histSumTotal.GetNbinsX()):
+            histSumTotalRes.SetBinContent(ibin+1,
+                histSumTotal.GetBinContent(ibin+1)/histSumTotal.GetBinContent(ibin+1)
+            )
+            histSumTotalRes.SetBinError(ibin+1,
+                histSumTotal.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)
+            )
+            histSumProfiledRes.SetBinContent(ibin+1,
+                histSumProfiled.GetBinContent(ibin+1)/histSumTotal.GetBinContent(ibin+1)
+            )
+            histSumProfiledRes.SetBinError(ibin+1,
+                histSumProfiled.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)
+            )
+            genHistSumRes.SetBinContent(ibin+1,
+                genHistSum.GetBinContent(ibin+1)/histSumTotal.GetBinContent(ibin+1)
+            )
+            genHistSumRes.SetBinError(ibin+1,
+                genHistSum.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)
+            )
+            
+            
+        genHistSumRes.Draw("HISTSame")
+        histSumTotalRes.Draw("PLSame")
+        for ibin in range(histSumTotal.GetNbinsX()):
+            c = histSumTotalRes.GetBinCenter(ibin+1)
+            w = (xmax-xmin)*0.012
+            n = histSumTotalRes.GetBinContent(ibin+1)
+            rel_sys = histSumProfiledRes.GetBinError(ibin+1)/histSumProfiledRes.GetBinContent(ibin+1)
+            u = (1.+rel_sys)*n
+            d = (1.-rel_sys)*n
+            lineUp = ROOT.TLine(c-w,u,c+w,u)
+            rootObj.append(lineUp)
+            lineUp.SetLineColor(ROOT.kBlack)
+            lineUp.SetLineWidth(1)
+            lineUp.Draw("SameL")
+            lineDown = ROOT.TLine(c-w,d,c+w,d)
+            rootObj.append(lineDown)
+            lineDown.SetLineColor(ROOT.kBlack)
+            lineDown.SetLineWidth(1)
+            lineDown.Draw("SameL")
+        
+        
+        
+        ROOT.gPad.RedrawAxis()
+        
+
+        hidePave=ROOT.TPaveText(cvxmin-0.065,resHeight-0.04,cvxmin-0.005,resHeight+0.028,"NDC")
+        hidePave.SetFillColor(ROOT.kWhite)
+        hidePave.SetFillStyle(1001)
+        hidePave.Draw("Same")
+        
+        
+        cv.Print(output+".pdf")
+        cv.Print(output+".png")
+        
         
     def plotCompareHistogram(self,genHistA,measuredHistsA,output,title="",xaxis="",yaxis="Events",yrange=None,normalizeByBinWidth=False,normalizeByCrossSection=False,logy=False,uncBand=None):
         genHist = genHistA.Clone()
