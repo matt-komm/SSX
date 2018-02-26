@@ -26,7 +26,7 @@ class WPtParton(Module.getClass("Unfolding")):
         return "parton"
         
     def getRecoBinning(self,channel):
-        return numpy.array([0.,35.,60.,90.,140.,250.])
+        return numpy.array([0.,35.,55.,80.,140.,250.])
         
     def getRecoVariable(self,channel):
         return "SingleTop_1__W_1__Pt"
@@ -41,7 +41,7 @@ class WPtParton(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self,channel):
-        return numpy.array([0.,35.,60.,90.,140.,250.])
+        return numpy.array([0.,35.,55.,80.,140.,250.])
         
     def getGenVariable(self,channel):
         return "Parton_1__W_1__Pt"
