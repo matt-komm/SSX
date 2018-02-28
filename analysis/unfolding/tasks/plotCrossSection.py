@@ -338,6 +338,7 @@ class PlotCrossSection(Module.getClass("Program")):
             sysResults
         )
         
+        #TODO: add lumi uncertainty!!!!!!
         
         #this is a reflection of the stat uncertainty only
         histRatioNominal = self.module("Unfolding").calculateRatio(

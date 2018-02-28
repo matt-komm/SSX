@@ -26,7 +26,7 @@ class TopPtParticle(Module.getClass("Unfolding")):
         return "particle"
         
     def getRecoBinning(self,channel):
-        return numpy.array([0.,50.,80.,120.,180.,250.])
+        return numpy.array([0.,50.,80.,120.,180.,300.])
         
     def getRecoVariable(self,channel):
         return "SingleTop_1__Top_1__Pt"
@@ -42,7 +42,7 @@ class TopPtParticle(Module.getClass("Unfolding")):
         return selection        
         
     def getGenBinning(self,channel):
-        return numpy.array([0.,50.,80.,120.,180.,250.])
+        return numpy.array([0.,50.,80.,120.,180.,300.])
         
     def getGenVariable(self,channel):
         return "PTR_1__TopBest_1__Pt"

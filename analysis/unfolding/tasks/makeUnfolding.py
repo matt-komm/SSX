@@ -130,6 +130,7 @@ class RunUnfolding(Module.getClass("Program")):
                         jbin+1,
                         nominalRecoHistsMorphed[charge].GetBinContent(ibin+1)*nominalRecoHistsMorphed[charge].GetBinContent(jbin+1)*signalFitResultCov
                     )
+
                     
             #draw reco hists
             self.module("Drawing").plotDataHistogram([nominalRecoHists[charge],nominalRecoHistsMorphed[charge]],measuredRecoHists[charge],
@@ -305,7 +306,14 @@ class RunUnfolding(Module.getClass("Program")):
             #uncBand=ratioUncBand
         )
         
-        
+        for charge in [-1,1]:
+            print "Charge: ",charge
+            for ibin in range(measuredRecoHists[charge].GetNbinsX()):
+                print "Reco/unfolded error ",ibin+1,": ",
+                print measuredRecoHists[charge].GetBinError(ibin+1)/measuredRecoHists[charge].GetBinContent(ibin+1),
+                print "/",
+                print unfoldedHists[charge].GetBinError(ibin+1)/unfoldedHists[charge].GetBinContent(ibin+1)
+            
         
         outputPath = os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_result.root")
         outputFile = ROOT.TFile(outputPath,"RECREATE")
