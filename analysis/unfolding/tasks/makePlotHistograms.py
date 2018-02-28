@@ -163,7 +163,7 @@ class PlotHistograms(Module.getClass("Program")):
                 "var":"fabs(SingleTop_1__Top_1__Y)",
                 "varTitle":"top quark |y|",
                 "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+srSelection,
-                "binning":numpy.array([0.,0.2,0.5,0.8,1.3,2.4])
+                "binning":numpy.array([0.,0.2,0.5,0.8,1.3,2.6])
             },
             {
                 "obsname":"2j1t",
@@ -181,7 +181,7 @@ class PlotHistograms(Module.getClass("Program")):
                 "var":"SingleTop_1__TightLepton_1__Pt",
                 "varTitle":"lepton p#scale[0.7]{#lower[0.3]{T}}",
                 "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+srSelection,
-                "binning":numpy.array([27.,35.,45.,70.,90.,200.])
+                "binning":numpy.array([26.,35.,45.,60.,85.,200.])
             },
             {
                 "obsname":"2j1t",
