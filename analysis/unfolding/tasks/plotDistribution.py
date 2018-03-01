@@ -221,6 +221,43 @@ class PlotCrossSection(Module.getClass("Program")):
    
         
     def execute(self):
+        sets = {
+            "tChannel": {
+                "hists": ["tChannel_pos","tChannel_neg"],
+                "fill":newColor(0.98,0.1,0.1),
+                "title":"#it{t}-channel",
+            },
+            "TopBkg": {
+                "hists":["TopBkg_pos","TopBkg_neg"],
+                "fill":newColor(0.98,0.77,0.05),
+                "title":"tt#lower[-0.87]{#kern[-0.89]{-}}/tW",
+            },
+            "WZjets": {
+                "hists": ["WZjets_pos","WZjets_neg"],
+                "fill":newColor(0.25,0.8,0.25),
+                "title":"W/Z+jets",
+            },
+            "QCD": {
+                "hists": ["QCD_2j1t_pos","QCD_2j1t_neg"],
+                "fill":ROOT.gROOT.GetColor(ROOT.kGray),
+                "title":"Multijet",
+            },
+        }
+        for s in sets.keys():
+            sets[s]["line"] = getDarkerColor(sets[s]["fill"])
+        componentDict = {
+            "tChannel_pos":["tChannel_pos"],
+            "tChannel_neg":["tChannel_neg"],
+            "TopBkg_pos":["TopBkg"],
+            "TopBkg_neg":["TopBkg","TopBkg_ratio"],
+            "WZjets_pos":["WZjets"],
+            "WZjets_neg":["WZjets","WZjets_ratio"],
+            "QCD_2j1t_pos":["QCD_2j1t"],
+            "QCD_2j1t_neg":["QCD_2j1t","QCD_2j1t_ratio"]
+        }
+        
+    
+    
         channels = self.getOption("channels").split(",")
         channelName = self.module("Samples").getChannelName(channels)
         plotName = self.getOption("plot").split(",")
@@ -243,23 +280,8 @@ class PlotCrossSection(Module.getClass("Program")):
         for sysName in systematicsProfiled+systematicsExtern:
             uncertainties.append(sysName+"Up")
             uncertainties.append(sysName+"Down")
-            
-        componentDict = {
-            "tChannel_pos":["tChannel_pos"],
-            "tChannel_neg":["tChannel_neg"],
-            "TopBkg_pos":["TopBkg"],
-            "TopBkg_neg":["TopBkg","TopBkg_ratio"],
-            "WZjets_pos":["WZjets"],
-            "WZjets_neg":["WZjets","WZjets_ratio"],
-            "QCD_2j1t_pos":["QCD_2j1t"],
-            "QCD_2j1t_neg":["QCD_2j1t","QCD_2j1t_ratio"]
-        }
-        stackList = [
-            {"components":["QCD_2j1t_pos","QCD_2j1t_neg"],"fill":ROOT.kGray},
-            {"components":["WZjets_pos","WZjets_neg"],"fill":ROOT.kGreen+1},
-            {"components":["TopBkg_pos","TopBkg_neg"],"fill":ROOT.kOrange+7},
-            {"components":["tChannel_pos","tChannel_neg"],"fill":ROOT.kRed},
-        ]
+        
+        stackList = ["QCD","WZjets","TopBkg","tChannel"]
         
         fitOutput = os.path.join(
             self.module("Utils").getOutputFolder("fit/profiled"),
@@ -348,20 +370,33 @@ class PlotCrossSection(Module.getClass("Program")):
 
                 
         cv = ROOT.TCanvas("cv","",800,700)
-        stack = ROOT.THStack()
-        for stackComp in stackList:
+        stack = []
+        
+        for stackName in stackList:
+        
+            
+            
             histSum = None
             for channel in channels:
-                for compName in stackComp["components"]:
+                for compName in sets[stackName]["hists"]:
                     if histSum == None:
                         histSum = histogramsPerChannelComponentAndUncertainty[channel][compName]["nominal"].Clone(
                             histogramsPerChannelComponentAndUncertainty[channel][compName]["nominal"].GetName()+"sum"
                         )
                     else:
                         histSum.Add(histogramsPerChannelComponentAndUncertainty[channel][compName]["nominal"])
-            histSum.SetFillColor(stackComp["fill"])
-            stack.Add(histSum,"HIST")
-        stack.Draw("HIST")
+            histSum.SetFillColor(sets[stackName]["fill"].GetNumber())
+            histSum.SetLineWidth(2)
+            histSum.SetLineColor(sets[stackName]["line"].GetNumber())
+            
+            stack.append({
+                "hist":histSum,
+                "title":sets[stackName]["title"]
+            })
+        totalMCSum = stack[0]["hist"].Clone(stack[0]["hist"].GetName()+"mcsum")
+        for i in range(1,len(stack)):
+            totalMCSum.Add(stack[i]["hist"])
+            
         dataSum = None
         for channel in channels:
             if dataSum==None:
@@ -370,8 +405,19 @@ class PlotCrossSection(Module.getClass("Program")):
                 )
             else:
                 dataSum.Add(histogramsPerChannelComponentAndUncertainty[channel]["data"])
-        dataSum.Draw("PESame")
-        cv.Print("plot.pdf")
+            
+            
+        ymin = 0
+        ymax = 1.35*max([totalMCSum.GetMaximum(),dataSum.GetMaximum()])
+        logy = 0
+        ytitle = "Events / bin"
+        xtitle = "blub"
+        lumi = "e/#mu#kern[-0.2]{ }+#kern[-0.2]{ }2#kern[-0.5]{ }jets#kern[-0.3]{ }1#kern[-0.5]{ }b-tag, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+            
+        self.module("Drawing").plotDistribution(
+            stack,dataSum,ymin,ymax,logy,ytitle,xtitle,lumi,"plot"
+        )
+            
                 
                 
             

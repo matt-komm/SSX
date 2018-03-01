@@ -321,7 +321,7 @@ class Unfolding(Module):
     #TODO: not yet working
     def scanCoverage(self,responseMatrix,data,regularizations=[],dataCovariance=None,output=None):
         N=10
-        xvalues = numpy.logspace(-8,-2,N)
+        xvalues = numpy.logspace(-8,12,N)
         bestTauAtMinCorrelation = xvalues[0]
         minGlobalCorrlation = 1.0
         self._logger.info("Scan for coverage: ["+str(xvalues[0])+", "+str(xvalues[-1])+"]")
@@ -336,11 +336,11 @@ class Unfolding(Module):
                  
         dataToy = data.Clone(data.GetName()+"_toy"+str(random.random()))
         dataToy.SetDirectory(0)
-        TOYS = 100
+        TOYS = 500
         
-        sigmas = [0]
-        probs = map(lambda s: 0.5+0.5*ROOT.TMath.Erf(s/math.sqrt(2)),sigmas)
-        tchanScalePS
+        sigmas = [3]
+        probs = map(lambda s: 100.*(0.5+0.5*ROOT.TMath.Erf(s/math.sqrt(2))),sigmas)
+        
         coverage = numpy.zeros((B,len(sigmas),N))
         for i in range(N):
             unfoldedHist,covariance,bestTau = self.module("Unfolding").unfold(
@@ -369,34 +369,40 @@ class Unfolding(Module):
                 for ibin in range(B):
                     toyResult[ibin][t]=unfoldedHistDiced.GetBinContent(ibin+1)
             resultQuantiles = numpy.percentile(toyResult, probs,axis=1)
+            resultMean = numpy.mean(toyResult,axis=1)
+            resultSigma = numpy.std(toyResult,axis=1)
             
             for ibin in range(B):
                 for s in range(len(sigmas)):
                     estimated = unfoldedHist.GetBinContent(ibin+1)+sigmas[s]*math.sqrt(covariance.GetBinContent(ibin+1,ibin+1))
                     diced = resultQuantiles[s][ibin]
-                    print xvalues[i],estimated,diced
+                    #diced = resultMean[ibin]+sigmas[s]*resultSigma[ibin]
                     coverage[ibin][s][i] = (diced-estimated)/estimated+1. #<0 if diced<estimated
         
         cv = ROOT.TCanvas("coverage","",800,700)
         cv.SetLogx()
         #cv.SetLogy()
         cv.SetRightMargin(0.18)
-        axis = ROOT.TH2F("axisScan",";#tau;coverage",50,xvalues[0],xvalues[-1],50,0.0,2)
+        axis = ROOT.TH2F("axisScan",";#tau;coverage",50,xvalues[0],xvalues[-1],50,0.5,1.5)
         axis.Draw("AXIS")
         rootObj =[]
-        legend = ROOT.TLegend(0.83,0.9,0.99,0.9-0.055*len(sigmas))
+        legend = ROOT.TLegend(0.83,0.9,0.99,0.9-0.05*len(sigmas)*B)
         legend.SetFillColor(ROOT.kWhite)
         legend.SetBorderSize(0)
         legend.SetTextFont(42)
+        print "probs",probs
+        colors = [ROOT.kAzure+4,ROOT.kViolet,ROOT.kGreen+1,ROOT.kYellow+1,ROOT.kOrange+7,ROOT.kRed+1]
         for s in range(len(sigmas)):
-            #print sigmas[s],probs[s],coverage[0][s]
-            graph = ROOT.TGraph(N,xvalues,coverage[0][s])
-            graph.SetLineWidth(3)
-            graph.SetLineColor(ROOT.kBlue)
-            graph.SetLineStyle(1)
-            rootObj.append(graph)
-            graph.Draw("SameL")
-            legend.AddEntry(graph,"%3.1f#sigma"%sigmas[s],"L")
+            for ibin in range(B):
+
+                #print sigmas[s],probs[s],coverage[0][s]
+                graph = ROOT.TGraph(N,xvalues,coverage[ibin][s])
+                graph.SetLineWidth(3)
+                graph.SetLineColor(colors[ibin%(B/2)])
+                graph.SetLineStyle(1+ibin%2)
+                rootObj.append(graph)
+                graph.Draw("SameL")
+                legend.AddEntry(graph,"bin%i %3.1f#sigma"%(ibin+1,sigmas[s]),"L")
         
         
         legend.Draw("Same")
@@ -573,12 +579,13 @@ class Unfolding(Module):
             self._logger.critical("TUnfold indicates a fatal error")
             sys.exit(1)
         tunfold.doUnfolding(bestTau,unfoldedHist,covariance,True,False,False)
-        
+        '''
         for ibin in range(unfoldedHist.GetNbinsX()):
             #reset bins <0 to -> 0
             if unfoldedHist.GetBinContent(ibin+1)<0:
                 unfoldedHist.SetBinContent(ibin+1,0.1)
             unfoldedHist.SetBinError(ibin+1,math.sqrt(covariance.GetBinContent(ibin+1,ibin+1)))
+        '''
         '''
         for ibin in range(unfoldedHist.GetNbinsX()):
             w = 1.0/genHist.GetBinContent(ibin+1)*genHist.Integral()/genHist.GetNbinsX()
