@@ -262,12 +262,24 @@ class PlotCrossSection(Module.getClass("Program")):
         channelName = self.module("Samples").getChannelName(channels)
         plotName = self.getOption("plot").split(",")
         
+        xtitle = ""
+        ytitle = ""
+        logy = 0
+        norm = 0
+        legendPos = "R"
+        cut = ""
+        for histSetup in self.module("Plots").getHistSetups("ele"): #only interested in xaxis title
+            if histSetup["obsname"]==plotName[0] and histSetup["name"]==plotName[1]:
+                xtitle = histSetup["xtitle"]
+                ytitle = histSetup["ytitle"]
+                logy = histSetup["logy"]
+                norm = histSetup["normalize"]
+                legendPos = histSetup["legendPos"]
+                cut = histSetup["cut"]
+        
         systematicsProfiled = [] if self.getOption("profiled")==None else self.getOption("profiled").split(",")
         systematicsExtern = [] if self.getOption("extern")==None else self.getOption("extern").split(",")
     
-        self.module("Utils").createFolder("dists/")
-        outputFolder = self.module("Utils").getOutputFolder("dists/")
-        
         unfoldingName = self.module("Unfolding").getUnfoldingName()
         if unfoldingName!="inc":
             self._logger.critical("Can only produce distributions inclusively")
@@ -388,7 +400,8 @@ class PlotCrossSection(Module.getClass("Program")):
             histSum.SetFillColor(sets[stackName]["fill"].GetNumber())
             histSum.SetLineWidth(2)
             histSum.SetLineColor(sets[stackName]["line"].GetNumber())
-            
+            if norm:
+                self.module("Utils").normalizeByBinWidth(histSum)
             stack.append({
                 "hist":histSum,
                 "title":sets[stackName]["title"]
@@ -405,17 +418,31 @@ class PlotCrossSection(Module.getClass("Program")):
                 )
             else:
                 dataSum.Add(histogramsPerChannelComponentAndUncertainty[channel]["data"])
+        if norm:
+            self.module("Utils").normalizeByBinWidth(dataSum)
             
+
+        ymin = 1000000000
+        for ibin in range(dataSum.GetNbinsX()):
+            c = dataSum.GetBinContent(ibin+1)
+            if c>0:
+                ymin = min(ymin,c)
+        ymax = max([totalMCSum.GetMaximum(),dataSum.GetMaximum()])
+                   
+        if logy:
+            ymin = math.exp((1-0.4*numpy.sign(ymin-1))*math.log10(ymin))
+            ymax = math.exp(0.3*(math.log(ymax)-math.log(ymin))+math.log(ymax))
+        else:
+            ymax = 1.3*ymax
+            ymin = 0
             
-        ymin = 0
-        ymax = 1.35*max([totalMCSum.GetMaximum(),dataSum.GetMaximum()])
-        logy = 0
-        ytitle = "Events / bin"
-        xtitle = "blub"
+        self.module("Utils").createFolder("dists/"+channelName)
+        finalFolder = self.module("Utils").getOutputFolder("dists/"+channelName)
+            
         lumi = "e/#mu#kern[-0.2]{ }+#kern[-0.2]{ }2#kern[-0.5]{ }jets#kern[-0.3]{ }1#kern[-0.5]{ }b-tag, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
-            
         self.module("Drawing").plotDistribution(
-            stack,dataSum,ymin,ymax,logy,ytitle,xtitle,lumi,"plot"
+            stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,lumi,
+            os.path.join(finalFolder,plotName[1])
         )
             
                 

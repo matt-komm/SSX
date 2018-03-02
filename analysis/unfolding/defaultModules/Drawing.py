@@ -520,7 +520,7 @@ class Drawing(Module):
         cv.Print(output+".png")
         
         
-    def plotDistribution(self,stack,data,ymin,ymax,logy,ytitle,xtitle,lumi,output):
+    def plotDistribution(self,stack,data,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,lumi,output):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
         ROOT.TGaxis.SetMaxDigits(3)
         ROOT.gStyle.SetLineScalePS(2)
@@ -536,7 +536,7 @@ class Drawing(Module):
         cvxmax=0.96
         cvymin=0.13
         cvymax=0.93
-        resHeight=0.34
+        resHeight=0.32
         resRange = 0.4
         
         rootObj =[]
@@ -603,7 +603,7 @@ class Drawing(Module):
         axis.GetYaxis().SetTitleFont(43)
         axis.GetYaxis().SetTitleSize(36)
         axis.GetYaxis().SetNoExponent(not logy)
-        axis.GetYaxis().SetTitleOffset(1.9)
+        axis.GetYaxis().SetTitleOffset(1.88)
         axis.Draw("AXIS")
         
         
@@ -632,16 +632,20 @@ class Drawing(Module):
         pCMS.SetTextAlign(11)
         pCMS.AddText("CMS")
         pCMS.Draw("Same")
-        '''
-        pPreliminary=ROOT.TPaveText(cvxmin+0.025+0.1,cvymax-0.065,cvxmin+0.025+0.1,cvymax-0.065,"NDC")
-        pPreliminary.SetFillColor(ROOT.kWhite)
-        pPreliminary.SetBorderSize(0)
-        pPreliminary.SetTextFont(53)
-        pPreliminary.SetTextSize(35)
-        pPreliminary.SetTextAlign(11)
-        pPreliminary.AddText("Preliminary")
-        pPreliminary.Draw("Same")
-        '''
+        
+        if legendPos=="R":
+            pCut=ROOT.TPaveText(cvxmin+0.025,cvymax-0.07,cvxmin+0.025,cvymax-0.07,"NDC")
+            pCut.SetTextAlign(11)
+        else:
+            pCut=ROOT.TPaveText(cvxmax-0.025,cvymax-0.07,cvxmax-0.025,cvymax-0.07,"NDC")
+            pCut.SetTextAlign(31)
+        pCut.SetFillColor(ROOT.kWhite)
+        pCut.SetBorderSize(0)
+        pCut.SetTextFont(43)
+        pCut.SetTextSize(31)
+        pCut.AddText(cut)
+        pCut.Draw("Same")
+        
         pLumi=ROOT.TPaveText(cvxmax,0.95,cvxmax,0.95,"NDC")
         pLumi.SetFillColor(ROOT.kWhite)
         pLumi.SetBorderSize(0)
@@ -652,9 +656,10 @@ class Drawing(Module):
         pLumi.Draw("Same")
         
        
-            
-        legend = ROOT.TLegend(cvxmax-0.24,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.09*len(stack))    
-        
+        if legendPos=="R":
+            legend = ROOT.TLegend(cvxmax-0.24,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.06*(len(stack)+2))    
+        else:
+            legend = ROOT.TLegend(cvxmin+0.03,cvymax-0.02,cvxmin+0.26,cvymax-0.01-0.06*(len(stack)+2))    
         legend.SetFillColor(0)
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
@@ -664,6 +669,7 @@ class Drawing(Module):
         for s in reversed(stack):
             legend.AddEntry(s["hist"],s["title"],"F")
         
+        legend.AddEntry(data,"Syst.","F")
         legend.Draw("Same")
         
         cv.cd(1)
@@ -682,7 +688,7 @@ class Drawing(Module):
         axisRes.GetYaxis().SetTitleFont(43)
         axisRes.GetYaxis().SetTitleSize(36)
         axisRes.GetYaxis().SetNoExponent(True)
-        axisRes.GetYaxis().SetTitleOffset(1.9)
+        axisRes.GetYaxis().SetTitleOffset(1.88)
         axisRes.Draw("AXIS")
         
         dataRes = data.Clone(data.GetName()+"res")
