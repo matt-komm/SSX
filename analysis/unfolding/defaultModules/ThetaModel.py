@@ -117,13 +117,19 @@ class ThetaModel(Module):
            
     
     def getBDTtchan(self,channel):
-        return "(TMath::TanH(2.1*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)+6.2*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)>0.0)*TMath::Power(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.,3)-1.6*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)<-0.1)*TMath::Power(fabs(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost+0.1),2.)))"
-        
+        if channel=="mu":
+            return "(TMath::TanH(2.3*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)+6.1*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)>0.0)*TMath::Power(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.,3)-1.4*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)<-0.1)*TMath::Power(fabs(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost+0.1),1.4)))"
+        elif channel=="ele":
+            return "(TMath::TanH(2.3*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)+6.1*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)>0.0)*TMath::Power(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.,3)-1.5*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)<-0.1)*TMath::Power(fabs(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost+0.1),1.4)))"
+        else:
+            self._logger.critical("Channel '"+channel+"' unknown!")
+            sys.exit(1)
+            
     def getBDTttw(self,channel):
         if channel=="mu":
-            return "(TMath::TanH(4.4*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.11)))"
+            return "(TMath::TanH(5.*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.16)))"
         elif channel=="ele":
-            return "(TMath::TanH(4.8*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.12)))"
+            return "(TMath::TanH(5.2*(BDTcomb_ttw_adaboost020_minnode0100_maxvar4_nCuts50_ntree1000_mix05000_invboost+0.13)))"
         self._logger.critical("Unknown channel: "+str(channel))
         sys.exit(1)
         
