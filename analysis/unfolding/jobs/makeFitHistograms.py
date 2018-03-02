@@ -145,6 +145,11 @@ for channel in ["mu","ele"]:
                 "-m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
             ])
             
+            #for 2j0t wjets
+            config.inputParams.append([
+                "-m setup/Wjets -m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
+            ])
+            
             #sys/binned per obs
             for unfoldingSetup in sorted(setupBins.keys()):
                 for ibin in range(setupBins[unfoldingSetup][channel]):
