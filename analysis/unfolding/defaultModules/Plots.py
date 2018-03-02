@@ -70,7 +70,7 @@ class Plots(Module):
                 "var":"SingleTop_1__mtw_beforePz",
                 "xtitle":"m#lower[0.3]{#scale[0.7]{T}}(W) (GeV)",
                 "ytitle":"Events / bin",
-                "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1),
+                "selection":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
                 "binning":numpy.linspace(0,200,num=21),
                 "legendPos":"R",
                 "normalize":False,
