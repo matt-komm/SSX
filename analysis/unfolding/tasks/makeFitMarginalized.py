@@ -17,6 +17,8 @@ class FitHistograms(Module.getClass("Program")):
     def execute(self):
         #mu,ele,comb
         channels = self.getOption("channels").split(",")
+        smooth = False if self.getOption("smooth")==None else True
+        self._logger.info("Use smoothed hists: "+str(smooth))
         channelName = self.module("Samples").getChannelName(channels)
         self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
@@ -49,15 +51,15 @@ class FitHistograms(Module.getClass("Program")):
                 histogramsPerChannelAndUncertainty[channel][sysName]={}
                 if unfoldingName=="inc":
                     histogramsPerChannelAndUncertainty[channel][sysName]["binInc"] = [
-                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,sysName+"Up"),
-                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,sysName+"Down")
+                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,sysName+"Up",smooth=smooth),
+                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,sysName+"Down",smooth=smooth)
                     ]
                 else:
                     nbins = len(self.module("Unfolding").getRecoBinning(channel))-1
                     for ibin in range(nbins):
                         histogramsPerChannelAndUncertainty[channel][sysName]["bin"+str(1+binMap[channel][ibin])] = [
-                            self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Up"),
-                            self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Down")
+                            self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Up",smooth=smooth),
+                            self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Down",smooth=smooth)
                         ]
                         
         

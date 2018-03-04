@@ -15,6 +15,8 @@ class FitHistograms(Module.getClass("Program")):
     def execute(self):
         #mu,ele,comb
         channels = self.getOption("channels").split(",")
+        smooth = False if self.getOption("smooth")==None else True
+        self._logger.info("Use smoothed hists: "+str(smooth))
         channelName = self.module("Samples").getChannelName(channels)
         self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
@@ -32,13 +34,13 @@ class FitHistograms(Module.getClass("Program")):
             histogramsPerChannel[channel]["nominal"]={}
             if unfoldingName=="inc":
                 histogramsPerChannel[channel]["nominal"]["binInc"] = \
-                    self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,uncertainty)
+                    self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,uncertainty,smooth=smooth and uncertainty!="nominal")
                 
             else:
                 nbins = len(self.module("Unfolding").getRecoBinning(channel))-1
                 for ibin in range(nbins):
                     histogramsPerChannel[channel]["nominal"]["bin"+str(1+binMap[channel][ibin])] = \
-                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,uncertainty)
+                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,uncertainty,smooth=smooth and uncertainty!="nominal")
                     
             
         fitSetup = {}

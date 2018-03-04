@@ -65,9 +65,13 @@ class ThetaModel(Module):
             uncertainty = "nominal"
         return self.module("Utils").getOutputFolder(channel+"/"+uncertainty+"/"+unfoldingName)
         
-    def getHistogramFile(self,channel,unfoldingName,unfoldingBin=-1,uncertainty="nominal"):
-        return self.module("Utils").getHistogramFile("fitHists",channel,unfoldingName,unfoldingBin,uncertainty)
+    def getHistogramFile(self,channel,unfoldingName,unfoldingBin=-1,uncertainty="nominal",smooth=False):
+        if smooth:
+            return self.module("Utils").getHistogramFile("fitHists_smooth",channel,unfoldingName,unfoldingBin,uncertainty)
+        else:
+            return self.module("Utils").getHistogramFile("fitHists",channel,unfoldingName,unfoldingBin,uncertainty)
 
+   
     def getHistogramName(self,observableName,fitComponentName,unfoldingName,unfoldingBin=-1,uncertainty=None):
         if unfoldingBin<0:
             if uncertainty:
@@ -80,8 +84,8 @@ class ThetaModel(Module):
             else:
                 return observableName+"__"+fitComponentName+"__"+unfoldingName+str(unfoldingBin)
                                 
-    def getHistsFromFiles(self,channel,unfoldingName,unfoldingBin=-1,uncertainty=None):
-        fileName = self.module("ThetaModel").getHistogramFile(channel,unfoldingName,unfoldingBin,uncertainty)
+    def getHistsFromFiles(self,channel,unfoldingName,unfoldingBin=-1,uncertainty=None,smooth=False):
+        fileName = self.module("ThetaModel").getHistogramFile(channel,unfoldingName,unfoldingBin,uncertainty,smooth=smooth)
         rootFile = ROOT.TFile(fileName)
         if not rootFile:
             self._logger.critical("Histogram file '"+fileName+"' not found")

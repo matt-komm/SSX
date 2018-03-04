@@ -37,7 +37,7 @@ class Plots(Module):
             },
             {
                 "obsname":"2j1t",
-                "name":"bdtttw2j1t",
+                "name":"bdttw2j1t",
                 "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":self.module("ThetaModel").getBDTttw(channel),
                 "xtitle":"BDT#lower[0.3]{#scale[0.7]{tt/W}} discriminant",
@@ -47,7 +47,8 @@ class Plots(Module):
                 "legendPos":"L",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}<0"
+                "cut":"",
+                #"cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}<0"
             },
             {
                 "obsname":"2j1t",
@@ -61,7 +62,8 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV"
+                "cut":"",
+                #"cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV"
             },
             {
                 "obsname":"3j2t",
@@ -70,7 +72,7 @@ class Plots(Module):
                 "var":"SingleTop_1__mtw_beforePz",
                 "xtitle":"m#lower[0.3]{#scale[0.7]{T}}(W) (GeV)",
                 "ytitle":"Events / bin",
-                "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1),
+                "selection":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(2),
                 "binning":numpy.linspace(0,200,num=21),
                 "legendPos":"R",
                 "normalize":False,

@@ -221,6 +221,10 @@ class PlotCrossSection(Module.getClass("Program")):
    
         
     def execute(self):
+        channels = self.getOption("channels").split(",")
+        channelName = self.module("Samples").getChannelName(channels)
+        plotName = self.getOption("plot").split(",")
+    
         sets = {
             "tChannel": {
                 "hists": ["tChannel_pos","tChannel_neg"],
@@ -238,7 +242,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 "title":"W/Z+jets",
             },
             "QCD": {
-                "hists": ["QCD_2j1t_pos","QCD_2j1t_neg"],
+                "hists": ["QCD_"+plotName[0]+"_pos","QCD_"+plotName[0]+"_neg"],
                 "fill":ROOT.gROOT.GetColor(ROOT.kGray),
                 "title":"Multijet",
             },
@@ -252,15 +256,13 @@ class PlotCrossSection(Module.getClass("Program")):
             "TopBkg_neg":["TopBkg","TopBkg_ratio"],
             "WZjets_pos":["WZjets"],
             "WZjets_neg":["WZjets","WZjets_ratio"],
-            "QCD_2j1t_pos":["QCD_2j1t"],
-            "QCD_2j1t_neg":["QCD_2j1t","QCD_2j1t_ratio"]
+            "QCD_"+plotName[0]+"_pos":["QCD_"+plotName[0]],
+            "QCD_"+plotName[0]+"_neg":["QCD_"+plotName[0],"QCD_"+plotName[0]+"_ratio"]
         }
         
     
     
-        channels = self.getOption("channels").split(",")
-        channelName = self.module("Samples").getChannelName(channels)
-        plotName = self.getOption("plot").split(",")
+        
         
         xtitle = ""
         ytitle = ""
