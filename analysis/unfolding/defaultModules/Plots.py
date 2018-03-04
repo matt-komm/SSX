@@ -37,7 +37,7 @@ class Plots(Module):
             },
             {
                 "obsname":"2j1t",
-                "name":"bdttw2j1t",
+                "name":"bdtttw2j1t",
                 "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":self.module("ThetaModel").getBDTttw(channel),
                 "xtitle":"BDT#lower[0.3]{#scale[0.7]{tt/W}} discriminant",
