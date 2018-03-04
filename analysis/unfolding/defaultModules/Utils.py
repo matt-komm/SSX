@@ -111,6 +111,7 @@ class Utils(Module):
             sys.exit(1)
         morphed = nominal.Clone(nominal.GetName()+"morph")
         morphed.SetDirectory(0)
+        
         for ibin in range((morphed.GetNbinsX()+2)*(morphed.GetNbinsY()+2)):
             nominal = morphed.GetBinContent(ibin)
             resultDiced = numpy.zeros(1000)
@@ -130,6 +131,8 @@ class Utils(Module):
     def morphPlotHist(self,hists,systematics,fitResult):
         morphedHists = {}
         for component in hists.keys():
+            if component=="data":
+                continue
             nominalHist = hists[component]['nominal']
             sysHists = []
             means = []

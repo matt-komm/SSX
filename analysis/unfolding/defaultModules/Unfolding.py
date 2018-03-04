@@ -465,15 +465,17 @@ class Unfolding(Module):
                 diced_pos = diced[i] 
                 diced_neg = diced[i+N] 
                 
-                for isys,sys in enumerate(systematics):
-                    rel_up_pos = sys[1]["Up"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
-                    rel_up_neg = sys[-1]["Up"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
+                for isys,sysDict in enumerate(systematics):
+                    rel_up_pos = sysDict[1]["Up"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
+                    rel_up_neg = sysDict[-1]["Up"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
                     
-                    rel_down_pos = sys[1]["Down"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
-                    rel_down_neg = sys[-1]["Down"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
+                    rel_down_pos = sysDict[1]["Down"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
+                    rel_down_neg = sysDict[-1]["Down"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
                     
                     if rel_up_pos<0 or rel_down_pos<0 or rel_up_neg<0 or rel_down_neg<0:
-                        self._logger.critical("Discovered inconsitent systematic envelope for uncertainty "+str(isys+1))
+                        self._logger.critical("Discovered inconsitent systematic envelope for uncertainty "+str(isys))
+                        self._logger.critical("Rel. up variations: "+str(rel_up_pos)+"/"+str(rel_up_neg)+" (pos/neg)")
+                        self._logger.critical("Rel. down variations: "+str(rel_down_pos)+"/"+str(rel_down_neg)+" (pos/neg)")
                         sys.exit(1)
                         
                     #symmetrize uncertainties
@@ -579,13 +581,13 @@ class Unfolding(Module):
             self._logger.critical("TUnfold indicates a fatal error")
             sys.exit(1)
         tunfold.doUnfolding(bestTau,unfoldedHist,covariance,True,False,False)
-        '''
+        
         for ibin in range(unfoldedHist.GetNbinsX()):
             #reset bins <0 to -> 0
             if unfoldedHist.GetBinContent(ibin+1)<0:
                 unfoldedHist.SetBinContent(ibin+1,0.1)
             unfoldedHist.SetBinError(ibin+1,math.sqrt(covariance.GetBinContent(ibin+1,ibin+1)))
-        '''
+        
         '''
         for ibin in range(unfoldedHist.GetNbinsX()):
             w = 1.0/genHist.GetBinContent(ibin+1)*genHist.Integral()/genHist.GetNbinsX()

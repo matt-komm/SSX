@@ -139,9 +139,9 @@ class Samples(Module):
     def getMCWeightReco(self,channel):
         
         if channel=="mu":
-            return self.module("Samples").getMuMCWeight()+"*"+ self.module("Samples").getMCMETFlags()
+            return self.module("Samples").getMuMCWeight()+"*"+self.module("Samples").getMCMETFlags()
         elif channel=="ele":
-            return self.module("Samples").getEleMCWeight()+"*"+ self.module("Samples").getMCMETFlags()
+            return self.module("Samples").getEleMCWeight()+"*"+self.module("Samples").getMCMETFlags()
         else:
             self._logger.critical("Channel '"+channel+"' invalid")
             sys.exit(1)

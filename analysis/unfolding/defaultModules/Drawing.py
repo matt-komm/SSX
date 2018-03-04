@@ -520,10 +520,12 @@ class Drawing(Module):
         cv.Print(output+".png")
         
         
-    def plotDistribution(self,stack,data,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,lumi,output):
+    def plotDistribution(self,stack,data,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,lumi,output):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
         ROOT.TGaxis.SetMaxDigits(3)
         ROOT.gStyle.SetLineScalePS(2)
+        ROOT.gStyle.SetHatchesSpacing(1.)
+        ROOT.gStyle.SetHatchesLineWidth(2)
         
         cv = ROOT.TCanvas("cvSum"+str(random.random()),"",800,700)
         cv.Divide(1,2,0,0)
@@ -532,12 +534,11 @@ class Drawing(Module):
         cv.GetPad(2).SetPad(0.0, 0.00, 1.0,1.0)
         cv.GetPad(2).SetFillStyle(4000)
         
-        cvxmin=0.185
+        
         cvxmax=0.96
         cvymin=0.13
         cvymax=0.93
         resHeight=0.32
-        resRange = 0.4
         
         rootObj =[]
         for i in range(1,3):
@@ -603,7 +604,7 @@ class Drawing(Module):
         axis.GetYaxis().SetTitleFont(43)
         axis.GetYaxis().SetTitleSize(36)
         axis.GetYaxis().SetNoExponent(not logy)
-        axis.GetYaxis().SetTitleOffset(1.88)
+        axis.GetYaxis().SetTitleOffset(1.88*cvxmin/0.185)
         axis.Draw("AXIS")
         
         
@@ -614,6 +615,7 @@ class Drawing(Module):
         
         mcSum = stack[0]["hist"].Clone(stack[0]["hist"].GetName()+"mcSum")
         for i in range(1,len(stack)):
+            #print stack[i]["hist"].GetBinError(1)/stack[i]["hist"].GetBinContent(1)
             mcSum.Add(stack[i]["hist"])
 
         data.Draw("PESame")
@@ -669,11 +671,10 @@ class Drawing(Module):
         for s in reversed(stack):
             legend.AddEntry(s["hist"],s["title"],"F")
         
-        legend.AddEntry(data,"Syst.","F")
-        legend.Draw("Same")
+        
         
         cv.cd(1)
-       
+        
         axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Data/MC",50,xmin,xmax,50,1-resRange,1+resRange)
         axisRes.GetYaxis().SetNdivisions(406)
         axisRes.GetXaxis().SetTitle(xtitle)
@@ -688,19 +689,45 @@ class Drawing(Module):
         axisRes.GetYaxis().SetTitleFont(43)
         axisRes.GetYaxis().SetTitleSize(36)
         axisRes.GetYaxis().SetNoExponent(True)
-        axisRes.GetYaxis().SetTitleOffset(1.88)
+        axisRes.GetYaxis().SetTitleOffset(1.88*cvxmin/0.185)
         axisRes.Draw("AXIS")
         
+        rootObj = []
         dataRes = data.Clone(data.GetName()+"res")
         for ibin in range(data.GetNbinsX()):
             d = data.GetBinContent(ibin+1)
             m = mcSum.GetBinContent(ibin+1)
             e = data.GetBinError(ibin+1)
+            c = mcSum.GetBinCenter(ibin+1)
+            w = mcSum.GetBinWidth(ibin+1)
             if m>0:
                 dataRes.SetBinContent(ibin+1,d/m)
                 dataRes.SetBinError(ibin+1,e/m)
+                h = min(mcSum.GetBinError(ibin+1)/m,resRange-0.001)
+                box = ROOT.TBox(c-0.5*w,1-h,c+0.5*w,1+h)
+                box.SetFillStyle(3345)
+                box.SetLineColor(ROOT.kGray+1)
+                box.SetFillColor(ROOT.kGray)
+                box.SetLineWidth(int(2))
+                rootObj.append(box)
+                box.Draw("SameF")
+                box2 = ROOT.TBox(c-0.5*w,1-h,c+0.5*w,1+h)
+                box2.SetFillStyle(0)
+                box2.SetLineColor(ROOT.kGray+1)
+                box2.SetFillColor(ROOT.kGray)
+                box2.SetLineWidth(int(2))
+                rootObj.append(box2)
+                box2.Draw("SameL")
+                
             else:
                 dataRes.SetBinContent(ibin+1,0)
+            
+        cv.cd(2)
+        legend.AddEntry(box,"Fit unc.","F")
+        legend.Draw("Same")
+        cv.cd(1)
+            
+                
         dataRes.Draw("PESame")
         
         axisLine = ROOT.TF1("axisLine"+str(random.random()),"1",xmin,xmax)

@@ -260,16 +260,14 @@ class PlotCrossSection(Module.getClass("Program")):
             "QCD_"+plotName[0]+"_neg":["QCD_"+plotName[0],"QCD_"+plotName[0]+"_ratio"]
         }
         
-    
-    
-        
-        
         xtitle = ""
         ytitle = ""
         logy = 0
         norm = 0
         legendPos = "R"
         cut = ""
+        region = ""
+        resRange = 0.4
         for histSetup in self.module("Plots").getHistSetups("ele"): #only interested in xaxis title
             if histSetup["obsname"]==plotName[0] and histSetup["name"]==plotName[1]:
                 xtitle = histSetup["xtitle"]
@@ -278,6 +276,8 @@ class PlotCrossSection(Module.getClass("Program")):
                 norm = histSetup["normalize"]
                 legendPos = histSetup["legendPos"]
                 cut = histSetup["cut"]
+                region = histSetup["region"]
+                resRange = histSetup["resRange"]
         
         systematicsProfiled = [] if self.getOption("profiled")==None else self.getOption("profiled").split(",")
         systematicsExtern = [] if self.getOption("extern")==None else self.getOption("extern").split(",")
@@ -288,7 +288,7 @@ class PlotCrossSection(Module.getClass("Program")):
             sys.exit(1)
 
         
-        histogramsPerChannelComponentAndUncertainty = {}
+        histogramsPerComponentAndUncertainty = {}
         
         uncertainties = ["nominal"]
         for sysName in systematicsProfiled+systematicsExtern:
@@ -297,14 +297,31 @@ class PlotCrossSection(Module.getClass("Program")):
         
         stackList = ["QCD","WZjets","TopBkg","tChannel"]
         
-        fitOutput = os.path.join(
-            self.module("Utils").getOutputFolder("fit/profiled"),
-            self.module("ThetaModel").getFitFileName(channels,unfoldingName,"profiled")
-        )
+        if plotName[0]=="2j0t":
+            fitOutput = os.path.join(
+                self.module("Utils").getOutputFolder("fit/wjets"),
+                self.module("ThetaModel").getFitFileName(channels,unfoldingName,"wjets")
+            )
+        else:
+            fitOutput = os.path.join(
+                self.module("Utils").getOutputFolder("fit/profiled"),
+                self.module("ThetaModel").getFitFileName(channels,unfoldingName,"profiled")
+            )
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
+        print fitResult["parameters"].keys()
+        #fake plot result of 2-component fit
+        if plotName[0]=="2j0t":
+            for compName in componentDict.keys():
+                if compName.find("QCD")>=0:
+                    continue
+                for parName in componentDict[compName]:
+                    if parName.find("ratio")>=0:
+                        fitResult["parameters"][parName+"_binInc"] = fitResult["parameters"]["Other_ratio_binInc"]
+                    else:
+                        fitResult["parameters"][parName+"_binInc"] = fitResult["parameters"]["Other_binInc"]
         
         for channel in channels:
-            histogramsPerChannelComponentAndUncertainty[channel] = {}
+            histogramsPerComponentAndUncertainty[channel] = {}
             for uncertainty in uncertainties:
                 
                 histFilePath = self.module("Utils").getHistogramFile(
@@ -332,22 +349,31 @@ class PlotCrossSection(Module.getClass("Program")):
                         sys.exit(1)
                         
                     hist = hist.Clone(hist.GetName()+str(random.random()))
-                    
                     #normalize the histograms of these uncertainties to their nominal value
                     if uncertainty in ["eleMultiIso","eleMultiVeto","muMulti","tw","dy"]:
-                        hist.Scale(histogramsPerChannelComponentAndUncertainty[channel][compName]["nominal"].Integral()/hist.Integral())
+                        hist.Scale(histogramsPerComponentAndUncertainty[channel][compName]["nominal"].Integral()/hist.Integral())
                     
                     for sfName in componentDict[compName]:
                         sfName+="_binInc"
                         if compName.find("QCD")>=0:
                             sfName+="_"+channel
                         sfValue = fitResult["parameters"][sfName]["mean_fit"]
+                        sfError = fitResult["parameters"][sfName]["unc_fit"]
                         hist.Scale(sfValue)
-                    if not histogramsPerChannelComponentAndUncertainty[channel].has_key(compName):
-                        histogramsPerChannelComponentAndUncertainty[channel][compName] = {uncertainty: hist}
-                        histogramsPerChannelComponentAndUncertainty[channel][compName][uncertainty].SetDirectory(0)  
+                        '''
+                        for ibin in range(hist.GetNbinsX()):
+                            hist.SetBinError(ibin+1,
+                                math.sqrt(hist.GetBinError(ibin+1)**2+(sfError*hist.GetBinContent(ibin+1))**2)
+                            )  
+                        '''  
+                    if not histogramsPerComponentAndUncertainty[channel].has_key(compName):
+                        histogramsPerComponentAndUncertainty[channel][compName] = {uncertainty: hist}
+                        histogramsPerComponentAndUncertainty[channel][compName][uncertainty].SetDirectory(0) 
+                    elif not histogramsPerComponentAndUncertainty[channel][compName].has_key(uncertainty):
+                        histogramsPerComponentAndUncertainty[channel][compName][uncertainty] = hist
+                        histogramsPerComponentAndUncertainty[channel][compName][uncertainty].SetDirectory(0) 
                     else:
-                        histogramsPerChannelComponentAndUncertainty[channel][compName][uncertainty].Add(hist)
+                        histogramsPerComponentAndUncertainty[channel][compName][uncertainty].Add(hist)
                 rootFile.Close()
                 
             histFilePath = self.module("Utils").getHistogramFile(
@@ -373,32 +399,94 @@ class PlotCrossSection(Module.getClass("Program")):
             if (not hist):
                 self._logger.critical("Histogram '"+histName+"' not found in file '"+histFilePath+"'")
                 sys.exit(1)
-                
-            hist = hist.Clone(hist.GetName()+str(random.random()))
-            if not histogramsPerChannelComponentAndUncertainty[channel].has_key("data"):
-                histogramsPerChannelComponentAndUncertainty[channel]["data"] =  hist
-                histogramsPerChannelComponentAndUncertainty[channel]["data"].SetDirectory(0)  
+            NBINS = hist.GetNbinsX()
+            if not histogramsPerComponentAndUncertainty[channel].has_key("data"):
+                histogramsPerComponentAndUncertainty[channel]["data"] = hist.Clone(hist.GetName()+str(random.random()))
+                histogramsPerComponentAndUncertainty[channel]["data"].SetDirectory(0)  
             else:
-                histogramsPerChannelComponentAndUncertainty[channel]["data"].Add(hist)
+                histogramsPerComponentAndUncertainty[channel]["data"].Add(hist)
+        
+        #morph around syst.
+        histogramsPerComponentAndUncertaintyMorphed = {}
+        if len(systematicsProfiled)>0:
+            for channel in channels:
+                histogramsPerComponentAndUncertaintyMorphed[channel] = self.module("Utils").morphPlotHist(
+                    histogramsPerComponentAndUncertainty[channel],systematicsProfiled,fitResult
+                )
+                for compName in histogramsPerComponentAndUncertainty[channel].keys():
+                    if compName=="data":
+                        continue
+                    histogramsPerComponentAndUncertaintyMorphed[channel][compName].Scale(
+                        histogramsPerComponentAndUncertainty[channel][compName]["nominal"].Integral()/\
+                        histogramsPerComponentAndUncertaintyMorphed[channel][compName].Integral()
+                    )
+                    for ibin in range(NBINS):
+                         histogramsPerComponentAndUncertaintyMorphed[channel][compName].SetBinError(ibin+1,
+                            math.sqrt(histogramsPerComponentAndUncertaintyMorphed[channel][compName].GetBinError(ibin+1)**2+\
+                            histogramsPerComponentAndUncertainty[channel][compName]["nominal"].GetBinError(ibin+1)**2)
+                         )
+        else:
+            for channel in channels:
+                histogramsPerComponentAndUncertaintyMorphed[channel] = {}
+                for compName in histogramsPerComponentAndUncertainty[channel].keys():
+                    if compName=="data":
+                        continue
+                    histogramsPerComponentAndUncertaintyMorphed[channel][compName] = histogramsPerComponentAndUncertainty[channel][compName]["nominal"]
+            
+        
+        #calculate error of MC sum while accounting for correlations of fit result
+        histContents = {}
+        for channel in channels:
+            histContents[channel] = {}
+            for compName in histogramsPerComponentAndUncertaintyMorphed[channel].keys():
+                hist = histogramsPerComponentAndUncertaintyMorphed[channel][compName]
+                histContents[channel][compName] = numpy.zeros(hist.GetNbinsX())
+                for ibin in range(hist.GetNbinsX()):
+                    histContents[channel][compName][ibin]=hist.GetBinContent(ibin+1)
+        
+        fitParameters = sorted(fitResult["parameters"].keys())
+        print fitParameters
+        means = numpy.ones(len(fitParameters))
+        cov = numpy.zeros((len(fitParameters),len(fitParameters)))
+        for ipar,parName1 in enumerate(fitParameters):
+            for jpar,parName2 in enumerate(fitParameters):
+                #if ipar==jpar:
+                #    cov[ipar][jpar]=0.01
+                if plotName[0]=="2j0t":
+                    if ipar==jpar:
+                        cov[ipar][jpar] = fitResult["parameters"][parName1]["unc_fit"]**2
+                else:
+                    cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
+        NTOYS = 1000
+        toys = numpy.zeros((NTOYS,NBINS))
+        for itoy in range(NTOYS):
+            sdiced = numpy.random.normal(loc=1,scale=0.1)
+            pdiced = numpy.random.multivariate_normal(means,cov)
+            for channel in channels:
+                for compName in histContents[channel].keys():
+                    content = histContents[channel][compName]
+                    for sfName in componentDict[compName]:
+                        sfName+="_binInc"
+                        if compName.find("QCD")>=0:
+                            sfName+="_"+channel
+                        content = pdiced[fitParameters.index(sfName)]*content
+                    toys[itoy]+=content
+        sumMC = numpy.mean(toys,axis=0)
+        sumMCerr = numpy.std(toys,axis=0)
+        
                 
-
-                
-        cv = ROOT.TCanvas("cv","",800,700)
         stack = []
         
         for stackName in stackList:
-        
-            
-            
             histSum = None
             for channel in channels:
                 for compName in sets[stackName]["hists"]:
                     if histSum == None:
-                        histSum = histogramsPerChannelComponentAndUncertainty[channel][compName]["nominal"].Clone(
-                            histogramsPerChannelComponentAndUncertainty[channel][compName]["nominal"].GetName()+"sum"
+                        histSum = histogramsPerComponentAndUncertaintyMorphed[channel][compName].Clone(
+                            histogramsPerComponentAndUncertaintyMorphed[channel][compName].GetName()+"sum"
                         )
                     else:
-                        histSum.Add(histogramsPerChannelComponentAndUncertainty[channel][compName]["nominal"])
+                        histSum.Add(histogramsPerComponentAndUncertaintyMorphed[channel][compName])
             histSum.SetFillColor(sets[stackName]["fill"].GetNumber())
             histSum.SetLineWidth(2)
             histSum.SetLineColor(sets[stackName]["line"].GetNumber())
@@ -412,14 +500,23 @@ class PlotCrossSection(Module.getClass("Program")):
         for i in range(1,len(stack)):
             totalMCSum.Add(stack[i]["hist"])
             
+        for ibin in range(NBINS):
+            totalMCSum.SetBinError(ibin+1,
+                math.sqrt(totalMCSum.GetBinError(ibin+1)**2+sumMCerr[ibin]**2)
+            )
+            
+
+
         dataSum = None
         for channel in channels:
             if dataSum==None:
-                dataSum = histogramsPerChannelComponentAndUncertainty[channel]["data"].Clone(
-                    histogramsPerChannelComponentAndUncertainty[channel]["data"].GetName()+"sum"
+                dataSum = histogramsPerComponentAndUncertainty[channel]["data"].Clone(
+                    histogramsPerComponentAndUncertainty[channel]["data"].GetName()+"sum"
                 )
             else:
-                dataSum.Add(histogramsPerChannelComponentAndUncertainty[channel]["data"])
+                dataSum.Add(histogramsPerComponentAndUncertainty[channel]["data"])
+
+        
         if norm:
             self.module("Utils").normalizeByBinWidth(dataSum)
             
@@ -441,9 +538,20 @@ class PlotCrossSection(Module.getClass("Program")):
         self.module("Utils").createFolder("dists/"+channelName)
         finalFolder = self.module("Utils").getOutputFolder("dists/"+channelName)
             
-        lumi = "e/#mu#kern[-0.2]{ }+#kern[-0.2]{ }2#kern[-0.5]{ }jets#kern[-0.3]{ }1#kern[-0.5]{ }b-tag, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+        lumi = ""
+        if channelName=="ele":
+            lumi +="e"
+        elif channelName=="mu":
+            lumi +="#mu"
+        elif channelName=="comb":
+            lumi += "e/#mu"
+        lumi+="#kern[-0.2]{ }+#kern[-0.2]{ }"+region+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+            
+        cvxmin=0.175
+        if plotName[0]=="2j0t":
+            cvxmin=0.21
         self.module("Drawing").plotDistribution(
-            stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,lumi,
+            stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,lumi,
             os.path.join(finalFolder,plotName[1])
         )
             
