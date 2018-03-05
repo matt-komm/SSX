@@ -361,7 +361,7 @@ class Drawing(Module):
         histSumTotal.Draw("PESAME")
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotal.GetBinCenter(ibin+1)
-            w = (xmax-xmin)*0.012
+            w = (xmax-xmin)*0.007
             n = histSumTotal.GetBinContent(ibin+1)
             rel_sys = histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1)
             u = (1.+rel_sys)*n
@@ -410,8 +410,8 @@ class Drawing(Module):
         
         legendXL = [cvxmin+0.02,cvxmin+0.35]
         legendXR = [0.52,cvxmax-0.13]
-        legendYD = [resHeight+0.03,resHeight+0.03+0.067*2]
-        legendYU = [cvymax-0.02,cvymax-0.02-0.067*2]
+        legendYD = [resHeight+0.03,resHeight+0.03+0.058*2]
+        legendYU = [cvymax-0.02,cvymax-0.02-0.058*2]
         
         if legendPos[0]=="L":
             legendX = legendXL
@@ -430,7 +430,7 @@ class Drawing(Module):
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
         legend.SetTextFont(43)
-        legend.SetTextSize(31)
+        legend.SetTextSize(30)
         legend.AddEntry(histSumTotal,"Data","PE")
         legend.AddEntry(genHistSum,"POWHEG#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8","L")
         legend.Draw("Same")
@@ -489,7 +489,7 @@ class Drawing(Module):
         histSumTotalRes.Draw("PLSame")
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotalRes.GetBinCenter(ibin+1)
-            w = (xmax-xmin)*0.012
+            w = (xmax-xmin)*0.007
             n = histSumTotalRes.GetBinContent(ibin+1)
             rel_sys = histSumProfiledRes.GetBinError(ibin+1)/histSumProfiledRes.GetBinContent(ibin+1)
             u = (1.+rel_sys)*n
@@ -604,7 +604,7 @@ class Drawing(Module):
         axis.GetYaxis().SetTitleFont(43)
         axis.GetYaxis().SetTitleSize(36)
         axis.GetYaxis().SetNoExponent(not logy)
-        axis.GetYaxis().SetTitleOffset(1.88*cvxmin/0.185)
+        axis.GetYaxis().SetTitleOffset(1.88*(cvxmin-(1-cvxmax))/(0.185-(1-cvxmax)))
         axis.Draw("AXIS")
         
         
@@ -644,7 +644,7 @@ class Drawing(Module):
         pCut.SetFillColor(ROOT.kWhite)
         pCut.SetBorderSize(0)
         pCut.SetTextFont(43)
-        pCut.SetTextSize(31)
+        pCut.SetTextSize(30)
         pCut.AddText(cut)
         pCut.Draw("Same")
         
@@ -659,14 +659,14 @@ class Drawing(Module):
         
        
         if legendPos=="R":
-            legend = ROOT.TLegend(cvxmax-0.24,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.06*(len(stack)+2))    
+            legend = ROOT.TLegend(cvxmax-0.24,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.058*(len(stack)+2))    
         else:
-            legend = ROOT.TLegend(cvxmin+0.03,cvymax-0.02,cvxmin+0.26,cvymax-0.01-0.06*(len(stack)+2))    
+            legend = ROOT.TLegend(cvxmin+0.03,cvymax-0.02,cvxmin+0.26,cvymax-0.01-0.058*(len(stack)+2))    
         legend.SetFillColor(0)
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
         legend.SetTextFont(43)
-        legend.SetTextSize(31)
+        legend.SetTextSize(30)
         legend.AddEntry(data,"Data","PE")
         for s in reversed(stack):
             legend.AddEntry(s["hist"],s["title"],"F")
@@ -689,7 +689,7 @@ class Drawing(Module):
         axisRes.GetYaxis().SetTitleFont(43)
         axisRes.GetYaxis().SetTitleSize(36)
         axisRes.GetYaxis().SetNoExponent(True)
-        axisRes.GetYaxis().SetTitleOffset(1.88*cvxmin/0.185)
+        axisRes.GetYaxis().SetTitleOffset(1.88*(cvxmin-(1-cvxmax))/(0.185-(1-cvxmax)))
         axisRes.Draw("AXIS")
         
         rootObj = []

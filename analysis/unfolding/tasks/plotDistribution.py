@@ -197,7 +197,7 @@ def newColor(red,green,blue):
 newColor.colorindex=301
 
 def getDarkerColor(color):
-    darkerColor=newColor(color.GetRed()*0.6,color.GetGreen()*0.6,color.GetBlue()*0.6)
+    darkerColor=newColor(color.GetRed()*0.55,color.GetGreen()*0.55,color.GetBlue()*0.55)
     return darkerColor
 
 
@@ -229,21 +229,25 @@ class PlotCrossSection(Module.getClass("Program")):
             "tChannel": {
                 "hists": ["tChannel_pos","tChannel_neg"],
                 "fill":newColor(0.98,0.1,0.1),
+                #"fill":newColor(1,0.02,0.02),
                 "title":"#it{t}-channel",
             },
             "TopBkg": {
                 "hists":["TopBkg_pos","TopBkg_neg"],
-                "fill":newColor(0.98,0.77,0.05),
+                "fill":newColor(0.96,0.72,0.12),
+                #"fill":newColor(0.98,0.57,0.05),
                 "title":"tt#lower[-0.87]{#kern[-0.89]{-}}/tW",
             },
             "WZjets": {
                 "hists": ["WZjets_pos","WZjets_neg"],
-                "fill":newColor(0.25,0.8,0.25),
+                #"fill":newColor(0.25,0.8,0.25),
+                #"fill":ROOT.gROOT.GetColor(ROOT.kGreen-2),
+                "fill":newColor(0.2,0.65,0.25),
                 "title":"W/Z+jets",
             },
             "QCD": {
                 "hists": ["QCD_"+plotName[0]+"_pos","QCD_"+plotName[0]+"_neg"],
-                "fill":ROOT.gROOT.GetColor(ROOT.kGray),
+                "fill":newColor(0.75,0.75,0.75),
                 "title":"Multijet",
             },
         }
@@ -416,10 +420,10 @@ class PlotCrossSection(Module.getClass("Program")):
                 for compName in histogramsPerComponentAndUncertainty[channel].keys():
                     if compName=="data":
                         continue
-                    histogramsPerComponentAndUncertaintyMorphed[channel][compName].Scale(
-                        histogramsPerComponentAndUncertainty[channel][compName]["nominal"].Integral()/\
-                        histogramsPerComponentAndUncertaintyMorphed[channel][compName].Integral()
-                    )
+                    #histogramsPerComponentAndUncertaintyMorphed[channel][compName].Scale(
+                    #    histogramsPerComponentAndUncertainty[channel][compName]["nominal"].Integral()/\
+                    #    histogramsPerComponentAndUncertaintyMorphed[channel][compName].Integral()
+                    #)
                     for ibin in range(NBINS):
                          histogramsPerComponentAndUncertaintyMorphed[channel][compName].SetBinError(ibin+1,
                             math.sqrt(histogramsPerComponentAndUncertaintyMorphed[channel][compName].GetBinError(ibin+1)**2+\
@@ -523,14 +527,18 @@ class PlotCrossSection(Module.getClass("Program")):
 
         ymin = 1000000000
         for ibin in range(dataSum.GetNbinsX()):
-            c = dataSum.GetBinContent(ibin+1)
+            c = stack[0]["hist"].GetBinContent(ibin+1)
             if c>0:
                 ymin = min(ymin,c)
         ymax = max([totalMCSum.GetMaximum(),dataSum.GetMaximum()])
                    
+        scale = 0
+        if plotName[1]=="pt2j1t" or plotName[1]=="wpt2j1t":
+            scale=0.4
+                   
         if logy:
-            ymin = math.exp((1-0.4*numpy.sign(ymin-1))*math.log10(ymin))
-            ymax = math.exp(0.3*(math.log(ymax)-math.log(ymin))+math.log(ymax))
+            ymin = math.exp(math.log(ymin)-0.05*(math.log(ymax)-math.log(ymin)))
+            ymax = math.exp((scale+0.3)*(math.log(ymax)-math.log(ymin))+math.log(ymax))
         else:
             ymax = 1.3*ymax
             ymin = 0

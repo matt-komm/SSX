@@ -387,7 +387,8 @@ class PlotCrossSection(Module.getClass("Program")):
         histSumTotal.SetMarkerColor(ROOT.kBlack)
         histSumTotal.SetMarkerSize(1.2)
         
-        genHistSum.SetLineColor(ROOT.kOrange+7)
+        genColor = newColor(255./255,102./255,5./255)
+        genHistSum.SetLineColor(genColor.GetNumber())
         genHistSum.SetLineWidth(2)
         
         
@@ -435,7 +436,7 @@ class PlotCrossSection(Module.getClass("Program")):
             
             
             
-        if unfoldingName=="lpt":
+        if unfoldingName=="lpt" or unfoldingName=="y":
             legendPos = "RU"
         elif unfoldingName=="cos":
             legendPos = "LU"

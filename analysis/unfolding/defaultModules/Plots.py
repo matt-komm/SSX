@@ -35,7 +35,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"",
                 "region":"2j1b",
-                "resRange":0.2
+                "resRange":0.1
             },
             {
                 "obsname":"2j1t",
@@ -51,7 +51,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}<0",
                 "region":"2j1b",
-                "resRange":0.2
+                "resRange":0.1
             },
             {
                 "obsname":"2j1t",
@@ -67,7 +67,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV",
                 "region":"2j1b",
-                "resRange":0.2
+                "resRange":0.1
             },
             {
                 "obsname":"3j2t",
@@ -83,7 +83,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"",
                 "region":"3j2b",
-                "resRange":0.2
+                "resRange":0.1
             },
             {
                 "obsname":"2j0t",
@@ -99,7 +99,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"",
                 "region":"2j0b",
-                "resRange":0.2
+                "resRange":0.1
             },
             
             {
