@@ -35,7 +35,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"",
                 "region":"2j1b",
-                "resRange":0.1
+                "resRange":0.2
             },
             {
                 "obsname":"2j1t",
@@ -49,9 +49,9 @@ class Plots(Module):
                 "legendPos":"L",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}<0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
                 "region":"2j1b",
-                "resRange":0.1
+                "resRange":0.2
             },
             {
                 "obsname":"2j1t",
@@ -65,9 +65,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV",
                 "region":"2j1b",
-                "resRange":0.1
+                "resRange":0.2
             },
             {
                 "obsname":"3j2t",
@@ -83,7 +83,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"",
                 "region":"3j2b",
-                "resRange":0.1
+                "resRange":0.2
             },
             {
                 "obsname":"2j0t",
@@ -114,7 +114,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":True,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}>0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -130,7 +130,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}>0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -146,7 +146,7 @@ class Plots(Module):
                 "legendPos":"L",
                 "normalize":True,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}>0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -162,7 +162,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":True,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}>0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -178,7 +178,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}>0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -194,7 +194,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":True,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)>50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}>0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             }
