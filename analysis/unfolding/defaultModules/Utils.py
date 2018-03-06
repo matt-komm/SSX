@@ -114,7 +114,7 @@ class Utils(Module):
         
         for ibin in range((morphed.GetNbinsX()+2)*(morphed.GetNbinsY()+2)):
             nominal = morphed.GetBinContent(ibin)
-            resultDiced = numpy.zeros(1000)
+            resultDiced = numpy.zeros(50)
             for itoy in range(len(resultDiced)):
                 resultDiced[itoy] = morphed.GetBinContent(ibin)
                 pdiced = numpy.random.multivariate_normal(nuciances,covariance)
@@ -126,6 +126,29 @@ class Utils(Module):
             morphed.SetBinContent(ibin,numpy.mean(resultDiced))
             morphed.SetBinError(ibin,numpy.std(resultDiced))
         return morphed
+        
+    def morphHist1D(self,nominal,systList,nuciances,covariance):
+        if len(nuciances)!=(len(systList)):
+            self._logger.critical("Morphing requires nuciances for each systematic")
+            sys.exit(1)
+        morphed = nominal.Clone(nominal.GetName()+"morph")
+        morphed.SetDirectory(0)
+        
+        for ibin in range((morphed.GetNbinsX()+2)):
+            nominal = morphed.GetBinContent(ibin)
+            resultDiced = numpy.zeros(50)
+            for itoy in range(len(resultDiced)):
+                resultDiced[itoy] = morphed.GetBinContent(ibin)
+                pdiced = numpy.random.multivariate_normal(nuciances,covariance)
+                for isys in range(len(systList)):
+                    p = pdiced[isys]
+                    up = systList[isys][0].GetBinContent(ibin)
+                    down = systList[isys][1].GetBinContent(ibin)
+                    resultDiced[itoy]+=self.module("Utils").morphValueDiff(nominal,up,down,p)
+            morphed.SetBinContent(ibin,numpy.mean(resultDiced))
+            morphed.SetBinError(ibin,numpy.std(resultDiced))
+        return morphed
+                
                 
         
     def morphPlotHist(self,hists,systematics,fitResult):
@@ -149,6 +172,30 @@ class Utils(Module):
                 
                 covariances.append(covs)
             morphedHists[component] = self.module("Utils").morphHist(nominalHist,sysHists,means,covariances)
+            
+        return morphedHists
+        
+    def morphPlotHist1D(self,hists,systematics,fitResult):
+        morphedHists = {}
+        for component in hists.keys():
+            if component=="data":
+                continue
+            nominalHist = hists[component]['nominal']
+            sysHists = []
+            means = []
+            covariances = []
+            for unc in systematics:
+                sysHists.append([
+                    hists[component][unc+"Up"],
+                    hists[component][unc+"Down"],
+                ])
+                means.append(fitResult["parameters"][unc]["mean_fit"])
+                covs = []
+                for unc2 in systematics:
+                    covs.append(fitResult["covariances"]["values"][unc][unc2])
+                
+                covariances.append(covs)
+            morphedHists[component] = self.module("Utils").morphHist1D(nominalHist,sysHists,means,covariances)
             
         return morphedHists
         

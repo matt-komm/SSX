@@ -243,7 +243,7 @@ class ThetaModel(Module):
         return Model(name, {"bb_uncertainties":"true"})
         
     
-    def makeModel(self,cfgPath,fitSetup,parametersDict,modelName="fit",outputFile="fit",pseudo=False):
+    def makeModel(self,cfgPath,fitSetup,parametersDict,modelName="fit",outputFile="fit",pseudo=False,seed=123):
         self._logger.info("Creating model: "+modelName)
         file = open(cfgPath,"w",20971520)
         
@@ -352,6 +352,13 @@ myminimizer = {
             burn-in = 20000;
             name = "mcmc_min05";
             stepsize_factor = 0.5;
+        },
+        {
+            type = "mcmc_minimizer";
+            iterations = 100000;
+            burn-in = 20000;
+            name = "mcmc_min05";
+            stepsize_factor = 0.1;
         }
     );
     last_minimizer = {
@@ -407,7 +414,7 @@ myminimizer = {
                 mean = parametersDict[parameterName]["config"]["mean"]
                 file.write('            '+parameterName+' = '+str(mean)+';\n') 
             file.write('        }; //optional; assuming p1, p2, p3 are parameters\n')
-            file.write('        rnd_gen = { seed = 123; }; // optional\n')
+            file.write('        rnd_gen = { seed = '+str(seed)+'; }; // optional\n')
             file.write('        };\n')
         else:
         
@@ -436,143 +443,6 @@ myminimizer = {
             
         file.close()
 
-        
-        '''
-        histFileName = os.path.join(self.module("Utils").getOutputFolder(),histFile+"_fitHists.root")
-        outputFileName = os.path.join(self.module("Utils").getOutputFolder(),outputFile+".root")
-        #20MB buffer
-        file = open(os.path.join(self.module("Utils").getOutputFolder(),modelName+".cfg"),"w",20971520)
-        
-        model=self.module("ThetaModel").getModel(modelName)
-        
-        uncertaintiesDict = self.module("ThetaModel").getUncertaintsDict()
-        observablesDict = self.module("ThetaModel").getObservablesDict()
-        fitComponentsDict = self.module("ThetaModel").getFitComponentsDict()
-        
-        
-        
-        for uncertaintyName in uncertaintiesDict.keys():
-            uncertaintiesDict[uncertaintyName]["dist"]=Distribution(uncertaintyName, uncertainties[uncertaintyName]["type"], uncertainties[uncertaintyName]["config"])
-            file.write(uncertaintiesDict[uncertaintyName]["dist"].toConfigString())
-            
-        for iobs,observableName in enumerate(observables.keys()):
-            #variableName = observablesDict[observableName]["variable"]
-            fitBins = observablesDict[observableName]["bins"]
-            fitRange = observablesDict[observableName]["range"]
-        
-            observable = Observable(observableName, fitBins, fitRange)
-
-            for icomp,componentName in enumerate(fitComponentsDict.keys()):
-                componentUncertainties = fitComponentsDict[componentName]["uncertainties"]
-               
-                self._logger.debug("Creating model component: "+observableName+" "+componentName)
-
-                componentHist = RootHistogram(observableName+"__"+componentName,{
-                    "zerobin_fillfactor":0.001,
-                    "use_errors":"true"
-                })
-                componentHist.setFileName(histFileName)
-                componentHist.setHistoName(observableName+"__"+componentName+"__fit")
-                    
-                component=ObservableComponent(observableName+"__"+componentName+"__"+str(icomp))
-                coeff=CoefficientMultiplyFunction()
-                for uncertaintyName in componentUncertainties:
-                    coeff.addDistribution(uncertainties[uncertaintyName]["dist"],uncertainties[uncertaintyName]["dist"].getParameterName())
-                component.setCoefficientFunction(coeff)
-                component.setNominalHistogram(componentHist)
-                observable.addComponent(component)
-
-                file.write(componentHist.toConfigString())
-                
-                        
-            model.addObservable(observable)
-
-
-            if not pseudo:
-                dataHist = RootHistogram(observableName+"__data",{
-                    "zerobin_fillfactor":0.001,
-                    "use_errors":"true"
-                })
-                dataHist.setFileName(histFileName)
-                dataHist.setHistoName(observableName+"__data__total")
-
-                file.write(dataHist.toConfigString())
-                
-            else:
-                pass
-
-                            
-        file.write(model.toConfigString())
-
-        file.write("\n")
-        file.write("\n")
-
-        file.write("myminimizer = {\n")
-        
-        file.write("type = \"newton_minimizer\";\n")
-        file.write("par_eps = 1e-5; // optional; default is 1e-4'\n")
-        file.write("maxit = 200000; // optional; default is 10,000'\n")
-        file.write("improve_cov = true; // optional; default is false'\n")
-        file.write("force_cov_positive = true; // optional, default is false'\n")
-        file.write("step_cov = 0.025; // optional; default is 0.1'\n")
-        file.write("};\n")
-        
-
-        
-        
-        file.write('pd = {\n')
-        file.write('    name= "'+modelName+'";\n')
-        file.write('    type = "mle";\n')
-        file.write('    parameters = ('+model.getParameterNames()+');\n')
-        file.write('    minimizer = \"@myminimizer\";\n')
-        file.write('    write_covariance = true;\n')
-        file.write('};\n')
-
-        file.write('main={\n')
-        
-        if pseudo:
-            file.write('    data_source = {\n')
-            file.write('        type = "model_source";\n')
-            file.write('        name="data";\n')
-            file.write('        model = "@'+model.getVarname()+'";\n')
-            file.write('        dice_poisson = true; // optional; default is true\n')
-            file.write('        dice_template_uncertainties = false; // optional; default is true\n')
-            file.write('        dice_rvobs = false; // optional; default is true\n')
-            file.write('        parameters-for-nll = {\n') 
-            for uncName in uncertainties.keys():
-                mean = uncertainties[uncName]["config"]["mean"]
-                file.write('            '+uncName+' = '+str(mean)+';\n') 
-            file.write('        }; //optional; assuming p1, p2, p3 are parameters\n')
-            file.write('        rnd_gen = { seed = 123; }; // optional\n')
-            file.write('        };\n')
-        else:
-        
-        file.write('    data_source={\n')
-        file.write('        type="histo_source";\n')
-        file.write('        name="data";\n')
-        for obs in self.module("ThetaModel").getObservablesDict().keys():
-            file.write('        obs_'+obs+'="@hist_'+obs+'__data";\n')
-        file.write('    };\n')
-
-            
-
-        file.write('    n-events=1;\n')
-        file.write('    model="@'+model.getVarname()+'";\n')
-        file.write('    output_database={\n')
-        file.write('        type="rootfile_database";\n')
-        file.write('        filename="'+outputFileName+'";\n')
-        file.write('    };\n')
-        file.write('    producers=("@pd"\n')
-        file.write('    );\n')
-        file.write('};\n')
-
-        file.write('options = {\n')
-        file.write('    plugin_files = ("$THETA_DIR/lib/libplugins.so", "$THETA_DIR/lib/libroot-plugin.so", "$THETA_DIR/lib/liblibtheta.so");\n')
-        file.write('};\n')
-            
-        file.close()
-        
-        '''
         
 
 

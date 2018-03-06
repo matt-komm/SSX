@@ -234,20 +234,20 @@ class PlotCrossSection(Module.getClass("Program")):
             },
             "TopBkg": {
                 "hists":["TopBkg_pos","TopBkg_neg"],
-                "fill":newColor(0.96,0.72,0.12),
+                "fill":newColor(0.98,0.8,0.2),
                 #"fill":newColor(0.98,0.57,0.05),
                 "title":"tt#lower[-0.87]{#kern[-0.89]{-}}/tW",
             },
             "WZjets": {
                 "hists": ["WZjets_pos","WZjets_neg"],
-                #"fill":newColor(0.25,0.8,0.25),
+                "fill":newColor(0.25,0.65,0.25),
                 #"fill":ROOT.gROOT.GetColor(ROOT.kGreen-2),
-                "fill":newColor(0.2,0.65,0.25),
+                #"fill":newColor(0.2,0.65,0.25),
                 "title":"W/Z+jets",
             },
             "QCD": {
                 "hists": ["QCD_"+plotName[0]+"_pos","QCD_"+plotName[0]+"_neg"],
-                "fill":newColor(0.75,0.75,0.75),
+                "fill":newColor(0.8,0.8,0.8),
                 "title":"Multijet",
             },
         }
@@ -353,14 +353,12 @@ class PlotCrossSection(Module.getClass("Program")):
                         sys.exit(1)
                         
                     hist = hist.Clone(hist.GetName()+str(random.random()))
-                    #normalize the histograms of these uncertainties to their nominal value
-                    if uncertainty in ["eleMultiIso","eleMultiVeto","muMulti","tw","dy"]:
-                        hist.Scale(histogramsPerComponentAndUncertainty[channel][compName]["nominal"].Integral()/hist.Integral())
                     
                     for sfName in componentDict[compName]:
                         sfName+="_binInc"
                         if compName.find("QCD")>=0:
                             sfName+="_"+channel
+                        
                         sfValue = fitResult["parameters"][sfName]["mean_fit"]
                         sfError = fitResult["parameters"][sfName]["unc_fit"]
                         hist.Scale(sfValue)
@@ -409,7 +407,22 @@ class PlotCrossSection(Module.getClass("Program")):
                 histogramsPerComponentAndUncertainty[channel]["data"].SetDirectory(0)  
             else:
                 histogramsPerComponentAndUncertainty[channel]["data"].Add(hist)
-        
+       
+        #normalize the histograms of these uncertainties to their nominal value
+        for channel in channels:
+            for compName in histogramsPerComponentAndUncertainty[channel].keys():
+                if compName=="data":
+                    continue
+                for uncertainty in histogramsPerComponentAndUncertainty[channel][compName].keys():
+                    normalize = False
+                    for sysName in ["eleMultiIso","eleMultiVeto","muMulti","tw","dy"]:
+                        normalize = normalize or uncertainty.startswith(sysName)
+                    if normalize:
+                        scale = histogramsPerComponentAndUncertainty[channel][compName]["nominal"].Integral()/histogramsPerComponentAndUncertainty[channel][compName][uncertainty].Integral()
+                        print channel,compName,uncertainty,scale
+                        histogramsPerComponentAndUncertainty[channel][compName][uncertainty].Scale(scale)
+                    
+       
         #morph around syst.
         histogramsPerComponentAndUncertaintyMorphed = {}
         if len(systematicsProfiled)>0:
@@ -420,10 +433,6 @@ class PlotCrossSection(Module.getClass("Program")):
                 for compName in histogramsPerComponentAndUncertainty[channel].keys():
                     if compName=="data":
                         continue
-                    #histogramsPerComponentAndUncertaintyMorphed[channel][compName].Scale(
-                    #    histogramsPerComponentAndUncertainty[channel][compName]["nominal"].Integral()/\
-                    #    histogramsPerComponentAndUncertaintyMorphed[channel][compName].Integral()
-                    #)
                     for ibin in range(NBINS):
                          histogramsPerComponentAndUncertaintyMorphed[channel][compName].SetBinError(ibin+1,
                             math.sqrt(histogramsPerComponentAndUncertaintyMorphed[channel][compName].GetBinError(ibin+1)**2+\
@@ -462,7 +471,8 @@ class PlotCrossSection(Module.getClass("Program")):
                 else:
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
         NTOYS = 1000
-        toys = numpy.zeros((NTOYS,NBINS))
+        toysSum = numpy.zeros((NTOYS,NBINS))
+        numpy.zeros((NTOYS,NBINS))
         for itoy in range(NTOYS):
             sdiced = numpy.random.normal(loc=1,scale=0.1)
             pdiced = numpy.random.multivariate_normal(means,cov)
@@ -474,13 +484,11 @@ class PlotCrossSection(Module.getClass("Program")):
                         if compName.find("QCD")>=0:
                             sfName+="_"+channel
                         content = pdiced[fitParameters.index(sfName)]*content
-                    toys[itoy]+=content
-        sumMC = numpy.mean(toys,axis=0)
-        sumMCerr = numpy.std(toys,axis=0)
+                    toysSum[itoy]+=content
+        sumMC = numpy.mean(toysSum,axis=0)
+        sumMCerr = numpy.std(toysSum,axis=0)
         
-                
         stack = []
-        
         for stackName in stackList:
             histSum = None
             for channel in channels:
@@ -555,7 +563,7 @@ class PlotCrossSection(Module.getClass("Program")):
             lumi += "e/#mu"
         lumi+="#kern[-0.2]{ }+#kern[-0.2]{ }"+region+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
             
-        cvxmin=0.175
+        cvxmin=0.185
         if plotName[0]=="2j0t":
             cvxmin=0.21
         self.module("Drawing").plotDistribution(

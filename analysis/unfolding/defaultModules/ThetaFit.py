@@ -16,28 +16,23 @@ class ThetaFit(Module):
         self._logger.setLevel(logging.DEBUG)
         self.fitResult = None
         
-    def run(self,fullPath,retry=3):
-        i = 0
-        exitcode = -1
-        while (exitcode!=0 and i<retry):
-            self._logger.info("run fit model: "+fullPath)
-            p = subprocess.Popen(["theta", fullPath],
-                #shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            while True:
-                nextline = p.stdout.readline()
-                if nextline == '' and p.poll() != None:
-                    break
-            exitcode = p.returncode
-            if exitcode!=0:
-                self._logger.error("Theta exits with error code: "+str(p.returncode)+" after "+str(i+1)+"/"+str(retry)+" try")
-            i+=1
+    def run(self,fullPath):
+        self._logger.info("run fit model: "+fullPath)
+        p = subprocess.Popen(["theta", fullPath],
+            #shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        while True:
+            nextline = p.stdout.readline()
+            if nextline == '' and p.poll() != None:
+                break
+        exitcode = p.returncode
         if exitcode!=0:
-            self._logger.critical("Theta exits with error code: "+str(exitcode)+" after "+str(retry)+" retries")
-            sys.exit(1)
+            self._logger.error("Theta exits with error code: "+str(p.returncode))
+            return False
         self._logger.info("Theta run successful: "+str(exitcode))
+        return True
             
     def checkFitResult(self,fullPath,modelName="fit"):
         if os.path.exists(fullPath):

@@ -120,15 +120,26 @@ class FitHistograms(Module.getClass("Program")):
             self.module("ThetaModel").getFitFileName(channels,unfoldingName,postfix="profiled")
         )
         
+        success = False
+        retry = 3
+        itry = 0
+        while (not success and itry<retry):
+            self.module("ThetaModel").makeModel(
+                fitOutput+".cfg",
+                fitSetup,parametersDict,
+                outputFile=fitOutput+".root",
+                pseudo=False,
+                seed = 123+7*itry-31*itry+173*itry
+            )
+            itry+=1
+            success = self.module("ThetaFit").run(fitOutput+".cfg")
+            if (not success):
+                self._logger.info("Retry with new seed")
+
+        if (not success):
+            self._logger.critical("No theta run succeeded")
+            sys.exit(1)
         
-        self.module("ThetaModel").makeModel(
-            fitOutput+".cfg",
-            fitSetup,parametersDict,
-            outputFile=fitOutput+".root",
-            pseudo=False
-        )
-        
-        self.module("ThetaFit").run(fitOutput+".cfg")
         fitResult = self.module("ThetaFit").parseFitResult(
             fitOutput+".root",
             parametersDict
