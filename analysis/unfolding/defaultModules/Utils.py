@@ -114,7 +114,7 @@ class Utils(Module):
         
         for ibin in range((morphed.GetNbinsX()+2)*(morphed.GetNbinsY()+2)):
             nominal = morphed.GetBinContent(ibin)
-            resultDiced = numpy.zeros(50)
+            resultDiced = numpy.zeros(500)
             for itoy in range(len(resultDiced)):
                 resultDiced[itoy] = morphed.GetBinContent(ibin)
                 pdiced = numpy.random.multivariate_normal(nuciances,covariance)
@@ -136,7 +136,7 @@ class Utils(Module):
         
         for ibin in range((morphed.GetNbinsX()+2)):
             nominal = morphed.GetBinContent(ibin)
-            resultDiced = numpy.zeros(50)
+            resultDiced = numpy.zeros(500)
             for itoy in range(len(resultDiced)):
                 resultDiced[itoy] = morphed.GetBinContent(ibin)
                 pdiced = numpy.random.multivariate_normal(nuciances,covariance)

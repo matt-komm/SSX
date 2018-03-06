@@ -69,6 +69,7 @@ for channel in ["mu","ele"]:
         config.inputParams.append([
             "-m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
         ])
+        
         #for 2j0t wjets
         config.inputParams.append([
             "-m setup/Wjets -m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
@@ -143,11 +144,6 @@ for channel in ["mu","ele"]:
             #sys/inclusive
             config.inputParams.append([
                 "-m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
-            ])
-            
-            #for 2j0t wjets
-            config.inputParams.append([
-                "-m setup/Wjets -m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
             ])
             
             #sys/binned per obs
