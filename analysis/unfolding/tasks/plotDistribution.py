@@ -470,7 +470,7 @@ class PlotCrossSection(Module.getClass("Program")):
                         cov[ipar][jpar] = fitResult["parameters"][parName1]["unc_fit"]**2
                 else:
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
-        NTOYS = 1000
+        NTOYS = 10000
         toysSum = numpy.zeros((NTOYS,NBINS))
         numpy.zeros((NTOYS,NBINS))
         for itoy in range(NTOYS):
@@ -541,11 +541,11 @@ class PlotCrossSection(Module.getClass("Program")):
         ymax = max([totalMCSum.GetMaximum(),dataSum.GetMaximum()])
                    
         scale = 0
-        if plotName[1]=="pt2j1t" or plotName[1]=="wpt2j1t":
-            scale=0.4
+        #$if plotName[1]=="pt2j1t" or plotName[1]=="wpt2j1t":
+        #    scale=0.4
                    
         if logy:
-            ymin = math.exp(math.log(ymin)-0.05*(math.log(ymax)-math.log(ymin)))
+            ymin = 1#math.exp(math.log(ymin)-0.05*(math.log(ymax)-math.log(ymin)))
             ymax = math.exp((scale+0.3)*(math.log(ymax)-math.log(ymin))+math.log(ymax))
         else:
             ymax = 1.3*ymax

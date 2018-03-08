@@ -14,7 +14,7 @@ class LeptonEtaParton(Module.getClass("Unfolding")):
         return "leta"
         
     def getUnfoldingVariableName(self):
-        return "lepton |#eta|"
+        return "lepton |y|"
         
     def getUnfoldingSymbol(self):
         return "|y|"

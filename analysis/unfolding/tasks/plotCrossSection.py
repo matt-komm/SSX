@@ -390,8 +390,8 @@ class PlotCrossSection(Module.getClass("Program")):
         
         #genColor = newColor(72./255,123./255,234./255)
         #genColor = newColor(226./255,128./255,22./255)
-        143, 47, 226
-        genColor = newColor(143./255,47./255,236./255)
+        #211, 42, 42
+        genColor = newColor(224./255,42./255,42./255)
         genHistSum.SetLineColor(genColor.GetNumber())
         genHistSum.SetLineWidth(2)
         

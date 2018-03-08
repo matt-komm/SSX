@@ -171,7 +171,7 @@ class Plots(Module):
                 "name":"leta2j1t",
                 "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"fabs(SingleTop_1__TightLepton_1__Eta)",
-                "xtitle":"Lepton |#eta|",
+                "xtitle":"Lepton |y|",
                 "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT",
                 "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+srSelection,
                 "binning":numpy.array([0.0,0.4,0.8,1.5,1.9,2.4]),

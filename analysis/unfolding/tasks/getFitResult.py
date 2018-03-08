@@ -224,6 +224,7 @@ class PlotCrossSection(Module.getClass("Program")):
         channels = self.getOption("channels").split(",")
         channelName = self.module("Samples").getChannelName(channels)
     
+        numpy.random.seed(12345)
         
         componentDict = {
             "tChannel_pos":["tChannel_pos"],
@@ -406,10 +407,14 @@ class PlotCrossSection(Module.getClass("Program")):
         cov = numpy.zeros((len(fitParameters),len(fitParameters)))
         for ipar,parName1 in enumerate(fitParameters):
             for jpar,parName2 in enumerate(fitParameters):
+                cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
+                '''
                 if ipar==jpar:
                     #print parName1,fitResult["covariances"]["values"][parName1][parName2]
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
-        NTOYS = 20000
+                '''
+                
+        NTOYS = 50000
         toysSum = {} 
         toysCompSum = {}
         for channel in channels:
