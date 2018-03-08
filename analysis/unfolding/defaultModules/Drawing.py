@@ -361,7 +361,7 @@ class Drawing(Module):
         histSumTotal.Draw("PESAME")
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotal.GetBinCenter(ibin+1)
-            w = (xmax-xmin)*0.007
+            w = (xmax-xmin)*0.008
             n = histSumTotal.GetBinContent(ibin+1)
             rel_sys = histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1)
             u = (1.+rel_sys)*n
@@ -409,9 +409,9 @@ class Drawing(Module):
         
         
         legendXL = [cvxmin+0.02,cvxmin+0.35]
-        legendXR = [0.52,cvxmax-0.13]
+        legendXR = [0.53,cvxmax-0.12]
         legendYD = [resHeight+0.03,resHeight+0.03+0.058*2]
-        legendYU = [cvymax-0.02,cvymax-0.02-0.058*2]
+        legendYU = [cvymax-0.025,cvymax-0.025-0.058*2]
         
         if legendPos[0]=="L":
             legendX = legendXL
@@ -489,7 +489,7 @@ class Drawing(Module):
         histSumTotalRes.Draw("PLSame")
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotalRes.GetBinCenter(ibin+1)
-            w = (xmax-xmin)*0.007
+            w = (xmax-xmin)*0.008
             n = histSumTotalRes.GetBinContent(ibin+1)
             rel_sys = histSumProfiledRes.GetBinError(ibin+1)/histSumProfiledRes.GetBinContent(ibin+1)
             u = (1.+rel_sys)*n

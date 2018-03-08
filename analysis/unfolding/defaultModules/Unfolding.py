@@ -535,7 +535,7 @@ class Unfolding(Module):
         for i in range(N):
             histResult.SetBinContent(i+1,meanResult[i])
             histResult.SetBinError(i+1,math.sqrt(covResult[i][i]))
-        return histResult
+        return histResult,covResult
         
     
                 

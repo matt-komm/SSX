@@ -223,36 +223,8 @@ class PlotCrossSection(Module.getClass("Program")):
     def execute(self):
         channels = self.getOption("channels").split(",")
         channelName = self.module("Samples").getChannelName(channels)
-        plotName = self.getOption("plot").split(",")
     
-        sets = {
-            "tChannel": {
-                "hists": ["tChannel_pos","tChannel_neg"],
-                "fill":newColor(0.98,0.1,0.1),
-                #"fill":newColor(1,0.02,0.02),
-                "title":"#it{t}-channel",
-            },
-            "TopBkg": {
-                "hists":["TopBkg_pos","TopBkg_neg"],
-                "fill":newColor(0.98,0.8,0.2),
-                #"fill":newColor(0.98,0.57,0.05),
-                "title":"tt#lower[-0.87]{#kern[-0.89]{-}}/tW",
-            },
-            "WZjets": {
-                "hists": ["WZjets_pos","WZjets_neg"],
-                "fill":newColor(0.25,0.65,0.25),
-                #"fill":ROOT.gROOT.GetColor(ROOT.kGreen-2),
-                #"fill":newColor(0.2,0.65,0.25),
-                "title":"W/Z+jets",
-            },
-            "QCD": {
-                "hists": ["QCD_"+plotName[0]+"_pos","QCD_"+plotName[0]+"_neg"],
-                "fill":newColor(0.8,0.8,0.8),
-                "title":"Multijet",
-            },
-        }
-        for s in sets.keys():
-            sets[s]["line"] = getDarkerColor(sets[s]["fill"])
+        
         componentDict = {
             "tChannel_pos":["tChannel_pos"],
             "tChannel_neg":["tChannel_neg"],
@@ -260,28 +232,10 @@ class PlotCrossSection(Module.getClass("Program")):
             "TopBkg_neg":["TopBkg","TopBkg_ratio"],
             "WZjets_pos":["WZjets"],
             "WZjets_neg":["WZjets","WZjets_ratio"],
-            "QCD_"+plotName[0]+"_pos":["QCD_"+plotName[0]],
-            "QCD_"+plotName[0]+"_neg":["QCD_"+plotName[0],"QCD_"+plotName[0]+"_ratio"]
+            "QCD_2j1t_pos":["QCD_2j1t"],
+            "QCD_2j1t_neg":["QCD_2j1t","QCD_2j1t_ratio"]
         }
         
-        xtitle = ""
-        ytitle = ""
-        logy = 0
-        norm = 0
-        legendPos = "R"
-        cut = ""
-        region = ""
-        resRange = 0.4
-        for histSetup in self.module("Plots").getHistSetups("ele"): #only interested in xaxis title
-            if histSetup["obsname"]==plotName[0] and histSetup["name"]==plotName[1]:
-                xtitle = histSetup["xtitle"]
-                ytitle = histSetup["ytitle"]
-                logy = histSetup["logy"]
-                norm = histSetup["normalize"]
-                legendPos = histSetup["legendPos"]
-                cut = histSetup["cut"]
-                region = histSetup["region"]
-                resRange = histSetup["resRange"]
         
         systematicsProfiled = [] if self.getOption("profiled")==None else self.getOption("profiled").split(",")
         systematicsExtern = [] if self.getOption("extern")==None else self.getOption("extern").split(",")
@@ -301,35 +255,19 @@ class PlotCrossSection(Module.getClass("Program")):
         
         stackList = ["QCD","WZjets","TopBkg","tChannel"]
         
-        if plotName[0]=="2j0t":
-            fitOutput = os.path.join(
-                self.module("Utils").getOutputFolder("fit/wjets"),
-                self.module("ThetaModel").getFitFileName(channels,unfoldingName,"wjets")
-            )
-        else:
-            fitOutput = os.path.join(
-                self.module("Utils").getOutputFolder("fit/profiled"),
-                self.module("ThetaModel").getFitFileName(channels,unfoldingName,"profiled")
-            )
+        fitOutput = os.path.join(
+            self.module("Utils").getOutputFolder("fit/profiled"),
+            self.module("ThetaModel").getFitFileName(channels,unfoldingName,"profiled")
+        )
+            
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         print fitResult["parameters"].keys()
-        #fake plot result of 2-component fit
-        if plotName[0]=="2j0t":
-            for compName in componentDict.keys():
-                if compName.find("QCD")>=0:
-                    continue
-                for parName in componentDict[compName]:
-                    if parName.find("ratio")>=0:
-                        fitResult["parameters"][parName+"_binInc"] = fitResult["parameters"]["Other_ratio_binInc"]
-                    else:
-                        fitResult["parameters"][parName+"_binInc"] = fitResult["parameters"]["Other_binInc"]
-        
+                
         for channel in channels:
             histogramsPerComponentAndUncertainty[channel] = {}
             for uncertainty in uncertainties:
                 
-                histFilePath = self.module("Utils").getHistogramFile(
-                    plotName[1],
+                histFilePath = self.module("ThetaModel").getHistogramFile(
                     channel,
                     unfoldingName,
                     -1,
@@ -341,7 +279,7 @@ class PlotCrossSection(Module.getClass("Program")):
                     sys.exit(1)
                 for compName in componentDict.keys():
                     histName = self.module("ThetaModel").getHistogramName(
-                        plotName[0],
+                        "2j1t",
                         compName,
                         unfoldingName,
                         -1,
@@ -378,8 +316,7 @@ class PlotCrossSection(Module.getClass("Program")):
                         histogramsPerComponentAndUncertainty[channel][compName][uncertainty].Add(hist)
                 rootFile.Close()
                 
-            histFilePath = self.module("Utils").getHistogramFile(
-                plotName[1],
+            histFilePath = self.module("ThetaModel").getHistogramFile(
                 channel,
                 unfoldingName,
                 -1,
@@ -391,7 +328,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 sys.exit(1)
 
             histName = self.module("ThetaModel").getHistogramName(
-                plotName[0],
+                "2j1t",
                 "data",
                 unfoldingName,
                 -1,
@@ -448,14 +385,20 @@ class PlotCrossSection(Module.getClass("Program")):
             
         
         #calculate error of MC sum while accounting for correlations of fit result
+        
         histContents = {}
+        histError = {}
         for channel in channels:
             histContents[channel] = {}
+            histError[channel] = {}
             for compName in histogramsPerComponentAndUncertaintyMorphed[channel].keys():
                 hist = histogramsPerComponentAndUncertaintyMorphed[channel][compName]
                 histContents[channel][compName] = numpy.zeros(hist.GetNbinsX())
+                histError[channel][compName] = numpy.zeros(hist.GetNbinsX())
                 for ibin in range(hist.GetNbinsX()):
                     histContents[channel][compName][ibin]=hist.GetBinContent(ibin+1)
+                    if hist.GetBinContent(ibin+1)>0:
+                        histError[channel][compName][ibin]=hist.GetBinError(ibin+1)
         
         fitParameters = sorted(fitResult["parameters"].keys())
         print fitParameters
@@ -463,31 +406,99 @@ class PlotCrossSection(Module.getClass("Program")):
         cov = numpy.zeros((len(fitParameters),len(fitParameters)))
         for ipar,parName1 in enumerate(fitParameters):
             for jpar,parName2 in enumerate(fitParameters):
-                #if ipar==jpar:
-                #    cov[ipar][jpar]=0.01
-                if plotName[0]=="2j0t":
-                    if ipar==jpar:
-                        cov[ipar][jpar] = fitResult["parameters"][parName1]["unc_fit"]**2
-                else:
+                if ipar==jpar:
+                    #print parName1,fitResult["covariances"]["values"][parName1][parName2]
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
-        NTOYS = 1000
-        toysSum = numpy.zeros((NTOYS,NBINS))
-        numpy.zeros((NTOYS,NBINS))
+        NTOYS = 20000
+        toysSum = {} 
+        toysCompSum = {}
+        for channel in channels:
+            toysSum[channel] = [numpy.zeros((NTOYS)),numpy.zeros((NTOYS))] 
+            toysCompSum[channel] = {} 
+            for comp in ["tChannel_pos","tChannel_neg","WZjets","TopBkg","QCD"]:
+                toysCompSum[channel][comp] = [numpy.zeros((NTOYS)),numpy.zeros((NTOYS))]
+                
         for itoy in range(NTOYS):
             sdiced = numpy.random.normal(loc=1,scale=0.1)
             pdiced = numpy.random.multivariate_normal(means,cov)
             for channel in channels:
                 for compName in histContents[channel].keys():
                     content = histContents[channel][compName]
+                    error = histError[channel][compName]
+                    #MC unc, does not work???
+                    #content+= numpy.random.normal(loc=numpy.zeros(len(error)),scale=error)
                     for sfName in componentDict[compName]:
                         sfName+="_binInc"
                         if compName.find("QCD")>=0:
                             sfName+="_"+channel
                         content = pdiced[fitParameters.index(sfName)]*content
-                    toysSum[itoy]+=content
-        sumMC = numpy.mean(toysSum,axis=0)
-        sumMCerr = numpy.std(toysSum,axis=0)
+                    toysSum[channel][0][itoy]+=numpy.sum(content[0:16])
+                    toysSum[channel][1][itoy]+=numpy.sum(content[16:32])
+                    reducedCompName = compName
+                    if compName.startswith("WZjets"):
+                        reducedCompName = "WZjets"
+                    if compName.startswith("TopBkg"):
+                        reducedCompName = "TopBkg"
+                    if compName.startswith("QCD"):
+                        reducedCompName = "QCD"
+                    
+                    toysCompSum[channel][reducedCompName][0][itoy]+=numpy.sum(content[0:16])
+                    toysCompSum[channel][reducedCompName][1][itoy]+=numpy.sum(content[16:32])
+                    
+                    
+        reducedHists = {}
+        reducedHistsSum = {}
+        for channel in channels:
+            reducedHists[channel] = {}
+            reducedHistsSum[channel] = None
+            for compName in histogramsPerComponentAndUncertaintyMorphed[channel].keys():
+                histogramsPerComponentAndUncertaintyMorphed[channel][compName].Rebin(16)
+                if compName!="data" and reducedHistsSum[channel]==None:
+                    reducedHistsSum[channel] = histogramsPerComponentAndUncertaintyMorphed[channel][compName].Clone()
+                else:
+                    reducedHistsSum[channel].Add(histogramsPerComponentAndUncertaintyMorphed[channel][compName])
+                
+                reducedCompName = compName
+                if compName.startswith("WZjets"):
+                    reducedCompName = "WZjets"
+                if compName.startswith("TopBkg"):
+                    reducedCompName = "TopBkg"
+                if compName.startswith("QCD"):
+                    reducedCompName = "QCD"
+                if not reducedHists[channel].has_key(reducedCompName):
+                    reducedHists[channel][reducedCompName] = histogramsPerComponentAndUncertaintyMorphed[channel][compName].Clone()
+                else:
+                    reducedHists[channel][reducedCompName].Add(histogramsPerComponentAndUncertaintyMorphed[channel][compName])
+            
+        properName = {"WZjets":"\\wzjets","TopBkg":"\\ttbar/\\tw","QCD":"Multijet","tChannel_pos":"\\tchannel (top quark)","tChannel_neg":"\\tchannel (top antiquark)"}
         
+        print channels
+        for compName in ["WZjets","TopBkg","QCD","tChannel_pos","tChannel_neg"]:
+            print "%30s  "%(properName[compName]),
+            for channel in channels:
+                hist = reducedHists[channel][compName]
+                print "  &  %8.0f &%5.0f"%(hist.GetBinContent(2),math.sqrt(hist.GetBinError(2)**2+numpy.std(toysCompSum[channel][compName][1])**2)),
+                print "  &  %8.0f &%5.0f"%(hist.GetBinContent(1),math.sqrt(hist.GetBinError(1)**2+numpy.std(toysCompSum[channel][compName][0])**2)),
+            print "\\\\"
+        print "%30s  "%("Total"),
+        for channel in channels:
+            print "  &  %8.0f &%5.0f"%(reducedHistsSum[channel].GetBinContent(2),math.sqrt(reducedHistsSum[channel].GetBinError(2)**2+numpy.std(toysSum[channel][1])**2)),
+            print "  &  %8.0f &%5.0f"%(reducedHistsSum[channel].GetBinContent(1),math.sqrt(reducedHistsSum[channel].GetBinError(1)**2+numpy.std(toysSum[channel][0])**2)),
+        print "\\\\"
+        print "%30s  "%("Data"),
+        for channel in channels:
+            hist = histogramsPerComponentAndUncertainty[channel]["data"]
+            hist.Rebin(16)
+            print "  &  %8.0f &%5.0f"%(hist.GetBinContent(2),hist.GetBinError(2)),
+            print "  &  %8.0f &%5.0f"%(hist.GetBinContent(1),hist.GetBinError(1)),
+        print "\\\\\\hline"
+        '''
+            print channel,"data",histogramsPerComponentAndUncertainty[channel]["data"].Integral(17,32),"/",sumPos
+            print channel,"data",histogramsPerComponentAndUncertainty[channel]["data"].Integral(1,16),"/",sumNeg
+            print "----------"
+            
+        '''
+        '''
         stack = []
         for stackName in stackList:
             histSum = None
@@ -570,7 +581,7 @@ class PlotCrossSection(Module.getClass("Program")):
             stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,lumi,
             os.path.join(finalFolder,plotName[1])
         )
-            
+        '''
                 
                 
             

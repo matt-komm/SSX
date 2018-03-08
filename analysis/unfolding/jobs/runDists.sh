@@ -8,6 +8,6 @@ for channels in ele mu ele,mu
         do
         echo $setup $channels
         echo "ADD PDF/LTAG SYST!!!!"
-        python driver.py -m tasks/plotDistribution -c channels:$channels -c plot:$setup
+        python driver.py -m tasks/plotDistribution -c channels:$channels -c plot:$setup -c profiled:$systProfiled
         done
     done

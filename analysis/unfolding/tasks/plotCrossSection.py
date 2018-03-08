@@ -317,43 +317,44 @@ class PlotCrossSection(Module.getClass("Program")):
         
         genBinning = self.module("Unfolding").getGenBinning(channelName)
         
+        #add lumi uncertainty of 2.5%
+        profiledResult["covarianceUnfolded"].Scale(1.025**2)
+        
         #this is a reflection of the stat uncertainty only
-        histSumNominal = self.module("Unfolding").calculateSum(
+        histSumNominal,covSumNominal = self.module("Unfolding").calculateSum(
             nominalResult["unfolded_pos"],
             nominalResult["unfolded_neg"],
             nominalResult["covarianceUnfolded"]
         )
         #this includes also the profiled exp. systematics
-        histSumProfiled = self.module("Unfolding").calculateSum(
+        histSumProfiled,covSumProfiled = self.module("Unfolding").calculateSum(
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
             profiledResult["covarianceUnfolded"]
         )
         #this is the envelope of all systematics
-        histSumTotal = self.module("Unfolding").calculateSum(
+        histSumTotal,covSumTotal = self.module("Unfolding").calculateSum(
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
             profiledResult["covarianceUnfolded"],
             {1:nominalResult["unfolded_pos"],-1:nominalResult["unfolded_neg"]},
             sysResults
         )
-        
-        #TODO: add lumi uncertainty!!!!!!
-        
+  
         #this is a reflection of the stat uncertainty only
-        histRatioNominal = self.module("Unfolding").calculateRatio(
+        histRatioNominal,covRatioNominal = self.module("Unfolding").calculateRatio(
             nominalResult["unfolded_pos"],
             nominalResult["unfolded_neg"],
             nominalResult["covarianceUnfolded"]
         )
         #this includes also the profiled exp. systematics
-        histRatioProfiled = self.module("Unfolding").calculateRatio(
+        histRatioProfiled,covRatioProfiled = self.module("Unfolding").calculateRatio(
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
             profiledResult["covarianceUnfolded"]
         )
         #this is the envelope of all systematics
-        histRatioTotal = self.module("Unfolding").calculateRatio(
+        histRatioTotal,covRatioTotal = self.module("Unfolding").calculateRatio(
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
             profiledResult["covarianceUnfolded"],
@@ -387,7 +388,10 @@ class PlotCrossSection(Module.getClass("Program")):
         histSumTotal.SetMarkerColor(ROOT.kBlack)
         histSumTotal.SetMarkerSize(1.2)
         
-        genColor = newColor(255./255,102./255,5./255)
+        #genColor = newColor(72./255,123./255,234./255)
+        #genColor = newColor(226./255,128./255,22./255)
+        143, 47, 226
+        genColor = newColor(143./255,47./255,236./255)
         genHistSum.SetLineColor(genColor.GetNumber())
         genHistSum.SetLineWidth(2)
         
@@ -403,7 +407,7 @@ class PlotCrossSection(Module.getClass("Program")):
         histRatioTotal.SetMarkerColor(ROOT.kBlack)
         histRatioTotal.SetMarkerSize(1.2)
         
-        genHistRatio.SetLineColor(ROOT.kOrange+7)
+        genHistRatio.SetLineColor(genColor.GetNumber())
         genHistRatio.SetLineWidth(2)
         
         
