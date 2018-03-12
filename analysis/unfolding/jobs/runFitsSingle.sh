@@ -24,8 +24,8 @@ syst=(
 )
 
 #syst=(
-#"systematics/ttbarPtUp"
-#"systematics/ttbarPtDown"
+#"systematics/pdfUp"
+#"systematics/pdfDown"
 #)
 
 setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton"
