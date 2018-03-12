@@ -135,6 +135,20 @@ for channel in ["mu","ele"]:
                 "systematics/tchanScaleTmpl -c qscale:UN",
                 "systematics/tchanScaleTmpl -c qscale:Up",
                 "systematics/tchanScaleTmpl -c qscale:Down",
+                
+                "systematics/ttbarScaleTmpl -c qscale:ND",
+                "systematics/ttbarScaleTmpl -c qscale:NU",
+                "systematics/ttbarScaleTmpl -c qscale:DN",
+                "systematics/ttbarScaleTmpl -c qscale:UN",
+                "systematics/ttbarScaleTmpl -c qscale:Up",
+                "systematics/ttbarScaleTmpl -c qscale:Down",
+                
+                "systematics/wjetsScaleTmpl -c qscale:ND",
+                "systematics/wjetsScaleTmpl -c qscale:NU",
+                "systematics/wjetsScaleTmpl -c qscale:DN",
+                "systematics/wjetsScaleTmpl -c qscale:UN",
+                "systematics/wjetsScaleTmpl -c qscale:Up",
+                "systematics/wjetsScaleTmpl -c qscale:Down",
             ]:
         
                 #sys
