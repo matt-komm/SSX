@@ -130,7 +130,7 @@ class PDFEnvelope:
                     {
                     
                         float mtw = -1;
-                        float topmass = -1;
+                        float lpt = -1;
                         float ljeta = -1;
                         //SingleTop_1__Top_1__Mass:SingleTop_1__absLEta:SingleTop_1__mtw_beforePz
                         std::vector<pxl::EventView*> eventViews;
@@ -151,24 +151,28 @@ class PDFEnvelope:
                                 eventView->getObjectsOfType(particles);
                                 for (pxl::Particle* particle: particles)
                                 {
-                                    if (particle->getName()=="Top")
+                                    if (particle->getName()=="TightLepton")
                                     {
-                                        topmass = particle->getMass();
+                                        lpt = particle->getPt();
+                                        //std::cout<<"lpt: "<<lpt<<std::endl;
                                         break;
                                     }
                                 }
                                 break;
                             }
                         }
-                        if (mtw>0 and topmass>0 and ljeta>0)
+                        if (mtw>0 and lpt>0 and ljeta>0)
                         {
                             const std::shared_ptr<TH3>& histUp = _histsUp.at(processName);
                             const std::shared_ptr<TH3>& histDown = _histsDown.at(processName);
                             int xbin = histUp->GetXaxis()->FindBin(mtw);
                             int ybin = histUp->GetYaxis()->FindBin(ljeta);
-                            int zbin = histUp->GetZaxis()->FindBin(topmass);
-                            pdfUp = histUp->GetBinContent(xbin,ybin,zbin);
-                            pdfDown = histDown->GetBinContent(xbin,ybin,zbin);
+                            int zbin = histUp->GetZaxis()->FindBin(lpt);
+                            if (xbin>0 and xbin<=histUp->GetNbinsX() and ybin>0 and ybin<=histUp->GetNbinsY() and zbin>0 and zbin<=histUp->GetNbinsZ())
+                            {
+                                pdfUp = histUp->GetBinContent(xbin,ybin,zbin);
+                                pdfDown = histDown->GetBinContent(xbin,ybin,zbin);
+                            }
                         }
                     }
                     event->setUserRecord("pdfUp",pdfUp);

@@ -11,11 +11,9 @@ from optparse import OptionParser
 parser = OptionParser()
 (options, args) = parser.parse_args()
 
-ROOT.gROOT.Reset()
 ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetOptFit(0)
-ROOT.gROOT.Reset()
 ROOT.gROOT.SetStyle("Plain")
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetOptFit(1111)
@@ -183,9 +181,22 @@ ROOT.gStyle.SetLineScalePS(2)
 # ROOT.gStyle.SetTimeOffset(Double_t toffset)
 # ROOT.gStyle.SetHistMinimumZero(kTRUE)
 
-ROOT.gStyle.SetPaintTextFormat("4.1f")
+ROOT.gStyle.SetPaintTextFormat("3.0f")
 ROOT.gStyle.SetPalette(1)
 #ROOT.gStyle.SetPaintTextFormat("7.4f")
+
+stops = numpy.array([0.00,0.15, 0.34, 0.45, 0.65, 0.84, 1.00])
+red   = numpy.array([0.50,0.05, 0.05, 0.4, 1.0, 1.00, 0.95])
+green = numpy.array([0.00,0.05, 0.8, 0.9, 0.8,0.20, 0.05])
+blue  = numpy.array([1.00,0.87, 1.00, 0., 0.0,0.00, 0.05])
+
+for i in range(len(red)):
+    red[i]=min(red[i]*1.1+0.05,1.0)
+    green[i]=min(green[i]*1.05+0.02,1.0)
+    blue[i]=min(blue[i]*1.15+0.1,1.0)
+
+start=ROOT.TColor.CreateGradientColorTable(len(stops), stops, red, green, blue, 200)
+ROOT.gStyle.SetNumberContours(200)
 
 
 rootObj = []
@@ -447,8 +458,8 @@ flavors = [
 
 workingpoints = [
     "tight",
-    "medium",
-    "loose"
+    #"medium",
+    #"loose"
 ]
 
 hists={}
@@ -499,13 +510,16 @@ for ifile,inputFile in enumerate(inputFiles):
                     hists[flavor][workingpoint]["tagged"].Add(rebinnedTagged)
                     hists[flavor][workingpoint]["true"].Add(rebinnedTrue)
     rootFile.Close()
+    
+    
+
                     
 outputFile = ROOT.TFile(args[0].rsplit(".")[0]+"_rebin.root","RECREATE")
 for flavor in flavors:
     for workingpoint in workingpoints: 
         eff = getEfficiency2D(hists[flavor][workingpoint]["tagged"],hists[flavor][workingpoint]["true"])
         eff.SetMarkerColor(ROOT.kBlack)
-        eff.SetMarkerSize(1.5)
+        eff.SetMarkerSize(1.6)
         
         eff.SetDirectory(outputFile)
         eff.SetName(flavor+"__"+workingpoint)
@@ -543,34 +557,39 @@ for flavor in flavors:
         cv.SetTickx(1)  # To get tick marks on the opposite side of the frame
         cv.SetTicky(1)
         
-        
+        '''
         axis=ROOT.TH2F("axis"+str(random.random()),";|#eta|;p_{T} (GeV)",50,etabinning[0],etabinning[-1],50,ptbinning[0],ptbinning[-1])
         axis.GetYaxis().SetNdivisions(508)
         axis.GetXaxis().SetNdivisions(508)
         axis.GetXaxis().SetTickLength(0.015/(1-cv.GetLeftMargin()-cv.GetRightMargin()))
         axis.GetYaxis().SetTickLength(0.015/(1-cv.GetTopMargin()-cv.GetBottomMargin()))
         axis.GetYaxis().SetNoExponent(True)
-        
+        '''
         
 
-        axis.Draw("AXIS")
+        #axis.Draw("AXIS")
         
         eff.Scale(100.0)
         
-        eff.Draw("Same colztext")
+        eff.Draw("colztext")
+        eff.GetXaxis().SetTitle("|#eta|")
+        eff.GetYaxis().SetTitle("p_{T} (GeV)")
         
         #eff.GetZaxis().SetRangeUser(0,60)
         #axis.GetZaxis().SetTitle("efficiency %")
         eff.GetZaxis().SetTitle("efficiency (%)")
         
-        '''
+        
         if flavor=="b":
             eff.GetZaxis().SetRangeUser(0,60)
+            ROOT.gStyle.SetPaintTextFormat("3.0f")
         if flavor=="c":
-            eff.GetZaxis().SetRangeUser(0,6)
+            eff.GetZaxis().SetRangeUser(0,5)
+            ROOT.gStyle.SetPaintTextFormat("3.1f")
         if flavor=="other":
-            eff.GetZaxis().SetRangeUser(0,7)
-        '''
+            eff.GetZaxis().SetRangeUser(0,2)
+            ROOT.gStyle.SetPaintTextFormat("3.1f")
+        
         ROOT.gPad.RedrawAxis()
 
         pCMS=ROOT.TPaveText(cv.GetLeftMargin()+0.025,0.94,cv.GetLeftMargin()+0.025,0.94,"NDC")
@@ -591,6 +610,15 @@ for flavor in flavors:
         pPreliminary.AddText("Simulation")
         pPreliminary.Draw("Same")
         
+        pText=ROOT.TPaveText(1-cv.GetRightMargin()+0.0,0.94,1-cv.GetRightMargin()+0.0,0.94,"NDC")
+        pText.SetFillColor(ROOT.kWhite)
+        pText.SetBorderSize(0)
+        pText.SetTextFont(43)
+        pText.SetTextSize(30)
+        pText.SetTextAlign(31)
+        pText.AddText(flavor+" flavor")
+        pText.Draw("Same")
+
 
         cv.Update()
 

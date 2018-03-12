@@ -124,7 +124,7 @@ class PlotHistograms(Module.getClass("Program")):
             
                 fitHist = ROOT.TH1F(
                     self.module("ThetaModel").getHistogramName(histSetup["obsname"],fitComponentName,unfoldingName,unfoldingBin,uncertainty=self.module("Utils").getUncertaintyName()),
-                    ";"+histSetup["varTitle"]+";Events / bin",
+                    ";"+histSetup["xtitle"]+";Events / bin",
                     len(histSetup["binning"])-1,
                     histSetup["binning"]
                 )
@@ -157,7 +157,7 @@ class PlotHistograms(Module.getClass("Program")):
              
             dataHist = ROOT.TH1F(
                 self.module("ThetaModel").getHistogramName(histSetup["obsname"],"data",unfoldingName,unfoldingBin),
-                ";"+histSetup["varTitle"]+";Events / bin",
+                ";"+histSetup["xtitle"]+";Events / bin",
                 len(histSetup["binning"])-1,
                     histSetup["binning"]
             )

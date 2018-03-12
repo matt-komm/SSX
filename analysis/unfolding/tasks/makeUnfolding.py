@@ -288,7 +288,7 @@ class RunUnfolding(Module.getClass("Program")):
         genSum.Add(nominalGenHists[-1])
         nominalGenHists[0] = genSum
         
-        histSum = self.module("Unfolding").calculateSum(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
+        histSum, covSum = self.module("Unfolding").calculateSum(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
         
         unfoldedHists[0] = histSum
         self.module("Drawing").plotDataHistogram([genSum],histSum,
@@ -299,7 +299,7 @@ class RunUnfolding(Module.getClass("Program")):
         
         genRatio= nominalGenHists[1].Clone("ratioGen")
         genRatio.Divide(genSum)
-        histRatio = self.module("Unfolding").calculateRatio(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
+        histRatio, covRatio = self.module("Unfolding").calculateRatio(unfoldedHists[1],unfoldedHists[-1],combinedUnfoldedCovariance)
         self.module("Drawing").plotDataHistogram([genRatio],histRatio,
             os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_ratio_unfoldedHist"),
             title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis=xtitle,yaxis=ytitleRatio,yrange=[0.2,1.],
