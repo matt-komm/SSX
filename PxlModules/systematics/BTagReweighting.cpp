@@ -59,9 +59,9 @@ class BTagReweighting:
             Module(),               
             _bTaggingAlgorithmName("pfCombinedMVAV2BJetTags"),
             _eventViewName("Reconstructed"),
-            _histPostFix({"tight"}),
+            _histPostFix({"loose","medium","tight"}),
             _jetNames({"SelectedJet"}),
-            _wp({0.9432})
+            _wp({-0.5884,0.4432,0.9432})
         {
             addSink("input", "input");
             _outputSource = addSource("output","output");
@@ -144,9 +144,9 @@ class BTagReweighting:
             
             _btagCalib = BTagCalibration("csvv1", _sfFile);
             
-            std::vector<BTagEntry::OperatingPoint> opPoints({BTagEntry::OP_TIGHT});
+            std::vector<BTagEntry::OperatingPoint> opPoints({BTagEntry::OP_LOOSE,BTagEntry::OP_MEDIUM,BTagEntry::OP_TIGHT});
             
-            for (unsigned int iwp = 0; iwp<1; ++iwp)
+            for (unsigned int iwp = 0; iwp<3; ++iwp)
             {
                 TFile mcEffFile(_mcFile.c_str());
                 TH2F* hist_b = dynamic_cast<TH2F*>(mcEffFile.Get((std::string("b__")+_histPostFix[iwp]).c_str()));
@@ -223,9 +223,9 @@ class BTagReweighting:
                         int ptBin = mcEff_other[iwp]->GetYaxis()->FindBin(pt);
                         efficiency = mcEff_other[iwp]->GetBinContent(etaBin,ptBin);
                     }
-                    if (efficiency<0.01)
+                    if (efficiency<0.001)
                     {
-                        efficiency+=0.01/std::pow(1.5,iwp); //make eff less for tighter wps
+                        efficiency+=0.001/std::pow(1.2,iwp); //make eff less for tighter wps
                     }
                     return efficiency;
                 
@@ -348,17 +348,11 @@ class BTagReweighting:
                                     );
                                 }
                             }
-                            float nominal = _btagWeightCalc.getEventWeight(jets,BWGHT::SYS::NOMINAL);
-                            float bc_up = _btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_UP);
-                            float bc_down = _btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_DOWN);
-                            float l_up = _btagWeightCalc.getEventWeight(jets,BWGHT::SYS::L_UP);
-                            float l_down = _btagWeightCalc.getEventWeight(jets,BWGHT::SYS::L_DOWN);
-                            
-                            eventView->setUserRecord("btagging_nominal",nominal);
-                            eventView->setUserRecord("btagging_bc_up",bc_up);
-                            eventView->setUserRecord("btagging_bc_down",bc_down);
-                            eventView->setUserRecord("btagging_l_up",l_up);
-                            eventView->setUserRecord("btagging_l_down",l_down);
+                            eventView->setUserRecord("btagging_nominal",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::NOMINAL));
+                            eventView->setUserRecord("btagging_bc_up",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_UP));
+                            eventView->setUserRecord("btagging_bc_down",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::BC_DOWN));
+                            eventView->setUserRecord("btagging_l_up",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::L_UP));
+                            eventView->setUserRecord("btagging_l_down",_btagWeightCalc.getEventWeight(jets,BWGHT::SYS::L_DOWN));
                             
                         }
                     }
@@ -397,3 +391,4 @@ class BTagReweighting:
 
 PXL_MODULE_INIT(BTagReweighting)
 PXL_PLUGIN_INIT
+

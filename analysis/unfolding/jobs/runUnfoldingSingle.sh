@@ -17,8 +17,17 @@ syst=(
 "systematics/tchanScalePSUp"
 "systematics/tchanScaleTmpl -c qscale:Up"
 "systematics/tchanScaleTmpl -c qscale:Down"
+"systematics/ttbarScaleTmpl -c qscale:Up"
+"systematics/ttbarScaleTmpl -c qscale:Down"
+"systematics/wjetsScaleTmpl -c qscale:Up"
+"systematics/wjetsScaleTmpl -c qscale:Down"
 )
-
+syst=(
+"systematics/ttbarScaleTmpl -c qscale:Up"
+"systematics/ttbarScaleTmpl -c qscale:Down"
+"systematics/wjetsScaleTmpl -c qscale:Up"
+"systematics/wjetsScaleTmpl -c qscale:Down"
+)
 for channels in ele mu ele,mu
     do
     echo $channels

@@ -15,18 +15,19 @@ syst=(
 "systematics/tchanHdampPSUp"
 "systematics/tchanScalePSDown"
 "systematics/tchanScalePSUp"
-"systematics/tchanScaleTmpl -c qscale:ND"
-"systematics/tchanScaleTmpl -c qscale:NU"
-"systematics/tchanScaleTmpl -c qscale:DN"
-"systematics/tchanScaleTmpl -c qscale:UN"
 "systematics/tchanScaleTmpl -c qscale:Up"
 "systematics/tchanScaleTmpl -c qscale:Down"
+"systematics/ttbarScaleTmpl -c qscale:Up"
+"systematics/ttbarScaleTmpl -c qscale:Down"
+"systematics/wjetsScaleTmpl -c qscale:Up"
+"systematics/wjetsScaleTmpl -c qscale:Down"
 )
-
-#syst=(
-#"systematics/pdfUp"
-#"systematics/pdfDown"
-#)
+syst=(
+"systematics/ttbarScaleTmpl -c qscale:Up"
+"systematics/ttbarScaleTmpl -c qscale:Down"
+"systematics/wjetsScaleTmpl -c qscale:Up"
+"systematics/wjetsScaleTmpl -c qscale:Down"
+)
 
 setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton"
 #setups="TopPtParton"

@@ -434,8 +434,8 @@ processNames = [
     "ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1",
     "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",
     "WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-    "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
-    "DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+    #"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",
+    #"DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
 ]
 
 print "using input file: ",args[0]
@@ -458,15 +458,15 @@ flavors = [
 
 workingpoints = [
     "tight",
-    #"medium",
-    #"loose"
+    "medium",
+    "loose"
 ]
 
 hists={}
 
 #ptbinning = numpy.array([20.0,30.0,40.0,55.0,110,150,220,320,450,600])
-ptbinning = numpy.array([40.0,55.0,110,150,220,320,450,600])
-etabinning = numpy.array([0.0,0.2,0.7,1.4,2.0,2.2,2.3,2.5])
+ptbinning = numpy.array([40.0,55.0,80.0,110,150,220,320,450,600])
+etabinning = numpy.array([0.0,0.2,0.7,1.4,2.0,2.2,2.3,2.4])
 
 
 
