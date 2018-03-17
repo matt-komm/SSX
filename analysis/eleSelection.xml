@@ -1,0 +1,326 @@
+<analysis file_format_version="0.4" >
+  <module name="MuonVeto1"  type="MuonVeto"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input muon name"  type="string" >
+<![CDATA[Muon]]>    </option>
+    <option name="Name of selected loose muons"  type="string" >
+<![CDATA[LooseMuon]]>    </option>
+    <option name="Clean event"  type="boolean" >
+True    </option>
+    <option name="LooseMuon Minimum pT"  type="double" >
+10    </option>
+    <option name="LooseMuon Maximum Eta"  type="double" >
+2.5    </option>
+    <option name="LooseMuon Minimum Relative Iso DeltaBeta"  type="double" >
+0.2    </option>
+    <option name="LooseMuon Relative Iso DeltaBeta; Beta Parameter"  type="double" >
+0.5    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+456      </entry>
+      <entry name="yPos"  type="double" >
+303      </entry>
+    </userrecords>
+  </module>
+  <module name="ElectronVeto1"  type="ElectronVeto"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input electron name"  type="string" >
+<![CDATA[Electron]]>    </option>
+    <option name="Name of selected loose electrons"  type="string" >
+<![CDATA[LooseElectron]]>    </option>
+    <option name="Clean event"  type="boolean" >
+True    </option>
+    <option name="LooseElectron Minimum pT"  type="double" >
+15    </option>
+    <option name="LooseElectron Maximum eta"  type="double" >
+2.5    </option>
+    <option name="ID"  type="string" >
+<![CDATA[summer16eleIDVeto25ns]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+443      </entry>
+      <entry name="yPos"  type="double" >
+457      </entry>
+    </userrecords>
+  </module>
+  <module name="JetSelection1"  type="JetSelection"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="input jet name"  type="string" >
+<![CDATA[Jet]]>    </option>
+    <option name="name of selected jets"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="clean event"  type="boolean" >
+True    </option>
+    <option name="PF Jet Minimum pT"  type="double" >
+40    </option>
+    <option name="PF Jet Maximum Eta"  type="double" >
+4.7    </option>
+    <option name="invert dR"  type="boolean" >
+False    </option>
+    <option name="dR cut"  type="double" >
+0.4    </option>
+    <option name="dR objects"  type="string_vector" >
+<![CDATA[("TightLepton")]]>    </option>
+    <option name="store n leading jets"  type="long" >
+-1    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+468      </entry>
+      <entry name="yPos"  type="double" >
+625      </entry>
+    </userrecords>
+  </module>
+  <module name="BTagSelectionTight3"  type="BTagSelection"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="input jet name"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="name of selected b-jets"  type="string" >
+<![CDATA[SelectedBJetTight]]>    </option>
+    <option name="name of untagged-jets"  type="string" >
+<![CDATA[SelectedLJetTight]]>    </option>
+    <option name="b Tagging Algorithm"  type="string" >
+<![CDATA[pfCombinedMVAV2BJetTags]]>    </option>
+    <option name="maximum b-jet eta"  type="double" >
+2.4    </option>
+    <option name="working point"  type="double" >
+0.9432    </option>
+    <option name="copy selected jets"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+1135      </entry>
+      <entry name="yPos"  type="double" >
+879      </entry>
+    </userrecords>
+  </module>
+  <module name="in"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+0    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+57      </entry>
+      <entry name="yPos"  type="double" >
+102      </entry>
+    </userrecords>
+  </module>
+  <module name="selected"  type="File Output"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="Buffer size"  type="long" >
+20485760    </option>
+    <option name="# Objects/file section"  type="long" >
+2000    </option>
+    <option name="Compression level"  type="long" >
+3    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+1387      </entry>
+      <entry name="yPos"  type="double" >
+908      </entry>
+    </userrecords>
+  </module>
+  <module name="veto"  type="File Output"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="Buffer size"  type="long" >
+20485760    </option>
+    <option name="# Objects/file section"  type="long" >
+2000    </option>
+    <option name="Compression level"  type="long" >
+3    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+915      </entry>
+      <entry name="yPos"  type="double" >
+260      </entry>
+    </userrecords>
+  </module>
+  <module name="ElectronSelection1"  type="ElectronSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input electron name"  type="string" >
+<![CDATA[Electron]]>    </option>
+    <option name="Name of selected tight electrons"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="TightElectron Minimum pT"  type="double" >
+35    </option>
+    <option name="TightElectron Maximum Eta"  type="double" >
+2.1    </option>
+    <option name="HLT ID"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="tight ID"  type="string" >
+<![CDATA[summer16eleIDTight25ns]]>    </option>
+    <option name="veto ID"  type="string" >
+<![CDATA[summer16eleIDVeto25ns]]>    </option>
+    <option name="number of electrons"  type="long" >
+1    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+502      </entry>
+      <entry name="yPos"  type="double" >
+84      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="ElectronVeto1"  name="veto loose electrons" >
+    </source>
+    <sink module="JetSelection1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonVeto1"  name="veto loose muons" >
+    </source>
+    <sink module="ElectronVeto1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight3"  name=">2 b-Tags" >
+    </source>
+    <sink module="selected"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight3"  name="2 b-Tags" >
+    </source>
+    <sink module="selected"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight3"  name="1 b-Tags" >
+    </source>
+    <sink module="selected"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight3"  name="0 b-Tags" >
+    </source>
+    <sink module="selected"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection1"  name="1 Jet" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection1"  name="0 Jets" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronVeto1"  name="other" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonVeto1"  name="other" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSelection1"  name="1 tight ele" >
+    </source>
+    <sink module="MuonVeto1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSelection1"  name="1 veto ele" >
+    </source>
+    <sink module="MuonVeto1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSelection1"  name="1 antiveto ele" >
+    </source>
+    <sink module="MuonVeto1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSelection1"  name="other" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="in"  name="out" >
+    </source>
+    <sink module="ElectronSelection1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection1"  name=">4 Jets" >
+    </source>
+    <sink module="BTagSelectionTight3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection1"  name="4 Jets" >
+    </source>
+    <sink module="BTagSelectionTight3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection1"  name="3 Jets" >
+    </source>
+    <sink module="BTagSelectionTight3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection1"  name="2 Jets" >
+    </source>
+    <sink module="BTagSelectionTight3"  name="input" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2018-03-17]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[13:15:45]]>    </entry>
+  </userrecords>
+</analysis>

@@ -1,0 +1,356 @@
+<analysis file_format_version="0.4" >
+  <module name="in"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+0    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+74      </entry>
+      <entry name="yPos"  type="double" >
+68      </entry>
+    </userrecords>
+  </module>
+  <module name="EventVariables1"  type="EventVariables"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="particles"  type="string_vector" >
+<![CDATA[("TightLepton","LightJet","BJet")]]>    </option>
+    <option name="prefix"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fox wolfram order"  type="long" >
+4    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+1379      </entry>
+      <entry name="yPos"  type="double" >
+572      </entry>
+    </userrecords>
+  </module>
+  <module name="TopReconstruction1"  type="TopReconstruction"  isEnabled="true" >
+    <option name="input event view lepton"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="lepton"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="input event view neutrino"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="neutrino"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <option name="input event view jets"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="b jets"  type="string_vector" >
+<![CDATA[("SelectedBJetTight")]]>    </option>
+    <option name="light jets"  type="string_vector" >
+<![CDATA[("SelectedLJetTight")]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="W boson"  type="string" >
+<![CDATA[W]]>    </option>
+    <option name="top"  type="string" >
+<![CDATA[Top]]>    </option>
+    <option name="other"  type="boolean" >
+False    </option>
+    <option name="0j"  type="boolean" >
+False    </option>
+    <option name="1j"  type="boolean" >
+False    </option>
+    <option name="2j0t"  type="boolean" >
+False    </option>
+    <option name="2j1t"  type="boolean" >
+True    </option>
+    <option name="2j2t"  type="boolean" >
+False    </option>
+    <option name="3j0t"  type="boolean" >
+False    </option>
+    <option name="3j1t"  type="boolean" >
+False    </option>
+    <option name="3j2t"  type="boolean" >
+False    </option>
+    <option name="3j3t"  type="boolean" >
+False    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+420      </entry>
+      <entry name="yPos"  type="double" >
+432      </entry>
+    </userrecords>
+  </module>
+  <module name="NeutrinoPz1"  type="NeutrinoPz"  isEnabled="true" >
+    <option name="input event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="met name"  type="string" >
+<![CDATA[MET]]>    </option>
+    <option name="lepton name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="neutrino name"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+267      </entry>
+      <entry name="yPos"  type="double" >
+109      </entry>
+    </userrecords>
+  </module>
+  <module name="out"  type="File Output"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="Buffer size"  type="long" >
+20485760    </option>
+    <option name="# Objects/file section"  type="long" >
+2000    </option>
+    <option name="Compression level"  type="long" >
+3    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+1515      </entry>
+      <entry name="yPos"  type="double" >
+690      </entry>
+    </userrecords>
+  </module>
+  <module name="Split for MVA SR"  type="Splitter"  isEnabled="true" >
+    <option name="process name field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="percentages"  type="string_vector" >
+<![CDATA[("ST_t-channel[A-Za-z0-9_\-]+=0.5","TT[A-Za-z0-9_\-]+=0.25","[A-Za-z0-9_\-]+=1.0")]]>    </option>
+    <option name="limits"  type="string_vector" >
+<![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
+    <option name="random"  type="boolean" >
+False    </option>
+    <option name="use event number"  type="boolean" >
+False    </option>
+    <option name="use existing flag"  type="boolean" >
+False    </option>
+    <option name="split name"  type="string" >
+<![CDATA[formva]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+779      </entry>
+      <entry name="yPos"  type="double" >
+667      </entry>
+    </userrecords>
+  </module>
+  <module name="Split for MVA CR"  type="Splitter"  isEnabled="true" >
+    <option name="process name field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="percentages"  type="string_vector" >
+<![CDATA[("TT[A-Za-z0-9_\-]+=0.02","W[A-Za-z0-9_\-]+=0.01","ST_t-channel[A-Za-z0-9_\-]+=0.01","QCD[A-Za-z0-9_\-]+MuEnriched[A-Za-z0-9_\-]+=0.1","QCD[A-Za-z0-9_\-]+EMEnriched[A-Za-z0-9_\-]+=0.2","[A-Za-z0-9_\-]+=0.0")]]>    </option>
+    <option name="limits"  type="string_vector" >
+<![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
+    <option name="random"  type="boolean" >
+False    </option>
+    <option name="use event number"  type="boolean" >
+False    </option>
+    <option name="use existing flag"  type="boolean" >
+False    </option>
+    <option name="split name"  type="string" >
+<![CDATA[formva]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+535      </entry>
+      <entry name="yPos"  type="double" >
+882      </entry>
+    </userrecords>
+  </module>
+  <module name="Split for Testing fake1"  type="Splitter"  isEnabled="true" >
+    <option name="process name field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="percentages"  type="string_vector" >
+<![CDATA[("[A-Za-z0-9_\-]+=1")]]>    </option>
+    <option name="limits"  type="string_vector" >
+<![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
+    <option name="random"  type="boolean" >
+False    </option>
+    <option name="use event number"  type="boolean" >
+False    </option>
+    <option name="use existing flag"  type="boolean" >
+False    </option>
+    <option name="split name"  type="string" >
+<![CDATA[testing]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+1077      </entry>
+      <entry name="yPos"  type="double" >
+771      </entry>
+    </userrecords>
+  </module>
+  <module name="Split for Testing1"  type="Splitter"  isEnabled="true" >
+    <option name="process name field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="percentages"  type="string_vector" >
+<![CDATA[("QCD[A-Za-z0-9_\-]+=0.5","WJetsToLNu[A-Za-z0-9_\-]+=0.5","[A-Za-z0-9_\-]+=0.7")]]>    </option>
+    <option name="limits"  type="string_vector" >
+<![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
+    <option name="random"  type="boolean" >
+False    </option>
+    <option name="use event number"  type="boolean" >
+False    </option>
+    <option name="use existing flag"  type="boolean" >
+False    </option>
+    <option name="split name"  type="string" >
+<![CDATA[testing]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+1173      </entry>
+      <entry name="yPos"  type="double" >
+905      </entry>
+    </userrecords>
+  </module>
+  <module name="PDFEnvelope1"  type="PDFEnvelope"  isEnabled="true" >
+    <option name="pdfHistFile"  type="string" >
+<![CDATA[pdfEnvelope.root]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+1540      </entry>
+      <entry name="yPos"  type="double" >
+595      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="in"  name="out" >
+    </source>
+    <sink module="NeutrinoPz1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction1"  name="noLepton" >
+    </source>
+    <sink module="EventVariables1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction1"  name="output" >
+    </source>
+    <sink module="Split for MVA SR"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction1"  name="veto" >
+    </source>
+    <sink module="Split for MVA CR"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for MVA CR"  name="veto" >
+    </source>
+    <sink module="Split for Testing fake1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for MVA SR"  name="veto" >
+    </source>
+    <sink module="Split for Testing fake1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for MVA CR"  name="output" >
+    </source>
+    <sink module="Split for Testing1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for MVA SR"  name="output" >
+    </source>
+    <sink module="Split for Testing1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for Testing fake1"  name="veto" >
+    </source>
+    <sink module="EventVariables1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for Testing fake1"  name="output" >
+    </source>
+    <sink module="EventVariables1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for Testing1"  name="veto" >
+    </source>
+    <sink module="EventVariables1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for Testing1"  name="output" >
+    </source>
+    <sink module="EventVariables1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="NeutrinoPz1"  name="noLepton" >
+    </source>
+    <sink module="TopReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="NeutrinoPz1"  name="output" >
+    </source>
+    <sink module="TopReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EventVariables1"  name="output" >
+    </source>
+    <sink module="PDFEnvelope1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PDFEnvelope1"  name="output" >
+    </source>
+    <sink module="out"  name="in" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2018-03-17]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[14:15:05]]>    </entry>
+  </userrecords>
+</analysis>

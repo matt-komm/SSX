@@ -1,0 +1,476 @@
+<analysis file_format_version="0.4" >
+  <module name="in"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+0    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+137      </entry>
+      <entry name="yPos"  type="double" >
+58      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSFiso1"  type="MuonSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="muon name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[muISO06]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[muoncat]]>    </option>
+    <option name="muon matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[data/muon_ISO_06.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[pt_abseta_ratio]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+True    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+122      </entry>
+      <entry name="yPos"  type="double" >
+412      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSFid1"  type="MuonSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="muon name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[muID06]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[muoncat]]>    </option>
+    <option name="muon matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[data/muon_ID_06.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[pt_abseta_ratio]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+True    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+334      </entry>
+      <entry name="yPos"  type="double" >
+414      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSFtrigger1"  type="MuonSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="muon name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[muTRIGGER06]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[muoncat]]>    </option>
+    <option name="muon matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[data/muon_TRIGGER_06.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[pt_abseta_ratio]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+True    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+523      </entry>
+      <entry name="yPos"  type="double" >
+410      </entry>
+    </userrecords>
+  </module>
+  <module name="PileUpReweighting1"  type="PileUpReweighting"  isEnabled="true" >
+    <option name="mc histogram file"  type="string" >
+<![CDATA[data/pu.root]]>    </option>
+    <option name="mc histogram name"  type="string" >
+<![CDATA[total]]>    </option>
+    <option name="mc rebin"  type="long" >
+1    </option>
+    <option name="data histogram files"  type="string_vector" >
+<![CDATA[("data/PU64000.root","data/PU64500.root","data/PU65000.root","data/PU65500.root","data/PU66000.root","data/PU66500.root","data/PU67000.root","data/PU67500.root","data/PU68000.root","data/PU68500.root","data/PU69000.root","data/PU69500.root","data/PU70000.root","data/PU70500.root","data/PU71000.root","data/PU71500.root","data/PU72000.root","data/PU72500.root","data/PU73000.root","data/PU73500.root","data/PU74000.root","data/PU74500.root","data/PU75000.root","data/PU75500.root","data/PU76000.root","data/PU76500.root")]]>    </option>
+    <option name="data histogram name"  type="string" >
+<![CDATA[pileup]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+317      </entry>
+      <entry name="yPos"  type="double" >
+81      </entry>
+    </userrecords>
+  </module>
+  <module name="out"  type="File Output"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="Buffer size"  type="long" >
+20485760    </option>
+    <option name="# Objects/file section"  type="long" >
+2000    </option>
+    <option name="Compression level"  type="long" >
+3    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+947      </entry>
+      <entry name="yPos"  type="double" >
+549      </entry>
+    </userrecords>
+  </module>
+  <module name="ElectronSFreco"  type="ElectronSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="lepton name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[eleRECO]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[elecat]]>    </option>
+    <option name="matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[data/egamma_RECO.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[EGamma_SF2D]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+False    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+290      </entry>
+      <entry name="yPos"  type="double" >
+566      </entry>
+    </userrecords>
+  </module>
+  <module name="ElectronSFid"  type="ElectronSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="lepton name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[eleID]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[elecat]]>    </option>
+    <option name="matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[data/egamma_ID.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[EGamma_SF2D]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+False    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+476      </entry>
+      <entry name="yPos"  type="double" >
+559      </entry>
+    </userrecords>
+  </module>
+  <module name="TopPtReweighting1"  type="TopPtReweighting"  isEnabled="true" >
+    <option name="processNames"  type="string_vector" >
+<![CDATA[("TT[A-Za-z0-9_\-]*")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+682      </entry>
+      <entry name="yPos"  type="double" >
+563      </entry>
+    </userrecords>
+  </module>
+  <module name="ElectronSFreco2"  type="ElectronSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="lepton name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[eleTRIGGER]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[elecat]]>    </option>
+    <option name="matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[data/egamma_TRIGGER.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[SF]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+False    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+71      </entry>
+      <entry name="yPos"  type="double" >
+564      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSFiso2"  type="MuonSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="muon name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[muISO]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[muoncat]]>    </option>
+    <option name="muon matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[data/muon_ISO.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[pt_abseta_ratio]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+True    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+159      </entry>
+      <entry name="yPos"  type="double" >
+255      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSFid2"  type="MuonSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="muon name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[muID]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[muoncat]]>    </option>
+    <option name="muon matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[data/muon_ID.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[pt_abseta_ratio]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+True    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+379      </entry>
+      <entry name="yPos"  type="double" >
+255      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSFtrigger2"  type="MuonSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="muon name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[muTRIGGER]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[muoncat]]>    </option>
+    <option name="muon matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[data/muon_TRIGGER.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[pt_abseta_ratio]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+True    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+570      </entry>
+      <entry name="yPos"  type="double" >
+256      </entry>
+    </userrecords>
+  </module>
+  <module name="BTagReweighting1"  type="BTagReweighting"  isEnabled="true" >
+    <option name="b tagging algorithm"  type="string" >
+<![CDATA[pfCombinedMVAV2BJetTags]]>    </option>
+    <option name="SF csv file"  type="string" >
+<![CDATA[data/cMVAv2_Moriond17.csv]]>    </option>
+    <option name="MC efficiency file"  type="string" >
+<![CDATA[data/btaggingEff_tch_rebin.root]]>    </option>
+    <option name="MC hist postfix"  type="string_vector" >
+<![CDATA[("loose","medium","tight")]]>    </option>
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="jet names"  type="string_vector" >
+<![CDATA[("SelectedJet")]]>    </option>
+    <option name="workingpoint"  type="string_vector" >
+<![CDATA[("-0.5884","0.4432","0.9432")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+577      </entry>
+      <entry name="yPos"  type="double" >
+80      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="MuonSFiso1"  name="output" >
+    </source>
+    <sink module="MuonSFid1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSFid1"  name="output" >
+    </source>
+    <sink module="MuonSFtrigger1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSFreco"  name="output" >
+    </source>
+    <sink module="ElectronSFid"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="in"  name="out" >
+    </source>
+    <sink module="PileUpReweighting1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSFid"  name="output" >
+    </source>
+    <sink module="TopPtReweighting1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopPtReweighting1"  name="output" >
+    </source>
+    <sink module="out"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSFtrigger1"  name="output" >
+    </source>
+    <sink module="ElectronSFreco2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSFreco2"  name="output" >
+    </source>
+    <sink module="ElectronSFreco"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSFiso2"  name="output" >
+    </source>
+    <sink module="MuonSFid2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSFid2"  name="output" >
+    </source>
+    <sink module="MuonSFtrigger2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSFtrigger2"  name="output" >
+    </source>
+    <sink module="MuonSFiso1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PileUpReweighting1"  name="output" >
+    </source>
+    <sink module="BTagReweighting1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagReweighting1"  name="output" >
+    </source>
+    <sink module="MuonSFiso2"  name="input" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2018-03-17]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[13:55:44]]>    </entry>
+  </userrecords>
+</analysis>

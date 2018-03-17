@@ -1,0 +1,1006 @@
+<analysis file_format_version="0.4" >
+  <module name="NeutrinoPz1"  type="NeutrinoPz"  isEnabled="true" >
+    <option name="input event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="met name"  type="string" >
+<![CDATA[MET]]>    </option>
+    <option name="lepton name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="neutrino name"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+169      </entry>
+      <entry name="yPos"  type="double" >
+700      </entry>
+    </userrecords>
+  </module>
+  <module name="PileUpReweighting2"  type="PileUpReweighting"  isEnabled="true" >
+    <option name="mc histogram file"  type="string" >
+<![CDATA[../data/pu.root]]>    </option>
+    <option name="mc histogram name"  type="string" >
+<![CDATA[total]]>    </option>
+    <option name="mc rebin"  type="long" >
+1    </option>
+    <option name="data histogram files"  type="string_vector" >
+<![CDATA[("../data/PU64000.root","../data/PU64500.root","../data/PU65000.root","../data/PU65500.root","../data/PU66000.root","../data/PU66500.root","../data/PU67000.root","../data/PU67500.root","../data/PU68000.root","../data/PU68500.root","../data/PU69000.root","../data/PU69500.root","../data/PU70000.root","../data/PU70500.root","../data/PU71000.root","../data/PU71500.root","../data/PU72000.root","../data/PU72500.root","../data/PU73000.root","../data/PU73500.root","../data/PU74000.root","../data/PU74500.root","../data/PU75000.root","../data/PU75500.root","../data/PU76000.root","../data/PU76500.root")]]>    </option>
+    <option name="data histogram name"  type="string" >
+<![CDATA[pileup]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+335      </entry>
+      <entry name="yPos"  type="double" >
+732      </entry>
+    </userrecords>
+  </module>
+  <module name="BTagReweighting2"  type="BTagReweighting"  isEnabled="true" >
+    <option name="b tagging algorithm"  type="string" >
+<![CDATA[pfCombinedMVAV2BJetTags]]>    </option>
+    <option name="SF csv file"  type="string" >
+<![CDATA[cMVAv2_Moriond17.csv]]>    </option>
+    <option name="MC efficiency file"  type="string" >
+<![CDATA[btaggingEff_tch_rebin.root]]>    </option>
+    <option name="MC hist postfix"  type="string_vector" >
+<![CDATA[("loose","medium","tight")]]>    </option>
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="jet names"  type="string_vector" >
+<![CDATA[("SelectedJet")]]>    </option>
+    <option name="workingpoint"  type="string_vector" >
+<![CDATA[("-0.5884","0.4432","0.9432")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+645      </entry>
+      <entry name="yPos"  type="double" >
+732      </entry>
+    </userrecords>
+  </module>
+  <module name="IsoMu27_vALL1"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_IsoMu27_v[0-9]+","HLT_IsoTkMu27_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[IsoMu20_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+581      </entry>
+      <entry name="yPos"  type="double" >
+532      </entry>
+    </userrecords>
+  </module>
+  <module name="IsoMu22_vALL2"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_IsoMu22_v[0-9]+","HLT_IsoTkMu22_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[IsoMu22_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+174      </entry>
+      <entry name="yPos"  type="double" >
+537      </entry>
+    </userrecords>
+  </module>
+  <module name="IsoMu24_vALL2"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_IsoMu24_v[0-9]+","HLT_IsoTkMu24_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[IsoMu24_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+358      </entry>
+      <entry name="yPos"  type="double" >
+524      </entry>
+    </userrecords>
+  </module>
+  <module name="Splitter1"  type="Splitter"  isEnabled="true" >
+    <option name="process name field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="percentages"  type="string_vector" >
+<![CDATA[("[A-Za-z0-9_\-]+=0.7")]]>    </option>
+    <option name="limits"  type="string_vector" >
+<![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
+    <option name="random"  type="boolean" >
+False    </option>
+    <option name="use event number"  type="boolean" >
+True    </option>
+    <option name="use existing flag"  type="boolean" >
+True    </option>
+    <option name="split name"  type="string" >
+<![CDATA[testing]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+1090      </entry>
+      <entry name="yPos"  type="double" >
+1040      </entry>
+    </userrecords>
+  </module>
+  <module name="EventVariables2"  type="EventVariables"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="particles"  type="string_vector" >
+<![CDATA[("TightMuon","LightJet","BJet")]]>    </option>
+    <option name="prefix"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fox wolfram order"  type="long" >
+5    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+730      </entry>
+      <entry name="yPos"  type="double" >
+1162      </entry>
+    </userrecords>
+  </module>
+  <module name="Splitter2"  type="Splitter"  isEnabled="true" >
+    <option name="process name field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="percentages"  type="string_vector" >
+<![CDATA[("TT[A-Za-z0-9_\-]+=0.1","[A-Za-z0-9_\-]+=1.0")]]>    </option>
+    <option name="limits"  type="string_vector" >
+<![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
+    <option name="random"  type="boolean" >
+False    </option>
+    <option name="use event number"  type="boolean" >
+True    </option>
+    <option name="use existing flag"  type="boolean" >
+True    </option>
+    <option name="split name"  type="string" >
+<![CDATA[formva]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+975      </entry>
+      <entry name="yPos"  type="double" >
+1151      </entry>
+    </userrecords>
+  </module>
+  <module name="TopReconstruction1"  type="TopReconstruction"  isEnabled="true" >
+    <option name="input event view lepton"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="lepton"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="input event view neutrino"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="neutrino"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <option name="input event view jets"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="b jets"  type="string_vector" >
+<![CDATA[("SelectedBJetTight")]]>    </option>
+    <option name="light jets"  type="string_vector" >
+<![CDATA[("SelectedLJetTight")]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="W boson"  type="string" >
+<![CDATA[W]]>    </option>
+    <option name="top"  type="string" >
+<![CDATA[Top]]>    </option>
+    <option name="other"  type="boolean" >
+True    </option>
+    <option name="0j"  type="boolean" >
+False    </option>
+    <option name="1j"  type="boolean" >
+False    </option>
+    <option name="2j0t"  type="boolean" >
+True    </option>
+    <option name="2j1t"  type="boolean" >
+True    </option>
+    <option name="2j2t"  type="boolean" >
+True    </option>
+    <option name="3j0t"  type="boolean" >
+True    </option>
+    <option name="3j1t"  type="boolean" >
+True    </option>
+    <option name="3j2t"  type="boolean" >
+True    </option>
+    <option name="3j3t"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+388      </entry>
+      <entry name="yPos"  type="double" >
+1128      </entry>
+    </userrecords>
+  </module>
+  <module name="EventWeight3"  type="EventWeight"  isEnabled="true" >
+    <option name="name of process field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="EraName"  type="string" >
+<![CDATA[80Xexcl]]>    </option>
+    <option name="weightname"  type="string" >
+<![CDATA[mcweight]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+203      </entry>
+      <entry name="yPos"  type="double" >
+337      </entry>
+    </userrecords>
+  </module>
+  <module name="PyModule1"  type="PyModule"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[lightjetSelection.py]]>    </option>
+    <option name="script"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="parameter"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="class"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="tight UR name"  type="string" >
+<![CDATA[nSelectedBJetTight]]>    </option>
+    <option name="med UR name"  type="string" >
+<![CDATA[nSelectedBJetMed]]>    </option>
+    <option name="loose UR name"  type="string" >
+<![CDATA[nSelectedBJetLoose]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+87      </entry>
+      <entry name="yPos"  type="double" >
+872      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSF1"  type="MuonSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="muon name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[iso]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[muoncat]]>    </option>
+    <option name="muon matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[muon_ISO.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[pt_abseta_ratio]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+True    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+441      </entry>
+      <entry name="yPos"  type="double" >
+337      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSF2"  type="MuonSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="muon name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[id]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[muoncat]]>    </option>
+    <option name="muon matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[muon_ID.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[pt_abseta_ratio]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+True    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+653      </entry>
+      <entry name="yPos"  type="double" >
+337      </entry>
+    </userrecords>
+  </module>
+  <module name="BTagSelectionTight2"  type="BTagSelection"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="input jet name"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="name of selected b-jets"  type="string" >
+<![CDATA[SelectedBJetTight]]>    </option>
+    <option name="name of untagged-jets"  type="string" >
+<![CDATA[SelectedLJetTight]]>    </option>
+    <option name="b Tagging Algorithm"  type="string" >
+<![CDATA[pfCombinedMVAV2BJetTags]]>    </option>
+    <option name="maximum b-jet eta"  type="double" >
+2.4    </option>
+    <option name="working point"  type="double" >
+0.9432    </option>
+    <option name="copy selected jets"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+741      </entry>
+      <entry name="yPos"  type="double" >
+85      </entry>
+    </userrecords>
+  </module>
+  <module name="BTagSelectionMed2"  type="BTagSelection"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="input jet name"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="name of selected b-jets"  type="string" >
+<![CDATA[SelectedBJetMed]]>    </option>
+    <option name="name of untagged-jets"  type="string" >
+<![CDATA[SelectedLJetMed]]>    </option>
+    <option name="b Tagging Algorithm"  type="string" >
+<![CDATA[pfCombinedMVAV2BJetTags]]>    </option>
+    <option name="maximum b-jet eta"  type="double" >
+2.4    </option>
+    <option name="working point"  type="double" >
+0.4432    </option>
+    <option name="copy selected jets"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+488      </entry>
+      <entry name="yPos"  type="double" >
+85      </entry>
+    </userrecords>
+  </module>
+  <module name="BTagSelectionLoose2"  type="BTagSelection"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="input jet name"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="name of selected b-jets"  type="string" >
+<![CDATA[SelectedBJetLoose]]>    </option>
+    <option name="name of untagged-jets"  type="string" >
+<![CDATA[SelectedLJetLoose]]>    </option>
+    <option name="b Tagging Algorithm"  type="string" >
+<![CDATA[pfCombinedMVAV2BJetTags]]>    </option>
+    <option name="maximum b-jet eta"  type="double" >
+2.4    </option>
+    <option name="working point"  type="double" >
+-0.5884    </option>
+    <option name="copy selected jets"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+198      </entry>
+      <entry name="yPos"  type="double" >
+79      </entry>
+    </userrecords>
+  </module>
+  <module name="TopReconstruction2"  type="TopReconstruction"  isEnabled="true" >
+    <option name="input event view lepton"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="lepton"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="input event view neutrino"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="neutrino"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <option name="input event view jets"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="b jets"  type="string_vector" >
+<![CDATA[("SelectedBJetMed")]]>    </option>
+    <option name="light jets"  type="string_vector" >
+<![CDATA[("SelectedLJetMed")]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="W boson"  type="string" >
+<![CDATA[W]]>    </option>
+    <option name="top"  type="string" >
+<![CDATA[Top]]>    </option>
+    <option name="other"  type="boolean" >
+True    </option>
+    <option name="0j"  type="boolean" >
+False    </option>
+    <option name="1j"  type="boolean" >
+False    </option>
+    <option name="2j0t"  type="boolean" >
+True    </option>
+    <option name="2j1t"  type="boolean" >
+True    </option>
+    <option name="2j2t"  type="boolean" >
+True    </option>
+    <option name="3j0t"  type="boolean" >
+True    </option>
+    <option name="3j1t"  type="boolean" >
+True    </option>
+    <option name="3j2t"  type="boolean" >
+True    </option>
+    <option name="3j3t"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+418      </entry>
+      <entry name="yPos"  type="double" >
+1014      </entry>
+    </userrecords>
+  </module>
+  <module name="TopReconstruction3"  type="TopReconstruction"  isEnabled="true" >
+    <option name="input event view lepton"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="lepton"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="input event view neutrino"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="neutrino"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <option name="input event view jets"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="b jets"  type="string_vector" >
+<![CDATA[("SelectedBJetLoose")]]>    </option>
+    <option name="light jets"  type="string_vector" >
+<![CDATA[("SelectedLJetLoose")]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[SingleTop]]>    </option>
+    <option name="W boson"  type="string" >
+<![CDATA[W]]>    </option>
+    <option name="top"  type="string" >
+<![CDATA[Top]]>    </option>
+    <option name="other"  type="boolean" >
+True    </option>
+    <option name="0j"  type="boolean" >
+False    </option>
+    <option name="1j"  type="boolean" >
+False    </option>
+    <option name="2j0t"  type="boolean" >
+True    </option>
+    <option name="2j1t"  type="boolean" >
+True    </option>
+    <option name="2j2t"  type="boolean" >
+True    </option>
+    <option name="3j0t"  type="boolean" >
+True    </option>
+    <option name="3j1t"  type="boolean" >
+True    </option>
+    <option name="3j2t"  type="boolean" >
+True    </option>
+    <option name="3j3t"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+453      </entry>
+      <entry name="yPos"  type="double" >
+898      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSF3"  type="MuonSF"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="muon name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="SF name"  type="string" >
+<![CDATA[trigger]]>    </option>
+    <option name="selection flag"  type="string" >
+<![CDATA[muoncat]]>    </option>
+    <option name="muon matching flag"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="fail if no lepton found"  type="boolean" >
+True    </option>
+    <option name="SF file name"  type="string" >
+<![CDATA[muon_TRIGGER.root]]>    </option>
+    <option name="SF hist name"  type="string" >
+<![CDATA[pt_abseta_ratio]]>    </option>
+    <option name="SF x=pt, y=eta"  type="boolean" >
+True    </option>
+    <option name="SF add uncertainty"  type="double" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+840      </entry>
+      <entry name="yPos"  type="double" >
+337      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter5"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[backgroundMC_test.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[("UR","Reconstructed->UR","Reconstructed->PU->UR","Reconstructed->MET->ALL","SingleTop->LightJet->ALL","SingleTop->BJet->ALL","SingleTop->Neutrino->ALL","SingleTop->Top->ALL","SingleTop->Wboson->ALL","SingleTop->Dijet->ALL","SingleTop->Shat->ALL","SingleTop->UR","SingleTop->TightLepton->ALL","Generated->UR","Reconstructed->SelectedJet->ALL")]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+1253      </entry>
+      <entry name="yPos"  type="double" >
+1095      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter6"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[backgroundMC_train.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[("UR","Reconstructed->UR","Reconstructed->PU->UR","Reconstructed->MET->ALL","SingleTop->LightJet->ALL","SingleTop->BJet->ALL","SingleTop->Neutrino->ALL","SingleTop->Top->ALL","SingleTop->Wboson->ALL","SingleTop->Dijet->ALL","SingleTop->Shat->ALL","SingleTop->UR","SingleTop->TightLepton->ALL","Generated->UR","Reconstructed->SelectedJet->ALL")]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+1288      </entry>
+      <entry name="yPos"  type="double" >
+957      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter7"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[backgroundMC.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[("UR","Reconstructed->UR","Reconstructed->PU->UR","Reconstructed->MET->ALL","SingleTop->LightJet->ALL","SingleTop->BJet->ALL","SingleTop->Neutrino->ALL","SingleTop->Top->ALL","SingleTop->Wboson->ALL","SingleTop->Dijet->ALL","SingleTop->Shat->ALL","SingleTop->UR","SingleTop->TightLepton->ALL","Generated->UR","Reconstructed->SelectedJet->ALL")]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+1232      </entry>
+      <entry name="yPos"  type="double" >
+1233      </entry>
+    </userrecords>
+  </module>
+  <module name="File Input3"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+0    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[("/nfs/user/mkomm/SSX13/selection/backgroundMC/selectedBackground[0-9]+.pxlio")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+30      </entry>
+      <entry name="yPos"  type="double" >
+88      </entry>
+    </userrecords>
+  </module>
+  <module name="EleTight32_vALL2"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_Ele32_eta2p1_WPTight_Gsf_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[EleTight32_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+1224      </entry>
+      <entry name="yPos"  type="double" >
+530      </entry>
+    </userrecords>
+  </module>
+  <module name="EleTight27_vALL3"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_Ele27_eta2p1_WPTight_Gsf_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[EleTight27_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+786      </entry>
+      <entry name="yPos"  type="double" >
+527      </entry>
+    </userrecords>
+  </module>
+  <module name="EleTight30_vALL3"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_Ele30_eta2p1_WPTight_Gsf_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[EleTight30_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+991      </entry>
+      <entry name="yPos"  type="double" >
+518      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="NeutrinoPz1"  name="output" >
+    </source>
+    <sink module="PileUpReweighting2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PileUpReweighting2"  name="output" >
+    </source>
+    <sink module="BTagReweighting2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu22_vALL2"  name="selected" >
+    </source>
+    <sink module="IsoMu24_vALL2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu22_vALL2"  name="veto" >
+    </source>
+    <sink module="IsoMu24_vALL2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu24_vALL2"  name="selected" >
+    </source>
+    <sink module="IsoMu27_vALL1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu24_vALL2"  name="veto" >
+    </source>
+    <sink module="IsoMu27_vALL1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EventVariables2"  name="output" >
+    </source>
+    <sink module="Splitter2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Splitter2"  name="output" >
+    </source>
+    <sink module="Splitter1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction1"  name="output" >
+    </source>
+    <sink module="EventVariables2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction1"  name="veto" >
+    </source>
+    <sink module="EventVariables2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagReweighting2"  name="output" >
+    </source>
+    <sink module="PyModule1"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule1"  name="tight" >
+    </source>
+    <sink module="TopReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSF1"  name="output" >
+    </source>
+    <sink module="MuonSF2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EventWeight3"  name="output" >
+    </source>
+    <sink module="MuonSF1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionLoose2"  name=">2 b-Tags" >
+    </source>
+    <sink module="BTagSelectionMed2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionLoose2"  name="2 b-Tags" >
+    </source>
+    <sink module="BTagSelectionMed2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionLoose2"  name="1 b-Tags" >
+    </source>
+    <sink module="BTagSelectionMed2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionLoose2"  name="0 b-Tags" >
+    </source>
+    <sink module="BTagSelectionMed2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionMed2"  name=">2 b-Tags" >
+    </source>
+    <sink module="BTagSelectionTight2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionMed2"  name="2 b-Tags" >
+    </source>
+    <sink module="BTagSelectionTight2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionMed2"  name="1 b-Tags" >
+    </source>
+    <sink module="BTagSelectionTight2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionMed2"  name="0 b-Tags" >
+    </source>
+    <sink module="BTagSelectionTight2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight2"  name=">2 b-Tags" >
+    </source>
+    <sink module="EventWeight3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight2"  name="2 b-Tags" >
+    </source>
+    <sink module="EventWeight3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight2"  name="1 b-Tags" >
+    </source>
+    <sink module="EventWeight3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight2"  name="0 b-Tags" >
+    </source>
+    <sink module="EventWeight3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule1"  name="other" >
+    </source>
+    <sink module="TopReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction2"  name="output" >
+    </source>
+    <sink module="EventVariables2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction2"  name="veto" >
+    </source>
+    <sink module="EventVariables2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction3"  name="output" >
+    </source>
+    <sink module="EventVariables2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction3"  name="veto" >
+    </source>
+    <sink module="EventVariables2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSF2"  name="output" >
+    </source>
+    <sink module="MuonSF3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSF3"  name="output" >
+    </source>
+    <sink module="IsoMu22_vALL2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule1"  name="med" >
+    </source>
+    <sink module="TopReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PyModule1"  name="loose" >
+    </source>
+    <sink module="TopReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Splitter2"  name="veto" >
+    </source>
+    <sink module="RootTreeWriter7"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Splitter1"  name="output" >
+    </source>
+    <sink module="RootTreeWriter5"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Splitter1"  name="veto" >
+    </source>
+    <sink module="RootTreeWriter6"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="File Input3"  name="out" >
+    </source>
+    <sink module="BTagSelectionLoose2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu27_vALL1"  name="selected" >
+    </source>
+    <sink module="EleTight27_vALL3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu27_vALL1"  name="veto" >
+    </source>
+    <sink module="EleTight27_vALL3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight27_vALL3"  name="selected" >
+    </source>
+    <sink module="EleTight30_vALL3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight27_vALL3"  name="veto" >
+    </source>
+    <sink module="EleTight30_vALL3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight30_vALL3"  name="selected" >
+    </source>
+    <sink module="EleTight32_vALL2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight30_vALL3"  name="veto" >
+    </source>
+    <sink module="EleTight32_vALL2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight32_vALL2"  name="selected" >
+    </source>
+    <sink module="NeutrinoPz1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight32_vALL2"  name="veto" >
+    </source>
+    <sink module="NeutrinoPz1"  name="input" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2017-10-31]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[12:02:12]]>    </entry>
+  </userrecords>
+</analysis>

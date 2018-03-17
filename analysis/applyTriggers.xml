@@ -1,0 +1,246 @@
+<analysis file_format_version="0.4" >
+  <module name="in"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+0    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+37      </entry>
+      <entry name="yPos"  type="double" >
+78      </entry>
+    </userrecords>
+  </module>
+  <module name="IsoMu27_vALL2"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_IsoMu27_v[0-9]+","HLT_IsoTkMu27_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[IsoMu20_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+576      </entry>
+      <entry name="yPos"  type="double" >
+78      </entry>
+    </userrecords>
+  </module>
+  <module name="IsoMu22_vALL3"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_IsoMu22_v[0-9]+","HLT_IsoTkMu22_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[IsoMu22_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+194      </entry>
+      <entry name="yPos"  type="double" >
+72      </entry>
+    </userrecords>
+  </module>
+  <module name="IsoMu24_vALL3"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_IsoMu24_v[0-9]+","HLT_IsoTkMu24_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[IsoMu24_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+390      </entry>
+      <entry name="yPos"  type="double" >
+78      </entry>
+    </userrecords>
+  </module>
+  <module name="EleTight32_vALL3"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_Ele32_eta2p1_WPTight_Gsf_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[EleTight32_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+596      </entry>
+      <entry name="yPos"  type="double" >
+302      </entry>
+    </userrecords>
+  </module>
+  <module name="EleTight27_vALL4"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_Ele27_eta2p1_WPTight_Gsf_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[EleTight27_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+171      </entry>
+      <entry name="yPos"  type="double" >
+312      </entry>
+    </userrecords>
+  </module>
+  <module name="EleTight30_vALL4"  type="TriggerSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="required trigger flags"  type="string_vector" >
+<![CDATA[("HLT_Ele30_eta2p1_WPTight_Gsf_v[0-9]+")]]>    </option>
+    <option name="require all"  type="boolean" >
+False    </option>
+    <option name="combined flag"  type="string" >
+<![CDATA[EleTight30_vALL]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+379      </entry>
+      <entry name="yPos"  type="double" >
+302      </entry>
+    </userrecords>
+  </module>
+  <module name="out"  type="File Output"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="Buffer size"  type="long" >
+20485760    </option>
+    <option name="# Objects/file section"  type="long" >
+2000    </option>
+    <option name="Compression level"  type="long" >
+3    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+850      </entry>
+      <entry name="yPos"  type="double" >
+309      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="in"  name="out" >
+    </source>
+    <sink module="IsoMu22_vALL3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu22_vALL3"  name="selected" >
+    </source>
+    <sink module="IsoMu24_vALL3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu22_vALL3"  name="veto" >
+    </source>
+    <sink module="IsoMu24_vALL3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu24_vALL3"  name="selected" >
+    </source>
+    <sink module="IsoMu27_vALL2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu24_vALL3"  name="veto" >
+    </source>
+    <sink module="IsoMu27_vALL2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu27_vALL2"  name="selected" >
+    </source>
+    <sink module="EleTight27_vALL4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="IsoMu27_vALL2"  name="veto" >
+    </source>
+    <sink module="EleTight27_vALL4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight27_vALL4"  name="selected" >
+    </source>
+    <sink module="EleTight30_vALL4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight27_vALL4"  name="veto" >
+    </source>
+    <sink module="EleTight30_vALL4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight30_vALL4"  name="selected" >
+    </source>
+    <sink module="EleTight32_vALL3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight30_vALL4"  name="veto" >
+    </source>
+    <sink module="EleTight32_vALL3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight32_vALL3"  name="selected" >
+    </source>
+    <sink module="out"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EleTight32_vALL3"  name="veto" >
+    </source>
+    <sink module="out"  name="in" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2017-03-22]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[15:40:08]]>    </entry>
+  </userrecords>
+</analysis>

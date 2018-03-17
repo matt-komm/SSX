@@ -1,0 +1,194 @@
+<analysis file_format_version="0.4" >
+  <module name="PartonLevelReconstruction1"  type="PartonLevelReconstruction"  isEnabled="true" >
+    <option name="input event view"  type="string" >
+<![CDATA[Generated]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[Parton]]>    </option>
+    <option name="add tau"  type="boolean" >
+False    </option>
+    <option name="add tau decays"  type="boolean" >
+True    </option>
+    <option name="last copies"  type="boolean" >
+True    </option>
+    <option name="sum add neutrinos"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+259      </entry>
+      <entry name="yPos"  type="double" >
+323      </entry>
+    </userrecords>
+  </module>
+  <module name="in"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+0    </option>
+    <option name="end"  type="long" >
+100    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[("/home/matthias/.mountpoints/ingridstageout/SSX/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1_v170303/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/crab_SSX/170303_162441/0000/output_1.pxlio")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+52      </entry>
+      <entry name="yPos"  type="double" >
+88      </entry>
+    </userrecords>
+  </module>
+  <module name="out"  type="File Output"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[test.pxlio]]>    </option>
+    <option name="Buffer size"  type="long" >
+20485760    </option>
+    <option name="# Objects/file section"  type="long" >
+2000    </option>
+    <option name="Compression level"  type="long" >
+3    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+740      </entry>
+      <entry name="yPos"  type="double" >
+294      </entry>
+    </userrecords>
+  </module>
+  <module name="TopReconstruction1"  type="TopReconstruction"  isEnabled="true" >
+    <option name="input event view lepton"  type="string" >
+<![CDATA[PTR]]>    </option>
+    <option name="lepton"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="input event view neutrino"  type="string" >
+<![CDATA[PTR]]>    </option>
+    <option name="neutrino"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <option name="input event view jets"  type="string" >
+<![CDATA[PTR]]>    </option>
+    <option name="b jets"  type="string_vector" >
+<![CDATA[("SelectedBJet")]]>    </option>
+    <option name="light jets"  type="string_vector" >
+<![CDATA[("SelectedJet")]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[PTR]]>    </option>
+    <option name="W boson"  type="string" >
+<![CDATA[W]]>    </option>
+    <option name="top"  type="string" >
+<![CDATA[Top]]>    </option>
+    <option name="other"  type="boolean" >
+True    </option>
+    <option name="0j"  type="boolean" >
+True    </option>
+    <option name="1j"  type="boolean" >
+True    </option>
+    <option name="2j0t"  type="boolean" >
+True    </option>
+    <option name="2j1t"  type="boolean" >
+True    </option>
+    <option name="2j2t"  type="boolean" >
+True    </option>
+    <option name="3j0t"  type="boolean" >
+True    </option>
+    <option name="3j1t"  type="boolean" >
+True    </option>
+    <option name="3j2t"  type="boolean" >
+True    </option>
+    <option name="3j3t"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+801      </entry>
+      <entry name="yPos"  type="double" >
+93      </entry>
+    </userrecords>
+  </module>
+  <module name="NeutrinoPz1"  type="NeutrinoPz"  isEnabled="true" >
+    <option name="input event view"  type="string" >
+<![CDATA[PTR]]>    </option>
+    <option name="met name"  type="string" >
+<![CDATA[MET]]>    </option>
+    <option name="lepton name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[PTR]]>    </option>
+    <option name="neutrino name"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+606      </entry>
+      <entry name="yPos"  type="double" >
+119      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="NeutrinoPz1"  name="output" >
+    </source>
+    <sink module="TopReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="NeutrinoPz1"  name="noLepton" >
+    </source>
+    <sink module="TopReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction1"  name="output" >
+    </source>
+    <sink module="PartonLevelReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction1"  name="veto" >
+    </source>
+    <sink module="PartonLevelReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="TopReconstruction1"  name="noLepton" >
+    </source>
+    <sink module="PartonLevelReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PartonLevelReconstruction1"  name="leptonic" >
+    </source>
+    <sink module="out"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PartonLevelReconstruction1"  name="hadronic" >
+    </source>
+    <sink module="out"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="in"  name="out" >
+    </source>
+    <sink module="NeutrinoPz1"  name="input" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2017-09-15]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[17:49:35]]>    </entry>
+  </userrecords>
+</analysis>

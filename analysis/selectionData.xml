@@ -1,0 +1,294 @@
+<analysis file_format_version="0.4" >
+  <module name="File Input1"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+1    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/SingleMu[A-Za-z0-9_\-]+_v170303/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+24      </entry>
+      <entry name="yPos"  type="double" >
+56      </entry>
+    </userrecords>
+  </module>
+  <module name="File Output1"  type="File Output"  isEnabled="true" >
+    <option name="filename"  type="string" >
+<![CDATA[selectedData.pxlio]]>    </option>
+    <option name="Buffer size"  type="long" >
+20485760    </option>
+    <option name="# Objects/file section"  type="long" >
+2000    </option>
+    <option name="Compression level"  type="long" >
+3    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+583      </entry>
+      <entry name="yPos"  type="double" >
+606      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonVeto4"  type="MuonVeto"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input muon name"  type="string" >
+<![CDATA[Muon]]>    </option>
+    <option name="Name of selected loose muons"  type="string" >
+<![CDATA[LooseMuon]]>    </option>
+    <option name="Clean event"  type="boolean" >
+True    </option>
+    <option name="LooseMuon Minimum pT"  type="double" >
+10    </option>
+    <option name="LooseMuon Maximum Eta"  type="double" >
+2.5    </option>
+    <option name="LooseMuon Minimum Relative Iso DeltaBeta"  type="double" >
+0.2    </option>
+    <option name="LooseMuon Relative Iso DeltaBeta; Beta Parameter"  type="double" >
+0.5    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+511      </entry>
+      <entry name="yPos"  type="double" >
+124      </entry>
+    </userrecords>
+  </module>
+  <module name="ElectronVeto3"  type="ElectronVeto"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input electron name"  type="string" >
+<![CDATA[Electron]]>    </option>
+    <option name="Name of selected loose electrons"  type="string" >
+<![CDATA[LooseElectron]]>    </option>
+    <option name="Clean event"  type="boolean" >
+True    </option>
+    <option name="LooseElectron Minimum pT"  type="double" >
+15    </option>
+    <option name="LooseElectron Maximum eta"  type="double" >
+2.5    </option>
+    <option name="ID"  type="string" >
+<![CDATA[summer16eleIDVeto25ns]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+757      </entry>
+      <entry name="yPos"  type="double" >
+140      </entry>
+    </userrecords>
+  </module>
+  <module name="JetSelection3"  type="JetSelection"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="input jet name"  type="string" >
+<![CDATA[Jet]]>    </option>
+    <option name="name of selected jets"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="clean event"  type="boolean" >
+True    </option>
+    <option name="PF Jet Minimum pT"  type="double" >
+40    </option>
+    <option name="PF Jet Maximum Eta"  type="double" >
+4.7    </option>
+    <option name="invert dR"  type="boolean" >
+False    </option>
+    <option name="dR cut"  type="double" >
+0.4    </option>
+    <option name="dR objects"  type="string_vector" >
+<![CDATA[("TightLepton")]]>    </option>
+    <option name="store n leading jets"  type="long" >
+0    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+214      </entry>
+      <entry name="yPos"  type="double" >
+528      </entry>
+    </userrecords>
+  </module>
+  <module name="MuonSelection4"  type="MuonSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input muon name"  type="string" >
+<![CDATA[Muon]]>    </option>
+    <option name="Name of selected tight muons"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="TightMuon Minimum pT"  type="double" >
+26    </option>
+    <option name="TightMuon Maximum Eta"  type="double" >
+2.4    </option>
+    <option name="TightMuon Minimum Relative Iso"  type="double" >
+0.06    </option>
+    <option name="TightMuon Minimum Relative MidIso"  type="double" >
+0.15    </option>
+    <option name="number of muons"  type="long" >
+1    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+250      </entry>
+      <entry name="yPos"  type="double" >
+54      </entry>
+    </userrecords>
+  </module>
+  <module name="File Input2"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+1    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/SingleEle[A-Za-z0-9_\-]+_v170303/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+30      </entry>
+      <entry name="yPos"  type="double" >
+198      </entry>
+    </userrecords>
+  </module>
+  <module name="ElectronSelection1"  type="ElectronSelection"  isEnabled="true" >
+    <option name="Event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="Input electron name"  type="string" >
+<![CDATA[Electron]]>    </option>
+    <option name="Name of selected tight electrons"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="TightElectron Minimum pT"  type="double" >
+35    </option>
+    <option name="TightElectron Maximum Eta"  type="double" >
+2.1    </option>
+    <option name="HLT ID"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="tight ID"  type="string" >
+<![CDATA[summer16eleIDTight25ns]]>    </option>
+    <option name="veto ID"  type="string" >
+<![CDATA[summer16eleIDVeto25ns]]>    </option>
+    <option name="number of electrons"  type="long" >
+1    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+225      </entry>
+      <entry name="yPos"  type="double" >
+208      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="File Input1"  name="out" >
+    </source>
+    <sink module="MuonSelection4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSelection4"  name="1 iso muon" >
+    </source>
+    <sink module="MuonVeto4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSelection4"  name="1 mid-iso muon" >
+    </source>
+    <sink module="MuonVeto4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonSelection4"  name="1 anti-iso muon" >
+    </source>
+    <sink module="MuonVeto4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="MuonVeto4"  name="veto loose muons" >
+    </source>
+    <sink module="ElectronVeto3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronVeto3"  name="veto loose electrons" >
+    </source>
+    <sink module="JetSelection3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection3"  name=">4 Jets" >
+    </source>
+    <sink module="File Output1"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection3"  name="4 Jets" >
+    </source>
+    <sink module="File Output1"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection3"  name="3 Jets" >
+    </source>
+    <sink module="File Output1"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection3"  name="2 Jets" >
+    </source>
+    <sink module="File Output1"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="File Input2"  name="out" >
+    </source>
+    <sink module="ElectronSelection1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSelection1"  name="1 antiveto ele" >
+    </source>
+    <sink module="MuonVeto4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSelection1"  name="1 veto ele" >
+    </source>
+    <sink module="MuonVeto4"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="ElectronSelection1"  name="1 tight ele" >
+    </source>
+    <sink module="MuonVeto4"  name="input" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2017-03-14]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[11:13:15]]>    </entry>
+  </userrecords>
+</analysis>

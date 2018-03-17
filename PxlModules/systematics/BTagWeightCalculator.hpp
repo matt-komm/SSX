@@ -312,8 +312,11 @@ class BTagWeightCalculator
                     //std::cout<<"     sf*eff@wp"<<iwp<<" - sf*eff@wp"<<(iwp+1)<<" = "<<mcEfficiency1*dataSF1<<" - "<<mcEfficiency2*dataSF2<<" = "<<mcEfficiency1*dataSF1-mcEfficiency2*dataSF2<<std::endl; 
                     //std::cout<<"     w = "<<(mcEfficiency1*dataSF1-mcEfficiency2*dataSF2)/(mcEfficiency1-mcEfficiency2)<<std::endl;
                     
-                    weightMC*=(mcEfficiency1-mcEfficiency2);
-                    weightData*=(dataSF1*mcEfficiency1-dataSF2*mcEfficiency2);
+                    if (mcEfficiency1>0.0001 or mcEfficiency2>0.0001)
+                    {
+                        weightMC*=(mcEfficiency1-mcEfficiency2);
+                        weightData*=(dataSF1*mcEfficiency1-dataSF2*mcEfficiency2);
+                    }
                 }
             }
             

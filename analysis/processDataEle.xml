@@ -1,0 +1,112 @@
+<analysis file_format_version="0.4" >
+  <module name="File Input1"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+1    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/SingleEle[A-Za-z0-9_\-]+_v171220/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+31      </entry>
+      <entry name="yPos"  type="double" >
+73      </entry>
+    </userrecords>
+  </module>
+  <module name="electronSelection"  type="SubAnalysis"  isEnabled="true" >
+    <option name="analysis file"  type="string" >
+<![CDATA[eleSelection.xml]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+386      </entry>
+      <entry name="yPos"  type="double" >
+193      </entry>
+    </userrecords>
+  </module>
+  <module name="applyTriggers"  type="SubAnalysis"  isEnabled="true" >
+    <option name="analysis file"  type="string" >
+<![CDATA[applyTriggers.xml]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+330      </entry>
+      <entry name="yPos"  type="double" >
+356      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter6"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[data.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[outputVariables.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+779      </entry>
+      <entry name="yPos"  type="double" >
+396      </entry>
+    </userrecords>
+  </module>
+  <module name="runReconstruction"  type="SubAnalysis"  isEnabled="true" >
+    <option name="analysis file"  type="string" >
+<![CDATA[runReconstruction.xml]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+517      </entry>
+      <entry name="yPos"  type="double" >
+400      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="applyTriggers"  name="out" >
+    </source>
+    <sink module="runReconstruction"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="File Input1"  name="out" >
+    </source>
+    <sink module="electronSelection"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="electronSelection"  name="selected" >
+    </source>
+    <sink module="applyTriggers"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="runReconstruction"  name="out" >
+    </source>
+    <sink module="RootTreeWriter6"  name="input" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2017-12-29]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[01:59:32]]>    </entry>
+  </userrecords>
+</analysis>

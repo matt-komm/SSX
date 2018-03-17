@@ -223,9 +223,9 @@ class BTagReweighting:
                         int ptBin = mcEff_other[iwp]->GetYaxis()->FindBin(pt);
                         efficiency = mcEff_other[iwp]->GetBinContent(etaBin,ptBin);
                     }
-                    if (efficiency<0.001)
+                    if (efficiency<0.0001)
                     {
-                        efficiency+=0.001/std::pow(1.2,iwp); //make eff less for tighter wps
+                        efficiency+=0.0001/std::pow(2.,iwp); //make eff less for tighter wps
                     }
                     return efficiency;
                 

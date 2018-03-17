@@ -1,0 +1,182 @@
+<analysis file_format_version="0.4" >
+  <module name="File Input1"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+0    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/ST_t-ch[A-Za-z0-9_\-]+_v170303/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+52      </entry>
+      <entry name="yPos"  type="double" >
+32      </entry>
+    </userrecords>
+  </module>
+  <module name="PartonLevelReconstruction1"  type="PartonLevelReconstruction"  isEnabled="true" >
+    <option name="input event view"  type="string" >
+<![CDATA[Generated]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[Parton_tau]]>    </option>
+    <option name="add tau"  type="boolean" >
+True    </option>
+    <option name="add tau decays"  type="boolean" >
+False    </option>
+    <option name="last copies"  type="boolean" >
+True    </option>
+    <option name="sum add neutrinos"  type="boolean" >
+False    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+450      </entry>
+      <entry name="yPos"  type="double" >
+229      </entry>
+    </userrecords>
+  </module>
+  <module name="PartonLevelReconstruction2"  type="PartonLevelReconstruction"  isEnabled="true" >
+    <option name="input event view"  type="string" >
+<![CDATA[Generated]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[Parton_decay]]>    </option>
+    <option name="add tau"  type="boolean" >
+False    </option>
+    <option name="add tau decays"  type="boolean" >
+True    </option>
+    <option name="last copies"  type="boolean" >
+True    </option>
+    <option name="sum add neutrinos"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+531      </entry>
+      <entry name="yPos"  type="double" >
+90      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter1"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[tauDecays.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[("Parton[A-Za-z_\-]+->[A-Za-z_\-]+->ALL","Parton[A-Za-z_\-]+->ALL","mcweight","genweight")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+866      </entry>
+      <entry name="yPos"  type="double" >
+214      </entry>
+    </userrecords>
+  </module>
+  <module name="EventWeight1"  type="EventWeight"  isEnabled="true" >
+    <option name="name of process field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="EraName"  type="string" >
+<![CDATA[80Xexcl]]>    </option>
+    <option name="weightname"  type="string" >
+<![CDATA[mcweight]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+105      </entry>
+      <entry name="yPos"  type="double" >
+205      </entry>
+    </userrecords>
+  </module>
+  <module name="PartonLevelReconstruction3"  type="PartonLevelReconstruction"  isEnabled="true" >
+    <option name="input event view"  type="string" >
+<![CDATA[Generated]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[Parton_taufirst]]>    </option>
+    <option name="add tau"  type="boolean" >
+True    </option>
+    <option name="add tau decays"  type="boolean" >
+False    </option>
+    <option name="last copies"  type="boolean" >
+False    </option>
+    <option name="sum add neutrinos"  type="boolean" >
+False    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+303      </entry>
+      <entry name="yPos"  type="double" >
+432      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="PartonLevelReconstruction1"  name="leptonic" >
+    </source>
+    <sink module="PartonLevelReconstruction2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PartonLevelReconstruction2"  name="leptonic" >
+    </source>
+    <sink module="RootTreeWriter1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="File Input1"  name="out" >
+    </source>
+    <sink module="EventWeight1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PartonLevelReconstruction1"  name="hadronic" >
+    </source>
+    <sink module="PartonLevelReconstruction2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PartonLevelReconstruction2"  name="hadronic" >
+    </source>
+    <sink module="RootTreeWriter1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EventWeight1"  name="output" >
+    </source>
+    <sink module="PartonLevelReconstruction3"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PartonLevelReconstruction3"  name="hadronic" >
+    </source>
+    <sink module="PartonLevelReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PartonLevelReconstruction3"  name="leptonic" >
+    </source>
+    <sink module="PartonLevelReconstruction1"  name="input" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2017-04-18]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[16:29:49]]>    </entry>
+  </userrecords>
+</analysis>
