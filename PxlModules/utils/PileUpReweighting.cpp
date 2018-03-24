@@ -244,7 +244,7 @@ class PileUpReweighting:
                             {
                                 //std::cout<<_N<<": "<<(_mean[ihist]/_N-1)*(_mean[ihist]/_N-1)<<">"<<5./std::sqrt(_N)<<std::endl;
                                 logger(pxl::LOG_LEVEL_WARNING, "Mean PU weight not 1.0! weight="+std::to_string(_mean[ihist]/_N)+" after "+std::to_string(_N)+" events.");
-                                throw std::runtime_error("Mean PU weight not 1.0! weight="+std::to_string(_mean[ihist]/_N)+" after "+std::to_string(_N)+" events.");
+                                //throw std::runtime_error("Mean PU weight not 1.0! weight="+std::to_string(_mean[ihist]/_N)+" after "+std::to_string(_N)+" events.");
                             }
                         }
                     }

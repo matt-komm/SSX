@@ -1,6 +1,7 @@
 #include "OutputStore.hpp"
 
-OutputStore::OutputStore(std::string filename):
+OutputStore::OutputStore(const std::string& filename):
+    _fileName(filename),
     _logger("OutputStore")
 {
     _file.reset(new TFile(filename.c_str(),"RECREATE"));
@@ -27,10 +28,13 @@ RootTree* OutputStore::getTree(std::string treeName)
 void OutputStore::close()
 {
     _file->cd();
+    _logger(pxl::LOG_LEVEL_INFO,"Closing file '",_fileName,"'");
     for (auto it = _treeMap.begin(); it != _treeMap.end(); ++it )
     {
         it->second->write();
+        _logger(pxl::LOG_LEVEL_INFO,"Wrote tree '",it->first,"' with ",it->second->getEntries()," events");
     }
+    
     _file->Close();
 }
 

@@ -20,6 +20,7 @@ class OutputStore
 {
 
     private:
+        const std::string _fileName;
         std::shared_ptr<TFile> _file;
         std::unordered_map<std::string,std::shared_ptr<RootTree>> _treeMap;
         pxl::Logger _logger;
@@ -28,7 +29,7 @@ class OutputStore
         {
             _treeMap.clear();
         }
-        OutputStore(std::string filename);
+        OutputStore(const std::string& filename);
         RootTree* getTree(std::string treeName);
         void close();
 };

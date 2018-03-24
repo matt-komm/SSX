@@ -43,6 +43,11 @@ class RootTree
             }
         }
         
+        int getEntries()
+        {
+            _tree->GetEntries();
+        }
+        
         
         void resetVariables();
         
