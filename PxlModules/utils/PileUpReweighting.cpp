@@ -229,7 +229,11 @@ class PileUpReweighting:
                             if (ntrueInteractionsAtBX0<_reweightingHists[ihist].second.GetNbinsX())
                             {
                                 const int bin = _reweightingHists[ihist].second.FindBin(ntrueInteractionsAtBX0);
-                                const float weight = _reweightingHists[ihist].second.GetBinContent(bin);
+                                float weight = _reweightingHists[ihist].second.GetBinContent(bin);
+                                if (std::isnan(weight) or std::isinf(weight))
+                                {
+                                      weight = 1.0;
+                                }
                                 recoEventView->setUserRecord(_reweightingHists[ihist].first+"_weight",weight);
                                 _mean[ihist]+=weight;
                             }
