@@ -15,6 +15,23 @@ class ThetaModelWjets(Module.getClass("ThetaModel")):
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
+        
+    def getFitFileName(self,channels,unfoldingName,postfix):
+        return self.module("Samples").getChannelName(channels)+"__wjet"+unfoldingName+"__"+postfix
+        
+    def getHistogramPath(self,channel,unfoldingName,uncertainty=None):
+        if not uncertainty:
+            uncertainty = "nominal"
+        return self.module("Utils").getOutputFolder(channel+"/"+uncertainty+"/"+unfoldingName)
+        
+    def getHistogramFile(self,channel,unfoldingName,unfoldingBin=-1,uncertainty="nominal",smooth=False):
+        if smooth:
+            return self.module("Utils").getHistogramFile("fitWjetHists_smooth",channel,unfoldingName,unfoldingBin,uncertainty)
+        else:
+            return self.module("Utils").getHistogramFile("fitWjetHists",channel,unfoldingName,unfoldingBin,uncertainty)
+
+   
+        
     def getObservablesDict(self,channel):
         tch = self.module("ThetaModel").getBDTtchan(channel)
         ttw = self.module("ThetaModel").getBDTttw(channel)
@@ -77,11 +94,3 @@ class ThetaModelWjets(Module.getClass("ThetaModel")):
 
         return components
         
-class UtilsWjets(Module.getClass("Utils")):
-    def __init__(self,options=[]):
-        UtilsWjets.baseClass.__init__(self,options)
-        self._logger = logging.getLogger(__file__)
-        self._logger.setLevel(logging.DEBUG)
-        
-    def getUncertaintyName(self):
-        return "wjets"

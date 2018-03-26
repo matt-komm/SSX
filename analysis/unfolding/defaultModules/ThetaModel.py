@@ -38,8 +38,9 @@ class ThetaModel(Module):
         
     def getUncertaintsDict(self):
         uncertaintiesBkg = {
-            "WZjets":self.module("ThetaModel").makeLogNormal(1.0,0.3),
+            "WZjets_HF":self.module("ThetaModel").makeLogNormal(1.0,0.3),
             "TopBkg":self.module("ThetaModel").makeLogNormal(1.0,0.1),
+            "WZjets_LF":self.module("ThetaModel").makeLogNormal(1.0,0.1),
             "QCD_2j1t":self.module("ThetaModel").makeLogNormal(1.0,1.),
             #"QCD_3j1t":self.module("ThetaModel").makeGaus(0.2,0.5),
             "QCD_3j2t":self.module("ThetaModel").makeLogNormal(1.0,1.),
@@ -122,9 +123,9 @@ class ThetaModel(Module):
     
     def getBDTtchan(self,channel):
         if channel=="mu":
-            return "(TMath::TanH(2.3*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)+6.1*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)>0.0)*TMath::Power(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.,3)-1.4*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)<-0.1)*TMath::Power(fabs(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost+0.1),1.4)))"
+            return "(TMath::TanH(2.3*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)+6.1*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)>0.0)*TMath::Power(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.,3)-1.7*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)<-0.1)*TMath::Power(fabs(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost+0.1),1.4)))"
         elif channel=="ele":
-            return "(TMath::TanH(2.3*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)+6.1*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)>0.0)*TMath::Power(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.,3)-1.5*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)<-0.1)*TMath::Power(fabs(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost+0.1),1.4)))"
+            return "(TMath::TanH(2.3*(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)+6.1*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)>0.0)*TMath::Power(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost-0.,3)-1.8*((BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost)<-0.1)*TMath::Power(fabs(BDTcomb_tch_adaboost020_minnode0100_maxvar3_nCuts50_ntree1000_mix05000_qcdmix00500_invboost+0.1),1.4)))"
         else:
             self._logger.critical("Channel '"+channel+"' unknown!")
             sys.exit(1)
@@ -176,11 +177,19 @@ class ThetaModel(Module):
                 "color":ROOT.kOrange+1
             },
             
-            "WZjets":
+            "WZjets_LF":
             {
                 "sets":["WJetsAMCex","DYMG"],
-                "uncertainties":["WZjets"],
-                "weight":"1",
+                "uncertainties":["WZjets_HF","WZjets_LF"],
+                "weight":"(Reconstructed_1__nBFlavorSelectedJet==0)*(Reconstructed_1__nCFlavorSelectedJet==0)",
+                "color":ROOT.kGreen+1
+            },
+            
+            "WZjets_HF":
+            {
+                "sets":["WJetsAMCex","DYMG"],
+                "uncertainties":["WZjets_HF"],
+                "weight":"(Reconstructed_1__nBFlavorSelectedJet>0 || Reconstructed_1__nCFlavorSelectedJet>0)",
                 "color":ROOT.kGreen+1
             },
             

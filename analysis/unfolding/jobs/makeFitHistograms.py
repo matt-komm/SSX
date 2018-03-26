@@ -133,24 +133,24 @@ for channel in ["mu","ele"]:
             "systematics/tchanScalePSDown",
             "systematics/tchanScalePSUp",
             
-            "systematics/tchanScaleTmpl -c qscale:ND",
-            "systematics/tchanScaleTmpl -c qscale:NU",
-            "systematics/tchanScaleTmpl -c qscale:DN",
-            "systematics/tchanScaleTmpl -c qscale:UN",
+            #"systematics/tchanScaleTmpl -c qscale:ND",
+            #"systematics/tchanScaleTmpl -c qscale:NU",
+            #"systematics/tchanScaleTmpl -c qscale:DN",
+            #"systematics/tchanScaleTmpl -c qscale:UN",
             "systematics/tchanScaleTmpl -c qscale:Up",
             "systematics/tchanScaleTmpl -c qscale:Down",
             
-            "systematics/ttbarScaleTmpl -c qscale:ND",
-            "systematics/ttbarScaleTmpl -c qscale:NU",
-            "systematics/ttbarScaleTmpl -c qscale:DN",
-            "systematics/ttbarScaleTmpl -c qscale:UN",
+            #"systematics/ttbarScaleTmpl -c qscale:ND",
+            #"systematics/ttbarScaleTmpl -c qscale:NU",
+            #"systematics/ttbarScaleTmpl -c qscale:DN",
+            #"systematics/ttbarScaleTmpl -c qscale:UN",
             "systematics/ttbarScaleTmpl -c qscale:Up",
             "systematics/ttbarScaleTmpl -c qscale:Down",
             
-            "systematics/wjetsScaleTmpl -c qscale:ND",
-            "systematics/wjetsScaleTmpl -c qscale:NU",
-            "systematics/wjetsScaleTmpl -c qscale:DN",
-            "systematics/wjetsScaleTmpl -c qscale:UN",
+            #"systematics/wjetsScaleTmpl -c qscale:ND",
+            #"systematics/wjetsScaleTmpl -c qscale:NU",
+            #"systematics/wjetsScaleTmpl -c qscale:DN",
+            #"systematics/wjetsScaleTmpl -c qscale:UN",
             "systematics/wjetsScaleTmpl -c qscale:Up",
             "systematics/wjetsScaleTmpl -c qscale:Down",
         ]:
@@ -158,6 +158,11 @@ for channel in ["mu","ele"]:
             #sys/inclusive
             config.inputParams.append([
                 "-m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
+            ])
+            
+            #for 2j0t wjets
+            config.inputParams.append([
+                "-m setup/Wjets -m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
             ])
             
             #sys/binned per obs
