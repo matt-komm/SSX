@@ -209,7 +209,7 @@ parser.add_option("-c", "--cfg", dest="cfg",
 formatterOutput = logging.Formatter("%(levelname)-10s %(message)s")
 formatterError = logging.Formatter("%(levelname)-10s %(message)s [%(filename)s:%(lineno)d]")
 streamOutputHandler = logging.StreamHandler(stream=sys.stdout)
-streamOutputHandler.setLevel(logging.DEBUG)
+streamOutputHandler.setLevel(logging.INFO)
 streamErrorHandler = logging.StreamHandler(stream=sys.stderr)
 streamErrorHandler.setLevel(logging.ERROR)
 bufferedHandler = logging.handlers.MemoryHandler(capacity=0,flushLevel=logging.INFO,target=streamOutputHandler)
@@ -219,7 +219,7 @@ rootLogger = logging.getLogger()
 rootLogger.addHandler(bufferedHandler)
 rootLogger.addHandler(streamErrorHandler)
 logger = logging.getLogger(__file__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 numpy.random.seed(seed=12345)

@@ -659,7 +659,7 @@ class Drawing(Module):
         
        
         if legendPos=="R":
-            legend = ROOT.TLegend(cvxmax-0.24,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.058*(len(stack)+2))    
+            legend = ROOT.TLegend(cvxmax-0.27,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.058*(len(stack)+2))    
         else:
             legend = ROOT.TLegend(cvxmin+0.03,cvymax-0.02,cvxmin+0.26,cvymax-0.01-0.058*(len(stack)+2))    
         legend.SetFillColor(0)

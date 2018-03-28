@@ -20,13 +20,14 @@ class ThetaFit(Module):
         self._logger.info("run fit model: "+fullPath)
         p = subprocess.Popen(["theta", fullPath],
             #shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            #stdout=subprocess.PIPE,
+            #stderr=subprocess.PIPE,
         )
-        while True:
+        '''
+        while p.poll()==None:
             nextline = p.stdout.readline()
-            if nextline == '' and p.poll() != None:
-                break
+        '''
+        p.wait()
         exitcode = p.returncode
         if exitcode!=0:
             self._logger.error("Theta exits with error code: "+str(p.returncode))

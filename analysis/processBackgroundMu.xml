@@ -255,7 +255,7 @@ True    </option>
     <option name="remove other variations"  type="boolean" >
 True    </option>
     <option name="ignore processes"  type="string_vector" >
-<![CDATA[("\S+hdamp\S+","\S+herwig\S+","\S+mtop\S+","\S+scale\S+","\S+colourFlip\S+","\S+fsr\S+","\S+isr\S+")]]>    </option>
+<![CDATA[("\S+hdamp\S+","\S+herwig\S+","\S+mtop\S+","\S+scale\S+","\S+colourFlip\S+","\S+fsr\S+","\S+isr\S+","\S+CUETP8M2T4up\S+","\S+CUETP8M2T4down\S+")]]>    </option>
     <option name="Res jet name"  type="string" >
 <![CDATA[JetRes]]>    </option>
     <option name="Res met name"  type="string" >
@@ -495,66 +495,6 @@ True    </option>
 987      </entry>
     </userrecords>
   </module>
-  <module name="PyAnalyse_Output"  type="PyAnalyse"  isEnabled="true" >
-    <option name="filename"  type="string" >
-<![CDATA[count.py]]>    </option>
-    <option name="script"  type="string" >
-<![CDATA[]]>    </option>
-    <option name="parameter"  type="string" >
-<![CDATA[]]>    </option>
-    <option name="class"  type="string" >
-<![CDATA[]]>    </option>
-    <userrecords>
-      <entry name="Compilation Date"  type="string" >
-<![CDATA[Nov 28 2017]]>      </entry>
-      <entry name="Compilation Time"  type="string" >
-<![CDATA[17:51:46]]>      </entry>
-      <entry name="xPos"  type="double" >
-1254      </entry>
-      <entry name="yPos"  type="double" >
-53      </entry>
-    </userrecords>
-  </module>
-  <module name="PyAnalyse_Reconstruction"  type="PyAnalyse"  isEnabled="true" >
-    <option name="filename"  type="string" >
-<![CDATA[count.py]]>    </option>
-    <option name="script"  type="string" >
-<![CDATA[]]>    </option>
-    <option name="parameter"  type="string" >
-<![CDATA[]]>    </option>
-    <option name="class"  type="string" >
-<![CDATA[]]>    </option>
-    <userrecords>
-      <entry name="Compilation Date"  type="string" >
-<![CDATA[Nov 28 2017]]>      </entry>
-      <entry name="Compilation Time"  type="string" >
-<![CDATA[17:51:46]]>      </entry>
-      <entry name="xPos"  type="double" >
-909      </entry>
-      <entry name="yPos"  type="double" >
-52      </entry>
-    </userrecords>
-  </module>
-  <module name="PyAnalyse_MuonSelection"  type="PyAnalyse"  isEnabled="true" >
-    <option name="filename"  type="string" >
-<![CDATA[count.py]]>    </option>
-    <option name="script"  type="string" >
-<![CDATA[]]>    </option>
-    <option name="parameter"  type="string" >
-<![CDATA[]]>    </option>
-    <option name="class"  type="string" >
-<![CDATA[]]>    </option>
-    <userrecords>
-      <entry name="Compilation Date"  type="string" >
-<![CDATA[Nov 28 2017]]>      </entry>
-      <entry name="Compilation Time"  type="string" >
-<![CDATA[17:51:46]]>      </entry>
-      <entry name="xPos"  type="double" >
-517      </entry>
-      <entry name="yPos"  type="double" >
-41      </entry>
-    </userrecords>
-  </module>
   <connection>
     <source module="applyWeights"  name="out" >
     </source>
@@ -718,65 +658,47 @@ True    </option>
     </sink>
   </connection>
   <connection>
-    <source module="RootTreeWriter5"  name="output" >
+    <source module="muSelection"  name="selected" >
     </source>
-    <sink module="PyAnalyse_Output"  name="in" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="Split for Testing fake"  name="output" >
-    </source>
-    <sink module="PyAnalyse_Output"  name="in" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="Split for Testing fake"  name="veto" >
-    </source>
-    <sink module="PyAnalyse_Output"  name="in" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="RootTreeWriter4"  name="output" >
-    </source>
-    <sink module="PyAnalyse_Output"  name="in" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="PyAnalyse_Output"  name="out" >
-    </source>
-    <sink module="RootTreeWriter6"  name="input" >
+    <sink module="applyWeights"  name="in" >
     </sink>
   </connection>
   <connection>
     <source module="runReconstruction"  name="out" >
     </source>
-    <sink module="PyAnalyse_Reconstruction"  name="in" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="PyAnalyse_Reconstruction"  name="out" >
-    </source>
     <sink module="Split for MVA1"  name="input" >
     </sink>
   </connection>
   <connection>
-    <source module="muSelection"  name="selected" >
+    <source module="RootTreeWriter4"  name="output" >
     </source>
-    <sink module="PyAnalyse_MuonSelection"  name="in" >
+    <sink module="RootTreeWriter6"  name="input" >
     </sink>
   </connection>
   <connection>
-    <source module="PyAnalyse_MuonSelection"  name="out" >
+    <source module="RootTreeWriter5"  name="output" >
     </source>
-    <sink module="applyWeights"  name="in" >
+    <sink module="RootTreeWriter6"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for Testing fake"  name="output" >
+    </source>
+    <sink module="RootTreeWriter6"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for Testing fake"  name="veto" >
+    </source>
+    <sink module="RootTreeWriter6"  name="input" >
     </sink>
   </connection>
   <userrecords>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-03-23]]>    </entry>
+<![CDATA[2018-03-26]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[21:20:57]]>    </entry>
+<![CDATA[13:46:34]]>    </entry>
   </userrecords>
 </analysis>

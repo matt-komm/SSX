@@ -239,11 +239,11 @@ class PlotCrossSection(Module.getClass("Program")):
                 "title":"tt#lower[-0.87]{#kern[-0.89]{-}}/tW",
             },
             "WZjets": {
-                "hists": ["WZjets_pos","WZjets_neg"],
-                "fill":newColor(0.25,0.65,0.25),
+                "hists": ["WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg"],
+                "fill":newColor(0.25,0.68,0.27),
                 #"fill":ROOT.gROOT.GetColor(ROOT.kGreen-2),
                 #"fill":newColor(0.2,0.65,0.25),
-                "title":"W/Z+jets",
+                "title":"W/Z/#gamma#scale[0.9]{*}+jets",
             },
             "QCD": {
                 "hists": ["QCD_"+plotName[0]+"_pos","QCD_"+plotName[0]+"_neg"],
@@ -258,8 +258,10 @@ class PlotCrossSection(Module.getClass("Program")):
             "tChannel_neg":["tChannel_neg"],
             "TopBkg_pos":["TopBkg"],
             "TopBkg_neg":["TopBkg","TopBkg_ratio"],
-            "WZjets_pos":["WZjets"],
-            "WZjets_neg":["WZjets","WZjets_ratio"],
+            "WZjets_LF_pos":["WZjets_HF"],
+            "WZjets_LF_neg":["WZjets_HF","WZjets_LF_ratio"],
+            "WZjets_HF_pos":["WZjets_HF"],
+            "WZjets_HF_neg":["WZjets_HF","WZjets_HF_ratio"],
             "QCD_"+plotName[0]+"_pos":["QCD_"+plotName[0]],
             "QCD_"+plotName[0]+"_neg":["QCD_"+plotName[0],"QCD_"+plotName[0]+"_ratio"]
         }
@@ -301,16 +303,12 @@ class PlotCrossSection(Module.getClass("Program")):
         
         stackList = ["QCD","WZjets","TopBkg","tChannel"]
         
-        if plotName[0]=="2j0t":
-            fitOutput = os.path.join(
-                self.module("Utils").getOutputFolder("fit/wjets"),
-                self.module("ThetaModel").getFitFileName(channels,unfoldingName,"wjets")
-            )
-        else:
-            fitOutput = os.path.join(
-                self.module("Utils").getOutputFolder("fit/profiled"),
-                self.module("ThetaModel").getFitFileName(channels,unfoldingName,"profiled")
-            )
+
+        fitOutput = os.path.join(
+            self.module("Utils").getOutputFolder("fit/profiled"),
+            self.module("ThetaModel").getFitFileName(channels,unfoldingName,"profiled")
+        )
+        
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         print fitResult["parameters"].keys()
         #fake plot result of 2-component fit
@@ -427,7 +425,7 @@ class PlotCrossSection(Module.getClass("Program")):
         histogramsPerComponentAndUncertaintyMorphed = {}
         if len(systematicsProfiled)>0:
             for channel in channels:
-                histogramsPerComponentAndUncertaintyMorphed[channel] = self.module("Utils").morphPlotHist(
+                histogramsPerComponentAndUncertaintyMorphed[channel] = self.module("Utils").morphPlotHist1D(
                     histogramsPerComponentAndUncertainty[channel],systematicsProfiled,fitResult
                 )
                 for compName in histogramsPerComponentAndUncertainty[channel].keys():
@@ -470,7 +468,7 @@ class PlotCrossSection(Module.getClass("Program")):
                         cov[ipar][jpar] = fitResult["parameters"][parName1]["unc_fit"]**2
                 else:
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
-        NTOYS = 10000
+        NTOYS = 2000
         toysSum = numpy.zeros((NTOYS,NBINS))
         numpy.zeros((NTOYS,NBINS))
         for itoy in range(NTOYS):

@@ -53,7 +53,7 @@ class ThetaModelWjets(Module.getClass("ThetaModel")):
             "Other":self.module("ThetaModel").makeLogNormal(1.0,0.3),
             "QCD_2j0t":self.module("ThetaModel").makeLogNormal(1.0,1.),
             
-            #"lumi":{"type":"gauss","config":{"mean": "1.0", "width":"0.1", "range":"(0.0,\"inf\")"}}
+            "lumi":{"type":"gauss","config":{"mean": "1.0", "width":"0.025", "range":"(0.0,\"inf\")"}}
         }
         
         uncertainties={}

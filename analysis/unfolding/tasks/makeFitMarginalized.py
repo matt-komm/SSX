@@ -66,11 +66,12 @@ class FitHistograms(Module.getClass("Program")):
         
 
         fitSetup = {}
-        parametersDict = {}
+        uncertainyParameterDict = self.module("ThetaModel").getUncertaintsDict()
+        parametersDict = {}#"lumi":uncertainyParameterDict["lumi"]}
         for channel in channels:
             observableDict = self.module("ThetaModel").getObservablesDict(channel)
             fitComponentDict = self.module("ThetaModel").getFitComponentsDict()
-            uncertainyParameterDict = self.module("ThetaModel").getUncertaintsDict()
+            
             for obserableName in observableDict.keys():
                 #make a separate observable per channel (and bin) 
                 binNames = histogramsPerChannelAndUncertainty[channel]["nominal"].keys()
@@ -86,6 +87,7 @@ class FitHistograms(Module.getClass("Program")):
                         uncertaintyParameters = fitComponentDict[componentName]["uncertainties"]
                         fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]={
                             "nominal":histogramsPerChannelAndUncertainty[channel]["nominal"][binName][obserableName][componentName],
+                            #"yield":["lumi"],
                             "yield":[],
                             "shape":[]
                         }
@@ -101,11 +103,11 @@ class FitHistograms(Module.getClass("Program")):
                                 fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]["yield"].append(uncertaintyParameter+"_"+binName)
                                 if not parametersDict.has_key(uncertaintyParameter+"_"+binName):
                                     parametersDict[uncertaintyParameter+"_"+binName]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
-                        
+                            
                         #add shape uncertainties
                         for sysName in uncertaintyList:
                             if not parametersDict.has_key(sysName):
-                                parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1.)
+                                parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1)
                             fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]["shape"].append({
                                 "parameter":sysName,
                                 "up":histogramsPerChannelAndUncertainty[channel][sysName][binName][0][obserableName][componentName],
@@ -121,7 +123,7 @@ class FitHistograms(Module.getClass("Program")):
         )
         
         success = False
-        retry = 3
+        retry = 10
         itry = 0
         while (not success and itry<retry):
             self.module("ThetaModel").makeModel(
@@ -131,8 +133,18 @@ class FitHistograms(Module.getClass("Program")):
                 pseudo=False,
                 seed = 123+7*itry-31*itry+173*itry
             )
+            
             itry+=1
             success = self.module("ThetaFit").run(fitOutput+".cfg")
+            try:
+                fitResult = self.module("ThetaFit").parseFitResult(
+                    fitOutput+".root",
+                    parametersDict
+                )
+            except Exception,e:
+                success = False
+                self._logger.error(str(e))
+            
             if (not success):
                 self._logger.info("Retry with new seed")
 
@@ -140,10 +152,7 @@ class FitHistograms(Module.getClass("Program")):
             self._logger.critical("No theta run succeeded")
             sys.exit(1)
         
-        fitResult = self.module("ThetaFit").parseFitResult(
-            fitOutput+".root",
-            parametersDict
-        )
+        
         self.module("ThetaFit").saveFitResult(fitOutput+".json",fitResult)
         
         #fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
@@ -170,8 +179,8 @@ class FitHistograms(Module.getClass("Program")):
         print fitResult["parameters"].items()[0]
         #print fitResult["parameters"]["en"]
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_yield.pdf",
-            selection=["tChannel_*_bin*","WZjets_bin*","TopBkg_bin*"],
-            ranges = [0.5,1.5],
+            selection=["tChannel_*_bin*","WZjets_bin*","WZjets_HF_bin*","WZjets_LF_bin*","TopBkg_bin*"],
+            ranges = [0.2,1.8],
             default=1,
         )
         
@@ -182,14 +191,14 @@ class FitHistograms(Module.getClass("Program")):
         )
         
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_ratios.pdf",
-            selection=["WZjets_ratio_bin*","TopBkg_ratio_bin*","QCD_*_ratio_bin*_*"],
+            selection=["WZjets_ratio_bin*","WZjets_HF_ratio_bin*","WZjets_LF_ratio_bin*","TopBkg_ratio_bin*","QCD_*_ratio_bin*_*"],
             ranges = [0.85,1.15],
             default=1,
         )
         
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_sys.pdf",
             selection=uncertaintyList,
-            ranges = [-1.5,1.5],
+            ranges = [-2.5,2.5],
             default=0
         )
 
@@ -207,8 +216,8 @@ class FitHistograms(Module.getClass("Program")):
                 fitResultMu = self.module("ThetaFit").loadFitResult(fitOutputMu+".json")
         
                 self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_yield_comparison.pdf",
-                    selection=["tChannel_*_bin*","WZjets_bin*","TopBkg_bin*"],
-                    ranges = [0.5,1.5],
+                    selection=["tChannel_*_bin*","WZjets_bin*","WZjets_HF_bin*","WZjets_LF_bin*","TopBkg_bin*"],
+                    ranges = [0.2,1.8],
                     default=1,
                 )
                 
@@ -219,14 +228,14 @@ class FitHistograms(Module.getClass("Program")):
                 )
                 
                 self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_ratios_comparison.pdf",
-                    selection=["WZjets_ratio_bin*","TopBkg_ratio_bin*","QCD_*_ratio_bin*_*"],
+                    selection=["WZjets_ratio_bin*","WZjets_HF_ratio_bin*","WZjets_LF_ratio_bin*","TopBkg_ratio_bin*","QCD_*_ratio_bin*_*"],
                     ranges = [0.85,1.15],
                     default=1,
                 )
                 
                 self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_sys_comparison.pdf",
                     selection=uncertaintyList,
-                    ranges = [-1.5,1.5],
+                    ranges = [-2.5,2.5],
                     default=0
                 )
             else:

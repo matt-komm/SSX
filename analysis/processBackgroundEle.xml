@@ -255,7 +255,7 @@ True    </option>
     <option name="remove other variations"  type="boolean" >
 True    </option>
     <option name="ignore processes"  type="string_vector" >
-<![CDATA[("\S+hdamp\S+","\S+herwig\S+","\S+mtop\S+","\S+scale\S+","\S+colourFlip\S+","\S+fsr\S+","\S+isr\S+")]]>    </option>
+<![CDATA[("\S+hdamp\S+","\S+herwig\S+","\S+mtop\S+","\S+scale\S+","\S+colourFlip\S+","\S+fsr\S+","\S+isr\S+","\S+CUETP8M2T4up\S+","\S+CUETP8M2T4down\S+")]]>    </option>
     <option name="Res jet name"  type="string" >
 <![CDATA[JetRes]]>    </option>
     <option name="Res met name"  type="string" >
@@ -697,8 +697,8 @@ True    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2017-12-29]]>    </entry>
+<![CDATA[2018-03-26]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[01:57:48]]>    </entry>
+<![CDATA[13:46:55]]>    </entry>
   </userrecords>
 </analysis>

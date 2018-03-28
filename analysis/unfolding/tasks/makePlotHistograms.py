@@ -27,11 +27,19 @@ class PlotHistograms(Module.getClass("Program")):
                 "color":ROOT.kOrange+1
             },
             
-            "WZjets":
+            "WZjets_LF":
             {
                 "sets":["WJetsAMCex","DYMG"],
-                "uncertainties":["WZjets"],
-                "weight":"1",
+                "uncertainties":["WZjets_LF","WZjets_HF"],
+                "weight":"(Reconstructed_1__nBFlavorSelectedJet==0)*(Reconstructed_1__nCFlavorSelectedJet==0)",
+                "color":ROOT.kGreen+1
+            },
+            
+            "WZjets_HF":
+            {
+                "sets":["WJetsAMCex","DYMG"],
+                "uncertainties":["WZjets_HF"],
+                "weight":"(Reconstructed_1__nBFlavorSelectedJet>0 || Reconstructed_1__nCFlavorSelectedJet>0)",
                 "color":ROOT.kGreen+1
             },
             

@@ -38,14 +38,16 @@ class ThetaModel(Module):
         
     def getUncertaintsDict(self):
         uncertaintiesBkg = {
-            "WZjets_HF":self.module("ThetaModel").makeLogNormal(1.0,0.3),
+            #"WZjets":self.module("ThetaModel").makeLogNormal(1.0,0.3),
             "TopBkg":self.module("ThetaModel").makeLogNormal(1.0,0.1),
+            "WZjets_HF":self.module("ThetaModel").makeLogNormal(1.0,0.3),
+            #"WZjets_HF":self.module("ThetaModel").makeGaus(1.0,0.3,r=[0.0,2.0]),
             "WZjets_LF":self.module("ThetaModel").makeLogNormal(1.0,0.1),
             "QCD_2j1t":self.module("ThetaModel").makeLogNormal(1.0,1.),
             #"QCD_3j1t":self.module("ThetaModel").makeGaus(0.2,0.5),
             "QCD_3j2t":self.module("ThetaModel").makeLogNormal(1.0,1.),
             
-            #"lumi":{"type":"gauss","config":{"mean": "1.0", "width":"0.1", "range":"(0.0,\"inf\")"}}
+            #"lumi":self.module("ThetaModel").makeLogNormal(1.0,0.025),
         }
         uncertainties = {
             "tChannel_pos":self.module("ThetaModel").makeGaus(1.0,10.0,r=[0.1,4.0]),
@@ -101,8 +103,8 @@ class ThetaModel(Module):
                 if not hist:
                     self._logger.critical("Histogram '"+histName+"' in file '"+fileName+"' not found")
                     sys.exit(1)
-                if hist.GetEntries()<=20 and (not (fitComponentName.find("QCD")>=0 and fitComponentName.find(observableName)<0)):
-                    self._logger.warning("Low number of events ("+str(hist.GetEntries())+") in histogram '"+histName+"' in file '"+fileName+"'")
+                #if hist.GetEntries()<=20 and (not (fitComponentName.find("QCD")>=0 and fitComponentName.find(observableName)<0)):
+                #    self._logger.debug("Low number of events ("+str(hist.GetEntries())+") in histogram '"+histName+"' in file '"+fileName+"'")
                 histClone = hist.Clone(hist.GetName()+"_clone")
                 histClone.SetDirectory(0)
                 histDict[observableName][fitComponentName]={"hist":histClone,"name":histName,"file":fileName}
@@ -112,8 +114,8 @@ class ThetaModel(Module):
             if not hist:
                 self._logger.critical("Histogram '"+histName+"' in file '"+fileName+"' not found")
                 sys.exit(1)
-            if hist.GetEntries()<=20:
-                self._logger.warning("Low number of events ("+str(hist.GetEntries())+") in histogram '"+histName+"' in file '"+fileName+"'")
+            #if hist.GetEntries()<=20:
+            #    self._logger.warning("Low number of events ("+str(hist.GetEntries())+") in histogram '"+histName+"' in file '"+fileName+"'")
             histClone = hist.Clone(hist.GetName()+"_clone")
             histClone.SetDirectory(0)
             histDict[observableName]["data"]={"hist":histClone,"name":histName,"file":fileName}
@@ -180,7 +182,7 @@ class ThetaModel(Module):
             "WZjets_LF":
             {
                 "sets":["WJetsAMCex","DYMG"],
-                "uncertainties":["WZjets_HF","WZjets_LF"],
+                "uncertainties":["WZjets_HF"],
                 "weight":"(Reconstructed_1__nBFlavorSelectedJet==0)*(Reconstructed_1__nCFlavorSelectedJet==0)",
                 "color":ROOT.kGreen+1
             },
@@ -343,37 +345,37 @@ myminimizer = {
     minimizers = (
         {
             type = "mcmc_minimizer";
-            iterations = 100000;
-            burn-in = 20000;
+            iterations = 150000;
+            burn-in = 50000;
             name = "mcmc_min20";
-            stepsize_factor = 1.5;
+            stepsize_factor = 1.25;
         },
         {
             type = "mcmc_minimizer";
-            iterations = 100000;
-            burn-in = 20000;
+            iterations = 150000;
+            burn-in = 50000;
             name = "mcmc_min10";
             stepsize_factor = 1.0;
         },
         {
             type = "mcmc_minimizer";
-            iterations = 100000;
-            burn-in = 20000;
+            iterations = 150000;
+            burn-in = 50000;
             name = "mcmc_min05";
             stepsize_factor = 0.5;
         },
         {
             type = "mcmc_minimizer";
-            iterations = 100000;
-            burn-in = 20000;
+            iterations = 150000;
+            burn-in = 50000;
             name = "mcmc_min05";
             stepsize_factor = 0.1;
         }
     );
     last_minimizer = {
         type = "newton_minimizer";
-        par_eps = 1e-5; // optional; default is 1e-4'
-        maxit = 200000; // optional; default is 10,000'
+        par_eps = 1e-3; // optional; default is 1e-4'
+        maxit = 800000; // optional; default is 10,000'
         improve_cov = true; // optional; default is false'
         force_cov_positive = true; // optional, default is false'
         step_cov = 0.01; // optional; default is 0.1'
@@ -381,17 +383,6 @@ myminimizer = {
 };
         ''')
         
-        '''
-        file.write("myminimizer = {\n")
-        
-        file.write("    type = \"newton_minimizer\";\n")
-        file.write("    par_eps = 1e-5; // optional; default is 1e-4'\n")
-        file.write("    maxit = 200000; // optional; default is 10,000'\n")
-        file.write("    improve_cov = true; // optional; default is false'\n")
-        file.write("    force_cov_positive = true; // optional, default is false'\n")
-        file.write("    step_cov = 0.025; // optional; default is 0.1'\n")
-        file.write("};\n")
-        '''        
 
         
         
