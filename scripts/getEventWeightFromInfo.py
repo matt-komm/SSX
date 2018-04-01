@@ -20,6 +20,8 @@ class bcolors:
 def warn(s):
     return bcolors.WARNING+s+bcolors.ENDC
 
+def err(s):
+    return bcolors.FAIL+s+bcolors.ENDC
 
 parser = OptionParser()
 (options, args) = parser.parse_args()
@@ -201,6 +203,14 @@ for folder in sorted(rootFiles.keys()):
 
     for f in rootFiles[folder]:
         rootFile = ROOT.TFile(f)
+        retry = 0
+        while (not rootFile and retry < 20):
+            rootFile = ROOT.TFile(f)
+            time.sleep(1+retry)
+            retry+=1
+        if (not rootFile):
+            print err("ERROR"),"Cannot read file",f,"-> skipping"
+            continue
         hist = rootFile.Get("eventAndPuInfo/genweight")
         
         weightedSumNeg += math.fabs(hist.GetBinContent(1))

@@ -531,6 +531,20 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
             831.76 // xsec for process 'TT'
         )
     },
+    {"TT_TuneCUETP8M2T4down_13TeV-powheg-pythia8_ext",
+        new SimpleWeightInfo(
+            //xtotal=29984052.0 eff=29984052.0 - 0.0 = 29984052.0
+            29984052.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            831.76 // xsec for process 'TT'
+        )
+    },
+    {"TT_TuneCUETP8M2T4up_13TeV-powheg-pythia8_ext",
+        new SimpleWeightInfo(
+            //xtotal=26459888.0 eff=26459888.0 - 0.0 = 26459888.0
+            26459888.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            831.76 // xsec for process 'TT'
+        )
+    },
     {"WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
         new SimpleWeightInfo(
             //xtotal=23712175.0 eff=19971756.0 - 3740419.0 = 16231337.0

@@ -24,7 +24,7 @@ class Plots(Module):
             {
                 "obsname":"2j1t",
                 "name":"mtw2j1t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"SingleTop_1__mtw_beforePz",
                 "xtitle":"m#lower[0.3]{#scale[0.7]{T}}(W) (GeV)",
                 "ytitle":"Events / bin",
@@ -40,7 +40,7 @@ class Plots(Module):
             {
                 "obsname":"2j1t",
                 "name":"bdtttw2j1t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":self.module("ThetaModel").getBDTttw(channel),
                 "xtitle":"BDT#lower[0.3]{#scale[0.7]{tt/W}} discriminant",
                 "ytitle":"Events / bin",
@@ -56,7 +56,7 @@ class Plots(Module):
             {
                 "obsname":"2j1t",
                 "name":"bdttch2j1t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":self.module("ThetaModel").getBDTtchan(channel),
                 "xtitle":"BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} discriminant",
                 "ytitle":"Events / bin",
@@ -72,7 +72,7 @@ class Plots(Module):
             {
                 "obsname":"3j2t",
                 "name":"mtw3j2t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_3j2t_pos","QCD_3j2t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_3j2t_pos","QCD_3j2t_neg"],
                 "var":"SingleTop_1__mtw_beforePz",
                 "xtitle":"m#lower[0.3]{#scale[0.7]{T}}(W) (GeV)",
                 "ytitle":"Events / bin",
@@ -88,7 +88,7 @@ class Plots(Module):
             {
                 "obsname":"2j0t",
                 "name":"mtw2j0t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j0t_pos","QCD_2j0t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j0t_pos","QCD_2j0t_neg"],
                 "var":"SingleTop_1__mtw_beforePz",
                 "xtitle":"m#lower[0.3]{#scale[0.7]{T}}(W) (GeV)",
                 "ytitle":"Events / bin",
@@ -105,7 +105,7 @@ class Plots(Module):
             {
                 "obsname":"2j1t",
                 "name":"pt2j1t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"SingleTop_1__Top_1__Pt",
                 "xtitle":"Top quark p#scale[0.7]{#lower[0.3]{T}} (GeV)",
                 "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT / GeV",
@@ -121,7 +121,7 @@ class Plots(Module):
             {
                 "obsname":"2j1t",
                 "name":"y2j1t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"fabs(SingleTop_1__Top_1__Y)",
                 "xtitle":"Top quark |y|",
                 "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT",
@@ -137,7 +137,7 @@ class Plots(Module):
             {
                 "obsname":"2j1t",
                 "name":"cos2j1t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"SingleTop_1__cosTheta_tPLz",
                 "xtitle":"cos#kern[0.1]{#theta}#scale[0.7]{#lower[0.28]{pol.}}#kern[-1.1]{*}",
                 "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT",
@@ -153,7 +153,7 @@ class Plots(Module):
             {
                 "obsname":"2j1t",
                 "name":"lpt2j1t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"SingleTop_1__TightLepton_1__Pt",
                 "xtitle":"Lepton p#scale[0.7]{#lower[0.3]{T}} (GeV)",
                 "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT / GeV",
@@ -169,7 +169,7 @@ class Plots(Module):
             {
                 "obsname":"2j1t",
                 "name":"leta2j1t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"fabs(SingleTop_1__TightLepton_1__Eta)",
                 "xtitle":"Lepton |y|",
                 "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT",
@@ -185,7 +185,7 @@ class Plots(Module):
             {
                 "obsname":"2j1t",
                 "name":"wpt2j1t",
-                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"SingleTop_1__W_1__Pt",
                 "xtitle":"W p#scale[0.7]{#lower[0.3]{T}} (GeV)",
                 "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT / GeV",

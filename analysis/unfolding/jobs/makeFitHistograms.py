@@ -127,6 +127,8 @@ for channel in ["mu","ele"]:
             "systematics/ttbarScaleISRPSUp",
             "systematics/ttbarScaleFSRPSDown",
             "systematics/ttbarScaleFSRPSUp",
+            "systematics/ttbarUEDown",
+            "systematics/ttbarUEUp",
             
             "systematics/tchanHdampPSDown",
             "systematics/tchanHdampPSUp",

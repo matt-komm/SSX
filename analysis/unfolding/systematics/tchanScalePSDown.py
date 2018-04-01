@@ -125,8 +125,8 @@ class SamplesTchanScalePSDown(Module.getClass("Samples")):
             "MC_antiiso":
             {
                 "processes":[
-                    "ST_t-channel_top_4f_scaledown_inclusiveDecays_13TeV-powhegV2-madspin-pythia8"+sys,
-                    "ST_t-channel_antitop_4f_scaledown_inclusiveDecays_13TeV-powhegV2-madspin-pythia8"+sys,
+                    "ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1"+sys,
+                    "ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1"+sys,
                     "ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_ext"+sys,
                     "ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1_ext"+sys,
                     "TT_TuneCUETP8M2T4_13TeV-powheg-pythia8"+sys,

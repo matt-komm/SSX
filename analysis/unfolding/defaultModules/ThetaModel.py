@@ -38,11 +38,10 @@ class ThetaModel(Module):
         
     def getUncertaintsDict(self):
         uncertaintiesBkg = {
-            #"WZjets":self.module("ThetaModel").makeLogNormal(1.0,0.3),
             "TopBkg":self.module("ThetaModel").makeLogNormal(1.0,0.1),
-            "WZjets_HF":self.module("ThetaModel").makeLogNormal(1.0,0.3),
+            "WZjets":self.module("ThetaModel").makeLogNormal(1.0,0.3),
             #"WZjets_HF":self.module("ThetaModel").makeGaus(1.0,0.3,r=[0.0,2.0]),
-            "WZjets_LF":self.module("ThetaModel").makeLogNormal(1.0,0.1),
+            #"WZjets_LF":self.module("ThetaModel").makeLogNormal(1.0,0.1),
             "QCD_2j1t":self.module("ThetaModel").makeLogNormal(1.0,1.),
             #"QCD_3j1t":self.module("ThetaModel").makeGaus(0.2,0.5),
             "QCD_3j2t":self.module("ThetaModel").makeLogNormal(1.0,1.),
@@ -179,19 +178,11 @@ class ThetaModel(Module):
                 "color":ROOT.kOrange+1
             },
             
-            "WZjets_LF":
+            "WZjets":
             {
                 "sets":["WJetsAMCex","DYMG"],
-                "uncertainties":["WZjets_HF"],
-                "weight":"(Reconstructed_1__nBFlavorSelectedJet==0)*(Reconstructed_1__nCFlavorSelectedJet==0)",
-                "color":ROOT.kGreen+1
-            },
-            
-            "WZjets_HF":
-            {
-                "sets":["WJetsAMCex","DYMG"],
-                "uncertainties":["WZjets_HF"],
-                "weight":"(Reconstructed_1__nBFlavorSelectedJet>0 || Reconstructed_1__nCFlavorSelectedJet>0)",
+                "uncertainties":["WZjets"],
+                "weight":"1",
                 "color":ROOT.kGreen+1
             },
             
