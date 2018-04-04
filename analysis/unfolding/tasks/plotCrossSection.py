@@ -314,8 +314,10 @@ class PlotCrossSection(Module.getClass("Program")):
                 normalizeByCrossSection=True
             )
             
+       
         
         genBinning = self.module("Unfolding").getGenBinning(channelName)
+        
         
         #add lumi uncertainty of 2.5%
         profiledResult["covarianceUnfolded"].Scale(1.025**2)
@@ -362,6 +364,9 @@ class PlotCrossSection(Module.getClass("Program")):
             sysResults
         )
         
+        
+ 
+        
         self.module("Drawing").plotCompareHistogram(nominalResult["nominalGen_inc"],
             [histSumNominal,histSumProfiled,histSumTotal],
             os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(0)+"_compareHist"),
@@ -375,6 +380,58 @@ class PlotCrossSection(Module.getClass("Program")):
         genHistRatio = nominalResult["ratioGen"]
         
         
+        
+        
+        
+        print "%20s"%("Central (pb)"),
+        for ibin in range(len(genBinning)-1):
+            print " %7.2f"%(histSumTotal.GetBinContent(ibin+1)),
+            print "/%6s "%("---"),
+        print
+        
+        print "%20s"%("Stat.-only"),
+        for ibin in range(len(genBinning)-1):
+            print " %6.1f%%"%(100.*histSumNominal.GetBinError(ibin+1)/histSumNominal.GetBinContent(ibin+1)),
+            print "/%6s "%("---"),
+        print
+        
+        print "%20s"%("Stat.+Exp."),
+        for ibin in range(len(genBinning)-1):
+            print " %6.1f%%"%(100.*histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1)),
+            print "/%6s "%("---"),
+        print
+        
+        binSum2 = numpy.zeros(len(genBinning)-1)
+        for isys,sys in enumerate(sorted(systematics)):
+            print "%20s"%(sys),
+            for ibin in range(len(genBinning)-1):
+                relUp = math.fabs(
+                    sysResults[isys][-1]["Up"].GetBinContent(ibin+1)+\
+                    sysResults[isys][1]["Up"].GetBinContent(ibin+1)-\
+                    histSumNominal.GetBinContent(ibin+1)
+                )/histSumNominal.GetBinContent(ibin+1)
+                relDown = math.fabs(
+                    sysResults[isys][-1]["Down"].GetBinContent(ibin+1)+\
+                    sysResults[isys][1]["Down"].GetBinContent(ibin+1)-\
+                    histSumNominal.GetBinContent(ibin+1)
+                )/histSumNominal.GetBinContent(ibin+1)
+                binSum2[ibin] += max(relUp,relDown)**2
+                print " %6.1f%%"%(100.*max(relUp,relDown)),
+                print "/%6.1f%%"%(100.*min(relUp,relDown)),
+            print
+        
+        print "%20s"%("Total"),
+        for ibin in range(len(genBinning)-1):
+            print " %6.1f%%"%(100.*histSumTotal.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)),
+            print "/%6s "%("---"),
+        print
+        
+        print "%20s"%("Sum2"),
+        for ibin in range(len(genBinning)-1):
+            err2 = binSum2[ibin]+(histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1))**2
+            print " %6.1f%%"%(100.*math.sqrt(err2)),
+            print "/%6s "%("---"),
+        print
         
         
         
@@ -414,8 +471,8 @@ class PlotCrossSection(Module.getClass("Program")):
         ymin = 100000
         ymax = -10000
         for ibin in range(histSumTotal.GetNbinsX()):
-            ymin = min(ymin,histSumTotal.GetBinContent(ibin+1)-histSumTotal.GetBinError(ibin+1))
-            ymax = max(ymax,histSumTotal.GetBinContent(ibin+1)+histSumTotal.GetBinError(ibin+1))
+            ymin = min([ymin,genHistSum.GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)-histSumTotal.GetBinError(ibin+1)])
+            ymax = max([ymax,genHistSum.GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)+histSumTotal.GetBinError(ibin+1)])
             
         if logy:
             ymin = 10**math.floor(math.log10(0.7*ymin))
@@ -443,7 +500,7 @@ class PlotCrossSection(Module.getClass("Program")):
         if unfoldingName=="lpt" or unfoldingName=="y":
             legendPos = "RU"
         elif unfoldingName=="cos":
-            legendPos = "LU"
+            legendPos = "RD"
         else:
             legendPos = "LD"
             

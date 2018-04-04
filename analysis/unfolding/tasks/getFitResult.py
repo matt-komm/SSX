@@ -254,7 +254,7 @@ class PlotCrossSection(Module.getClass("Program")):
             uncertainties.append(sysName+"Up")
             uncertainties.append(sysName+"Down")
         
-        stackList = ["QCD","WZjets","TopBkg","tChannel"]
+        stackList = ["QCD","WZjets_LF","WZjets_HF","TopBkg","tChannel"]
         
         fitOutput = os.path.join(
             self.module("Utils").getOutputFolder("fit/profiled"),
@@ -400,6 +400,8 @@ class PlotCrossSection(Module.getClass("Program")):
                     histContents[channel][compName][ibin]=hist.GetBinContent(ibin+1)
                     if hist.GetBinContent(ibin+1)>0:
                         histError[channel][compName][ibin]=hist.GetBinError(ibin+1)
+                    else:
+                        histError[channel][compName][ibin]=1
         
         fitParameters = sorted(fitResult["parameters"].keys())
         print fitParameters
@@ -414,7 +416,7 @@ class PlotCrossSection(Module.getClass("Program")):
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
                 '''
                 
-        NTOYS = 50000
+        NTOYS = 5000
         toysSum = {} 
         toysCompSum = {}
         for channel in channels:
@@ -428,10 +430,10 @@ class PlotCrossSection(Module.getClass("Program")):
             pdiced = numpy.random.multivariate_normal(means,cov)
             for channel in channels:
                 for compName in histContents[channel].keys():
-                    content = histContents[channel][compName]
-                    error = histError[channel][compName]
+                    content = numpy.copy(histContents[channel][compName])
+                    error = numpy.copy(histError[channel][compName])
                     #MC unc, does not work???
-                    #content+= numpy.random.normal(loc=numpy.zeros(len(error)),scale=error)
+                    content+= numpy.random.normal(loc=numpy.zeros(len(error)),scale=error)
                     for sfName in componentDict[compName]:
                         sfName+="_binInc"
                         if compName.find("QCD")>=0:

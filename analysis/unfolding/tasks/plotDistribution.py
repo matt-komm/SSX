@@ -239,7 +239,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 "title":"tt#lower[-0.87]{#kern[-0.89]{-}}/tW",
             },
             "WZjets": {
-                "hists": ["WZjets_HF_pos","WZjets_HF_neg","WZjets_LF_pos","WZjets_LF_neg"],
+                "hists": ["WZjets_pos","WZjets_neg"],
                 "fill":newColor(0.25,0.68,0.27),
                 #"fill":ROOT.gROOT.GetColor(ROOT.kGreen-2),
                 #"fill":newColor(0.2,0.65,0.25),
@@ -258,10 +258,8 @@ class PlotCrossSection(Module.getClass("Program")):
             "tChannel_neg":["tChannel_neg"],
             "TopBkg_pos":["TopBkg"],
             "TopBkg_neg":["TopBkg","TopBkg_ratio"],
-            "WZjets_LF_pos":["WZjets_HF"],
-            "WZjets_LF_neg":["WZjets_HF","WZjets_LF_ratio"],
-            "WZjets_HF_pos":["WZjets_HF"],
-            "WZjets_HF_neg":["WZjets_HF","WZjets_HF_ratio"],
+            "WZjets_pos":["WZjets"],
+            "WZjets_neg":["WZjets","WZjets_ratio"],
             "QCD_"+plotName[0]+"_pos":["QCD_"+plotName[0]],
             "QCD_"+plotName[0]+"_neg":["QCD_"+plotName[0],"QCD_"+plotName[0]+"_ratio"]
         }

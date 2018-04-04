@@ -138,7 +138,7 @@ class SmoothHistograms(Module.getClass("Program")):
                         histUpSmooth = histUp.Clone(histUp.GetName()+binName+obsName+compName+sysName+"smooth"+str(random.random()))
                         histDownSmooth = histDown.Clone(histDown.GetName()+binName+obsName+compName+sysName+"smooth"+str(random.random()))
                        
-   
+
                         for ibin in range(histNominal.GetNbinsX()+2):
                             cNom = histNominal.GetBinContent(ibin)
                             eNom = histNominal.GetBinError(ibin)
@@ -166,6 +166,7 @@ class SmoothHistograms(Module.getClass("Program")):
                                 if sigDown>1 and cDown/cNom>1:
                                     cUp = cNom-math.fabs(cDown-cNom)
                             
+<<<<<<< Updated upstream
                             if sigDown<1:
                                 cDown = cNom
                                 if sigUp>1 and cUp/cNom<1:
@@ -189,7 +190,10 @@ class SmoothHistograms(Module.getClass("Program")):
                                 #use large error of 100% here
                                 histRelUp.SetBinError(ibin,1.)
                                 histRelDown.SetBinError(ibin,1.)
-                        
+                                
+                        self._logger.info("Compatible up bins: "+sysName+" "+compName+" "+str(compatibleBinsUp)+"/"+str(histNominal.GetNbinsX()+2))
+                        self._logger.info("Compatible down bins: "+sysName+" "+compName+" "+str(compatibleBinsDown)+"/"+str(histNominal.GetNbinsX()+2))
+                                   
                         histRelUpSmooth = histRelUp.Clone(histRelUp.GetName()+str(random.random()))
                         histRelDownSmooth = histRelDown.Clone(histRelDown.GetName()+str(random.random()))
                         #self.smooth(histRelUpSmooth,region=obsName)
@@ -197,13 +201,23 @@ class SmoothHistograms(Module.getClass("Program")):
                         
                         for ibin in range(histNominal.GetNbinsX()):
                             cNom = histNominal.GetBinContent(ibin+1)
-                            if cNom!=0:
+                            if (compatibleBinsUp>0.8*(histNominal.GetNbinsX()+2) and compatibleBinsDown>0.8*(histNominal.GetNbinsX()+2)):
                                 histUpSmooth.SetBinContent(ibin+1,
-                                    histRelUpSmooth.GetBinContent(ibin+1)*cNom
+                                    cNom
                                 )
                                 histDownSmooth.SetBinContent(ibin+1,
-                                    histRelDownSmooth.GetBinContent(ibin+1)*cNom
+                                    cNom
                                 )
+                            
+                            else:
+                                if cNom!=0:
+                                    histUpSmooth.SetBinContent(ibin+1,
+                                        histRelUpSmooth.GetBinContent(ibin+1)*cNom
+                                    )
+                                    histDownSmooth.SetBinContent(ibin+1,
+                                        histRelDownSmooth.GetBinContent(ibin+1)*cNom
+                                    )
+                            
                         histogramsPerChannelAndUncertainty[sysName][binName][0][obsName][compName]["histSmooth"] = histUpSmooth
                         histogramsPerChannelAndUncertainty[sysName][binName][1][obsName][compName]["histSmooth"] = histDownSmooth
                        

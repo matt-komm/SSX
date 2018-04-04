@@ -145,6 +145,58 @@ class FitHistograms(Module.getClass("Program")):
         #print fitResult["parameters"]["tChannel_neg_bin0"]
         #print fitResult["parameters"]["tChannel_pos_bin0"]
         #print fitResult["parameters"]["en"]
+        
+        for channel in channels:
+            observableDict = self.module("ThetaModel").getObservablesDict(channel)
+            fitComponentDict = self.module("ThetaModel").getFitComponentsDict()
+            uncertainyParameterDict = self.module("ThetaModel").getUncertaintsDict()
+        
+            for obserableName in observableDict.keys():
+                
+                #make a separate observable per channel (and bin) 
+                binNames = histogramsPerChannel[channel]["nominal"].keys()
+                for binName in binNames:
+                    mcSum = 0.0
+                    mcSumErr2 = 0.0
+                    
+                    yieldsPerComp = {}
+                    err2PerComp = {}
+                    
+                    hist = histogramsPerChannel[channel]["nominal"][binName][obserableName]["data"]["hist"]
+                    hist.Rebin(hist.GetNbinsX())
+                    
+                    print channel,obserableName,binName,"data",round(hist.GetBinContent(1),1),round(math.sqrt(hist.GetBinContent(1)),1)
+                    
+                    for componentName in fitComponentDict.keys():
+                        uncertaintyParameters = fitComponentDict[componentName]["uncertainties"]
+                        
+                        hist = histogramsPerChannel[channel]["nominal"][binName][obserableName][componentName]["hist"]
+                        hist.Rebin(hist.GetNbinsX())
+                        for uncertaintyParameter in uncertaintyParameters:
+                            if uncertaintyParameter.find("QCD")>=0:
+                                parameterName = uncertaintyParameter+"_"+binName+"_"+channel
+                            else:
+                                parameterName = uncertaintyParameter+"_"+binName
+                            hist.Scale(fitResult["parameters"][parameterName]["mean_fit"])
+                        err = math.sqrt(
+                            hist.GetBinError(1)**2 + \
+                            hist.GetBinContent(1)**2*fitResult["parameters"][parameterName]["unc_fit"]**2
+                        )
+                        compName =  componentName.replace("_neg","").replace("_pos","")
+                        if not yieldsPerComp.has_key(compName):
+                            yieldsPerComp[compName] = 0.0
+                            err2PerComp[compName] = 0.0
+                        yieldsPerComp[compName] += hist.GetBinContent(1)
+                        err2PerComp[compName] += err**2
+                        mcSum += hist.GetBinContent(1)
+
+                        mcSumErr2 += err**2
+                        
+                    for componentName in yieldsPerComp.keys():
+                        print channel,obserableName,binName,componentName,round(yieldsPerComp[componentName],1),round(math.sqrt(err2PerComp[componentName]),1)
+                        
+                    print channel,obserableName,binName,"total",round(mcSum,1),round(math.sqrt(mcSumErr2),1)
+        
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_yield.pdf",
             selection=["Other_bin*","tChannel_*_bin*","WZjets_bin*","WZjets_HF_bin*","WZjets_LF_bin*","TopBkg_bin*","QCD_*_bin*"],
             ranges = [0,2.0],
