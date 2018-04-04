@@ -1,4 +1,4 @@
-syst="pdf,topMass,tchanHdampPS,tchanScaleME,tchanScalePS,ttbarHdampPS,ttbarPt,ttbarScaleFSRPS,ttbarScaleISRPS,ttbarScaleME,wjetsScaleME"
+syst="ttbarUE,pdf,topMass,tchanHdampPS,tchanScaleME,tchanScalePS,ttbarHdampPS,ttbarPt,ttbarScaleFSRPS,ttbarScaleISRPS,ttbarScaleME,wjetsScaleME"
 for channel in ele mu
     do
     echo $channels

@@ -1,4 +1,6 @@
 syst=(
+"systematics/ttbarUEUp"
+"systematics/ttbarUEDown"
 "systematics/topMassDown"
 "systematics/topMassUp"
 "systematics/ttbarPtUp"

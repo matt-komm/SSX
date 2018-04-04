@@ -138,7 +138,7 @@ class SmoothHistograms(Module.getClass("Program")):
                         histUpSmooth = histUp.Clone(histUp.GetName()+binName+obsName+compName+sysName+"smooth"+str(random.random()))
                         histDownSmooth = histDown.Clone(histDown.GetName()+binName+obsName+compName+sysName+"smooth"+str(random.random()))
                        
-                        
+   
                         for ibin in range(histNominal.GetNbinsX()+2):
                             cNom = histNominal.GetBinContent(ibin)
                             eNom = histNominal.GetBinError(ibin)
@@ -147,20 +147,43 @@ class SmoothHistograms(Module.getClass("Program")):
                             cDown = histDown.GetBinContent(ibin)
                             eDown = histDown.GetBinError(ibin)
                             
+                            
+                            
                             if eUp<0.00001:
                                 eUp=1
                             if eDown<0.00001:
                                 eDown=1
+                            if cNom<0.001:
+                                cNom = 0.001
+                                
+                            sigUp = math.fabs(cUp-cNom)/eUp
+                            sigDown = math.fabs(cUp-cDown)/eDown
+                                
+                            if sigUp<1:
+                                cUp = cNom
+                                if sigDown>1 and cDown/cNom<1:
+                                    cUp = cNom+math.fabs(cDown-cNom)
+                                if sigDown>1 and cDown/cNom>1:
+                                    cUp = cNom-math.fabs(cDown-cNom)
                             
-                            if cNom>1:
+                            if sigDown<1:
+                                cDown = cNom
+                                if sigUp>1 and cUp/cNom<1:
+                                    cDown = cNom+math.fabs(cUp-cNom)
+                                if sigUp>1 and cUp/cNom>1:
+                                    cDown = cNom-math.fabs(cUp-cNom)
+                                
+                                
+                            #if math.fabs(sigUp-sigDown)>5:
+                                
+                            
+                            if cNom>0.1:
                                 histRelUp.SetBinContent(ibin,cUp/cNom)
                                 histRelDown.SetBinContent(ibin,cDown/cNom)
                                 
                                 histRelUp.SetBinError(ibin,eUp/cNom)
                                 histRelDown.SetBinError(ibin,eDown/cNom)
                             else:
-                                
-                            
                                 histRelUp.SetBinContent(ibin,1.)
                                 histRelDown.SetBinContent(ibin,1.)
                                 #use large error of 100% here
@@ -169,8 +192,8 @@ class SmoothHistograms(Module.getClass("Program")):
                         
                         histRelUpSmooth = histRelUp.Clone(histRelUp.GetName()+str(random.random()))
                         histRelDownSmooth = histRelDown.Clone(histRelDown.GetName()+str(random.random()))
-                        self.smooth(histRelUpSmooth,region=obsName)
-                        self.smooth(histRelDownSmooth,region=obsName)
+                        #self.smooth(histRelUpSmooth,region=obsName)
+                        #self.smooth(histRelDownSmooth,region=obsName)
                         
                         for ibin in range(histNominal.GetNbinsX()):
                             cNom = histNominal.GetBinContent(ibin+1)
