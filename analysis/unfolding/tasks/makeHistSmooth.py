@@ -147,6 +147,10 @@ class SmoothHistograms(Module.getClass("Program")):
                             cDown = histDown.GetBinContent(ibin)
                             eDown = histDown.GetBinError(ibin)
                             
+                            #interpolate from 1 GeV to 0.5 GeV uncertainty
+                            if sysName=="topMass":
+                                cUp = cUp*0.5+cNom*0.5 
+                                cDown = cDown*0.5+cNom*0.5
                             
                             
                             if eUp<0.00001:
@@ -157,22 +161,32 @@ class SmoothHistograms(Module.getClass("Program")):
                                 cNom = 0.001
                                 
                             sigUp = math.fabs(cUp-cNom)/eUp
-                            sigDown = math.fabs(cUp-cDown)/eDown
-                                
-                            if sigUp<1:
-                                cUp = cNom
-                                if sigDown>1 and cDown/cNom<1:
-                                    cUp = cNom+math.fabs(cDown-cNom)
-                                if sigDown>1 and cDown/cNom>1:
-                                    cUp = cNom-math.fabs(cDown-cNom)
+                            sigDown = math.fabs(cDown-cNom)/eDown
                             
-                            if sigDown<1:
-                                cDown = cNom
-                                if sigUp>1 and cUp/cNom<1:
-                                    cDown = cNom+math.fabs(cUp-cNom)
-                                if sigUp>1 and cUp/cNom>1:
+                            if sigUp<0.75 and sigDown<0.75:
+                                if cDown/cNom<1 and cUp/cNom<1:
+                                    cDown = cNom*(cDown/cNom+cUp/cNom)*0.5
+                                    cUp = cNom+math.fabs(cDown-cNom)
+                                elif cDown/cNom>1 and cUp/cNom>1:
+                                    cUp = cNom*(cDown/cNom+cUp/cNom)*0.5
                                     cDown = cNom-math.fabs(cUp-cNom)
-                                
+                                elif cDown/cNom>1 and cUp/cNom<1:
+                                    cUp = cNom*(1+min(cDown/cNom-1,1-cUp/cNom))
+                                    cDown = cNom-math.fabs(cUp-cNom)
+                                elif cDown/cNom<1 and cUp/cNom>1:
+                                    cUp = cNom*(1+min(1-cDown/cNom,cUp/cNom-1))
+                                    cDown = cNom-math.fabs(cUp-cNom)
+                            elif sigUp<0.75 and sigDown>0.75:
+                                if cDown/cNom<1:
+                                    cUp = cNom+math.fabs(cDown-cNom)
+                                if cDown/cNom>1:
+                                    cUp = cNom-math.fabs(cDown-cNom)
+                            elif sigDown<0.75 and sigUp>0.75:
+                                if cUp/cNom<1:
+                                    cDown = cNom+math.fabs(cUp-cNom)
+                                if cUp/cNom>1:
+                                    cDown = cNom-math.fabs(cUp-cNom)
+                            
                                 
                             #if math.fabs(sigUp-sigDown)>5:
                                 
@@ -190,37 +204,29 @@ class SmoothHistograms(Module.getClass("Program")):
                                 histRelUp.SetBinError(ibin,1.)
                                 histRelDown.SetBinError(ibin,1.)
                                 
-                        self._logger.info("Compatible up bins: "+sysName+" "+compName+" "+str(compatibleBinsUp)+"/"+str(histNominal.GetNbinsX()+2))
-                        self._logger.info("Compatible down bins: "+sysName+" "+compName+" "+str(compatibleBinsDown)+"/"+str(histNominal.GetNbinsX()+2))
+                        #self._logger.info("Compatible up bins: "+sysName+" "+compName+" "+str(compatibleBinsUp)+"/"+str(histNominal.GetNbinsX()+2))
+                        #self._logger.info("Compatible down bins: "+sysName+" "+compName+" "+str(compatibleBinsDown)+"/"+str(histNominal.GetNbinsX()+2))
                                    
                         histRelUpSmooth = histRelUp.Clone(histRelUp.GetName()+str(random.random()))
                         histRelDownSmooth = histRelDown.Clone(histRelDown.GetName()+str(random.random()))
-                        #self.smooth(histRelUpSmooth,region=obsName)
-                        #self.smooth(histRelDownSmooth,region=obsName)
+                        self.smooth(histRelUpSmooth,region=obsName)
+                        self.smooth(histRelDownSmooth,region=obsName)
                         
                         for ibin in range(histNominal.GetNbinsX()):
                             cNom = histNominal.GetBinContent(ibin+1)
-                            if (compatibleBinsUp>0.8*(histNominal.GetNbinsX()+2) and compatibleBinsDown>0.8*(histNominal.GetNbinsX()+2)):
+                            
+                            if cNom!=0:
                                 histUpSmooth.SetBinContent(ibin+1,
-                                    cNom
+                                    histRelUpSmooth.GetBinContent(ibin+1)*cNom
                                 )
                                 histDownSmooth.SetBinContent(ibin+1,
-                                    cNom
+                                    histRelDownSmooth.GetBinContent(ibin+1)*cNom
                                 )
-                            
-                            else:
-                                if cNom!=0:
-                                    histUpSmooth.SetBinContent(ibin+1,
-                                        histRelUpSmooth.GetBinContent(ibin+1)*cNom
-                                    )
-                                    histDownSmooth.SetBinContent(ibin+1,
-                                        histRelDownSmooth.GetBinContent(ibin+1)*cNom
-                                    )
                             
                         histogramsPerChannelAndUncertainty[sysName][binName][0][obsName][compName]["histSmooth"] = histUpSmooth
                         histogramsPerChannelAndUncertainty[sysName][binName][1][obsName][compName]["histSmooth"] = histDownSmooth
                        
-                        '''
+                        
                         cv = ROOT.TCanvas("cv"+binName+obsName+compName+str(random.random()),"",800,600)
                         ymax = max(map(lambda x: x.GetMaximum(),[histNominal,histUp,histDown]))
                         axis = ROOT.TH2F("axis"+binName+obsName+compName+str(random.random()),"",
@@ -244,7 +250,7 @@ class SmoothHistograms(Module.getClass("Program")):
                         
                         cv.Update()
                         cv.Print(obsName+"_"+compName+"_"+binName+"_"+sysName+".png")
-                        '''
+                        
         
         for sysName in systematics:
             for i,d in enumerate(["Up","Down"]):
