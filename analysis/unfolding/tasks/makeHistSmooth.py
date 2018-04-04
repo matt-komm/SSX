@@ -166,7 +166,6 @@ class SmoothHistograms(Module.getClass("Program")):
                                 if sigDown>1 and cDown/cNom>1:
                                     cUp = cNom-math.fabs(cDown-cNom)
                             
-<<<<<<< Updated upstream
                             if sigDown<1:
                                 cDown = cNom
                                 if sigUp>1 and cUp/cNom<1:
