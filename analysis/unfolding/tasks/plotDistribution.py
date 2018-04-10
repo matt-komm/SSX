@@ -309,6 +309,27 @@ class PlotCrossSection(Module.getClass("Program")):
         
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         print fitResult["parameters"].keys()
+        
+        
+        
+        fitResultExtern = {}
+        for systematic in systematicsExtern:
+            fitOutputUp = os.path.join(
+                self.module("Utils").getOutputFolder("fit/"+systematic+"Up"),
+                self.module("ThetaModel").getFitFileName(channels,unfoldingName,systematic+"Up")
+            )
+            fitOutputDown = os.path.join(
+                self.module("Utils").getOutputFolder("fit/"+systematic+"Down"),
+                self.module("ThetaModel").getFitFileName(channels,unfoldingName,systematic+"Down")
+            )
+            
+            fitResultUp = self.module("ThetaFit").loadFitResult(fitOutputUp+".json")
+            fitResultDown = self.module("ThetaFit").loadFitResult(fitOutputDown+".json")
+        
+            fitResultExtern[systematic+"Up"] = fitResultUp
+            fitResultExtern[systematic+"Down"] = fitResultDown
+               
+        
         #fake plot result of 2-component fit
         if plotName[0]=="2j0t":
             for compName in componentDict.keys():
@@ -317,8 +338,23 @@ class PlotCrossSection(Module.getClass("Program")):
                 for parName in componentDict[compName]:
                     if parName.find("ratio")>=0:
                         fitResult["parameters"][parName+"_binInc"] = fitResult["parameters"]["Other_ratio_binInc"]
+                        for systematic in systematicsExtern:
+                            fitResultExtern[systematic][0]["parameters"][parName+"_binInc"] = fitResultExtern[systematic][0]["parameters"]["Other_ratio_binInc"]
+                            fitResultExtern[systematic][1]["parameters"][parName+"_binInc"] = fitResultExtern[systematic][1]["parameters"]["Other_ratio_binInc"]
                     else:
                         fitResult["parameters"][parName+"_binInc"] = fitResult["parameters"]["Other_binInc"]
+                        for systematic in systematicsExtern:
+                            fitResultExtern[systematic][0]["parameters"][parName+"_binInc"] = fitResultExtern[systematic][0]["parameters"]["Other_binInc"]
+                            fitResultExtern[systematic][1]["parameters"][parName+"_binInc"] = fitResultExtern[systematic][1]["parameters"]["Other_binInc"]
+        
+        fitResultProfiled = {"nominal":fitResult}
+        for systematic in systematicsProfiled:
+            fitResultProfiled[systematic+"Up"] = fitResult
+            fitResultProfiled[systematic+"Down"] = fitResult
+        fitResults = {} 
+        fitResults.update(fitResultProfiled)
+        fitResults.update(fitResultExtern)
+        
         
         for channel in channels:
             histogramsPerComponentAndUncertainty[channel] = {}
@@ -355,8 +391,8 @@ class PlotCrossSection(Module.getClass("Program")):
                         if compName.find("QCD")>=0:
                             sfName+="_"+channel
                         
-                        sfValue = fitResult["parameters"][sfName]["mean_fit"]
-                        sfError = fitResult["parameters"][sfName]["unc_fit"]
+                        sfValue = fitResults[uncertainty]["parameters"][sfName]["mean_fit"]
+                        sfError = fitResults[uncertainty]["parameters"][sfName]["unc_fit"]
                         hist.Scale(sfValue)
                         '''
                         for ibin in range(hist.GetNbinsX()):
@@ -452,6 +488,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 histContents[channel][compName] = numpy.zeros(hist.GetNbinsX())
                 for ibin in range(hist.GetNbinsX()):
                     histContents[channel][compName][ibin]=hist.GetBinContent(ibin+1)
+        
         
         fitParameters = sorted(fitResult["parameters"].keys())
         print fitParameters

@@ -198,6 +198,7 @@ class FitHistograms(Module.getClass("Program")):
         
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_sys.pdf",
             selection=uncertaintyList,
+            nameDict={"unc":"uncl. energy","tw":"tW/t#bar{t} ratio","res":"JER","pu":"pileup","muMulti":"#mu multijet iso. range","muEff":"#mu efficency","ltag":"mistagging eff.","en":"JEC","eleMultiVeto":"ele. multijet #gamma veto","eleMultiIso":"ele. multijet iso. range","eleEff":"ele. efficiency","dy":"W/Z+jet ratio","btag":"b-tagging"},  
             ranges = [-2.5,2.5],
             default=0
         )
@@ -235,6 +236,7 @@ class FitHistograms(Module.getClass("Program")):
                 
                 self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_sys_comparison.pdf",
                     selection=uncertaintyList,
+                    nameDict={"unc":"uncl. energy","tw":"tW/t#bar{t} ratio","res":"JER","pu":"pileup","muMulti":"#mu multijet iso. range","muEff":"#mu eff.","ltag":"mistagging eff.","en":"JEC","eleMultiVeto":"e multijet #photon veto","eleMultiIso":"e multijet iso. range","eleEff":"e efficiency","dy":"W/Z+jet ratio","btag":"b-tagging"},  
                     ranges = [-2.5,2.5],
                     default=0
                 )

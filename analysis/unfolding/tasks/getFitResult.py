@@ -416,7 +416,7 @@ class PlotCrossSection(Module.getClass("Program")):
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
                 '''
                 
-        NTOYS = 5000
+        NTOYS = 10000
         toysSum = {} 
         toysCompSum = {}
         for channel in channels:

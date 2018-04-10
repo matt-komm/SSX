@@ -225,7 +225,7 @@ class RunUnfolding(Module.getClass("Program")):
             regularizations=range(1,len(genBinning)-2)+range(1+(len(genBinning)-1),len(genBinning)-2+(len(genBinning)-1)),
             dataCovariance=combinedCovarianceMatrix,
             scanOutput=os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_comb_tauScan"),
-            fixedTau=None
+            fixedTau=1e-10 if (unfoldingName=="lpt" or unfoldingName=="leta") else None
         )
         #draw unfolded hist
         self.module("Drawing").plotDataHistogram([combinedHists["nominalGen"]],combinedUnfoldedHist,

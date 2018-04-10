@@ -32,7 +32,7 @@ class Drawing(Module):
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
-    def drawPosterior(self,fitResultDict,outputFile,selection=[],ranges=[-2,2],default=None):
+    def drawPosterior(self,fitResultDict,outputFile,selection=[],nameDict={},ranges=[-2,2],default=None):
         colors = {"comb":ROOT.kTeal+4,"mu":ROOT.kAzure+2,"ele":ROOT.kOrange+7}
         fitResultSelectedDict = {}
         Nfits = len(fitResultDict.keys())
@@ -63,7 +63,10 @@ class Drawing(Module):
         axis.GetXaxis().SetTickLength(30./(150+Npar*50))
         axis.GetYaxis().SetTickLength(0.02)
         for ipar,parameterName in enumerate(sorted(parameters)):
-            axis.GetYaxis().SetBinLabel(ipar+1,parameterName.replace("_"," "))
+            pName = parameterName.replace("_"," ")
+            if nameDict.has_key(pName):
+               pName = nameDict[pName]
+            axis.GetYaxis().SetBinLabel(ipar+1,pName)
             
         axis.Draw("AXIS")
         rootObj = []
@@ -152,6 +155,7 @@ class Drawing(Module):
             pText.SetTextFont(43)
             pText.SetTextSize(30)
             pText.SetTextAlign(12)
+            
             pText.AddText(fitName)
             pText.Draw("Same")
             
