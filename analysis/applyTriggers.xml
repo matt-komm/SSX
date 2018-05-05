@@ -25,7 +25,7 @@
     <option name="require all"  type="boolean" >
 False    </option>
     <option name="combined flag"  type="string" >
-<![CDATA[IsoMu20_vALL]]>    </option>
+<![CDATA[IsoMu27_vALL]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Mar 22 2017]]>      </entry>
@@ -112,7 +112,7 @@ False    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[11:53:31]]>      </entry>
       <entry name="xPos"  type="double" >
-171      </entry>
+172      </entry>
       <entry name="yPos"  type="double" >
 312      </entry>
     </userrecords>
@@ -239,8 +239,8 @@ False    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2017-03-22]]>    </entry>
+<![CDATA[2018-05-05]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[15:40:08]]>    </entry>
+<![CDATA[23:58:32]]>    </entry>
   </userrecords>
 </analysis>

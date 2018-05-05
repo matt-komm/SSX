@@ -247,9 +247,9 @@ True    </option>
     <option name="lepton pdgId"  type="long" >
 11    </option>
     <option name="lepton pt"  type="double" >
-35    </option>
+26    </option>
     <option name="lepton eta"  type="double" >
-1.5    </option>
+2.4    </option>
     <option name="number of leptons"  type="long" >
 1    </option>
     <option name="jet input name"  type="string" >
@@ -319,7 +319,7 @@ True    </option>
     <option name="process name field"  type="string" >
 <![CDATA[ProcessName]]>    </option>
     <option name="percentages"  type="string_vector" >
-<![CDATA[("[A-Za-z0-9_\-]+=0.1")]]>    </option>
+<![CDATA[("[A-Za-z0-9_\-]+=0.3")]]>    </option>
     <option name="limits"  type="string_vector" >
 <![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
     <option name="random"  type="boolean" >
@@ -905,8 +905,8 @@ True    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-03-17]]>    </entry>
+<![CDATA[2018-05-06]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[14:18:18]]>    </entry>
+<![CDATA[00:37:45]]>    </entry>
   </userrecords>
 </analysis>

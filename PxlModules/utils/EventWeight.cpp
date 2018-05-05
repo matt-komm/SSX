@@ -127,8 +127,8 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
     },
     {"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ext",
         new SimpleWeightInfo(
-            //xtotal=121726979.0 eff=101707668.0 - 20019311.0 = 81688357.0
-            1.92055435757e+12, //xsec from weight =  15777.5570654  (matching eff = 3.22319858332)
+            //xtotal=122055388.0 eff=101982201.0 - 20073187.0 = 81909014.0
+            1.92573953018e+12, //xsec from weight =  15777.5872227  (matching eff = 3.22320474418)
             4895.0 // xsec for process 'DYJetsToLL_M-50'
         )
     },
@@ -335,6 +335,27 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
             80.95 // xsec for process 'ST_t-channel_antitop_4f'
         )
     },
+    {"ST_t-channel_eleDecays_13TeV-comphep-pythia8_TuneCUETP8M1",
+        new SimpleWeightInfo(
+            //xtotal=604020.0 eff=604020.0 - 0.0 = 604020.0
+            604020.0, //xsec from weight =  1.0  (matching eff = 0.0141465073985)
+            70.688826 // xsec for process 'ST_t-channel_eleDecays_13TeV-comphep'
+        )
+    },
+    {"ST_t-channel_muDecays_13TeV-comphep-pythia8_TuneCUETP8M1",
+        new SimpleWeightInfo(
+            //xtotal=603449.0 eff=603449.0 - 0.0 = 603449.0
+            603449.0, //xsec from weight =  1.0  (matching eff = 0.0141465073985)
+            70.688826 // xsec for process 'ST_t-channel_muDecays_13TeV-comphep'
+        )
+    },
+    {"ST_t-channel_tauDecays_13TeV-comphep-pythia8_TuneCUETP8M1",
+        new SimpleWeightInfo(
+            //xtotal=603483.0 eff=603483.0 - 0.0 = 603483.0
+            603483.0, //xsec from weight =  1.0  (matching eff = 0.0141465073985)
+            70.688826 // xsec for process 'ST_t-channel_tauDecays_13TeV-comphep'
+        )
+    },
     {"ST_t-channel_top_4f_hdampdown_inclusiveDecays_13TeV-powhegV2-madspin-pythia8",
         new SimpleWeightInfo(
             //xtotal=6000000.0 eff=6000000.0 - 0.0 = 6000000.0
@@ -517,6 +538,20 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
             831.76 // xsec for process 'TT'
         )
     },
+    {"TT_TuneCUETP8M2T4down_13TeV-powheg-pythia8_ext",
+        new SimpleWeightInfo(
+            //xtotal=29984052.0 eff=29984052.0 - 0.0 = 29984052.0
+            29984052.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            831.76 // xsec for process 'TT'
+        )
+    },
+    {"TT_TuneCUETP8M2T4up_13TeV-powheg-pythia8_ext",
+        new SimpleWeightInfo(
+            //xtotal=29643040.0 eff=29643040.0 - 0.0 = 29643040.0
+            29643040.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
+            831.76 // xsec for process 'TT'
+        )
+    },
     {"TT_hdampDOWN_TuneCUETP8M2T4_13TeV-powheg-pythia8_ext",
         new SimpleWeightInfo(
             //xtotal=29046156.0 eff=29046156.0 - 0.0 = 29046156.0
@@ -528,20 +563,6 @@ const std::unordered_map<std::string,WeightInfoContainer> eventWeights80Xexcl = 
         new SimpleWeightInfo(
             //xtotal=29169226.0 eff=29169226.0 - 0.0 = 29169226.0
             29169226.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
-            831.76 // xsec for process 'TT'
-        )
-    },
-    {"TT_TuneCUETP8M2T4down_13TeV-powheg-pythia8_ext",
-        new SimpleWeightInfo(
-            //xtotal=29984052.0 eff=29984052.0 - 0.0 = 29984052.0
-            29984052.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
-            831.76 // xsec for process 'TT'
-        )
-    },
-    {"TT_TuneCUETP8M2T4up_13TeV-powheg-pythia8_ext",
-        new SimpleWeightInfo(
-            //xtotal=26459888.0 eff=26459888.0 - 0.0 = 26459888.0
-            26459888.0, //xsec from weight =  1.0  (matching eff = 0.00120226988554)
             831.76 // xsec for process 'TT'
         )
     },

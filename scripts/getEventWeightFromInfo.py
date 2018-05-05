@@ -164,6 +164,10 @@ xsecDB = {
     "ST_t-channel_antitop_5f": 80.95,
     "ST_t-channel_top_5f": 136.02,
     
+    "ST_t-channel_eleDecays_13TeV-comphep":(80.95+136.02)*3*WtoLeptons,
+    "ST_t-channel_muDecays_13TeV-comphep":(80.95+136.02)*3*WtoLeptons,
+    "ST_t-channel_tauDecays_13TeV-comphep":(80.95+136.02)*3*WtoLeptons,
+    
     "ST_tW_antitop": 35.6,
     "ST_tW_top": 35.6,
     "ST_tWll": 2*35.6*(3*WtoLeptons)*(3*WtoLeptons),

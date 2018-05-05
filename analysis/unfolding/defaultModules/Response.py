@@ -448,7 +448,7 @@ class Response(Module):
         # -> projection on y axis gives weighted reco distribution
         # -> projection on x axis gives unweighted gen distribution
         
-        #R+w*e=R'+e' =>  w=(R'+e'-R)/e
+        #R+e=R'+w*e' =>  w=(R+e-R')/e'
         for ibin in range(efficiencyHist.GetNbinsX()):
             denominator = efficiencyHist.GetBinContent(ibin+1)
             nominator = efficiencyHistUnweighted.GetBinContent(ibin+1)

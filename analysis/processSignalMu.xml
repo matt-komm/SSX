@@ -257,7 +257,7 @@ True    </option>
     <option name="process name field"  type="string" >
 <![CDATA[ProcessName]]>    </option>
     <option name="percentages"  type="string_vector" >
-<![CDATA[("[A-Za-z0-9_\-]+=0.1")]]>    </option>
+<![CDATA[("[A-Za-z0-9_\-]+=0.3")]]>    </option>
     <option name="limits"  type="string_vector" >
 <![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
     <option name="random"  type="boolean" >
@@ -274,7 +274,7 @@ False    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[11:53:31]]>      </entry>
       <entry name="xPos"  type="double" >
-789      </entry>
+790      </entry>
       <entry name="yPos"  type="double" >
 52      </entry>
     </userrecords>
@@ -905,8 +905,8 @@ True    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2017-12-29]]>    </entry>
+<![CDATA[2018-05-06]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[02:00:48]]>    </entry>
+<![CDATA[00:37:46]]>    </entry>
   </userrecords>
 </analysis>
