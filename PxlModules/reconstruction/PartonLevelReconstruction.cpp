@@ -196,6 +196,13 @@ class PartonLevelReconstruction:
             {
                 if (event)
                 {
+                    std::string processName = event->getUserRecord("ProcessName").toString();
+                    if (processName.find("comphep")!=std::string::npos or processName.find("herwig")!=std::string::npos)
+                    {
+                        _outputLeptonic->setTargets(event);
+                        return _outputLeptonic->processTargets();
+                    }
+                
                     std::vector<pxl::EventView*> eventViews;
                     event->getObjectsOfType(eventViews);
                     

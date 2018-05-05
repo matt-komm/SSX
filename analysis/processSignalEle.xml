@@ -5,7 +5,7 @@
     <option name="end"  type="long" >
 -1    </option>
     <option name="File names"  type="string_vector" >
-<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/ST_t-ch(?![A-Za-z0-9_\-]+herwigpp)[A-Za-z0-9_\-]+_v171220/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/ST_t-ch[A-Za-z0-9_\-]+_v180430/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
@@ -907,6 +907,6 @@ True    </option>
     <entry name="Modification date"  type="string" >
 <![CDATA[2018-05-06]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[00:37:45]]>    </entry>
+<![CDATA[01:47:27]]>    </entry>
   </userrecords>
 </analysis>
