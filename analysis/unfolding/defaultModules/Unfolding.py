@@ -412,7 +412,7 @@ class Unfolding(Module):
         
     def calculateSum(self,hist1,hist2,covariance,nominal=None,systematics=[]):
         return self.module("Unfolding").calculate(
-            lambda pos,neg: pos+neg,
+            lambda i,pos,neg: pos[i]+neg[i],
             hist1,
             hist2,
             covariance,
@@ -422,7 +422,7 @@ class Unfolding(Module):
         
     def calculateRatio(self,hist1,hist2,covariance,nominal=None,systematics=[]):
         return self.module("Unfolding").calculate(
-            lambda pos,neg: pos/(pos+neg),
+            lambda i,pos,neg: pos[i]/(pos[i]+neg[i]),
             hist1,
             hist2,
             covariance,
@@ -457,10 +457,13 @@ class Unfolding(Module):
         numpy.random.seed(seed=12345)
         toys = numpy.zeros((NTOYS,N))
         
-
+        diced_result_pos = numpy.zeros(N)
+        diced_result_neg = numpy.zeros(N)
         for itoy in range(NTOYS):
             diced=numpy.random.multivariate_normal(mean=means,cov=cov)
             nuciances = numpy.random.normal(0,1,size=(len(systematics))) #independent per sys
+            
+            
             for i in range(N):
                 diced_pos = diced[i] 
                 diced_neg = diced[i+N] 
@@ -524,8 +527,12 @@ class Unfolding(Module):
                         nominal_neg,up_neg,down_neg,nuciances[isys]
                     )
                     
-                    
-                toys[itoy][i]=fct(diced_pos,diced_neg)
+                diced_result_pos[i] = diced_pos
+                diced_result_neg[i] = diced_neg
+                
+                
+            for i in range(N):
+                toys[itoy][i]=fct(i,diced_result_pos,diced_result_neg)
                 
         histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName()+str(random.random()))
                 
@@ -564,8 +571,15 @@ class Unfolding(Module):
             self._logger.critical("TUnfold indicates a fatal error")
             sys.exit(1)
 
+        #!!!! NOTE: the following slightly increases regularization !!!!!
+        #!!!! NOTE: the following slightly increases regularization !!!!!
+        #!!!! NOTE: the following slightly increases regularization !!!!!
+        #!!!! NOTE: the following slightly increases regularization !!!!!
+        #!!!! NOTE: the following slightly increases regularization !!!!!
+        #!!!! NOTE: the following slightly increases regularization !!!!!
+
         if fixedTau==None:
-            bestTau = self.module("Unfolding").doScan(tunfold,genBinning,scanOutput)
+            bestTau = 2*self.module("Unfolding").doScan(tunfold,genBinning,scanOutput)
         else:
             bestTau=fixedTau
 

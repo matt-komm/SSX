@@ -238,14 +238,47 @@ class Utils(Module):
             hist.SetBinContent(ibin+1,hist.GetBinContent(ibin+1)/hist.GetBinWidth(ibin+1))
             hist.SetBinError(ibin+1,hist.GetBinError(ibin+1)/hist.GetBinWidth(ibin+1))
             
+               
+    def normalizeByBinWidth2D(self,genBinning,hist):
+        #hist.Scale(1./hist.Integral())
+        print "norm 2d"
+        N = hist.GetNbinsX()/2
+        for ibin in range(N):
+            for jbin in range(N):
+                arr = (genBinning[ibin+1]-genBinning[ibin])*(genBinning[jbin+1]-genBinning[jbin])
+                
+                hist.SetBinContent(ibin+1,jbin+1,hist.GetBinContent(ibin+1,jbin+1)/arr)
+                hist.SetBinError(ibin+1,jbin+1,hist.GetBinError(ibin+1,jbin+1)/arr)
+                
+                hist.SetBinContent(ibin+1+N,jbin+1,hist.GetBinContent(ibin+1+N,jbin+1)/arr)
+                hist.SetBinError(ibin+1+N,jbin+1,hist.GetBinError(ibin+1+N,jbin+1)/arr)
+                
+                hist.SetBinContent(ibin+1,jbin+1+N,hist.GetBinContent(ibin+1,jbin+1+N)/arr)
+                hist.SetBinError(ibin+1,jbin+1+N,hist.GetBinError(ibin+1,jbin+1+N)/arr)
+                
+                hist.SetBinContent(ibin+1+N,jbin+1+N,hist.GetBinContent(ibin+1+N,jbin+1+N)/arr)
+                hist.SetBinError(ibin+1+N,jbin+1+N,hist.GetBinError(ibin+1+N,jbin+1+N)/arr)
+            
     def normalizeByCrossSection(self,hist):
-        plotRange = hist.GetXaxis().GetBinUpEdge(hist.GetNbinsX())-hist.GetXaxis().GetBinLowEdge(1)
+        #plotRange = hist.GetXaxis().GetBinUpEdge(hist.GetNbinsX())-hist.GetXaxis().GetBinLowEdge(1)
         self.module("Utils").normalizeByBinWidth(hist)
         hist.Scale(1./self.module("Samples").getLumi())
         totXsec = 0.0
         for ibin in range(hist.GetNbinsX()):
             totXsec+=hist.GetBinContent(ibin+1)*hist.GetBinWidth(ibin+1)
         #self._logger.info("Calculated theo. xsec: "+str(totXsec)+" pb")
+        return totXsec
+        
+        
+    def normalizeByCrossSection2D(self,genBinning,hist):
+        #plotRangeX = hist.GetXaxis().GetBinUpEdge(hist.GetNbinsX())-hist.GetXaxis().GetBinLowEdge(1)
+        #plotRangeY = hist.GetYaxis().GetBinUpEdge(hist.GetNbinsY())-hist.GetYaxis().GetBinLowEdge(1)
+        self.module("Utils").normalizeByBinWidth2D(genBinning,hist)
+        hist.Scale(1./self.module("Samples").getLumi()**2)
+        totXsec = 0.0
+        for ibin in range(hist.GetNbinsX()):
+            for jbin in range(hist.GetNbinsY()):
+                totXsec+=hist.GetBinContent(ibin+1,jbin+1)*hist.GetXaxis().GetBinWidth(ibin+1)*hist.GetYaxis().GetBinWidth(jbin+1)
         return totXsec
         
             
