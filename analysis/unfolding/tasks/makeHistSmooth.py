@@ -226,7 +226,7 @@ class SmoothHistograms(Module.getClass("Program")):
                         histogramsPerChannelAndUncertainty[sysName][binName][0][obsName][compName]["histSmooth"] = histUpSmooth
                         histogramsPerChannelAndUncertainty[sysName][binName][1][obsName][compName]["histSmooth"] = histDownSmooth
                        
-                        
+                        '''
                         cv = ROOT.TCanvas("cv"+binName+obsName+compName+str(random.random()),"",800,600)
                         ymax = max(map(lambda x: x.GetMaximum(),[histNominal,histUp,histDown]))
                         axis = ROOT.TH2F("axis"+binName+obsName+compName+str(random.random()),"",
@@ -250,7 +250,7 @@ class SmoothHistograms(Module.getClass("Program")):
                         
                         cv.Update()
                         cv.Print(obsName+"_"+compName+"_"+binName+"_"+sysName+".png")
-                        
+                        '''
         
         for sysName in systematics:
             for i,d in enumerate(["Up","Down"]):

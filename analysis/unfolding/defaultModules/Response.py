@@ -359,6 +359,12 @@ class Response(Module):
             len(genBinning)-1,
             genBinning
         )
+        efficiencyHistUnweighted = ROOT.TH1F(
+            "efficiencyUnweighted",
+            ";"+self.module("Unfolding").getGenVariable(channel)+";",
+            len(genBinning)-1,
+            genBinning
+        )
         #to cross check the cross section
         xsecHist = ROOT.TH1F(
             "xsec",
@@ -411,7 +417,10 @@ class Response(Module):
         self._logger.info("Projected unselected events "+str(efficiencyHistMatrix.Integral())+" in efficiency hist")
         self._logger.info("Projected selected events (w/o reco weight) "+str(responseHistUnweighted.Integral())+" in response matrix") 
         self._logger.info("Projected unselected events (w/o reco weight) "+str(efficiencyHistMatrixUnweighted.Integral())+" in efficiency hist")
-        #force no sys samples !
+        
+        self._logger.info("Projected gen/summed unweighted events "+str(xsecGenSelectionHist.Integral())+"/"+str(responseHistUnweighted.Integral()+efficiencyHistMatrixUnweighted.Integral())+" for response matrix (should be identical)") 
+                
+        #force no sys samples for veto files!
         for processName in self.module("Samples").getSample("tChannel",channel,sys="")["processes"]:
              self._logger.info("Projecting events from '"+processName+"'")
              for fileName in self.module("Files").getEfficiencyFiles(channel):
@@ -430,34 +439,45 @@ class Response(Module):
         self._logger.info("Projected unselected events from veto "+str(efficiencyHistVeto.Integral())+" in efficiency hist")
         
         efficiencyHist.Add(efficiencyHistMatrix)
+        efficiencyHistUnweighted.Add(efficiencyHistMatrixUnweighted)
+        
+        efficiencyHist.Add(efficiencyHistVeto)
+        efficiencyHistUnweighted.Add(efficiencyHistVeto)
         
         #efficiency needs to be correct to account for the reco weight (e.g. lepton scale factors)
         # -> projection on y axis gives weighted reco distribution
         # -> projection on x axis gives unweighted gen distribution
+        
+        #R+w*e=R'+e' =>  w=(R'+e'-R)/e
         for ibin in range(efficiencyHist.GetNbinsX()):
-            sumWeighted = efficiencyHistMatrix.GetBinContent(ibin+1)
-            sumUnweighted = efficiencyHistMatrixUnweighted.GetBinContent(ibin+1)
+            denominator = efficiencyHist.GetBinContent(ibin+1)
+            nominator = efficiencyHistUnweighted.GetBinContent(ibin+1)
+            
             for jbin in range(responseHist.GetNbinsY()):
-                sumWeighted+=responseHist.GetBinContent(ibin+1,jbin+1)
-                sumUnweighted+=responseHistUnweighted.GetBinContent(ibin+1,jbin+1)
-            scale = 1.*sumUnweighted/sumWeighted
-            self._logger.info("Bin "+str(ibin+1)+": apply reco reweighting of "+str(scale))
-            efficiencyHist.SetBinContent(ibin+1,scale*efficiencyHist.GetBinContent(ibin+1))
-            efficiencyHist.SetBinError(ibin+1,scale*efficiencyHist.GetBinError(ibin+1))
+                nominator-=responseHist.GetBinContent(ibin+1,jbin+1)
+                nominator+=responseHistUnweighted.GetBinContent(ibin+1,jbin+1)
+            
+            w = 1.*nominator/denominator
+            self._logger.info("Bin "+str(ibin+1)+": apply reco reweighting of "+str(w))
+            efficiencyHist.SetBinContent(ibin+1,w*efficiencyHist.GetBinContent(ibin+1))
+            efficiencyHist.SetBinError(ibin+1,w*efficiencyHist.GetBinError(ibin+1))
         
-        efficiencyHist.Add(efficiencyHistVeto)
         
-        self._logger.info("Average selection efficiency: "+str(responseHist.Integral()/efficiencyHist.Integral()))
+        
+        #self._logger.info("Average selection efficiency: "+str(responseHist.Integral()/efficiencyHist.Integral()))
 
         #put efficiencies in underflow
         for i in range(responseHist.GetNbinsX()):
             responseHist.SetBinContent(i+1,0,efficiencyHist.GetBinContent(i+1))
+            responseHistUnweighted.SetBinContent(i+1,0,efficiencyHistUnweighted.GetBinContent(i+1))
                 
         rootFile = ROOT.TFile(output,"RECREATE")
         responseHist.SetDirectory(rootFile)
         responseHist.Write()
         genHist = responseHist.ProjectionX("gen")
+        genHistUnweighted = responseHistUnweighted.ProjectionX("genUnweighted")
         self._logger.info("Cross section in bin range: "+str(genHist.Integral()/self.module("Samples").getLumi())+" pb")
+        self._logger.info("Cross section in bin range (unweighted): "+str(genHistUnweighted.Integral()/self.module("Samples").getLumi())+" pb")
         self._logger.info("Cross section after gen selection: "+str(xsecGenSelectionHist.Integral()/self.module("Samples").getLumi())+" pb")
         self._logger.info("Cross section after gen selection (no tau): "+str(xsecGenSelectionNoTauHist.Integral()/self.module("Samples").getLumi())+" pb")
         self._logger.info("Total cross section: "+str(xsecHist.Integral()/self.module("Samples").getLumi())+" pb")
