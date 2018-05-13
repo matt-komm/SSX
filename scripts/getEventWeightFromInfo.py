@@ -181,7 +181,7 @@ xsecDB = {
     "TT": 831.76,
     "TTJets": 831.76,
     
-    "WW":63.7,
+    "WW":118.7, #https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV
     "WZ":47.13,
     "ZZ":16.523, #https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Diboson
 }

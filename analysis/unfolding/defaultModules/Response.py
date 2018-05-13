@@ -286,7 +286,11 @@ class Response(Module):
                         responseMatricesCombined[charge][unc].Add(h)
         responseMatrices[combName]=responseMatricesCombined
         return responseMatrices
-                    
+        
+    def getError(self,responseHist):
+        w = responseHist.Integral()/responseHist.GetEntries()
+        err = math.sqrt(responseHist.GetEntries())*w
+        return err
                 
     
     def makeResponse(self,channel,genCharge,output):
@@ -476,7 +480,7 @@ class Response(Module):
         responseHist.Write()
         genHist = responseHist.ProjectionX("gen")
         genHistUnweighted = responseHistUnweighted.ProjectionX("genUnweighted")
-        self._logger.info("Cross section in bin range: "+str(genHist.Integral()/self.module("Samples").getLumi())+" pb")
+        self._logger.info("Cross section in bin range: "+str(genHist.Integral()/self.module("Samples").getLumi())+"+-"+str(self.getError(genHist)/self.module("Samples").getLumi())+" pb")
         self._logger.info("Cross section in bin range (unweighted): "+str(genHistUnweighted.Integral()/self.module("Samples").getLumi())+" pb")
         self._logger.info("Cross section after gen selection: "+str(xsecGenSelectionHist.Integral()/self.module("Samples").getLumi())+" pb")
         self._logger.info("Cross section after gen selection (no tau): "+str(xsecGenSelectionNoTauHist.Integral()/self.module("Samples").getLumi())+" pb")

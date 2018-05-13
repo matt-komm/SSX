@@ -132,6 +132,7 @@ class JetSelection:
             std::vector<std::string> temp;
             getOption("dR objects",temp);
             _dRObjects.clear();
+
             std::copy(temp.begin(), temp.end(), std::back_inserter(_dRObjects));
             
             getOption("store n leading jets",_nLeadingJetsToStore);
@@ -336,12 +337,15 @@ class JetSelection:
                                         eventView->removeObject(particle);
                                     }
                                 }
-                                for (unsigned int iname = 0; iname < _dRObjects.size(); ++iname)
+                                else
                                 {
-                                    if (particle->getName()==_dRObjects[iname])
+                                    for (unsigned int iname = 0; iname < _dRObjects.size(); ++iname)
                                     {
-                                        dRCleaningObjects.push_back(particle);
-                                        break;
+                                        if (particle->getName()==_dRObjects[iname])
+                                        {
+                                            dRCleaningObjects.push_back(particle);
+                                            break;
+                                        }
                                     }
                                 }
                             }

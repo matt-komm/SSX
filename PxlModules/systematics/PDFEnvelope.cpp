@@ -82,7 +82,7 @@ class PDFEnvelope:
                 throw std::runtime_error("Cannot open file: "+_histFile);
             }
             TList* keyList = rootFile.GetListOfKeys();
-            TIterator* it = keyList->MakeIterator();
+            auto it = std::shared_ptr<TIterator>(keyList->MakeIterator());
             TObject* obj;
             std::set<std::string> keys;
             while(obj= it->Next())

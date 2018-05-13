@@ -241,7 +241,7 @@ True    </option>
     <option name="variables"  type="string_vector" >
 <![CDATA[()]]>    </option>
     <option name="variablesFile"  type="string" >
-<![CDATA[outputVariables.txt]]>    </option>
+<![CDATA[outputVetoVariables.txt]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Mar 22 2017]]>      </entry>
@@ -257,7 +257,7 @@ True    </option>
     <option name="process name field"  type="string" >
 <![CDATA[ProcessName]]>    </option>
     <option name="percentages"  type="string_vector" >
-<![CDATA[("[A-Za-z0-9_\-]+=0.3")]]>    </option>
+<![CDATA[("ST_t-channel_[A-Za-z]*top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_Tune[A-Za-z0-9_\-]*=0.2","[A-Za-z0-9_\-]+=1.")]]>    </option>
     <option name="limits"  type="string_vector" >
 <![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
     <option name="random"  type="boolean" >
@@ -276,7 +276,7 @@ False    </option>
       <entry name="xPos"  type="double" >
 790      </entry>
       <entry name="yPos"  type="double" >
-52      </entry>
+53      </entry>
     </userrecords>
   </module>
   <module name="RootTreeWriter8"  type="RootTreeWriter"  isEnabled="true" >
@@ -379,7 +379,7 @@ False    </option>
     <option name="remove other variations"  type="boolean" >
 True    </option>
     <option name="ignore processes"  type="string_vector" >
-<![CDATA[("\S+hdamp\S+","\S+herwig\S+","\S+mtop\S+","\S+scale\S+","\S+colourFlip\S+","\S+fsr\S+","\S+isr\S+")]]>    </option>
+<![CDATA[("\S+hdamp\S+","\S+herwig\S+","\S+mtop\S+","\S+scale\S+","\S+colourFlip\S+","\S+fsr\S+","\S+isr\S+","\S+comphep\S+","\S+TuneCUETP8M2T4\S*")]]>    </option>
     <option name="Res jet name"  type="string" >
 <![CDATA[JetRes]]>    </option>
     <option name="Res met name"  type="string" >
@@ -901,12 +901,30 @@ True    </option>
     <sink module="RootTreeWriter6"  name="input" >
     </sink>
   </connection>
+  <connection>
+    <source module="muonSelection2"  name="veto" >
+    </source>
+    <sink module="Split for VETO1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="muonSelection4"  name="veto" >
+    </source>
+    <sink module="Split for VETO1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="muonSelection5"  name="veto" >
+    </source>
+    <sink module="Split for VETO1"  name="input" >
+    </sink>
+  </connection>
   <userrecords>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-05-06]]>    </entry>
+<![CDATA[2018-05-10]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[01:47:00]]>    </entry>
+<![CDATA[20:06:19]]>    </entry>
   </userrecords>
 </analysis>

@@ -296,7 +296,7 @@ if __name__=="__main__":
         "HOURS":"%02i"%int(options.hours),
         "MINUTES":"00",
         "EXEC":"pxlrun",
-        "RAM":"2500",
+        "RAM":"3000",
         "SCRIPTNAME":"runJob.sh",
         "ARGLIST":"'XMLANAYLSIS'",
         "ARGSTOJOB":"$XMLANAYLSIS",

@@ -52,6 +52,8 @@ class Drawing(Module):
                             break
         parameters = sorted(list(set(parameters)))
         Npar = len(parameters)
+        if Npar==0:
+            return
        
         ROOT.gStyle.SetPaintTextFormat("4.0f")
         cv = ROOT.TCanvas("corr","",800,150+Npar*50)

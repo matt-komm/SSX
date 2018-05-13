@@ -93,8 +93,13 @@ class FitHistograms(Module.getClass("Program")):
                         }
                         #print channel,obserableName,componentName,fitSetup[channel+"_"+obserableName][componentName]["nominal"]
                         for uncertaintyParameter in uncertaintyParameters:
-                            if uncertaintyParameter.find("QCD")>=0:
-                                #make extra parameter per channel for QCD
+                            if uncertaintyParameter.find("tChannel")>=0:
+                                #make extra parameter per bin for signal
+                                fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]["yield"].append(uncertaintyParameter+"_"+binName)
+                                if not parametersDict.has_key(uncertaintyParameter+"_"+binName):
+                                    parametersDict[uncertaintyParameter+"_"+binName]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
+                            elif uncertaintyParameter.find("QCD")>=0:
+                                #make extra parameter per channel for QCD but not per bin
                                 fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]["yield"].append(uncertaintyParameter+"_"+binName+"_"+channel)
                                 if not parametersDict.has_key(uncertaintyParameter+"_"+binName+"_"+channel):
                                     parametersDict[uncertaintyParameter+"_"+binName+"_"+channel]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
@@ -179,13 +184,13 @@ class FitHistograms(Module.getClass("Program")):
         print fitResult["parameters"].items()[0]
         #print fitResult["parameters"]["en"]
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_yield.pdf",
-            selection=["tChannel_*_bin*","WZjets_bin*","WZjets_HF_bin*","WZjets_LF_bin*","TopBkg_bin*"],
+            selection=["tChannel_*_bin*","WZjets_bin*","WZjets_HF_bin*","WZjets_LF_bin*","TopBkg_bin*"],#,"WZjets*","WZjets_HF*","WZjets_LF*","TopBkg*"],
             ranges = [0.2,1.8],
             default=1,
         )
         
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_qcd.pdf",
-            selection=["QCD_*_bin*_*"],
+            selection=["QCD_*_bin*_*"],#,"QCD_*"],
             ranges = [0,1.5],
             default=1,
         )
@@ -217,13 +222,13 @@ class FitHistograms(Module.getClass("Program")):
                 fitResultMu = self.module("ThetaFit").loadFitResult(fitOutputMu+".json")
         
                 self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_yield_comparison.pdf",
-                    selection=["tChannel_*_bin*","WZjets_bin*","WZjets_HF_bin*","WZjets_LF_bin*","TopBkg_bin*"],
+                    selection=["tChannel_*_bin*","WZjets_bin*","WZjets_HF_bin*","WZjets_LF_bin*","TopBkg_bin*"],#,"WZjets*","WZjets_HF*","WZjets_LF*","TopBkg*"],
                     ranges = [0.2,1.8],
                     default=1,
                 )
                 
                 self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_qcd_comparison.pdf",
-                    selection=["QCD_*_bin*_*"],
+                    selection=["QCD_*_bin*_*"],#,"QCD_*"],
                     ranges = [0,1.5],
                     default=1,
                 )

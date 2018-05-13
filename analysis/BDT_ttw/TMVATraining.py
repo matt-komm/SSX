@@ -6,7 +6,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--ch', dest='channel', action='store',default='',help='name')
-parser.add_argument('--ver', dest='ver', action='store',default='5',help='version')
+parser.add_argument('--ver', dest='ver', action='store',default='6',help='version')
 parser.add_argument('--name', dest='name', action='store',default='',help='name')
 parser.add_argument('--cfg', dest='cfg', action='store',default='',help='config')
 parser.add_argument('--mix', dest='mix',default='0.01',help='mixing of CR regions')

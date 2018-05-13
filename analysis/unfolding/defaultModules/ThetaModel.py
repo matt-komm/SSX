@@ -339,6 +339,20 @@ myminimizer = {
             iterations = 150000;
             burn-in = 50000;
             name = "mcmc_min20";
+            stepsize_factor = 2.;
+        },
+        {
+            type = "mcmc_minimizer";
+            iterations = 150000;
+            burn-in = 50000;
+            name = "mcmc_min20";
+            stepsize_factor = 1.5;
+        },
+        {
+            type = "mcmc_minimizer";
+            iterations = 150000;
+            burn-in = 50000;
+            name = "mcmc_min20";
             stepsize_factor = 1.25;
         },
         {
@@ -360,7 +374,7 @@ myminimizer = {
             iterations = 150000;
             burn-in = 50000;
             name = "mcmc_min05";
-            stepsize_factor = 0.1;
+            stepsize_factor = 0.25;
         }
     );
     last_minimizer = {

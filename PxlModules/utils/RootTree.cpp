@@ -7,6 +7,11 @@ RootTree::RootTree(std::shared_ptr<TFile>& file, std::string name):
 {
     _tree = new TTree(name.c_str(),name.c_str());
     _tree->SetDirectory(file.get());
+    //_tree-> SetAutoFlush(-50000000);
+    //_tree->SetAutoSave(-50000000); //50MB instead of default 300MB
+    
+    _tree->SetAutoFlush(5000);
+    _tree->SetAutoSave(5000); //5000 events instead of default 300MB
 }
 
 
