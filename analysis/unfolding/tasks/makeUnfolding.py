@@ -18,6 +18,7 @@ class RunUnfolding(Module.getClass("Program")):
         #mu,ele
         channels = self.getOption("channels").split(",")
         systematics = [] if self.getOption("systematics")==None else self.getOption("systematics").split(",")
+        self._logger.info("Systematics: "+str(systematics))
         channelName = self.module("Samples").getChannelName(channels)
         #inc,pt,y,cos
         unfoldingName = self.module("Unfolding").getUnfoldingName()

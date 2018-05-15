@@ -22,7 +22,7 @@ class ThetaModel(Module):
         return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2))}}
         #return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2)), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
        
-    def makeGaus(self,mean,unc,r=[-3,3]):
+    def makeGaus(self,mean,unc,r=[-10,10]):
         return {"type":"gauss","config":{"mean": "%4.3f"%(mean), "width":"%4.3f"%(unc), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
         
     def getMeanAndUncertainty(self,dist):
@@ -49,8 +49,8 @@ class ThetaModel(Module):
             #"lumi":self.module("ThetaModel").makeLogNormal(1.0,0.025),
         }
         uncertainties = {
-            "tChannel_pos":self.module("ThetaModel").makeGaus(1.0,10.0,r=[0.1,4.0]),
-            "tChannel_neg":self.module("ThetaModel").makeGaus(1.0,10.0,r=[0.1,4.0]),
+            "tChannel_pos":self.module("ThetaModel").makeGaus(1.0,5.0,r=[0.1,4.0]),
+            "tChannel_neg":self.module("ThetaModel").makeGaus(1.0,5.0,r=[0.1,4.0]),
         }
         
         for uncName in uncertaintiesBkg.keys():
@@ -100,8 +100,9 @@ class ThetaModel(Module):
                 histName = self.module("ThetaModel").getHistogramName(observableName,fitComponentName,unfoldingName,unfoldingBin,uncertainty)
                 hist = rootFile.Get(histName)
                 if not hist:
-                    self._logger.critical("Histogram '"+histName+"' in file '"+fileName+"' not found")
-                    sys.exit(1)
+                    self._logger.error("Histogram '"+histName+"' in file '"+fileName+"' not found")
+                    return None
+                    #sys.exit(1)
                 #if hist.GetEntries()<=20 and (not (fitComponentName.find("QCD")>=0 and fitComponentName.find(observableName)<0)):
                 #    self._logger.debug("Low number of events ("+str(hist.GetEntries())+") in histogram '"+histName+"' in file '"+fileName+"'")
                 histClone = hist.Clone(hist.GetName()+"_clone")
@@ -111,8 +112,9 @@ class ThetaModel(Module):
             histName = self.module("ThetaModel").getHistogramName(observableName,"data",unfoldingName,unfoldingBin)
             hist = rootFile.Get(histName)
             if not hist:
-                self._logger.critical("Histogram '"+histName+"' in file '"+fileName+"' not found")
-                sys.exit(1)
+                self._logger.error("Histogram '"+histName+"' in file '"+fileName+"' not found")
+                return None
+                #sys.exit(1)
             #if hist.GetEntries()<=20:
             #    self._logger.warning("Low number of events ("+str(hist.GetEntries())+") in histogram '"+histName+"' in file '"+fileName+"'")
             histClone = hist.Clone(hist.GetName()+"_clone")
@@ -245,7 +247,7 @@ class ThetaModel(Module):
         return Model(name, {"bb_uncertainties":"true"})
         
     
-    def makeModel(self,cfgPath,fitSetup,parametersDict,modelName="fit",outputFile="fit",pseudo=False,seed=123):
+    def makeModel(self,cfgPath,fitSetup,parametersDict,modelName="fit",outputFile="fit",pseudo=False,seed=123,cov=0.01):
         self._logger.info("Creating model: "+modelName)
         file = open(cfgPath,"w",20971520)
         
@@ -336,54 +338,33 @@ myminimizer = {
     minimizers = (
         {
             type = "mcmc_minimizer";
-            iterations = 150000;
+            iterations = 100000;
             burn-in = 50000;
-            name = "mcmc_min20";
-            stepsize_factor = 2.;
-        },
-        {
-            type = "mcmc_minimizer";
-            iterations = 150000;
-            burn-in = 50000;
-            name = "mcmc_min20";
-            stepsize_factor = 1.5;
-        },
-        {
-            type = "mcmc_minimizer";
-            iterations = 150000;
-            burn-in = 50000;
-            name = "mcmc_min20";
+            name = "mcmc_min125";
             stepsize_factor = 1.25;
-        },
+        }, 
         {
             type = "mcmc_minimizer";
-            iterations = 150000;
+            iterations = 100000;
             burn-in = 50000;
-            name = "mcmc_min10";
+            name = "mcmc_min100";
             stepsize_factor = 1.0;
         },
         {
             type = "mcmc_minimizer";
-            iterations = 150000;
+            iterations = 100000;
             burn-in = 50000;
-            name = "mcmc_min05";
-            stepsize_factor = 0.5;
-        },
-        {
-            type = "mcmc_minimizer";
-            iterations = 150000;
-            burn-in = 50000;
-            name = "mcmc_min05";
-            stepsize_factor = 0.25;
+            name = "mcmc_min075";
+            stepsize_factor = 0.75;
         }
     );
     last_minimizer = {
         type = "newton_minimizer";
         par_eps = 1e-3; // optional; default is 1e-4'
-        maxit = 800000; // optional; default is 10,000'
+        maxit = 1000000; // optional; default is 10,000'
         improve_cov = true; // optional; default is false'
         force_cov_positive = true; // optional, default is false'
-        step_cov = 0.01; // optional; default is 0.1'
+        step_cov = '''+str(cov)+'''; // optional; default is 0.1'
     };
 };
         ''')

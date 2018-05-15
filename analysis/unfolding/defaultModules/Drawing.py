@@ -673,7 +673,7 @@ class Drawing(Module):
         legend.SetBorderSize(0)
         legend.SetTextFont(43)
         legend.SetTextSize(30)
-        legend.AddEntry(data,"Data","PE")
+        legend.AddEntry(data,"Data","P")
         for s in reversed(stack):
             legend.AddEntry(s["hist"],s["title"],"F")
         

@@ -222,8 +222,8 @@ class IncCrossSection(Module.getClass("Program")):
         result = {}
         for charge in [-1,1]:
             for h in [
-                ["nominalReco_"+self.module("Samples").getChargeName(charge)],
-                ["measuredReco_"+self.module("Samples").getChargeName(charge)],
+                #["nominalReco_"+self.module("Samples").getChargeName(charge)],
+                #["measuredReco_"+self.module("Samples").getChargeName(charge)],
                 ["nominalGen_"+self.module("Samples").getChargeName(charge)],
                 ["unfolded_"+self.module("Samples").getChargeName(charge)],
             ]:
@@ -271,17 +271,17 @@ class IncCrossSection(Module.getClass("Program")):
         unfoldingLevel = self.getOption("level")
         channelName = self.module("Samples").getChannelName(channels)
         
-        unfoldingName = "cos" #use angle here since it is contained in [-1;1] to get acceptance
+        unfoldingName = "pt" #use angle here since it is contained in [-1;1] to get acceptance
         
         systematics = [] if self.getOption("systematics")==None else self.getOption("systematics").split(",")
         NSYS = len(systematics)
     
-        nominalFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/nominal")
-        rootFileNominal = ROOT.TFile(os.path.join(nominalFolder,channelName+"_result.root"))
-        nominalResult = self.getResult(rootFileNominal)
-        rootFileNominal.Close()
+        #nominalFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/profiled")
+        #rootFileNominal = ROOT.TFile(os.path.join(nominalFolder,channelName+"_result.root"))
+        #nominalResult = self.getResult(rootFileNominal)
+        #rootFileNominal.Close()
         
-        
+        '''
         nominalHistPos = nominalResult["nominalGen_pos"]
         nominalHistPos.Scale(1./self.module("Samples").getLumi())
         nominalXsecPos = nominalHistPos.Integral()
@@ -293,7 +293,7 @@ class IncCrossSection(Module.getClass("Program")):
         nominalHist = nominalResult["nominalGen_inc"]
         nominalHist.Scale(1./self.module("Samples").getLumi())
         nominalXsec = nominalHist.Integral()
-        
+        '''
         if unfoldingLevel=="parton":
             #disregard lepton selection
             nominalXsec = 216.99
@@ -302,7 +302,7 @@ class IncCrossSection(Module.getClass("Program")):
             nominalXsecNeg = 80.95
         
         print "nominal pos/neg/inc/ratio",nominalXsecPos,nominalXsecNeg,nominalXsec,nominalXsecPos/nominalXsecNeg
-        fitResultStat = self.getFitResult(channels,"inc","nominal") 
+        #fitResultStat = self.getFitResult(channels,"inc","nominal") 
         fitResultProfiled = self.getFitResult(channels,"inc","profiled")
         
         meansProfiled = [
@@ -323,11 +323,11 @@ class IncCrossSection(Module.getClass("Program")):
         incMeanProfiled,incStdProfiled = self.calculate(lambda x: x[0]+x[1],meansProfiled,covarianceProfiled)
         ratioMeanProfiled,ratioStdProfiled = self.calculate(lambda x: x[0]/x[1],meansProfiled,covarianceProfiled)
         
-        print "pos",meansProfiled[0],math.sqrt(covarianceProfiled[0][0])/meansProfiled[0]
-        print "neg",meansProfiled[1],math.sqrt(covarianceProfiled[1][1])/meansProfiled[1]
+        print "pos",meansProfiled[0],math.sqrt(covarianceProfiled[0][0])
+        print "neg",meansProfiled[1],math.sqrt(covarianceProfiled[1][1])
         print "corr",correlationProfiled
-        print "inc",incMeanProfiled,incStdProfiled/incMeanProfiled
-        print "ratio",ratioMeanProfiled,ratioStdProfiled/ratioMeanProfiled
+        print "inc",incMeanProfiled,incStdProfiled
+        print "ratio",ratioMeanProfiled,ratioStdProfiled
         
         sysResults = []
         for isys,sys in enumerate(sorted(systematics)):

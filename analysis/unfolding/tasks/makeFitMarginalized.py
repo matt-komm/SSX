@@ -136,7 +136,8 @@ class FitHistograms(Module.getClass("Program")):
                 fitSetup,parametersDict,
                 outputFile=fitOutput+".root",
                 pseudo=False,
-                seed = 123+7*itry-31*itry+173*itry
+                seed = 123+7*itry-31*itry+173*itry,
+                cov=0.01+itry*0.02 if unfoldingName=='inc' else 0.1+itry*0.05
             )
             
             itry+=1
@@ -191,7 +192,7 @@ class FitHistograms(Module.getClass("Program")):
         
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_qcd.pdf",
             selection=["QCD_*_bin*_*"],#,"QCD_*"],
-            ranges = [0,1.5],
+            ranges = [0,2.],
             default=1,
         )
         
@@ -229,7 +230,7 @@ class FitHistograms(Module.getClass("Program")):
                 
                 self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_qcd_comparison.pdf",
                     selection=["QCD_*_bin*_*"],#,"QCD_*"],
-                    ranges = [0,1.5],
+                    ranges = [0,2.],
                     default=1,
                 )
                 
@@ -241,7 +242,7 @@ class FitHistograms(Module.getClass("Program")):
                 
                 self.module("Drawing").drawPosterior({"mu":fitResultMu,"ele":fitResultEle,"comb":fitResult},fitOutput+"__posteriors_sys_comparison.pdf",
                     selection=uncertaintyList,
-                    nameDict={"unc":"uncl. energy","tw":"tW/t#bar{t} ratio","res":"JER","pu":"pileup","muMulti":"#mu multijet iso. range","muEff":"#mu eff.","ltag":"mistagging eff.","en":"JEC","eleMultiVeto":"e multijet #photon veto","eleMultiIso":"e multijet iso. range","eleEff":"e efficiency","dy":"W/Z+jet ratio","btag":"b-tagging"},  
+                    nameDict={"unc":"uncl. energy","tw":"tW/t#bar{t} ratio","res":"JER","pu":"pileup","muMulti":"#mu multijet iso. range","muEff":"#mu eff.","ltag":"mistagging eff.","en":"JEC","eleMultiVeto":"e multijet #gamma veto","eleMultiIso":"e multijet iso. range","eleEff":"e efficiency","dy":"W/Z+jet ratio","btag":"b-tagging"},  
                     ranges = [-2.5,2.5],
                     default=0
                 )
