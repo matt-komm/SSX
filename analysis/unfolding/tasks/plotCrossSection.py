@@ -339,7 +339,7 @@ class PlotCrossSection(Module.getClass("Program")):
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
             profiledResult["covarianceUnfolded"],
-            {1:profiledResult["unfolded_pos"],-1:profiledResult["unfolded_neg"]},
+            {1:nominalResult["unfolded_pos"],-1:nominalResult["unfolded_neg"]},
             sysResults
         )
   
@@ -360,7 +360,7 @@ class PlotCrossSection(Module.getClass("Program")):
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
             profiledResult["covarianceUnfolded"],
-            {1:profiledResult["unfolded_pos"],-1:profiledResult["unfolded_neg"]},
+            {1:nominalResult["unfolded_pos"],-1:nominalResult["unfolded_neg"]},
             sysResults
         )
         
