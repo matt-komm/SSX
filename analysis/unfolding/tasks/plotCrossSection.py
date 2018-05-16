@@ -339,7 +339,7 @@ class PlotCrossSection(Module.getClass("Program")):
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
             profiledResult["covarianceUnfolded"],
-            {1:nominalResult["unfolded_pos"],-1:nominalResult["unfolded_neg"]},
+            {1:profiledResult["unfolded_pos"],-1:profiledResult["unfolded_neg"]},
             sysResults
         )
   
@@ -360,7 +360,7 @@ class PlotCrossSection(Module.getClass("Program")):
             profiledResult["unfolded_pos"],
             profiledResult["unfolded_neg"],
             profiledResult["covarianceUnfolded"],
-            {1:nominalResult["unfolded_pos"],-1:nominalResult["unfolded_neg"]},
+            {1:profiledResult["unfolded_pos"],-1:profiledResult["unfolded_neg"]},
             sysResults
         )
         
@@ -380,30 +380,48 @@ class PlotCrossSection(Module.getClass("Program")):
         genHistRatio = nominalResult["ratioGen"]
         
         
-        
-        
-        
-        print "%20s"%("Central (pb)"),
+        #tabSys= "\\hline\n"
+        tabSys= "%20s"%(" ")
         for ibin in range(len(genBinning)-1):
-            print " %7.2f"%(histSumTotal.GetBinContent(ibin+1)),
-            print "/%6s "%("---"),
-        print
+            tabSys+= "& %7s"%("bin "+str(ibin+1))
+        tabSys+= "\\\\\\hline\n"
         
-        print "%20s"%("Stat.-only"),
+        if unit!="":
+            tabSys+= "%20s"%("Central value (pb/"+unit+")")
+        else:
+            tabSys+= "%20s"%("Central value (pb)")
         for ibin in range(len(genBinning)-1):
-            print " %6.1f%%"%(100.*histSumNominal.GetBinError(ibin+1)/histSumNominal.GetBinContent(ibin+1)),
-            print "/%6s "%("---"),
-        print
+            tabSys+= ("& %4.2e}"%(histSumTotal.GetBinContent(ibin+1))).replace("e","\\cdot 10^{")
+        tabSys+= "\\\\\n"
         
-        print "%20s"%("Stat.+Exp."),
+        tabSys+= "%20s"%("Stat.-only")
         for ibin in range(len(genBinning)-1):
-            print " %6.1f%%"%(100.*histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1)),
-            print "/%6s "%("---"),
-        print
+            tabSys+= "& $\\pm%6.1f$\\%%"%(100.*histSumNominal.GetBinError(ibin+1)/histSumNominal.GetBinContent(ibin+1))
+        tabSys+= "\\\\\n"
+        
+        tabSys+= "%20s"%("Stat.+Exp.")
+        for ibin in range(len(genBinning)-1):
+            tabSys+= "& $\\pm%6.1f$\\%%"%(100.*histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1))
+        tabSys+= "\\\\\n"
+        
+        sysDictNames = {
+            "pdf":"PDF",
+            "tchanHdampPS":"$t$-ch. $h_\\mathrm{damp}$",
+            "tchanScaleME":"$t$-ch. ME scale",
+            "tchanScalePS":"$t$-ch. PS scale",
+            "topMass":"Top mass",
+            "ttbarHdampPS":"\\ttbar $h_\\mathrm{damp}$",
+            "ttbarPt":"\\ttbar \\pt rew.",
+            "ttbarScaleFSRPS":"\\ttbar FSR PS scale",
+            "ttbarScaleISRPS":"\\ttbar ISR PS scale",
+            "ttbarScaleME":"\\ttbar ME scale",
+            "ttbarUE":"\\ttbar UE tune",
+            "wjetsScaleME":"\\wjets ME scale"
+        }
         
         binSum2 = numpy.zeros(len(genBinning)-1)
         for isys,sys in enumerate(sorted(systematics)):
-            print "%20s"%(sys),
+            tabSys+= "%20s"%(sysDictNames[sys])
             for ibin in range(len(genBinning)-1):
                 relUp = math.fabs(
                     sysResults[isys][-1]["Up"].GetBinContent(ibin+1)+\
@@ -416,23 +434,29 @@ class PlotCrossSection(Module.getClass("Program")):
                     histSumNominal.GetBinContent(ibin+1)
                 )/histSumNominal.GetBinContent(ibin+1)
                 binSum2[ibin] += max(relUp,relDown)**2
-                print " %6.1f%%"%(100.*max(relUp,relDown)),
-                print "/%6.1f%%"%(100.*min(relUp,relDown)),
-            print
-        
-        print "%20s"%("Total"),
+                tabSys+= "& $\\pm%6.1f$\\%%"%(100.*max(relUp,relDown))
+            tabSys+= "\\\\\n"
+        tabSys+= "\\hline\n"
+        tabSys+= "%20s"%("Total")
         for ibin in range(len(genBinning)-1):
-            print " %6.1f%%"%(100.*histSumTotal.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)),
-            print "/%6s "%("---"),
-        print
+            tabSys+= "& $\\pm%6.1f$\\%%"%(100.*histSumTotal.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1))
+        tabSys+= "\\\\\\hline\n"
         
+        self.module("Utils").createFolder("final/"+channelName)
+        finalFolder = self.module("Utils").getOutputFolder("final/"+channelName)
+
+        
+        
+        fTabSys = open(os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sum.tex"),"w")
+        fTabSys.write(tabSys)
+        fTabSys.close()
+        '''
         print "%20s"%("Sum2"),
         for ibin in range(len(genBinning)-1):
             err2 = binSum2[ibin]+(histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1))**2
-            print " %6.1f%%"%(100.*math.sqrt(err2)),
-            print "/%6s "%("---"),
-        print
-        
+            print "& $\\pm%6.1f$%%"%(100.*math.sqrt(err2)),
+        print "\\\\"
+        '''
         
         
         histSumProfiled.SetMarkerStyle(20)
@@ -505,9 +529,7 @@ class PlotCrossSection(Module.getClass("Program")):
             legendPos = "LD"
             
             
-        self.module("Utils").createFolder("final/"+channelName)
-        finalFolder = self.module("Utils").getOutputFolder("final/"+channelName)
-
+        
         
         self.module("Drawing").plotCrossSection(
             genHistSum,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitleSum,xtitle,

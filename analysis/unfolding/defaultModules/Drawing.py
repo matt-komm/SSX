@@ -1125,7 +1125,18 @@ class Drawing(Module):
         hist.GetYaxis().SetLabelSize(33)
         hist.GetZaxis().SetLabelSize(33)
 
+        matrix = ROOT.TMatrixD(hist.GetNbinsX(),hist.GetNbinsY())
+        for ibin in range(hist.GetNbinsX()):
+            for jbin in range(hist.GetNbinsY()):
+                matrix[ibin][jbin] = hist.GetBinContent(ibin+1,jbin+1)
+        matrixSVD = ROOT.TDecompSVD(matrix)
+        conditionNumber = matrixSVD.Condition()
+        print "SVD composition: ",conditionNumber
+                
         hist.Scale(100.)
+        
+        
+        
             
         ymax = 1.1*hist.GetMaximum()
         ymin = hist.GetMinimum()
@@ -1160,8 +1171,18 @@ class Drawing(Module):
         pLumi.SetTextSize(36)
         pLumi.SetTextAlign(31)
         if title!="":
-            pLumi.AddText(title)
+            pLumi.AddText("%s"%(title))
         pLumi.Draw("Same")
+        
+        pCond=ROOT.TPaveText(cvxmax-0.03,0.86,cvxmax-0.03,0.86,"NDC")
+        pCond.SetFillColor(ROOT.kWhite)
+        pCond.SetBorderSize(0)
+        pCond.SetTextFont(43)
+        pCond.SetTextSize(30)
+        pCond.SetTextAlign(31)
+        pCond.SetTextColor(ROOT.kWhite)
+        pCond.AddText("cond. no.: %4.2f"%(conditionNumber))
+        pCond.Draw("Same")
         
         cvResponse.cd(1)
         histMatrixGenSelected.Draw("SameHIST")

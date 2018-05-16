@@ -412,7 +412,7 @@ class Unfolding(Module):
         
     def calculateSum(self,hist1,hist2,covariance,nominal=None,systematics=[]):
         return self.module("Unfolding").calculate(
-            lambda i,pos,neg: pos[i]+neg[i],
+            lambda i,pos,neg: max(0.0001,pos[i]+neg[i]),
             hist1,
             hist2,
             covariance,
@@ -422,7 +422,7 @@ class Unfolding(Module):
         
     def calculateRatio(self,hist1,hist2,covariance,nominal=None,systematics=[]):
         return self.module("Unfolding").calculate(
-            lambda i,pos,neg: pos[i]/(pos[i]+neg[i]),
+            lambda i,pos,neg: max(0,pos[i])/max(0.0001,pos[i]+neg[i]),
             hist1,
             hist2,
             covariance,
@@ -468,6 +468,8 @@ class Unfolding(Module):
                 diced_pos = diced[i] 
                 diced_neg = diced[i+N] 
                 
+                #print itoy,i,diced_neg
+                
                 for isys,sysDict in enumerate(systematics):
                     rel_up_pos = sysDict[1]["Up"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
                     rel_up_neg = sysDict[-1]["Up"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
@@ -481,6 +483,9 @@ class Unfolding(Module):
                         self._logger.critical("Rel. down variations: "+str(rel_down_pos)+"/"+str(rel_down_neg)+" (pos/neg)")
                         sys.exit(1)
                         
+                    #print "toy=",itoy,", i=",i,", sys=",isys,", raw=",sysDict[1]["Up"].GetBinContent(i+1),sysDict[1]["Down"].GetBinContent(i+1),nominal[1].GetBinContent(i+1),sysDict[-1]["Up"].GetBinContent(i+1),sysDict[-1]["Down"].GetBinContent(i+1),nominal[-1].GetBinContent(i+1)
+                    #print "toy=",itoy,", i=",i,", sys=",isys,", var=",rel_up_pos,rel_down_pos,rel_up_neg,rel_down_neg
+                        
                     #symmetrize uncertainties
                     if math.fabs(rel_up_pos-1)>math.fabs(rel_down_pos-1):
                         rel_down_pos = 1.-numpy.sign(rel_up_pos-1)*math.fabs(rel_up_pos-1)
@@ -492,7 +497,7 @@ class Unfolding(Module):
                     else:
                         rel_up_neg = 1.-numpy.sign(rel_down_neg-1)*math.fabs(rel_down_neg-1)
                         
-                    
+
                     nominal_pos = means[i]
                     nominal_neg = means[i+N]
                     
@@ -540,6 +545,7 @@ class Unfolding(Module):
         covResult = numpy.cov(toys,rowvar=False)
         
         for i in range(N):
+            #print i,meanResult[i],math.sqrt(covResult[i][i])
             histResult.SetBinContent(i+1,meanResult[i])
             histResult.SetBinError(i+1,math.sqrt(covResult[i][i]))
         return histResult,covResult

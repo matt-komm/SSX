@@ -337,15 +337,23 @@ class IncCrossSection(Module.getClass("Program")):
                 sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+v)
                 rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
                 result = self.getResult(rootFile)
+                fitResultSys = self.getFitResult(channels,"inc",sys+v)
                 results[-1][v]=result["nominalGen_neg"].Integral()/self.module("Samples").getLumi()
                 results[1][v]=result["nominalGen_pos"].Integral()/self.module("Samples").getLumi()
-                '''
+                
+                
                 if unfoldingLevel=="parton":
                     #disregard lepton selection
                     results[1][v] = nominalXsecPos 
                     results[-1][v] = nominalXsecNeg
-                '''
-            print sys,results[1]["Up"],"/",results[1]["Down"],",",results[-1]["Up"],"/",results[-1]["Down"]
+                    
+                
+                results[1][v] = results[1][v]*fitResultSys["parameters"]["tChannel_pos_binInc"]["mean_fit"],
+                results[-1][v] = results[-1][v]*fitResultSys["parameters"]["tChannel_neg_binInc"]["mean_fit"]
+                
+            
+                
+            #print sys,results[1]["Up"],"/",results[1]["Down"],",",results[-1]["Up"],"/",results[-1]["Down"]
                 
             sysResults.append(results)
             
