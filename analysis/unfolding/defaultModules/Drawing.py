@@ -437,7 +437,7 @@ class Drawing(Module):
         legend.SetBorderSize(0)
         legend.SetTextFont(43)
         legend.SetTextSize(30)
-        legend.AddEntry(histSumTotal,"Data","PE")
+        legend.AddEntry(histSumTotal,"Data","P")
         legend.AddEntry(genHistSum,"POWHEG#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8","L")
         legend.Draw("Same")
         
