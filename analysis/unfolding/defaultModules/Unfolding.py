@@ -412,7 +412,7 @@ class Unfolding(Module):
         
     def calculateSum(self,hist1,hist2,covariance,nominal=None,systematics=[]):
         return self.module("Unfolding").calculate(
-            lambda i,pos,neg: max(0.0001,pos[i]+neg[i]),
+            lambda i,pos,neg: (pos[i]+neg[i]),
             hist1,
             hist2,
             covariance,
@@ -423,7 +423,7 @@ class Unfolding(Module):
     def calculateRatio(self,hist1,hist2,covariance,nominal=None,systematics=[]):
         #NOTE: truncating the toys 
         return self.module("Unfolding").calculate(
-            lambda i,pos,neg: max(0,pos[i])/max(0.0001,pos[i]+neg[i]),
+            lambda i,pos,neg: pos[i]/(pos[i]+neg[i]),
             hist1,
             hist2,
             covariance,
@@ -486,7 +486,9 @@ class Unfolding(Module):
                         
                     #print "toy=",itoy,", i=",i,", sys=",isys,", raw=",sysDict[1]["Up"].GetBinContent(i+1),sysDict[1]["Down"].GetBinContent(i+1),nominal[1].GetBinContent(i+1),sysDict[-1]["Up"].GetBinContent(i+1),sysDict[-1]["Down"].GetBinContent(i+1),nominal[-1].GetBinContent(i+1)
                     #print "toy=",itoy,", i=",i,", sys=",isys,", var=",rel_up_pos,rel_down_pos,rel_up_neg,rel_down_neg
-                        
+                    
+                    #TODO: study if this is not giving too large uncertainties since symmetrization is
+                    # done for both channels indepdently
                     #symmetrize uncertainties
                     if math.fabs(rel_up_pos-1)>math.fabs(rel_down_pos-1):
                         rel_down_pos = 1.-numpy.sign(rel_up_pos-1)*math.fabs(rel_up_pos-1)
