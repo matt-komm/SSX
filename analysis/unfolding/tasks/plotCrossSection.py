@@ -381,9 +381,17 @@ class PlotCrossSection(Module.getClass("Program")):
         
         
         #tabSys= "\\hline\n"
-        tabSys= "%20s"%(" ")
+        if unit!="":
+            tabSys= "%20s"%("Bin range / "+unit)
+        else:
+            tabSys= "%20s"%("Bin range ")
         for ibin in range(len(genBinning)-1):
-            tabSys+= "& %7s"%("bin "+str(ibin+1))
+            binStart = genBinning[ibin]
+            binEnd = genBinning[ibin+1]
+            if math.log10(genBinning[-1])>=2:
+                tabSys+= "& $[%4.0f;%4.0f]$ "%(binStart,binEnd)
+            else:
+                tabSys+= "& $[%4.2f;%4.2f]$ "%(binStart,binEnd)
         tabSys+= "\\\\\\hline\n"
         
         if unit!="":
@@ -391,7 +399,13 @@ class PlotCrossSection(Module.getClass("Program")):
         else:
             tabSys+= "%20s"%("Central value (pb)")
         for ibin in range(len(genBinning)-1):
-            tabSys+= ("& %4.2e}"%(histSumTotal.GetBinContent(ibin+1))).replace("e","\\cdot 10^{")
+            value = histSumTotal.GetBinContent(ibin+1)
+            if math.log10(value)>3 or math.log10(value)<3:
+                tabSys+= ("& $%4.2e}$"%(histSumTotal.GetBinContent(ibin+1))).replace("e","\\cdot 10^{")
+            elif math.log10(value)>0:
+                tabSys+= ("& $%4.1f}$"%(histSumTotal.GetBinContent(ibin+1)))
+            else:
+                tabSys+= ("& $%5.3f}$"%(histSumTotal.GetBinContent(ibin+1)))
         tabSys+= "\\\\\n"
         
         tabSys+= "%20s"%("Stat.-only")
