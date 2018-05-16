@@ -421,6 +421,7 @@ class Unfolding(Module):
         )
         
     def calculateRatio(self,hist1,hist2,covariance,nominal=None,systematics=[]):
+        #NOTE: truncating the toys 
         return self.module("Unfolding").calculate(
             lambda i,pos,neg: max(0,pos[i])/max(0.0001,pos[i]+neg[i]),
             hist1,
