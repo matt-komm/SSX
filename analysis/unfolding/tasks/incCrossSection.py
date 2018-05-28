@@ -302,8 +302,34 @@ class IncCrossSection(Module.getClass("Program")):
             nominalXsecNeg = 80.95
         
         print "nominal pos/neg/inc/ratio",nominalXsecPos,nominalXsecNeg,nominalXsec,nominalXsecPos/nominalXsecNeg
-        #fitResultStat = self.getFitResult(channels,"inc","nominal") 
+        fitResultStat = self.getFitResult(channels,"inc","nominal") 
         fitResultProfiled = self.getFitResult(channels,"inc","profiled")
+        
+        #print fitResultProfiled["parameters"]["tChannel_pos_binInc"]["mean_fit"],fitResultProfiled["parameters"]["tChannel_neg_binInc"]["mean_fit"]
+        meansStat = [
+            nominalXsecPos*fitResultStat["parameters"]["tChannel_pos_binInc"]["mean_fit"],
+            nominalXsecNeg*fitResultStat["parameters"]["tChannel_neg_binInc"]["mean_fit"]
+        ]
+        covarianceStat = [
+            [
+                nominalXsecPos*nominalXsecPos*fitResultStat["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_pos_binInc"],
+                nominalXsecPos*nominalXsecNeg*fitResultStat["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+            ],[
+                nominalXsecPos*nominalXsecNeg*fitResultStat["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                nominalXsecNeg*nominalXsecNeg*fitResultStat["covariances"]["values"]["tChannel_neg_binInc"]["tChannel_neg_binInc"]
+            ]
+        ]
+        
+        f = open("incCrossSection.tex",'w')
+        
+        f.write("%20s & %10s & %10s \\\\\n"%("","\\$sigma(\\mathrm{t}+\\bar{\\mathrm{t}})$/pb","\\$sigma(\\mathrm{t})/sigma(\\bar{\\mathrm{t}})$"))
+        
+        correlationStat = covarianceStat[0][1]/math.sqrt(covarianceStat[0][0]*covarianceStat[1][1])
+        incMeanStat,incStdStat = self.calculate(lambda x: x[0]+x[1],meansStat,covarianceStat)
+        ratioMeanStat,ratioStdStat = self.calculate(lambda x: x[0]/x[1],meansStat,covarianceStat)
+
+        
+       
         
         meansProfiled = [
             nominalXsecPos*fitResultProfiled["parameters"]["tChannel_pos_binInc"]["mean_fit"],
@@ -319,20 +345,41 @@ class IncCrossSection(Module.getClass("Program")):
             ]
         ]
         correlationProfiled = covarianceProfiled[0][1]/math.sqrt(covarianceProfiled[0][0]*covarianceProfiled[1][1])
-        
         incMeanProfiled,incStdProfiled = self.calculate(lambda x: x[0]+x[1],meansProfiled,covarianceProfiled)
         ratioMeanProfiled,ratioStdProfiled = self.calculate(lambda x: x[0]/x[1],meansProfiled,covarianceProfiled)
         
+        print "profiled",incMeanProfiled,ratioMeanProfiled
+        
+        f.write("%20s & %7.1f & %7.2f \\\\\n"%("",incMeanProfiled,ratioMeanProfiled))
+
+        f.write("%20s & $\\pm%5.1f$\\%% & $\\pm%5.1f$\\%% \\\\\n"%("Stat.-only",incStdStat/incMeanStat*100.,ratioStdStat/ratioMeanStat*100.))
+        f.write("%20s & $\\pm%5.1f$\\%% & $\\pm%5.1f$\\%% \\\\\n"%("Stat.+Exp.",incStdProfiled/incMeanProfiled*100.,ratioStdProfiled/ratioMeanProfiled*100.))
+        
+        
+        '''
         print "pos",meansProfiled[0],math.sqrt(covarianceProfiled[0][0])
         print "neg",meansProfiled[1],math.sqrt(covarianceProfiled[1][1])
         print "corr",correlationProfiled
+        print "-----------"
         print "inc",incMeanProfiled,incStdProfiled
         print "ratio",ratioMeanProfiled,ratioStdProfiled
+        print "-----------"
+        '''
+        nameDict = {
+            "unc":"Unclustered energy","tw":"tW/\\ttbar ratio","res":"JER","pu":"Pileup","muMulti":"Muon multijet isolation range","muEff":"Muon efficiency","ltag":"Mistagging efficency","en":"Jet energy scale","eleMultiVeto":"Electron multijet $\\gamma$ veto","eleMultiIso":"Electron multijet isolation range","eleEff":"Electron efficiency","dy":"W/Z+jet ratio","btag":"B-tagging",
+            "ttbarUE": "\\ttbar UE tune","pdf":"PDF","topMass":"Top quark mass","tchanHdampPS":"$h_\\mathrm{damp}$ \\tchannel","tchanScaleME":"Q scale \\tchannel","tchanScalePS":"PS scale \\tchannel","ttbarScaleME":"Q scale \\ttbar","ttbarHdampPS":"$h_\\mathrm{damp}$ \\ttbar","ttbarPt":"\\ttbar \\pt reweighting","ttbarScaleFSRPS":"FSR scale \\ttbar","ttbarScaleISRPS":"ISR scale \\ttbar","wjetsScaleME":"Q scale \\wjets"
+        }
         
         sysResults = []
+        
+        totalInc = incStdProfiled**2
+        totalRatio = ratioStdProfiled**2
+        
         for isys,sys in enumerate(sorted(systematics)):
             results = {-1:{},1:{}}
             
+            sysRatio = 0
+            sysInc = 0
             for v in ["Up","Down"]:
                 sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+v)
                 rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
@@ -348,17 +395,36 @@ class IncCrossSection(Module.getClass("Program")):
                     results[-1][v] = nominalXsecNeg
                     
                 
-                results[1][v] = results[1][v]*fitResultSys["parameters"]["tChannel_pos_binInc"]["mean_fit"],
-                results[-1][v] = results[-1][v]*fitResultSys["parameters"]["tChannel_neg_binInc"]["mean_fit"]
+                meansSys = [
+                    results[1][v]*fitResultSys["parameters"]["tChannel_pos_binInc"]["mean_fit"],
+                    results[-1][v]*fitResultSys["parameters"]["tChannel_neg_binInc"]["mean_fit"]
+                ]
+                covarianceSys = [
+                    [
+                        results[1][v]*results[1][v]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_pos_binInc"],
+                        results[1][v]*results[-1][v]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                    ],[
+                        results[1][v]*results[-1][v]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                        results[-1][v]*results[-1][v]*fitResultSys["covariances"]["values"]["tChannel_neg_binInc"]["tChannel_neg_binInc"]
+                    ]
+                ]
+                correlationSys = covarianceSys[0][1]/math.sqrt(covarianceSys[0][0]*covarianceSys[1][1])
+                incMeanSys,incStdSys = self.calculate(lambda x: x[0]+x[1],meansSys,covarianceProfiled)
+                ratioMeanSys,ratioStdSys = self.calculate(lambda x: x[0]/x[1],meansSys,covarianceSys)
                 
-            
+                print sys+v,incMeanSys,ratioMeanSys
                 
-            #print sys,results[1]["Up"],"/",results[1]["Down"],",",results[-1]["Up"],"/",results[-1]["Down"]
+                sysInc = max(sysInc,math.fabs(incMeanSys-incMeanProfiled))
+                sysRatio = max(sysRatio,math.fabs(ratioMeanSys-ratioMeanProfiled))
                 
-            sysResults.append(results)
+                
+            totalInc+=sysInc**2
+            totalRatio+=sysRatio**2
+                
+            f.write("%20s & $\\pm%5.1f$\\%% & $\\pm%5.1f$\\%% \\\\\n"%(nameDict[sys],sysInc/incMeanProfiled*100.,sysRatio/ratioMeanProfiled*100.))
             
             #fitResultProfiled = self.getFitResult(channels,"inc","profiled")
-            
         
-        
+        f.write("%20s & $\\pm%5.1f$\\%% & $\\pm%5.1f$\\%% \\\\\n"%("Total",math.sqrt(totalInc)/incMeanProfiled*100.,math.sqrt(totalRatio)/ratioMeanProfiled*100.))
+        f.close()
 
