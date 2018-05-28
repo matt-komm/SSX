@@ -28,7 +28,7 @@ class SmoothHistograms(Module.getClass("Program")):
         for ibin in range(end-start+1):
             hist.SetBinContent(start+ibin+1,numpy.real(arr[ibin]))
             
-    def smoothAvgPerRange(self,hist,start,end,w=0.2):
+    def smoothAvgPerRange(self,hist,start,end,w=0.15):
         arr = numpy.zeros((end-start+1))
         err = numpy.zeros((end-start+1))
         
@@ -42,7 +42,7 @@ class SmoothHistograms(Module.getClass("Program")):
             e3 = hist.GetBinError(start+ibin+1+1)
             
             arr[ibin]=(w*c1/e1+(1-2*w)*c2/e2+w*c3/e3)/(w/e1+(1-2*w)/e2+w/e3)
-            err[ibin]=max([e1,e2,e3])
+            err[ibin]=math.sqrt((w*e1)**2+((1-2*w)*e2)**2+(w*e3)**2)
         
         arr[0]=((1-w)*hist.GetBinContent(start+1)/hist.GetBinError(start+1)+\
                 w*hist.GetBinContent(start+2)/hist.GetBinError(start+2))/\
@@ -59,23 +59,49 @@ class SmoothHistograms(Module.getClass("Program")):
             hist.SetBinContent(start+ibin+1,arr[ibin])
             hist.SetBinError(start+ibin+1,err[ibin])
             
-    def smooth(self,hist,region,w=0.1,i=10):
+    def smooth(self,hist,region,w=0.1,i=10,scale=1):
         #0..3 //mtsmoothAvgPerRangew
         #4..11 //BDT ttw
         #12..15 //BDT tch
         for _ in range(i):
             if region=="2j1t":
                 for r in [
-                    [0,3],
-                    [4,11],
-                    [12,15]
+                    [0,4*scale-1],
+                    [4*scale,12*scale-1],
+                    [12*scale,16*scale-1]
                 ]:
-                    self.smoothAvgPerRange(hist,16+r[0],16+r[1],w)
-                    self.smoothAvgPerRange(hist,15-r[1],15-r[0],w)
+                    self.smoothAvgPerRange(hist,16*scale+r[0],16*scale+r[1],w)
+                    self.smoothAvgPerRange(hist,16*scale-1-r[1],16*scale-1-r[0],w)
             elif region=="3j2t":
-                self.smoothAvgPerRange(hist,0,4,w)
-                self.smoothAvgPerRange(hist,5,9,w)
+                self.smoothAvgPerRange(hist,0,5*scale-1,w)
+                self.smoothAvgPerRange(hist,5*scale,10*scale-1,w)
+                
+    def symHist(self,histNominalPos,histNominalNeg,histPos,histNeg):
+        for ibin in range(histPos.GetNbinsX()/2+1):
+            cNominalPos = histNominalPos.GetBinContent(histPos.GetNbinsX()+1-ibin)
+            cNominalNeg = histNominalNeg.GetBinContent(ibin)
+        
+            cPos = histPos.GetBinContent(histPos.GetNbinsX()+1-ibin)
+            cNeg = histNeg.GetBinContent(ibin)
+            ePos = histPos.GetBinError(histPos.GetNbinsX()+1-ibin)
+            eNeg = histNeg.GetBinError(ibin)
+            #print ibin,histNominal.GetNbinsX()+1-ibin
             
+            if cNominalPos<0.01:
+                continue
+                
+            relPos = cPos/cNominalPos-1
+            relNeg = cNeg/cNominalNeg-1  
+            
+            relSym = (relPos+relNeg)*0.5
+            #print ibin,histPos.GetNbinsX()+1-ibin,relPos,relNeg,relSym
+            eSym = math.sqrt((ePos**2+eNeg**2)*0.25)
+            
+            histPos.SetBinContent(histPos.GetNbinsX()+1-ibin,(relSym+1)*cNominalPos)
+            histNeg.SetBinContent(ibin,(relSym+1)*cNominalNeg)
+            histPos.SetBinError(histPos.GetNbinsX()+1-ibin,eSym)
+            histNeg.SetBinError(ibin,eSym)
+                
     def execute(self):
         #mu,ele,comb
         channel = self.getOption("channel")
@@ -120,7 +146,35 @@ class SmoothHistograms(Module.getClass("Program")):
                         self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Up"),
                         self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Down")
                     ]
-                    
+                  
+        #symmetrize background by charge
+        for binName in sorted(histogramsPerChannelAndUncertainty["nominal"].keys()):
+            for obsName in sorted(histogramsPerChannelAndUncertainty["nominal"][binName].keys()):
+                for compName in sorted(histogramsPerChannelAndUncertainty["nominal"][binName][obsName].keys()):
+                    if compName=="data":
+                        continue
+                    if compName.find('tChannel')>=0:
+                        continue
+                    if compName.find('pos')<0:
+                        continue
+                        
+                    compNamePos = compName
+                    compNameNeg = compName.replace("pos","neg")
+                        
+                    histNominalPos = histogramsPerChannelAndUncertainty["nominal"][binName][obsName][compNamePos]["hist"]
+                    histNominalNeg = histogramsPerChannelAndUncertainty["nominal"][binName][obsName][compNameNeg]["hist"]
+                    for sysName in systematics:
+                        
+                        
+                        #print compNamePos,compNameNeg
+                        histUpPos = histogramsPerChannelAndUncertainty[sysName][binName][0][obsName][compNamePos]["hist"]
+                        histDownPos = histogramsPerChannelAndUncertainty[sysName][binName][1][obsName][compNamePos]["hist"]
+                        histUpNeg = histogramsPerChannelAndUncertainty[sysName][binName][0][obsName][compNameNeg]["hist"]
+                        histDownNeg = histogramsPerChannelAndUncertainty[sysName][binName][1][obsName][compNameNeg]["hist"]
+                        
+                        self.symHist(histNominalPos,histNominalNeg,histUpPos,histUpNeg)
+                        self.symHist(histNominalPos,histNominalNeg,histDownPos,histDownNeg)
+
 
         for binName in sorted(histogramsPerChannelAndUncertainty["nominal"].keys()):
             for obsName in sorted(histogramsPerChannelAndUncertainty["nominal"][binName].keys()):
@@ -140,12 +194,16 @@ class SmoothHistograms(Module.getClass("Program")):
                         histUp.SetLineColor(ROOT.kOrange+7)
                         histDown.SetLineColor(ROOT.kAzure+4)
                         
+                        
+                        
+                        
                         histRelUp = histUp.Clone(histUp.GetName()+binName+obsName+compName+sysName+"rel"+str(random.random()))
                         histRelDown = histDown.Clone(histDown.GetName()+binName+obsName+compName+sysName+"rel"+str(random.random()))
                         
                         histUpSmooth = histUp.Clone(histUp.GetName()+binName+obsName+compName+sysName+"smooth"+str(random.random()))
                         histDownSmooth = histDown.Clone(histDown.GetName()+binName+obsName+compName+sysName+"smooth"+str(random.random()))
                        
+                        
 
                         for ibin in range(histNominal.GetNbinsX()+2):
                             cNom = histNominal.GetBinContent(ibin)
@@ -161,6 +219,7 @@ class SmoothHistograms(Module.getClass("Program")):
                                 cDown = cDown*0.5+cNom*0.5
                             
                             
+                                
                             
                             if eUp<0.00001:
                                 eUp=1
@@ -171,7 +230,7 @@ class SmoothHistograms(Module.getClass("Program")):
                                 
                             sigUp = math.fabs(cUp-cNom)/eUp
                             sigDown = math.fabs(cDown-cNom)/eDown
-                            
+                            '''
                             if sigUp<0.75 and sigDown<0.75:
                                 if cDown/cNom<1 and cUp/cNom<1:
                                     cDown = cNom*(cDown/cNom+cUp/cNom)*0.5
@@ -195,7 +254,7 @@ class SmoothHistograms(Module.getClass("Program")):
                                     cDown = cNom+math.fabs(cUp-cNom)
                                 if cUp/cNom>1:
                                     cDown = cNom-math.fabs(cUp-cNom)
-                                
+                            '''
                             #add some noise to let fits see some numerical differences
                             #if compName.find("QCD")>=0 and sysName in ["eleMultiIso","eleMultiVeto","muMulti"]:
                             cUp*=numpy.random.normal(loc=1.0, scale=0.0001)
@@ -219,8 +278,10 @@ class SmoothHistograms(Module.getClass("Program")):
                                    
                         histRelUpSmooth = histRelUp.Clone(histRelUp.GetName()+str(random.random()))
                         histRelDownSmooth = histRelDown.Clone(histRelDown.GetName()+str(random.random()))
-                        self.smooth(histRelUpSmooth,region=obsName)
-                        self.smooth(histRelDownSmooth,region=obsName)
+                        
+                        
+                        self.smooth(histRelUpSmooth,region=obsName,scale=1)
+                        self.smooth(histRelDownSmooth,region=obsName,scale=1)
                         
                         for ibin in range(histNominal.GetNbinsX()):
                             cNom = histNominal.GetBinContent(ibin+1)
