@@ -195,6 +195,9 @@ def findXsec(name):
     if len(match)==0:
         return "? //"+warn("WARNING")+", xsec not found"
     return [str(xsecDB[match])+" // xsec for process '"+match+"'",xsecDB[match]]
+    
+    
+eventWeights = {}
 
 for folder in sorted(rootFiles.keys()):
     #print "reading ... ",folder
@@ -237,12 +240,25 @@ for folder in sorted(rootFiles.keys()):
     print tab+tab+")"
     print tab+"},"
     '''
+    processName = folder.rsplit("_v",1)[0]
+    if processName.find('_ext')>=0:
+        processName = processName[0:processName.find('_ext')]
+        
+    if not eventWeights.has_key(processName):
+        eventWeights[processName]={"total":0,"pos":0,"neg":0,"sum":0}
+    eventWeights[processName]["total"]+=nEvents
+    eventWeights[processName]["pos"]+=sumPosWeight
+    eventWeights[processName]["neg"]+=sumNegWeight
+    eventWeights[processName]["sum"]+=weightedGenSum
     
-    print tab+"{\""+folder.rsplit("_v",1)[0]+"\","
+for process in sorted(eventWeights.keys()):
+
+    weights = eventWeights[process]
+    print tab+"{\""+process+"\","
     print tab+tab+"new SimpleWeightInfo("
-    print tab+tab+tab+"//xtotal="+str(nEvents)+" eff="+str(sumPosWeight)+" - "+str(sumNegWeight)+" = "+str(sumPosWeight-sumNegWeight)
-    print tab+tab+tab+str(weightedGenSum)+", //xsec from weight = ",str(weightedGenSum/nEvents)," (matching eff = "+str(weightedGenSum/nEvents/findXsec(folder.rsplit("_v",1)[0])[1])+")"
-    print tab+tab+tab+findXsec(folder.rsplit("_v",1)[0])[0]
+    print tab+tab+tab+"//xtotal="+str(weights["total"])+" eff="+str(weights["pos"])+" - "+str(weights["neg"])+" = "+str(weights["pos"]-weights["neg"])
+    print tab+tab+tab+str(weights["sum"])+", //xsec from weight = ",str(weights["sum"]/weights["total"])
+    print tab+tab+tab+findXsec(process)[0]
     print tab+tab+")"
     print tab+"},"
     
