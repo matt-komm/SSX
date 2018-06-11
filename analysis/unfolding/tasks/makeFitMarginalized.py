@@ -137,7 +137,7 @@ class FitHistograms(Module.getClass("Program")):
                 outputFile=fitOutput+".root",
                 pseudo=False,
                 seed = 123+7*itry-31*itry+173*itry,
-                cov=0.01+itry*0.01 if unfoldingName=='inc' else 0.05+itry*0.05
+                cov=0.001+itry*0.001 if unfoldingName=='inc' else 0.001+itry*0.001
             )
             
             itry+=1

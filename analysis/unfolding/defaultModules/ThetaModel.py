@@ -338,24 +338,24 @@ myminimizer = {
     minimizers = (
         {
             type = "mcmc_minimizer";
-            iterations = 100000;
+            iterations = 200000;
             burn-in = 50000;
             name = "mcmc_min125";
-            stepsize_factor = 1.25;
+            stepsize_factor = 1.1;
         }, 
         {
             type = "mcmc_minimizer";
-            iterations = 100000;
+            iterations = 200000;
             burn-in = 50000;
             name = "mcmc_min100";
             stepsize_factor = 1.0;
         },
         {
             type = "mcmc_minimizer";
-            iterations = 100000;
+            iterations = 200000;
             burn-in = 50000;
             name = "mcmc_min075";
-            stepsize_factor = 0.75;
+            stepsize_factor = 0.9;
         }
     );
     last_minimizer = {

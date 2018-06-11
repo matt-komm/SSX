@@ -30,20 +30,20 @@ setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtPa
 
 
 
-python driver.py -m tasks/makeFitSingle -c channels:$1 -c smooth:1
-python driver.py -m setup/Wjets -m tasks/makeFitSingle -c channels:$1 -c smooth:1
+python driver.py -m tasks/makeFitSingle -c channels:$1
+python driver.py -m setup/Wjets -m tasks/makeFitSingle -c channels:$1
 for setup in $setups
     do
-    python driver.py -m tasks/makeFitSingle -m setup/$setup -c channels:$1 -c smooth:1
+    python driver.py -m tasks/makeFitSingle -m setup/$setup -c channels:$1
     done
 #just smooth all systematics
 for sys  in "${syst[@]}"
     do
-    python driver.py -m tasks/makeFitSingle -m $sys -c channels:$1 -c smooth:1
-    python driver.py -m setup/Wjets -m tasks/makeFitSingle -m $sys -c channels:$1 -c smooth:1
+    python driver.py -m tasks/makeFitSingle -m $sys -c channels:$1
+    python driver.py -m setup/Wjets -m tasks/makeFitSingle -m $sys -c channels:$1
     for setup in $setups
         do
-        python driver.py -m tasks/makeFitSingle -m $sys -m setup/$setup -c channels:$1 -c smooth:1
+        python driver.py -m tasks/makeFitSingle -m $sys -m setup/$setup -c channels:$1
         done
     done
 

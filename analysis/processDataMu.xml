@@ -65,7 +65,7 @@
     <option name="end"  type="long" >
 -1    </option>
     <option name="File names"  type="string_vector" >
-<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/SingleMu[A-Za-z0-9_\-]+_v180430/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/SingleMu[A-Za-z0-9_\-]+_v180529/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Mar 22 2017]]>      </entry>
@@ -105,8 +105,8 @@
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-05-06]]>    </entry>
+<![CDATA[2018-06-01]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[00:42:47]]>    </entry>
+<![CDATA[16:02:50]]>    </entry>
   </userrecords>
 </analysis>

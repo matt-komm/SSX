@@ -15,7 +15,7 @@ class Files(Module):
         
         
     def getVersion(self):
-        return "6"
+        return "7"
         
         
     def getSystematicPostfix(self):

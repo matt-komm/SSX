@@ -5,14 +5,14 @@
     <option name="end"  type="long" >
 -1    </option>
     <option name="File names"  type="string_vector" >
-<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/SingleEle[A-Za-z0-9_\-]+_v180430/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/SingleEle[A-Za-z0-9_\-]+_v180529/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[10:12:55]]>      </entry>
       <entry name="xPos"  type="double" >
-31      </entry>
+28      </entry>
       <entry name="yPos"  type="double" >
 73      </entry>
     </userrecords>
@@ -105,8 +105,8 @@
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-05-06]]>    </entry>
+<![CDATA[2018-06-01]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[00:42:53]]>    </entry>
+<![CDATA[16:02:28]]>    </entry>
   </userrecords>
 </analysis>

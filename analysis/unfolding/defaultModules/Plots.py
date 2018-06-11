@@ -20,6 +20,7 @@ class Plots(Module):
         mtwSelection = "(SingleTop_1__mtw_beforePz>50.)"
         srSelection = "(SingleTop_1__mtw_beforePz>50.)*("+self.module("ThetaModel").getBDTtchan(channel)+">0.7)"
         bgSelection = "(SingleTop_1__mtw_beforePz>50.)*("+self.module("ThetaModel").getBDTtchan(channel)+"<0.0)"
+        crSelection = bgSelection
         return [
             {
                 "obsname":"2j1t",
@@ -195,6 +196,108 @@ class Plots(Module):
                 "normalize":True,
                 "logy":True,
                 "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
+                "region":"2j1b",
+                "resRange":0.2
+            },
+            
+            
+            
+            
+            
+            
+            {
+                "obsname":"2j1t",
+                "name":"pt2j1t_CR",
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "var":"SingleTop_1__Top_1__Pt",
+                "xtitle":"Top quark p#scale[0.7]{#lower[0.3]{T}} (GeV)",
+                "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT / GeV",
+                "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+crSelection,
+                "binning":numpy.array([0.,50.,80.,120.,180.,300.]),
+                "legendPos":"R",
+                "normalize":True,
+                "logy":True,
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "region":"2j1b",
+                "resRange":0.2
+            },
+            {
+                "obsname":"2j1t",
+                "name":"y2j1t_CR",
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "var":"fabs(SingleTop_1__Top_1__Y)",
+                "xtitle":"Top quark |y|",
+                "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT",
+                "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+crSelection,
+                "binning":numpy.array([0.,0.2,0.5,0.8,1.3,2.6]),
+                "legendPos":"R",
+                "normalize":True,
+                "logy":False,
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "region":"2j1b",
+                "resRange":0.2
+            },
+            {
+                "obsname":"2j1t",
+                "name":"cos2j1t_CR",
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "var":"SingleTop_1__cosTheta_tPLz",
+                "xtitle":"cos#kern[0.1]{#theta}#scale[0.7]{#lower[0.28]{pol.}}#kern[-1.1]{*}",
+                "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT",
+                "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+crSelection,
+                "binning":numpy.array([-1.0,-0.6,-0.3,0.0,0.3,0.6,1.0]),
+                "legendPos":"L",
+                "normalize":True,
+                "logy":False,
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "region":"2j1b",
+                "resRange":0.2
+            },
+            {
+                "obsname":"2j1t",
+                "name":"lpt2j1t_CR",
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "var":"SingleTop_1__TightLepton_1__Pt",
+                "xtitle":"Lepton p#scale[0.7]{#lower[0.3]{T}} (GeV)",
+                "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT / GeV",
+                "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+crSelection,
+                "binning":numpy.array([26.,35.,45.,60.,85.,200.]),
+                "legendPos":"R",
+                "normalize":True,
+                "logy":True,
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "region":"2j1b",
+                "resRange":0.2
+            },
+            {
+                "obsname":"2j1t",
+                "name":"leta2j1t_CR",
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "var":"fabs(SingleTop_1__TightLepton_1__Eta)",
+                "xtitle":"Lepton |y|",
+                "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT",
+                "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+crSelection,
+                "binning":numpy.array([0.0,0.4,0.8,1.5,1.9,2.4]),
+                "legendPos":"R",
+                "normalize":True,
+                "logy":False,
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "region":"2j1b",
+                "resRange":0.2
+            },
+            {
+                "obsname":"2j1t",
+                "name":"wpt2j1t_CR",
+                "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
+                "var":"SingleTop_1__W_1__Pt",
+                "xtitle":"W p#scale[0.7]{#lower[0.3]{T}} (GeV)",
+                "ytitle":"#LT#kern[-0.5]{ }Events#kern[-0.5]{ }#GT / GeV",
+                "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+crSelection,
+                "binning":numpy.array([0.,35.,55.,80.,140.,250.]),
+                "legendPos":"R",
+                "normalize":True,
+                "logy":True,
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
                 "region":"2j1b",
                 "resRange":0.2
             }

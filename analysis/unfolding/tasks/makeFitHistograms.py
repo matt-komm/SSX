@@ -30,6 +30,7 @@ class FitHistograms(Module.getClass("Program")):
             unfoldingBin,
             self.module("Utils").getUncertaintyName()
         )
+        
         if os.path.exists(histFilePath):
             self._logger.info("Output file '"+histFilePath+"' already exists! -> skip")
             sys.exit(0)

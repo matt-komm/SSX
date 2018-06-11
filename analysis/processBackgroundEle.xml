@@ -5,7 +5,7 @@
     <option name="end"  type="long" >
 -1    </option>
     <option name="File names"  type="string_vector" >
-<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/(?!SingleMu)(?!SingleEle)(?!ST_t-ch)(?!QCD[A-Za-z0-9_\-]+MuEnriched)(?!DY[0-9]JetsToLL_M)(?![A-Za-z0-9_\-]+colourFlip)[A-Za-z0-9_\-]+_v180430/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/(?!SingleMu)(?!SingleEle)(?!ST_t-ch)(?!QCD[A-Za-z0-9_\-]+MuEnriched)(?!DY[0-9]JetsToLL_M)(?![A-Za-z0-9_\-]+colourFlip)[A-Za-z0-9_\-]+_v180529/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Jun 21 2016]]>      </entry>
@@ -697,8 +697,8 @@ True    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-05-06]]>    </entry>
+<![CDATA[2018-06-01]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[00:43:11]]>    </entry>
+<![CDATA[16:01:52]]>    </entry>
   </userrecords>
 </analysis>
