@@ -94,10 +94,10 @@ ttbarCut = "((formva==1)&&(Reconstructed_1__muoncat==0 || Reconstructed_1__eleca
 
 for background in [
     ["WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",0.25,wjetsCut],
-    ["WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",0.25,wjetsCut],
-    ["WToLNu_0J_13TeV-amcatnloFXFX-pythia8_ext",0.5,wjetsCut],
+    ["WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",0.25,wjetsCut],
+    ["WToLNu_0J_13TeV-amcatnloFXFX-pythia8",0.5,wjetsCut],
     ["WToLNu_1J_13TeV-amcatnloFXFX-pythia8",0.5,wjetsCut],
-    ["WToLNu_2J_13TeV-amcatnloFXFX-pythia8_ext",0.5,wjetsCut],
+    ["WToLNu_2J_13TeV-amcatnloFXFX-pythia8",0.5,wjetsCut],
 ]:
     chainTrain = ROOT.TChain(background[0])
     backgroundTrainChains.append(chainTrain)
