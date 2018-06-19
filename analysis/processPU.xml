@@ -1,0 +1,240 @@
+<analysis file_format_version="0.4" >
+  <module name="File Input1"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+1    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/(?!SingleMu)(?!SingleEle)[A-Za-z0-9_\-]+_v180529/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+30      </entry>
+      <entry name="yPos"  type="double" >
+72      </entry>
+    </userrecords>
+  </module>
+  <module name="muSelection"  type="SubAnalysis"  isEnabled="true" >
+    <option name="analysis file"  type="string" >
+<![CDATA[muonSelection.xml]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+434      </entry>
+      <entry name="yPos"  type="double" >
+314      </entry>
+    </userrecords>
+  </module>
+  <module name="applyWeights"  type="SubAnalysis"  isEnabled="true" >
+    <option name="analysis file"  type="string" >
+<![CDATA[applyWeights.xml]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+698      </entry>
+      <entry name="yPos"  type="double" >
+521      </entry>
+    </userrecords>
+  </module>
+  <module name="applyTriggers"  type="SubAnalysis"  isEnabled="true" >
+    <option name="analysis file"  type="string" >
+<![CDATA[applyTriggers.xml]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+892      </entry>
+      <entry name="yPos"  type="double" >
+587      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter6"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[pu.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[puVariables.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+1071      </entry>
+      <entry name="yPos"  type="double" >
+582      </entry>
+    </userrecords>
+  </module>
+  <module name="EventWeight1"  type="EventWeight"  isEnabled="true" >
+    <option name="name of process field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="EraName"  type="string" >
+<![CDATA[80Xexcl]]>    </option>
+    <option name="weightname"  type="string" >
+<![CDATA[mcweight]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+142      </entry>
+      <entry name="yPos"  type="double" >
+205      </entry>
+    </userrecords>
+  </module>
+  <module name="JetMETVariations1"  type="JetMETVariations"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="nominal jet name"  type="string" >
+<![CDATA[Jetsmeared]]>    </option>
+    <option name="nominal MET name"  type="string" >
+<![CDATA[MET]]>    </option>
+    <option name="rename jet"  type="string" >
+<![CDATA[Jet]]>    </option>
+    <option name="rename MET"  type="string" >
+<![CDATA[MET]]>    </option>
+    <option name="remove other variations"  type="boolean" >
+True    </option>
+    <option name="ignore processes"  type="string_vector" >
+<![CDATA[("\S+hdamp\S+","\S+herwig\S+","\S+mtop\S+","\S+scale\S+","\S+colourFlip\S+","\S+fsr\S+","\S+isr\S+","\S+CUETP8M2T4up\S+","\S+CUETP8M2T4down\S+")]]>    </option>
+    <option name="Res jet name"  type="string" >
+<![CDATA[JetRes]]>    </option>
+    <option name="Res met name"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="variate ResUp"  type="boolean" >
+False    </option>
+    <option name="variate ResDown"  type="boolean" >
+False    </option>
+    <option name="En jet name"  type="string" >
+<![CDATA[JetEn]]>    </option>
+    <option name="En met name"  type="string" >
+<![CDATA[METEn]]>    </option>
+    <option name="variate EnUp"  type="boolean" >
+False    </option>
+    <option name="variate EnDown"  type="boolean" >
+False    </option>
+    <option name="Unc jet name"  type="string" >
+<![CDATA[]]>    </option>
+    <option name="Unc met name"  type="string" >
+<![CDATA[METUnc]]>    </option>
+    <option name="variate UncUp"  type="boolean" >
+False    </option>
+    <option name="variate UncDown"  type="boolean" >
+False    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+87      </entry>
+      <entry name="yPos"  type="double" >
+403      </entry>
+    </userrecords>
+  </module>
+  <module name="Duplicator1"  type="Duplicator"  isEnabled="true" >
+    <option name="active 1"  type="boolean" >
+True    </option>
+    <option name="active 2"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+340      </entry>
+      <entry name="yPos"  type="double" >
+488      </entry>
+    </userrecords>
+  </module>
+  <module name="electronSelection1"  type="SubAnalysis"  isEnabled="true" >
+    <option name="analysis file"  type="string" >
+<![CDATA[eleSelection.xml]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+429      </entry>
+      <entry name="yPos"  type="double" >
+644      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="applyWeights"  name="out" >
+    </source>
+    <sink module="applyTriggers"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="File Input1"  name="out" >
+    </source>
+    <sink module="EventWeight1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EventWeight1"  name="output" >
+    </source>
+    <sink module="JetMETVariations1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="muSelection"  name="selected" >
+    </source>
+    <sink module="applyWeights"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="applyTriggers"  name="out" >
+    </source>
+    <sink module="RootTreeWriter6"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetMETVariations1"  name="nominal" >
+    </source>
+    <sink module="Duplicator1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Duplicator1"  name="out1" >
+    </source>
+    <sink module="muSelection"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Duplicator1"  name="out2" >
+    </source>
+    <sink module="electronSelection1"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="electronSelection1"  name="selected" >
+    </source>
+    <sink module="applyWeights"  name="in" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2018-06-19]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[12:40:17]]>    </entry>
+  </userrecords>
+</analysis>

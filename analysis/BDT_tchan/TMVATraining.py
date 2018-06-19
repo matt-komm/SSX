@@ -105,10 +105,10 @@ tchCut = "((formva==1)&&(Reconstructed_1__muoncat==0 || Reconstructed_1__elecat=
 
 for background in [
     ["WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",0.25,wjetsCut],
-    ["WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext",0.25,wjetsCut],
-    ["WToLNu_0J_13TeV-amcatnloFXFX-pythia8_ext",0.5,wjetsCut],
+    ["WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",0.25,wjetsCut],
+    ["WToLNu_0J_13TeV-amcatnloFXFX-pythia8",0.5,wjetsCut],
     ["WToLNu_1J_13TeV-amcatnloFXFX-pythia8",0.5,wjetsCut],
-    ["WToLNu_2J_13TeV-amcatnloFXFX-pythia8_ext",0.5,wjetsCut],
+    ["WToLNu_2J_13TeV-amcatnloFXFX-pythia8",0.5,wjetsCut],
     
     ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8",2.5,ttbarCut],
 
@@ -118,18 +118,18 @@ for background in [
     ["QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",float(args.qcdmix),qcdCut],
     ["QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",float(args.qcdmix),qcdCut],
     ["QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",float(args.qcdmix),qcdCut],
-    ["QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",float(args.qcdmix),qcdCut],
-    ["QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",float(args.qcdmix),qcdCut],
-    ["QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",float(args.qcdmix),qcdCut],
-    ["QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",float(args.qcdmix),qcdCut],
-    ["QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",float(args.qcdmix),qcdCut],
+    ["QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",float(args.qcdmix),qcdCut],
+    ["QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",float(args.qcdmix),qcdCut],
+    ["QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",float(args.qcdmix),qcdCut],
+    ["QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",float(args.qcdmix),qcdCut],
+    ["QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",float(args.qcdmix),qcdCut],
     ["QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",float(args.qcdmix),qcdCut],
     
     ["QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8",3*float(args.qcdmix),qcdCut],
-    ["QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",3*float(args.qcdmix),qcdCut],
-    ["QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",3*float(args.qcdmix),qcdCut],
-    ["QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8_ext",3*float(args.qcdmix),qcdCut],
-    ["QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8_ext",3*float(args.qcdmix),qcdCut],
+    ["QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8",3*float(args.qcdmix),qcdCut],
+    ["QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8",3*float(args.qcdmix),qcdCut],
+    ["QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8",3*float(args.qcdmix),qcdCut],
+    ["QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8",3*float(args.qcdmix),qcdCut],
     ["QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8",3*float(args.qcdmix),qcdCut],
     ["QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8",3*float(args.qcdmix),qcdCut],
 ]:

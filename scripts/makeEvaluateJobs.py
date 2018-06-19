@@ -95,9 +95,9 @@ for ibatch, rootFilesBatch in enumerate(rootFileBatches):
 
     generated = genScript.substitute({
         "JOBNAME": jobName,
-        "HOURS":"08",
+        "HOURS":"10",
         "MINUTES":"00",
-        "RAM":"2548",
+        "RAM":"3000",
         "EXEC":"$HOME/SSX/PxlModules/build/scripts/evaluateTMVA/evaluateTMVA",
         "ARGLIST":"'FILE','OUTPUT'",
         "ARGSTOJOB":"--file $FILE $WEIGHTS $OUTPUT",

@@ -115,6 +115,15 @@ class RootTree
                 }
                 case pxl::Variant::TYPE_SERIALIZABLE:
                 {
+                    pxl::Serializable* obj = value.asSerializable().clone();
+                    pxl::BasicNVector* vec = dynamic_cast<pxl::BasicNVector*>(obj);
+                    if (vec)
+                    {
+                        for (unsigned int i = 0; i < vec->getSize(); ++i)
+                        {
+                            storeVariable<float>(name+"_"+std::to_string(i),(*vec)(i));
+                        }
+                    }
                     break;
                 }
                 case pxl::Variant::TYPE_STRING:
