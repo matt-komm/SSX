@@ -17,12 +17,12 @@ class Module(object):
                 Module._classes[cl.__name__]=cl
                 self._logger.info("add default class: "+cl.__name__)
                 
-    def getOption(self,name):
+    def getOption(self,name,required=True):
         if self._options.has_key(name):
             return self._options[name]
-        self._logger.error("Option '"+name+"' not found")
-        return None
-                
+        if required:
+            self._logger.error("Option '"+name+"' not found")
+        return None   
             
     def loadModule(self,name,pluginPath):
         filePath = None

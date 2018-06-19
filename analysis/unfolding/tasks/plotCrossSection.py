@@ -255,6 +255,7 @@ class PlotCrossSection(Module.getClass("Program")):
         channelName = self.module("Samples").getChannelName(channels)
         unfoldingLevel = self.module("Unfolding").getUnfoldingLevel()
         
+        
         systematics = [] if self.getOption("systematics")==None else self.getOption("systematics").split(",")
         NSYS = len(systematics)
     
@@ -274,13 +275,15 @@ class PlotCrossSection(Module.getClass("Program")):
         
         
         xtitle = self.module("Unfolding").getUnfoldingLevel().capitalize()+"-level "+self.module("Unfolding").getUnfoldingVariableName()
-        ytitleSum = "d#kern[-0.5]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{#/}}#kern[-2]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
-        ytitleRatio = "d#kern[-0.5]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{#/}}#kern[-2]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleSum = "d#kern[-0.5]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleSumNorm = "1#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }#sigma#kern[-0.5]{ }#times#kern[-0.3]{ }d#kern[-0.5]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleRatio = "d#kern[-0.5]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
         unit = self.module("Unfolding").getUnfoldingVariableUnit()
         logy = unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt"
         if unit!="":
             xtitle += " ("+unit+")"
             ytitleSum += " (pb#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
+            ytitleSumNorm += " (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
             ytitleRatio += " (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
         else:
             ytitleSum += " (pb)"
@@ -322,6 +325,8 @@ class PlotCrossSection(Module.getClass("Program")):
         #add lumi uncertainty of 2.5%
         profiledResult["covarianceUnfolded"].Scale(1.025**2)
         
+        
+        ### total xsec ###
         #this is a reflection of the stat uncertainty only
         histSumNominal,covSumNominal = self.module("Unfolding").calculateSum(
             nominalResult["unfolded_pos"],
@@ -342,7 +347,32 @@ class PlotCrossSection(Module.getClass("Program")):
             {1:nominalResult["unfolded_pos"],-1:nominalResult["unfolded_neg"]},
             sysResults
         )
-  
+        
+        
+        ### normalized xsec ###
+        #this is a reflection of the stat uncertainty only
+        histSumNominalNorm,covSumNominalNorm = self.module("Unfolding").calculateSumNorm(
+            nominalResult["unfolded_pos"],
+            nominalResult["unfolded_neg"],
+            nominalResult["covarianceUnfolded"]
+        )
+        #this includes also the profiled exp. systematics
+        histSumProfiledNorm,covSumProfiledNorm = self.module("Unfolding").calculateSumNorm(
+            profiledResult["unfolded_pos"],
+            profiledResult["unfolded_neg"],
+            profiledResult["covarianceUnfolded"]
+        )
+        #this is the envelope of all systematics
+        histSumTotalNorm,covSumTotalNorm = self.module("Unfolding").calculateSumNorm(
+            profiledResult["unfolded_pos"],
+            profiledResult["unfolded_neg"],
+            profiledResult["covarianceUnfolded"],
+            {1:nominalResult["unfolded_pos"],-1:nominalResult["unfolded_neg"]},
+            sysResults
+        )
+        
+        
+        ### ratio xsec ###
         #this is a reflection of the stat uncertainty only
         histRatioNominal,covRatioNominal = self.module("Unfolding").calculateRatio(
             nominalResult["unfolded_pos"],
@@ -376,8 +406,15 @@ class PlotCrossSection(Module.getClass("Program")):
         self.module("Utils").normalizeByCrossSection(histSumProfiled)
         self.module("Utils").normalizeByCrossSection(histSumTotal)
         genHistSum = nominalResult["nominalGen_inc"]
+        genHistSumNorm = genHistSum.Clone(genHistSum.GetName()+"norm")
+        genHistSumNorm.Scale(1./genHistSumNorm.Integral())
+        
         self.module("Utils").normalizeByCrossSection(genHistSum)
         genHistRatio = nominalResult["ratioGen"]
+        
+        self.module("Utils").normalizeByBinWidth(histSumProfiledNorm)
+        self.module("Utils").normalizeByBinWidth(histSumTotalNorm)
+        self.module("Utils").normalizeByBinWidth(genHistSumNorm)
         
         
         #tabSys= "\\hline\n"
@@ -477,11 +514,23 @@ class PlotCrossSection(Module.getClass("Program")):
         histSumProfiled.SetLineWidth(2)
         histSumProfiled.SetMarkerSize(1.)
         
+        histSumProfiledNorm.SetMarkerStyle(20)
+        histSumProfiledNorm.SetLineWidth(2)
+        histSumProfiledNorm.SetMarkerSize(1.)
+        
+        
         histSumTotal.SetMarkerStyle(20)
         histSumTotal.SetLineWidth(1)
         histSumTotal.SetLineColor(ROOT.kBlack)
         histSumTotal.SetMarkerColor(ROOT.kBlack)
         histSumTotal.SetMarkerSize(1.2)
+        
+        histSumTotalNorm.SetMarkerStyle(20)
+        histSumTotalNorm.SetLineWidth(1)
+        histSumTotalNorm.SetLineColor(ROOT.kBlack)
+        histSumTotalNorm.SetMarkerColor(ROOT.kBlack)
+        histSumTotalNorm.SetMarkerSize(1.2)
+        
         
         #genColor = newColor(72./255,123./255,234./255)
         #genColor = newColor(226./255,128./255,22./255)
@@ -489,7 +538,8 @@ class PlotCrossSection(Module.getClass("Program")):
         genColor = newColor(224./255,42./255,42./255)
         genHistSum.SetLineColor(genColor.GetNumber())
         genHistSum.SetLineWidth(2)
-        
+        genHistSumNorm.SetLineColor(genColor.GetNumber())
+        genHistSumNorm.SetLineWidth(2)
         
         
         histRatioProfiled.SetMarkerStyle(20)
@@ -508,16 +558,28 @@ class PlotCrossSection(Module.getClass("Program")):
         
         ymin = 100000
         ymax = -10000
+        
+        yminNorm = 100000
+        ymaxNorm = -10000
         for ibin in range(histSumTotal.GetNbinsX()):
             ymin = min([ymin,genHistSum.GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)-histSumTotal.GetBinError(ibin+1)])
             ymax = max([ymax,genHistSum.GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)+histSumTotal.GetBinError(ibin+1)])
             
+            yminNorm = min([yminNorm,genHistSumNorm.GetBinContent(ibin+1),histSumTotalNorm.GetBinContent(ibin+1)-histSumTotalNorm.GetBinError(ibin+1)])
+            ymaxNorm = max([ymaxNorm,genHistSumNorm.GetBinContent(ibin+1),histSumTotalNorm.GetBinContent(ibin+1)+histSumTotalNorm.GetBinError(ibin+1)])
+            
         if logy:
             ymin = 10**math.floor(math.log10(0.7*ymin))
             ymax = math.exp(0.15*(math.log(ymax)-math.log(ymin))+math.log(ymax))
+            
+            yminNorm = 10**math.floor(math.log10(0.7*yminNorm))
+            ymaxNorm = math.exp(0.15*(math.log(ymaxNorm)-math.log(yminNorm))+math.log(ymaxNorm))
         else:
             ymax = 1.1*ymax
             ymin = 0
+            
+            ymaxNorm = 1.1*ymaxNorm
+            yminNorm = 0
         
         resRanges = [0.46,1.]
         
@@ -550,7 +612,14 @@ class PlotCrossSection(Module.getClass("Program")):
             self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
             legendPos,resRange,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sum")
-        )   
+        )  
+        
+        self.module("Drawing").plotCrossSection(
+            genHistSumNorm,histSumProfiledNorm,histSumTotalNorm,yminNorm,ymaxNorm,logy,ytitleSumNorm,xtitle,
+            self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
+            legendPos,resRange,
+            os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sumnorm")
+        ) 
         
         self.module("Drawing").plotCrossSection(
             genHistRatio,histRatioProfiled,histRatioTotal,0.2,1.,0,ytitleRatio,xtitle,

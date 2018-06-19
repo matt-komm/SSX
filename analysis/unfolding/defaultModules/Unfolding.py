@@ -420,6 +420,16 @@ class Unfolding(Module):
             systematics
         )
         
+    def calculateSumNorm(self,hist1,hist2,covariance,nominal=None,systematics=[]):
+        return self.module("Unfolding").calculate(
+            lambda i,pos,neg: (pos[i]+neg[i])/(numpy.sum(pos)+numpy.sum(neg)),
+            hist1,
+            hist2,
+            covariance,
+            nominal,
+            systematics
+        )
+        
     def calculateRatio(self,hist1,hist2,covariance,nominal=None,systematics=[]):
         #NOTE: truncating the toys 
         return self.module("Unfolding").calculate(
