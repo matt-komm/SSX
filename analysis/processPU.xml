@@ -31,20 +31,6 @@
 314      </entry>
     </userrecords>
   </module>
-  <module name="applyWeights"  type="SubAnalysis"  isEnabled="true" >
-    <option name="analysis file"  type="string" >
-<![CDATA[applyWeights.xml]]>    </option>
-    <userrecords>
-      <entry name="Compilation Date"  type="string" >
-<![CDATA[Mar 22 2017]]>      </entry>
-      <entry name="Compilation Time"  type="string" >
-<![CDATA[11:53:31]]>      </entry>
-      <entry name="xPos"  type="double" >
-698      </entry>
-      <entry name="yPos"  type="double" >
-521      </entry>
-    </userrecords>
-  </module>
   <module name="applyTriggers"  type="SubAnalysis"  isEnabled="true" >
     <option name="analysis file"  type="string" >
 <![CDATA[applyTriggers.xml]]>    </option>
@@ -176,12 +162,6 @@ True    </option>
     </userrecords>
   </module>
   <connection>
-    <source module="applyWeights"  name="out" >
-    </source>
-    <sink module="applyTriggers"  name="in" >
-    </sink>
-  </connection>
-  <connection>
     <source module="File Input1"  name="out" >
     </source>
     <sink module="EventWeight1"  name="input" >
@@ -191,12 +171,6 @@ True    </option>
     <source module="EventWeight1"  name="output" >
     </source>
     <sink module="JetMETVariations1"  name="input" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="muSelection"  name="selected" >
-    </source>
-    <sink module="applyWeights"  name="in" >
     </sink>
   </connection>
   <connection>
@@ -226,7 +200,13 @@ True    </option>
   <connection>
     <source module="electronSelection1"  name="selected" >
     </source>
-    <sink module="applyWeights"  name="in" >
+    <sink module="applyTriggers"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="muSelection"  name="selected" >
+    </source>
+    <sink module="applyTriggers"  name="in" >
     </sink>
   </connection>
   <userrecords>
@@ -235,6 +215,6 @@ True    </option>
     <entry name="Modification date"  type="string" >
 <![CDATA[2018-06-19]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[12:40:17]]>    </entry>
+<![CDATA[12:53:31]]>    </entry>
   </userrecords>
 </analysis>

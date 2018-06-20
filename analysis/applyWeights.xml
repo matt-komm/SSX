@@ -117,7 +117,7 @@ True    </option>
     <option name="mc histogram file"  type="string" >
 <![CDATA[data/pu.root]]>    </option>
     <option name="mc histogram name"  type="string" >
-<![CDATA[total]]>    </option>
+<![CDATA[-1]]>    </option>
     <option name="mc rebin"  type="long" >
 1    </option>
     <option name="data histogram files"  type="string_vector" >
@@ -130,7 +130,7 @@ True    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[11:53:31]]>      </entry>
       <entry name="xPos"  type="double" >
-317      </entry>
+318      </entry>
       <entry name="yPos"  type="double" >
 81      </entry>
     </userrecords>
@@ -469,8 +469,8 @@ True    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-03-17]]>    </entry>
+<![CDATA[2018-06-20]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[13:55:44]]>    </entry>
+<![CDATA[02:03:56]]>    </entry>
   </userrecords>
 </analysis>
