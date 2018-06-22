@@ -67,8 +67,10 @@ ElectronRegressionUncertainties::ElectronRegressionUncertainties(const edm::Para
 {
     _energyShifter.setConsume(iConfig.getParameter<edm::ParameterSet>("egmUncertaintyConfig"), consumesCollector());
     
-    produces<edm::ValueMap<double>>("energyUp");
-    produces<edm::ValueMap<double>>("energyDown");
+    produces<edm::ValueMap<double>>("energyRegressionUp");
+    produces<edm::ValueMap<double>>("energyRegressionDown");
+    produces<edm::ValueMap<double>>("energyScaleUp");
+    produces<edm::ValueMap<double>>("energyScaleDown");
 }
 
 
@@ -91,31 +93,32 @@ ElectronRegressionUncertainties::produce(edm::Event& iEvent, const edm::EventSet
     
     _energyShifter.setEvent(iEvent);
     
-    std::vector<double> energyUp(electronCollectionProduct->size(),0.0);
-    std::vector<double> energyDown(electronCollectionProduct->size(),0.0);
+    std::vector<double> energyRegressionUp(electronCollectionProduct->size(),0.0);
+    std::vector<double> energyRegressionDown(electronCollectionProduct->size(),0.0);
+    std::vector<double> energyScaleUp(electronCollectionProduct->size(),0.0);
+    std::vector<double> energyScaleDown(electronCollectionProduct->size(),0.0);
     
     for (unsigned int iele = 0; iele < electronCollectionProduct->size(); ++iele)
     {
         auto electron = electronCollectionProduct->refAt(iele);
-        reco::GsfElectron electronUp;
-        reco::GsfElectron electronDown;
+
+        reco::GsfElectron electronRegressionUp = _energyShifter.getSimpleShiftedObject(electron, EGMSmearer::ResolutionUp);
+        reco::GsfElectron electronRegressionDown = _energyShifter.getSimpleShiftedObject(electron, EGMSmearer::ResolutionDown);
+
+        //apply inverse one since it is actually meant to be run on data
+        reco::GsfElectron electronScaleUp = _energyShifter.getSimpleShiftedObject(electron, EGMSmearer::ScaleDown);
+        reco::GsfElectron electronScaleDown = _energyShifter.getSimpleShiftedObject(electron, EGMSmearer::ScaleUp);
         
-        if (_isMC)
-        {
-            electronUp = _energyShifter.getSimpleShiftedObject(electron, EGMSmearer::ResolutionUp);
-            electronDown = _energyShifter.getSimpleShiftedObject(electron, EGMSmearer::ResolutionDown);
-        }
-        else
-        {
-            electronUp = _energyShifter.getSimpleShiftedObject(electron, EGMSmearer::ScaleUp);
-            electronDown = _energyShifter.getSimpleShiftedObject(electron, EGMSmearer::ScaleDown);
-        }
-        energyUp[iele] = electronUp.energy();
-        energyDown[iele] = electronDown.energy();
+        energyRegressionUp[iele] = electronRegressionUp.energy();
+        energyRegressionDown[iele] = electronRegressionDown.energy();
+        energyScaleUp[iele] = electronScaleUp.energy();
+        energyScaleDown[iele] = electronScaleDown.energy();
     }
     
-    writeValueMap(iEvent,electronCollectionProduct,energyUp,"energyUp");
-    writeValueMap(iEvent,electronCollectionProduct,energyDown,"energyDown");
+    writeValueMap(iEvent,electronCollectionProduct,energyRegressionUp,"energyRegressionUp");
+    writeValueMap(iEvent,electronCollectionProduct,energyRegressionDown,"energyRegressionDown");
+    writeValueMap(iEvent,electronCollectionProduct,energyScaleUp,"energyScaleUp");
+    writeValueMap(iEvent,electronCollectionProduct,energyScaleDown,"energyScaleDown");
 }
 
 
