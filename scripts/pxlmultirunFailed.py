@@ -34,6 +34,7 @@ if __name__=="__main__":
     for dirpath, dirnames, filenames in os.walk(outputFolder):
         for filename in filenames:
             if filename.endswith(".xml"):   
+                #print filename,
                 analysisImporter=pxl.xml.AnalysisXmlImport()
                 inputFolder = os.path.join(outputFolder,dirpath)
                 analysisFile =os.path.join(inputFolder,filename)
@@ -48,6 +49,7 @@ if __name__=="__main__":
                         if op.usage==op.USAGE_FILE_SAVE:
                             if (m.getType()=="RootTreeWriter") or (m.getType()=="File Output") or op.name=="output":
                                 outputFile = os.path.join(inputFolder,m.getOption(op.name))
+                                #print outputFile
                                 if not os.path.exists(outputFile):
                                     print "Missing output: ",outputFile," from analysis ",os.path.join(inputFolder,filename)
                                     if not analysisFile in analysisFiles:

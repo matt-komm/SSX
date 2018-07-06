@@ -236,6 +236,7 @@ class JetMETVariations:
                     bool success = true;
                     if (not event->getUserRecord("isRealData").toBool())
                     {
+                        event->setUserRecord("ProcessNameOrig",event->getUserRecord("ProcessName").toString());
                         if (not isIgnored(event))
                         {
                             for (auto variation = _variations.begin(); variation!= _variations.end();++variation)
@@ -290,6 +291,7 @@ class JetMETVariations:
                                 }
                             }
                         }
+                        
                         //std::cout<<"  produce "<<"Nominal"<<std::endl;
                         renameJetMET(event,_nominalJetName,_nominalMETName);
                     }

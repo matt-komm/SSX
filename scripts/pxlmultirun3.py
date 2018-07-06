@@ -8,6 +8,7 @@ import json
 import random
 import shutil
 import sys
+import math
 
 from string import Template
 
@@ -104,10 +105,19 @@ def generatePartions(fileList,N):
             sizedFileDictList[base]=[]
             sizePerBase[base]=0.0
         size = os.path.getsize(f)
+        
+        size = math.pow(size,0.8)
+        
         sizedFileDictList[base].append({"file":f,"size":size})
         totalSize+=size
         sizePerBase[base]+=size
         
+    '''
+    totalSize = 0
+    for base in sizedFileDictList.keys():
+        sizePerBase[base] = 1.*(len(sizedFileDictList[base]))
+        totalSize+=1.*len(sizedFileDictList[base])
+    '''
     if N<len(sizePerBase.keys()):
         print "ERROR - need more jobs than folders"
         sys.exit(0)
@@ -127,11 +137,11 @@ def generatePartions(fileList,N):
     for baseSizePair in sortedBaseBySize:
         base = baseSizePair["base"]
         random.shuffle(sizedFileDictList[base])
-        partSize = max(1,int(N*sizePerBase[base]/totalSize)-int(N*sizeLeft/totalSize)+partsLeft)
+        partSize = max(1,int(1.*N*sizePerBase[base]/totalSize)-int(1.*N*sizeLeft/totalSize)+partsLeft)
         partsPerBase[base]=partSize
         partsLeft-=partSize
         sizeLeft-=sizePerBase[base]
-        #print base,partSize
+        #print base,partSize,N*sizePerBase[base]/totalSize
         tot+=partSize
     #print tot
     

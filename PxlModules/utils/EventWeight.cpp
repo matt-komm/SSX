@@ -979,6 +979,17 @@ const std::unordered_map<std::string,WeightInfoContainer> EventWeight::_eventWei
             5.68821104143e+12, //xsec from weight =  22004.4933513
             3226.0 // xsec for process 'WToLNu_2J_13TeV'
         )
+    },
+    
+    
+    
+    //gen only
+    {"ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1",
+        new SimpleWeightInfo(
+            //xtotal=19938230.0 eff=12117204.0 - 7821026.0 = 4296178.0
+            1341440559.5, //xsec from weight =  67.2798217043
+            70.688826 // xsec for process 'ST_t-channel_4f_leptonDecays'
+        )
     }
 };
 

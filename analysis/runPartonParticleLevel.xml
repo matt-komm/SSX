@@ -135,6 +135,30 @@ True    </option>
 119      </entry>
     </userrecords>
   </module>
+  <module name="PartonLevelReconstruction2"  type="PartonLevelReconstruction"  isEnabled="true" >
+    <option name="input event view"  type="string" >
+<![CDATA[Generated]]>    </option>
+    <option name="output event view"  type="string" >
+<![CDATA[PartonTau]]>    </option>
+    <option name="add tau"  type="boolean" >
+True    </option>
+    <option name="add tau decays"  type="boolean" >
+False    </option>
+    <option name="last copies"  type="boolean" >
+True    </option>
+    <option name="sum add neutrinos"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+273      </entry>
+      <entry name="yPos"  type="double" >
+498      </entry>
+    </userrecords>
+  </module>
   <connection>
     <source module="NeutrinoPz1"  name="output" >
     </source>
@@ -166,7 +190,25 @@ True    </option>
     </sink>
   </connection>
   <connection>
+    <source module="in"  name="out" >
+    </source>
+    <sink module="NeutrinoPz1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
     <source module="PartonLevelReconstruction1"  name="leptonic" >
+    </source>
+    <sink module="PartonLevelReconstruction2"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PartonLevelReconstruction2"  name="leptonic" >
+    </source>
+    <sink module="out"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PartonLevelReconstruction2"  name="hadronic" >
     </source>
     <sink module="out"  name="in" >
     </sink>
@@ -174,21 +216,15 @@ True    </option>
   <connection>
     <source module="PartonLevelReconstruction1"  name="hadronic" >
     </source>
-    <sink module="out"  name="in" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="in"  name="out" >
-    </source>
-    <sink module="NeutrinoPz1"  name="input" >
+    <sink module="PartonLevelReconstruction2"  name="input" >
     </sink>
   </connection>
   <userrecords>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2017-09-15]]>    </entry>
+<![CDATA[2018-06-22]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[17:49:35]]>    </entry>
+<![CDATA[18:43:08]]>    </entry>
   </userrecords>
 </analysis>
