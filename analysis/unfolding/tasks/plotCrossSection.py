@@ -4,6 +4,7 @@ import ROOT
 import numpy
 import random
 import math
+import sys
 import os
 import datetime
 import re
@@ -405,6 +406,10 @@ class PlotCrossSection(Module.getClass("Program")):
         
         self.module("Utils").normalizeByCrossSection(histSumProfiled)
         self.module("Utils").normalizeByCrossSection(histSumTotal)
+        
+        self.module("Utils").normalizeCovByCrossSection2D(genBinning,covSumProfiled)
+        self.module("Utils").normalizeCovByCrossSection2D(genBinning,covSumTotal)
+        
         genHistSum = nominalResult["nominalGen_inc"]
         genHistSumNorm = genHistSum.Clone(genHistSum.GetName()+"norm")
         genHistSumNorm.Scale(1./genHistSumNorm.Integral())
@@ -412,10 +417,41 @@ class PlotCrossSection(Module.getClass("Program")):
         self.module("Utils").normalizeByCrossSection(genHistSum)
         genHistRatio = nominalResult["ratioGen"]
         
+        
+
+        
         self.module("Utils").normalizeByBinWidth(histSumProfiledNorm)
         self.module("Utils").normalizeByBinWidth(histSumTotalNorm)
         self.module("Utils").normalizeByBinWidth(genHistSumNorm)
         
+        self.module("Utils").normalizeCovByBinWidth(genBinning,covSumProfiledNorm)
+        self.module("Utils").normalizeCovByBinWidth(genBinning,covSumTotalNorm)
+        
+        
+        for ibin in range(histSumProfiledNorm.GetNbinsX()):
+            if math.fabs(histSumProfiled.GetBinError(ibin+1)-math.sqrt(covSumProfiled[ibin][ibin]))/histSumProfiled.GetBinError(ibin+1)>0.0001:
+                self._logger.critical("Covariance matrix and histogram error do not agree!")
+                sys.exit(1)
+            if math.fabs(histSumTotal.GetBinError(ibin+1)-math.sqrt(covSumTotal[ibin][ibin]))/histSumTotal.GetBinError(ibin+1)>0.0001:
+                self._logger.critical("Covariance matrix and histogram error do not agree!")
+                sys.exit(1)
+            if math.fabs(histSumProfiledNorm.GetBinError(ibin+1)-math.sqrt(covSumProfiledNorm[ibin][ibin]))/histSumProfiledNorm.GetBinError(ibin+1)>0.0001:
+                self._logger.critical("Covariance matrix and histogram error do not agree!")
+                sys.exit(1)
+            if math.fabs(histSumTotalNorm.GetBinError(ibin+1)-math.sqrt(covSumTotalNorm[ibin][ibin]))/histSumTotalNorm.GetBinError(ibin+1)>0.0001:
+                self._logger.critical("Covariance matrix and histogram error do not agree!")
+                sys.exit(1)
+        
+        if unfoldingName=="cos" and unfoldingLevel=="parton":
+            asymmetryGen = self.module("Asymmetry").calculateAsymmetry(genHistSumNorm)
+            asymmetryStat = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal)
+            asymmetryProfiled = self.module("Asymmetry").fitDistribution(histSumProfiled,covSumProfiled)
+            asymmetryTotal = self.module("Asymmetry").fitDistribution(histSumTotal,covSumTotal)
+            
+            self._logger.info("Gen asymmetry: %5.3f"%(asymmetryGen))
+            self._logger.info("Meas. asymmetry (stat): %5.3f+-%5.3f"%(asymmetryStat[0],asymmetryStat[1]))
+            self._logger.info("Meas. asymmetry (exp): %5.3f+-%5.3f"%(asymmetryProfiled[0],asymmetryProfiled[1]))
+            self._logger.info("Meas. asymmetry (tot): %5.3f+-%5.3f"%(asymmetryTotal[0],asymmetryTotal[1]))
         
         #tabSys= "\\hline\n"
         if unit!="":
