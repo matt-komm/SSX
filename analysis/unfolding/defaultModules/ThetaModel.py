@@ -260,6 +260,7 @@ class ThetaModel(Module):
         dataDict = {}
         
         for iobs,observableName in enumerate(sorted(fitSetup.keys())):
+            print iobs,observableName
             fitBins = fitSetup[observableName]["bins"]
             fitRange = fitSetup[observableName]["range"]
         
@@ -314,15 +315,19 @@ class ThetaModel(Module):
             model.addObservable(observable)
             
             if not pseudo:
-                dataHist = RootHistogram(observableName+"__data",{
-                    "zerobin_fillfactor":0.001,
-                    "use_errors":"true"
-                })
-                dataDict[observableName]=dataHist
-                dataHist.setFileName(fitSetup[observableName]["data"]["file"])
-                dataHist.setHistoName(fitSetup[observableName]["data"]["name"])
-
-                file.write(dataHist.toConfigString())
+                dataSumHist = HistoAdd(observableName+"__data")
+                for idata,dataHistCfg in enumerate(fitSetup[observableName]["data"]):
+                    dataHist = RootHistogram(observableName+"__data"+str(idata),{
+                        "zerobin_fillfactor":0.001,
+                        "use_errors":"true"
+                    })
+                    dataHist.setFileName(dataHistCfg["file"])
+                    dataHist.setHistoName(dataHistCfg["name"])
+                    file.write(dataHist.toConfigString())
+                    dataSumHist.addHisto(dataHist.getVarname())
+                
+                dataDict[observableName]=dataSumHist
+                file.write(dataSumHist.toConfigString())
                 
             else:
                 pass

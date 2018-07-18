@@ -17,8 +17,6 @@ class FitHistograms(Module.getClass("Program")):
     def execute(self):
         #mu,ele,comb
         channels = self.getOption("channels").split(",")
-        smooth = False if self.getOption("smooth")==None else True
-        self._logger.info("Use smoothed hists: "+str(smooth))
         channelName = self.module("Samples").getChannelName(channels)
         self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
@@ -26,7 +24,17 @@ class FitHistograms(Module.getClass("Program")):
         
         unfoldingName = self.module("Unfolding").getUnfoldingName()
         uncertaintyList = self.getOption("systematics").split(",") if len(self.getOption("systematics"))>0 else []
-        self._logger.info("profile systematics: "+str(uncertaintyList))
+        smoothing = []
+        for isys in range(len(uncertaintyList)):
+            if uncertaintyList[isys].endswith("~"):
+                uncertaintyList[isys] = uncertaintyList[isys].replace("~","")
+                smoothing.append(True)
+                self._logger.info("add syst: "+uncertaintyList[isys]+" [smooth]")
+            else:
+                self._logger.info("add syst: "+uncertaintyList[isys])
+                smoothing.append(False)
+                
+        #self._logger.info("profile systematics: "+str(uncertaintyList))
         
         
         #maps channel bins to global bins for combinations
@@ -47,19 +55,19 @@ class FitHistograms(Module.getClass("Program")):
                     histogramsPerChannelAndUncertainty[channel]["nominal"]["bin"+str(1+binMap[channel][ibin])] = \
                         self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,"nominal")
                     
-            for sysName in uncertaintyList:
+            for isys,sysName in enumerate(uncertaintyList):
                 histogramsPerChannelAndUncertainty[channel][sysName]={}
                 if unfoldingName=="inc":
                     histogramsPerChannelAndUncertainty[channel][sysName]["binInc"] = [
-                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,sysName+"Up",smooth=smooth),
-                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,sysName+"Down",smooth=smooth)
+                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,sysName+"Up",smooth=smoothing[isys]),
+                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,sysName+"Down",smooth=smoothing[isys])
                     ]
                 else:
                     nbins = len(self.module("Unfolding").getRecoBinning(channel))-1
                     for ibin in range(nbins):
                         histogramsPerChannelAndUncertainty[channel][sysName]["bin"+str(1+binMap[channel][ibin])] = [
-                            self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Up",smooth=smooth),
-                            self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Down",smooth=smooth)
+                            self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Up",smooth=smoothing[isys]),
+                            self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,sysName+"Down",smooth=smoothing[isys])
                         ]
                         
         
@@ -81,7 +89,7 @@ class FitHistograms(Module.getClass("Program")):
                         "bins":observableDict[obserableName]["bins"],
                         "range":observableDict[obserableName]["range"],
                         "components":{},
-                        "data":histogramsPerChannelAndUncertainty[channel]["nominal"][binName][obserableName]["data"]
+                        "data":[histogramsPerChannelAndUncertainty[channel]["nominal"][binName][obserableName]["data"]]
                     }
                     for componentName in fitComponentDict.keys():
                         uncertaintyParameters = fitComponentDict[componentName]["uncertainties"]

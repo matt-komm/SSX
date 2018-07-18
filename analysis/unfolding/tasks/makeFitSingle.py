@@ -15,8 +15,6 @@ class FitHistograms(Module.getClass("Program")):
     def execute(self):
         #mu,ele,comb
         channels = self.getOption("channels").split(",")
-        smooth = False if self.getOption("smooth")==None else True
-        self._logger.info("Use smoothed hists: "+str(smooth))
         channelName = self.module("Samples").getChannelName(channels)
         self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
@@ -24,6 +22,7 @@ class FitHistograms(Module.getClass("Program")):
         unfoldingName = self.module("Unfolding").getUnfoldingName()
         uncertainty = self.module("Utils").getUncertaintyName()
         self._logger.info("systematic name: "+str(uncertainty))
+        smoothing=False
         
         #maps channel bins to global bins for combinations
         if unfoldingName!="inc":
@@ -34,13 +33,13 @@ class FitHistograms(Module.getClass("Program")):
             histogramsPerChannel[channel]["nominal"]={}
             if unfoldingName=="inc":
                 histogramsPerChannel[channel]["nominal"]["binInc"] = \
-                    self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,uncertainty,smooth=smooth and uncertainty!="nominal")
+                    self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,-1,uncertainty,smooth=smoothing and uncertainty!="nominal")
                 
             else:
                 nbins = len(self.module("Unfolding").getRecoBinning(channel))-1
                 for ibin in range(nbins):
                     histogramsPerChannel[channel]["nominal"]["bin"+str(1+binMap[channel][ibin])] = \
-                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,uncertainty,smooth=smooth and uncertainty!="nominal")
+                        self.module("ThetaModel").getHistsFromFiles(channel,unfoldingName,ibin,uncertainty,smooth=smoothing and uncertainty!="nominal")
                     
             
         fitSetup = {}
@@ -60,7 +59,7 @@ class FitHistograms(Module.getClass("Program")):
                         "bins":observableDict[obserableName]["bins"],
                         "range":observableDict[obserableName]["range"],
                         "components":{},
-                        "data":histogramsPerChannel[channel]["nominal"][binName][obserableName]["data"]
+                        "data":[histogramsPerChannel[channel]["nominal"][binName][obserableName]["data"]]
                     }
                     for componentName in fitComponentDict.keys():
                         uncertaintyParameters = fitComponentDict[componentName]["uncertainties"]
@@ -165,7 +164,7 @@ class FitHistograms(Module.getClass("Program")):
                     hist = histogramsPerChannel[channel]["nominal"][binName][obserableName]["data"]["hist"]
                     hist.Rebin(hist.GetNbinsX())
                     
-                    print channel,obserableName,binName,"data",round(hist.GetBinContent(1),1),round(math.sqrt(hist.GetBinContent(1)),1)
+                    #print channel,obserableName,binName,"data",round(hist.GetBinContent(1),1),round(math.sqrt(hist.GetBinContent(1)),1)
                     
                     for componentName in fitComponentDict.keys():
                         uncertaintyParameters = fitComponentDict[componentName]["uncertainties"]
@@ -192,11 +191,12 @@ class FitHistograms(Module.getClass("Program")):
 
                         mcSumErr2 += err**2
                         
+                    '''
                     for componentName in yieldsPerComp.keys():
                         print channel,obserableName,binName,componentName,round(yieldsPerComp[componentName],1),round(math.sqrt(err2PerComp[componentName]),1)
                         
                     print channel,obserableName,binName,"total",round(mcSum,1),round(math.sqrt(mcSumErr2),1)
-        
+                    '''
         self.module("Drawing").drawPosterior({channelName:fitResult},fitOutput+"__posteriors_yield.pdf",
             selection=["Other_bin*","tChannel_*_bin*","WZjets_bin*","WZjets_HF_bin*","WZjets_LF_bin*","TopBkg_bin*","QCD_*_bin*"],
             ranges = [0,2.0],
