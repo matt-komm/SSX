@@ -117,13 +117,11 @@ True    </option>
     <option name="mc histogram file"  type="string" >
 <![CDATA[data/pu.root]]>    </option>
     <option name="mc histogram name"  type="string" >
-<![CDATA[-1]]>    </option>
-    <option name="mc default histogram name"  type="string" >
-<![CDATA[TT_TuneCUETP8M2T4_13TeV-powheg-pythia8]]>    </option>
+<![CDATA[total]]>    </option>
     <option name="mc rebin"  type="long" >
 1    </option>
     <option name="data histogram files"  type="string_vector" >
-<![CDATA[("data/PU65000.root","data/PU67000.root","data/PU69000.root","data/PU69500.root","data/PU71000.root","data/PU73000.root")]]>    </option>
+<![CDATA[("data/PU64000.root","data/PU64500.root","data/PU65000.root","data/PU65500.root","data/PU66000.root","data/PU66500.root","data/PU67000.root","data/PU67500.root","data/PU68000.root","data/PU68500.root","data/PU69000.root","data/PU69500.root","data/PU70000.root","data/PU70500.root","data/PU71000.root","data/PU71500.root","data/PU72000.root","data/PU72500.root","data/PU73000.root","data/PU73500.root","data/PU74000.root","data/PU74500.root","data/PU75000.root","data/PU75500.root","data/PU76000.root","data/PU76500.root")]]>    </option>
     <option name="data histogram name"  type="string" >
 <![CDATA[pileup]]>    </option>
     <userrecords>
@@ -132,7 +130,7 @@ True    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[11:53:31]]>      </entry>
       <entry name="xPos"  type="double" >
-318      </entry>
+317      </entry>
       <entry name="yPos"  type="double" >
 81      </entry>
     </userrecords>
@@ -471,8 +469,8 @@ True    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-06-25]]>    </entry>
+<![CDATA[2018-03-17]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[15:18:54]]>    </entry>
+<![CDATA[13:55:44]]>    </entry>
   </userrecords>
 </analysis>
