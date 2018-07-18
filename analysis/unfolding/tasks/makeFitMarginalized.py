@@ -74,6 +74,9 @@ class FitHistograms(Module.getClass("Program")):
         
 
         fitSetup = {}
+        
+        combineChannels = True
+        
         uncertainyParameterDict = self.module("ThetaModel").getUncertaintsDict()
         parametersDict = {}#"lumi":uncertainyParameterDict["lumi"]}
         for channel in channels:
@@ -85,15 +88,33 @@ class FitHistograms(Module.getClass("Program")):
                 binNames = histogramsPerChannelAndUncertainty[channel]["nominal"].keys()
                 
                 for binName in binNames:
-                    fitSetup[channel+"__"+obserableName+"__"+binName] = {
-                        "bins":observableDict[obserableName]["bins"],
-                        "range":observableDict[obserableName]["range"],
-                        "components":{},
-                        "data":[histogramsPerChannelAndUncertainty[channel]["nominal"][binName][obserableName]["data"]]
-                    }
+                    obsName = channel+"__"+obserableName+"__"+binName
+                    if combineChannels and len(channels)>=2:
+                        obsName = obserableName+"__"+binName
+                        
+                    if not fitSetup.has_key(obsName):
+                        fitSetup[obsName] = {
+                            "bins":observableDict[obserableName]["bins"],
+                            "range":observableDict[obserableName]["range"],
+                            "components":{},
+                            "data":[histogramsPerChannelAndUncertainty[channel]["nominal"][binName][obserableName]["data"]]
+                        }
+                    else:
+                        #sanity checks!
+                        if fitSetup[obsName]["bins"]!=observableDict[obserableName]["bins"]:
+                            self._logger.critical("Binning in different channels not identical! ("+str(fitSetup[obsName]["bins"])+" vs. "+str(observableDict[obserableName]["bins"])+")")
+                            sys.exit(1)
+                        if fitSetup[obsName]["range"]!=observableDict[obserableName]["range"]:
+                            self._logger.critical("Range in different channels not identical!")
+                            sys.exit(1)
+                        fitSetup[obsName]["data"].append(
+                            histogramsPerChannelAndUncertainty[channel]["nominal"][binName][obserableName]["data"]
+                        )
+                        
+                        
                     for componentName in fitComponentDict.keys():
                         uncertaintyParameters = fitComponentDict[componentName]["uncertainties"]
-                        fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]={
+                        fitSetup[obsName]["components"][channel+"_"+componentName]={
                             "nominal":histogramsPerChannelAndUncertainty[channel]["nominal"][binName][obserableName][componentName],
                             #"yield":["lumi"],
                             "yield":[],
@@ -103,17 +124,17 @@ class FitHistograms(Module.getClass("Program")):
                         for uncertaintyParameter in uncertaintyParameters:
                             if uncertaintyParameter.find("tChannel")>=0:
                                 #make extra parameter per bin for signal
-                                fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]["yield"].append(uncertaintyParameter+"_"+binName)
+                                fitSetup[obsName]["components"][channel+"_"+componentName]["yield"].append(uncertaintyParameter+"_"+binName)
                                 if not parametersDict.has_key(uncertaintyParameter+"_"+binName):
                                     parametersDict[uncertaintyParameter+"_"+binName]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
                             elif uncertaintyParameter.find("QCD")>=0:
                                 #make extra parameter per channel for QCD but not per bin
-                                fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]["yield"].append(uncertaintyParameter+"_"+binName+"_"+channel)
+                                fitSetup[obsName]["components"][channel+"_"+componentName]["yield"].append(uncertaintyParameter+"_"+binName+"_"+channel)
                                 if not parametersDict.has_key(uncertaintyParameter+"_"+binName+"_"+channel):
                                     parametersDict[uncertaintyParameter+"_"+binName+"_"+channel]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
                             else:
                                 #take all other processes 100% correlated between channels
-                                fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]["yield"].append(uncertaintyParameter+"_"+binName)
+                                fitSetup[obsName]["components"][channel+"_"+componentName]["yield"].append(uncertaintyParameter+"_"+binName)
                                 if not parametersDict.has_key(uncertaintyParameter+"_"+binName):
                                     parametersDict[uncertaintyParameter+"_"+binName]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
                             
@@ -121,7 +142,7 @@ class FitHistograms(Module.getClass("Program")):
                         for sysName in uncertaintyList:
                             if not parametersDict.has_key(sysName):
                                 parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1)
-                            fitSetup[channel+"__"+obserableName+"__"+binName]["components"][componentName]["shape"].append({
+                            fitSetup[obsName]["components"][channel+"_"+componentName]["shape"].append({
                                 "parameter":sysName,
                                 "up":histogramsPerChannelAndUncertainty[channel][sysName][binName][0][obserableName][componentName],
                                 "down":histogramsPerChannelAndUncertainty[channel][sysName][binName][1][obserableName][componentName]
