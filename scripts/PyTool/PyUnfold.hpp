@@ -72,6 +72,13 @@ class PyUnfold
             if (_dataCovariance!=nullptr)
             {
                 TMatrixD covarianceMatrix = PyUtils::convert2DHistToMatrix(dataCovariance);
+                double det = covarianceMatrix.Determinant();
+                std::cout<<"Cov det: "<<det<<std::endl;
+                if (det<1e-12)
+                {
+                    std::cout<<"Determinant of covariance too small (<e-12) -> exit"<<std::endl;
+                    throw std::runtime_error("Determinant of covariance too small (<e-12) ");
+                }
                 TMatrixD covarianceMatrixInv = covarianceMatrix.Invert();
                 _dataCovarianceInv = (TH2*)dataCovariance->Clone();
                 for (int ibin = 0; ibin < _dataCovarianceInv->GetXaxis()->GetNbins(); ++ibin)

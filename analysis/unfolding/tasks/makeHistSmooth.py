@@ -41,9 +41,19 @@ class SmoothHistograms(Module.getClass("Program")):
             e2 = hist.GetBinError(start+ibin+1+0)
             e3 = hist.GetBinError(start+ibin+1+1)
             
-            arr[ibin]=(w*c1/e1+(1-2*w)*c2/e2+w*c3/e3)/(w/e1+(1-2*w)/e2+w/e3)
+            #arr[ibin]=(w*c1/e1+(1-2*w)*c2/e2+w*c3/e3)/(w/e1+(1-2*w)/e2+w/e3)
+            #err[ibin]=math.sqrt((w*e1)**2+((1-2*w)*e2)**2+(w*e3)**2)
+            
+            arr[ibin]=(w*0.5*c1+(1-w)*c2+w*0.5*c3)
             err[ibin]=math.sqrt((w*e1)**2+((1-2*w)*e2)**2+(w*e3)**2)
+            
+        arr[0]=(1-w)*hist.GetBinContent(start+1)+w*hist.GetBinContent(start+2)
+        err[0]=max([hist.GetBinError(start+1),hist.GetBinError(start+2)])
         
+        arr[-1]=(1-w)*hist.GetBinContent(end+1)+w*hist.GetBinContent(end)
+        err[-1]=max([hist.GetBinError(end+1),hist.GetBinError(end)])
+            
+        '''
         arr[0]=((1-w)*hist.GetBinContent(start+1)/hist.GetBinError(start+1)+\
                 w*hist.GetBinContent(start+2)/hist.GetBinError(start+2))/\
                 ((1-w)/hist.GetBinError(start+1)+w/hist.GetBinError(start+2))
@@ -53,13 +63,13 @@ class SmoothHistograms(Module.getClass("Program")):
                 w*hist.GetBinContent(end)/hist.GetBinError(end))/\
                 ((1-w)/hist.GetBinError(end+1)+w/hist.GetBinError(end))
         err[-1]=max([hist.GetBinError(end+1),hist.GetBinError(end)])
-        
+        '''
 
         for ibin in range(end-start+1):
             hist.SetBinContent(start+ibin+1,arr[ibin])
             hist.SetBinError(start+ibin+1,err[ibin])
             
-    def smooth(self,hist,region,w=0.1,i=10,scale=1):
+    def smooth(self,hist,region,w=0.05,i=20,scale=1):
         #0..3 //mtsmoothAvgPerRangew
         #4..11 //BDT ttw
         #12..15 //BDT tch
@@ -181,6 +191,7 @@ class SmoothHistograms(Module.getClass("Program")):
                 for compName in sorted(histogramsPerChannelAndUncertainty["nominal"][binName][obsName].keys()):
                     if compName=="data":
                         continue
+                    
                     histNominal = histogramsPerChannelAndUncertainty["nominal"][binName][obsName][compName]["hist"]
                     #histNominalSmooth = histNominal.Clone(histNominal.GetName()+binName+obsName+compName+sysName+"smooth"+str(random.random()))
                     #for ibin in range(histNominal.GetNbinsX()+2):
@@ -217,10 +228,13 @@ class SmoothHistograms(Module.getClass("Program")):
                             if sysName=="topMass":
                                 cUp = cUp*0.5+cNom*0.5 
                                 cDown = cDown*0.5+cNom*0.5
+                            '''
+                            #symmetrize
+                            delta = (math.fabs(cUp-cNom)+math.fabs(cDown-cNom))*0.5
                             
-                            
-                                
-                            
+                            cUp = cNom+delta*numpy.sign(cUp-cNom)
+                            cDown = cNom+delta*numpy.sign(cDown-cNom)
+                            '''
                             if eUp<0.00001:
                                 eUp=1
                             if eDown<0.00001:
@@ -228,33 +242,34 @@ class SmoothHistograms(Module.getClass("Program")):
                             if cNom<0.001:
                                 cNom = 0.001
                                 
-                            sigUp = math.fabs(cUp-cNom)/eUp
-                            sigDown = math.fabs(cDown-cNom)/eDown
-                            '''
-                            if sigUp<0.75 and sigDown<0.75:
-                                if cDown/cNom<1 and cUp/cNom<1:
-                                    cDown = cNom*(cDown/cNom+cUp/cNom)*0.5
-                                    cUp = cNom+math.fabs(cDown-cNom)
-                                elif cDown/cNom>1 and cUp/cNom>1:
-                                    cUp = cNom*(cDown/cNom+cUp/cNom)*0.5
-                                    cDown = cNom-math.fabs(cUp-cNom)
-                                elif cDown/cNom>1 and cUp/cNom<1:
-                                    cUp = cNom*(1+min(cDown/cNom-1,1-cUp/cNom))
-                                    cDown = cNom-math.fabs(cUp-cNom)
-                                elif cDown/cNom<1 and cUp/cNom>1:
-                                    cUp = cNom*(1+min(1-cDown/cNom,cUp/cNom-1))
-                                    cDown = cNom-math.fabs(cUp-cNom)
-                            elif sigUp<0.75 and sigDown>0.75:
-                                if cDown/cNom<1:
-                                    cUp = cNom+math.fabs(cDown-cNom)
-                                if cDown/cNom>1:
-                                    cUp = cNom-math.fabs(cDown-cNom)
-                            elif sigDown<0.75 and sigUp>0.75:
-                                if cUp/cNom<1:
-                                    cDown = cNom+math.fabs(cUp-cNom)
-                                if cUp/cNom>1:
-                                    cDown = cNom-math.fabs(cUp-cNom)
-                            '''
+                            if compName.find('tChannel')<0:
+                                sigUp = math.fabs(cUp-cNom)/eUp
+                                sigDown = math.fabs(cDown-cNom)/eDown
+                                
+                                if sigUp<0.75 and sigDown<0.75:
+                                    if cDown/cNom<1 and cUp/cNom<1:
+                                        cDown = cNom*(cDown/cNom+cUp/cNom)*0.5
+                                        cUp = cNom+math.fabs(cDown-cNom)
+                                    elif cDown/cNom>1 and cUp/cNom>1:
+                                        cUp = cNom*(cDown/cNom+cUp/cNom)*0.5
+                                        cDown = cNom-math.fabs(cUp-cNom)
+                                    elif cDown/cNom>1 and cUp/cNom<1:
+                                        cUp = cNom*(1+min(cDown/cNom-1,1-cUp/cNom))
+                                        cDown = cNom-math.fabs(cUp-cNom)
+                                    elif cDown/cNom<1 and cUp/cNom>1:
+                                        cUp = cNom*(1+min(1-cDown/cNom,cUp/cNom-1))
+                                        cDown = cNom-math.fabs(cUp-cNom)
+                                elif sigUp<0.75 and sigDown>0.75:
+                                    if cDown/cNom<1:
+                                        cUp = cNom+math.fabs(cDown-cNom)
+                                    if cDown/cNom>1:
+                                        cUp = cNom-math.fabs(cDown-cNom)
+                                elif sigDown<0.75 and sigUp>0.75:
+                                    if cUp/cNom<1:
+                                        cDown = cNom+math.fabs(cUp-cNom)
+                                    if cUp/cNom>1:
+                                        cDown = cNom-math.fabs(cUp-cNom)
+                            
                             #add some noise to let fits see some numerical differences
                             #if compName.find("QCD")>=0 and sysName in ["eleMultiIso","eleMultiVeto","muMulti"]:
                             #cUp*=numpy.random.normal(loc=1.0, scale=0.0001)
@@ -279,9 +294,9 @@ class SmoothHistograms(Module.getClass("Program")):
                         histRelUpSmooth = histRelUp.Clone(histRelUp.GetName()+str(random.random()))
                         histRelDownSmooth = histRelDown.Clone(histRelDown.GetName()+str(random.random()))
                         
-                        
-                        self.smooth(histRelUpSmooth,region=obsName,scale=1)
-                        self.smooth(histRelDownSmooth,region=obsName,scale=1)
+                        #if compName.find('tChannel')<0:
+                        #self.smooth(histRelUpSmooth,region=obsName,scale=1)
+                        #self.smooth(histRelDownSmooth,region=obsName,scale=1)
                         
                         for ibin in range(histNominal.GetNbinsX()):
                             cNom = histNominal.GetBinContent(ibin+1)

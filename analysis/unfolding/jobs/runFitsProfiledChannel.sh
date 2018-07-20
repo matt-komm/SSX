@@ -1,4 +1,4 @@
-syst="btag,ltag,eleEff,muEff,en,res,pu,unc,dy,tw,eleMultiIso,eleMultiVeto,muMulti"
+syst="btag,ltag,eleEff,muEff,en~,res~,pu,unc~,dy,tw,eleMultiIso,eleMultiVeto,muMulti"
 
 
 python driver.py -m tasks/makeFitMarginalized -c channels:$1 -c systematics:$syst

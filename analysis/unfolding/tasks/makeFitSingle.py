@@ -1,6 +1,6 @@
 from defaultModules.Module import Module
-
 import logging
+
 import ROOT
 import copy
 import os
@@ -22,7 +22,9 @@ class FitHistograms(Module.getClass("Program")):
         unfoldingName = self.module("Unfolding").getUnfoldingName()
         uncertainty = self.module("Utils").getUncertaintyName()
         self._logger.info("systematic name: "+str(uncertainty))
-        smoothing=False
+        
+        smoothing = True if (self.getOption("smoothing")!=None and self.getOption("smoothing")=="1") else False
+        self._logger.info("apply smoothing: "+str(smoothing))
         
         #maps channel bins to global bins for combinations
         if unfoldingName!="inc":
@@ -43,7 +45,7 @@ class FitHistograms(Module.getClass("Program")):
                     
             
         fitSetup = {}
-        combineChannels = True
+        combineChannels = False
         parametersDict = {}
         
         

@@ -1,8 +1,8 @@
 syst=(
 "systematics/ttbarUEUp"
 "systematics/ttbarUEDown"
-"systematics/topMassDown"
-"systematics/topMassUp"
+"systematics/topMassDown -c smoothing:1"
+"systematics/topMassUp -c smoothing:1"
 "systematics/ttbarPtUp"
 "systematics/ttbarPtDown"
 "systematics/pdfUp"

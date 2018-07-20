@@ -75,7 +75,7 @@ class FitHistograms(Module.getClass("Program")):
 
         fitSetup = {}
         
-        combineChannels = True
+        combineChannels = False
         
         uncertainyParameterDict = self.module("ThetaModel").getUncertaintsDict()
         parametersDict = {}#"lumi":uncertainyParameterDict["lumi"]}
@@ -166,7 +166,7 @@ class FitHistograms(Module.getClass("Program")):
                 outputFile=fitOutput+".root",
                 pseudo=False,
                 seed = 123+7*itry-31*itry+173*itry,
-                cov=0.001+itry*0.001 if unfoldingName=='inc' else 0.001+itry*0.001
+                cov=0.001+itry*0.001 if unfoldingName=='inc' else 0.01+itry*0.002
             )
             
             itry+=1
@@ -176,6 +176,7 @@ class FitHistograms(Module.getClass("Program")):
                     fitOutput+".root",
                     parametersDict
                 )
+                                
             except Exception,e:
                 success = False
                 self._logger.error(str(e))

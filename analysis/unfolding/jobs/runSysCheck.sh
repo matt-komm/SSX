@@ -1,5 +1,5 @@
-systProfiled="btag ltag eleEff muEff en res pu unc dy tw eleMultiIso eleMultiVeto muMulti"
-systExternalized="ttbarUE pdf topMass tchanHdampPS tchanScaleME tchanScalePS ttbarHdampPS ttbarPt ttbarScaleFSRPS ttbarScaleISRPS ttbarScaleME wjetsScaleME"
+systProfiled="en res unc"
+systExternalized="topMass"
 syst="$systProfiled $systExternalized"
 
 for channel in ele mu
