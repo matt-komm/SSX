@@ -1,0 +1,188 @@
+<analysis file_format_version="0.4" >
+  <module name="File Input1"  type="File Input"  isEnabled="true" >
+    <option name="start"  type="long" >
+1    </option>
+    <option name="end"  type="long" >
+-1    </option>
+    <option name="File names"  type="string_vector" >
+<![CDATA[("/storage/data/cms/store/user/mkomm/SSX/ST_t-ch[A-Za-z0-9_\-]+_vgen180529/[walk]/[A-Za-z0-9_\-]+.pxlio")]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Jun 21 2016]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[10:12:55]]>      </entry>
+      <entry name="xPos"  type="double" >
+30      </entry>
+      <entry name="yPos"  type="double" >
+73      </entry>
+    </userrecords>
+  </module>
+  <module name="EventWeight1"  type="EventWeight"  isEnabled="true" >
+    <option name="name of process field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="EraName"  type="string" >
+<![CDATA[80Xexcl]]>    </option>
+    <option name="weightname"  type="string" >
+<![CDATA[mcweight]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+214      </entry>
+      <entry name="yPos"  type="double" >
+75      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter7"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[signalMC_gen.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[outputVetoVariables.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+614      </entry>
+      <entry name="yPos"  type="double" >
+212      </entry>
+    </userrecords>
+  </module>
+  <module name="Split for VETO1"  type="Splitter"  isEnabled="true" >
+    <option name="process name field"  type="string" >
+<![CDATA[ProcessName]]>    </option>
+    <option name="percentages"  type="string_vector" >
+<![CDATA[("ST_t-channel_[A-Za-z]*top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_Tune[A-Za-z0-9_\-]*=0.2","[A-Za-z0-9_\-]+=1.")]]>    </option>
+    <option name="limits"  type="string_vector" >
+<![CDATA[("[A-Za-z0-9_\-]+=-1")]]>    </option>
+    <option name="random"  type="boolean" >
+False    </option>
+    <option name="use event number"  type="boolean" >
+False    </option>
+    <option name="use existing flag"  type="boolean" >
+False    </option>
+    <option name="split name"  type="string" >
+<![CDATA[veto]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+402      </entry>
+      <entry name="yPos"  type="double" >
+228      </entry>
+    </userrecords>
+  </module>
+  <module name="PLmu1"  type="PLObjects"  isEnabled="true" >
+    <option name="event view name"  type="string" >
+<![CDATA[PTR]]>    </option>
+    <option name="lepton input name"  type="string" >
+<![CDATA[Lepton]]>    </option>
+    <option name="selected lepton name"  type="string" >
+<![CDATA[TightLepton]]>    </option>
+    <option name="lepton pdgId"  type="long" >
+13    </option>
+    <option name="lepton pt"  type="double" >
+26    </option>
+    <option name="lepton eta"  type="double" >
+2.4    </option>
+    <option name="number of leptons"  type="long" >
+1    </option>
+    <option name="jet input name"  type="string" >
+<![CDATA[Jet]]>    </option>
+    <option name="selected jet name"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="jet pt"  type="double" >
+40    </option>
+    <option name="jet eta"  type="double" >
+4.7    </option>
+    <option name="lepton-jet dR"  type="double" >
+0.4    </option>
+    <option name="max number of jets"  type="long" >
+3    </option>
+    <option name="selected bjet name"  type="string" >
+<![CDATA[SelectedBJet]]>    </option>
+    <option name="bjet eta"  type="double" >
+4.7    </option>
+    <option name="B hadron eta"  type="double" >
+10    </option>
+    <option name="neutrino input name"  type="string" >
+<![CDATA[Neutrino]]>    </option>
+    <option name="MET name"  type="string" >
+<![CDATA[MET]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+434      </entry>
+      <entry name="yPos"  type="double" >
+65      </entry>
+    </userrecords>
+  </module>
+  <module name="runPartonParticleLevel2"  type="SubAnalysis"  isEnabled="true" >
+    <option name="analysis file"  type="string" >
+<![CDATA[runPartonParticleLevel.xml]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Mar 22 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[11:53:31]]>      </entry>
+      <entry name="xPos"  type="double" >
+142      </entry>
+      <entry name="yPos"  type="double" >
+204      </entry>
+    </userrecords>
+  </module>
+  <connection>
+    <source module="File Input1"  name="out" >
+    </source>
+    <sink module="EventWeight1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Split for VETO1"  name="output" >
+    </source>
+    <sink module="RootTreeWriter7"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="EventWeight1"  name="output" >
+    </source>
+    <sink module="PLmu1"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PLmu1"  name="noLepton" >
+    </source>
+    <sink module="runPartonParticleLevel2"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="PLmu1"  name="output" >
+    </source>
+    <sink module="runPartonParticleLevel2"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="runPartonParticleLevel2"  name="out" >
+    </source>
+    <sink module="Split for VETO1"  name="input" >
+    </sink>
+  </connection>
+  <userrecords>
+    <entry name="Author"  type="string" >
+<![CDATA[matthias]]>    </entry>
+    <entry name="Modification date"  type="string" >
+<![CDATA[2018-08-03]]>    </entry>
+    <entry name="Modification time"  type="string" >
+<![CDATA[19:44:03]]>    </entry>
+  </userrecords>
+</analysis>

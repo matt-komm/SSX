@@ -149,9 +149,11 @@ class ThetaModel(Module):
         observables = {
             "2j1t": {
                 "weight":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1),
-                "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*((1.0*"+tch+"+0.0*"+ttw+"<0.)*(100.+50.*"+ttw+")+(1.0*"+tch+"+0.0*"+ttw+">0.)*(150.+50.*"+tch+")))",
-                "bins":32,
-                "range":[-200.,200.]
+                #"variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*((1.0*"+tch+"+0.0*"+ttw+"<0.)*(100.+50.*"+ttw+")+(1.0*"+tch+"+0.0*"+ttw+">0.)*(150.+50.*"+tch+")))",
+                "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(50.0+20.0*fabs(SingleTop_1__LightJet_1__Eta)))",
+                #"bins":32,
+                "bins":30,
+                "range":[-150,150.]
             },
             #"3j1t": {
             #    "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(1),

@@ -984,13 +984,43 @@ const std::unordered_map<std::string,WeightInfoContainer> EventWeight::_eventWei
     
     
     //gen only
+    {"ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-herwigpp_TuneEE5C",
+        new SimpleWeightInfo(
+            //xtotal=19299964.0 eff=12519100.0 - 6780864.0 = 5738236.0
+            1299149749.22, //xsec from weight =  67.3135840678
+            70.688826 // xsec for process 'ST_t-channel_4f_leptonDecays'
+        )
+    },
     {"ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1",
         new SimpleWeightInfo(
             //xtotal=19938230.0 eff=12117204.0 - 7821026.0 = 4296178.0
             1341440559.5, //xsec from weight =  67.2798217043
             70.688826 // xsec for process 'ST_t-channel_4f_leptonDecays'
         )
+    },
+    {"ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180731",
+        new SimpleWeightInfo(
+            //xtotal=1960000.0 eff=1350088.0 - 609912.0 = 740176.0
+            536338.46875, //xsec from weight =  0.273642075893
+            70.688826 // xsec for process 'ST_t-channel_5f_leptonDecays'
+        )
     }
+    /* these are also fully available - see above
+    {"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-herwigpp",
+        new SimpleWeightInfo(
+            //xtotal=3990259.0 eff=3990259.0 - 0.0 = 3990259.0
+            3990259.0, //xsec from weight =  1.0
+            80.95 // xsec for process 'ST_t-channel_antitop_4f'
+        )
+    },
+    {"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-herwigpp",
+        new SimpleWeightInfo(
+            //xtotal=5887322.0 eff=5887322.0 - 0.0 = 5887322.0
+            5887322.0, //xsec from weight =  1.0
+            136.02 // xsec for process 'ST_t-channel_top_4f'
+        )
+    },
+    */
 };
 
 
