@@ -574,14 +574,14 @@ class PlotCrossSection(Module.getClass("Program")):
         ymax = max([totalMCSum.GetMaximum(),dataSum.GetMaximum()])
                    
         scale = 0
-        #$if plotName[1]=="pt2j1t" or plotName[1]=="wpt2j1t":
-        #    scale=0.4
+        if plotName[1]=="cos2j1t_CR":
+            scale=0.5
                    
         if logy:
             ymin = 1#math.exp(math.log(ymin)-0.05*(math.log(ymax)-math.log(ymin)))
             ymax = math.exp((scale+0.3)*(math.log(ymax)-math.log(ymin))+math.log(ymax))
         else:
-            ymax = 1.3*ymax
+            ymax = 1.3*(1+scale)*ymax
             ymin = 0
             
         self.module("Utils").createFolder("dists/"+channelName)

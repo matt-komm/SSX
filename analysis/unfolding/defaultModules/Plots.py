@@ -43,14 +43,14 @@ class Plots(Module):
                 "name":"bdtttw2j1t",
                 "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":self.module("ThetaModel").getBDTttw(channel),
-                "xtitle":"BDT#lower[0.3]{#scale[0.7]{tt/W}} discriminant",
+                "xtitle":"BDT#lower[0.3]{#scale[0.7]{t#bar{t}/W}} discriminant",
                 "ytitle":"Events / bin",
                 "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+bgSelection,
                 "binning":numpy.linspace(-1,1,num=21),
                 "legendPos":"L",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -59,7 +59,7 @@ class Plots(Module):
                 "name":"bdttch2j1t",
                 "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":self.module("ThetaModel").getBDTtchan(channel),
-                "xtitle":"BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} discriminant",
+                "xtitle":"BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}} discriminant",
                 "ytitle":"Events / bin",
                 "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+mtwSelection,
                 "binning":numpy.linspace(-1,1,num=21),
@@ -115,7 +115,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":True,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -131,7 +131,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -147,7 +147,7 @@ class Plots(Module):
                 "legendPos":"L",
                 "normalize":True,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -163,7 +163,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":True,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -179,7 +179,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -195,7 +195,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":True,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }>#kern[-0.6]{ }0.7",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -217,7 +217,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -233,7 +233,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -246,10 +246,10 @@ class Plots(Module):
                 "ytitle":"Events / bin",
                 "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+crSelection,
                 "binning":numpy.linspace(-1,1,num=26),
-                "legendPos":"L",
+                "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -265,7 +265,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -281,7 +281,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
                 "region":"2j1b",
                 "resRange":0.2
             },
@@ -297,7 +297,7 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W)#kern[-0.6]{ }>#kern[-0.6]{ }50#kern[-0.5]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch.}}#kern[-0.6]{ }<#kern[-0.6]{ }0",
                 "region":"2j1b",
                 "resRange":0.2
             }
