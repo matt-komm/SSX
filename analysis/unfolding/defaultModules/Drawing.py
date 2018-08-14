@@ -278,7 +278,7 @@ class Drawing(Module):
         cvHist.Print(output+".pdf")
         cvHist.Print(output+".png")
         
-    def plotCrossSection(self,genHistSum,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,legendPos,resRange,output):
+    def plotCrossSection(self,genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,legendPos,resRange,output):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
         ROOT.TGaxis.SetMaxDigits(3)
         ROOT.gStyle.SetLineScalePS(2)
@@ -341,8 +341,8 @@ class Drawing(Module):
         cv.cd(2)
         
         
-        xmin = genHistSum.GetXaxis().GetBinLowEdge(1)
-        xmax = genHistSum.GetXaxis().GetBinUpEdge(genHistSum.GetNbinsX())
+        xmin = genHistSums[0]["hist"].GetXaxis().GetBinLowEdge(1)
+        xmax = genHistSums[0]["hist"].GetXaxis().GetBinUpEdge(genHistSums[0]["hist"].GetNbinsX())
         axis = ROOT.TH2F("axis"+str(random.random()),";;",
             50,xmin,xmax,
             50,ymin,ymax
@@ -363,7 +363,8 @@ class Drawing(Module):
         axis.GetYaxis().SetTitleOffset(1.45)
         axis.Draw("AXIS")
         
-        genHistSum.Draw("HISTSAME")
+        for genHistSum in reversed(genHistSums):
+            genHistSum["hist"].Draw("HISTSAME")
         histSumTotal.Draw("PESAME")
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotal.GetBinCenter(ibin+1)
@@ -416,8 +417,8 @@ class Drawing(Module):
         
         legendXL = [cvxmin+0.02,cvxmin+0.35]
         legendXR = [0.53,cvxmax-0.12]
-        legendYD = [resHeight+0.03,resHeight+0.03+0.058*2]
-        legendYU = [cvymax-0.025,cvymax-0.025-0.058*2]
+        legendYD = [resHeight+0.03,resHeight+0.03+0.043*(1+len(genHistSums))]
+        legendYU = [cvymax-0.025,cvymax-0.025-0.043*(1+len(genHistSums))]
         
         if legendPos[0]=="L":
             legendX = legendXL
@@ -436,9 +437,10 @@ class Drawing(Module):
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
         legend.SetTextFont(43)
-        legend.SetTextSize(30)
+        legend.SetTextSize(27)
         legend.AddEntry(histSumTotal,"Data","P")
-        legend.AddEntry(genHistSum,"POWHEG#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8","L")
+        for genHistSum in genHistSums:
+            legend.AddEntry(genHistSum["hist"],genHistSum["legend"],"L")
         legend.Draw("Same")
         
         cv.cd(1)
@@ -468,7 +470,9 @@ class Drawing(Module):
         
         histSumTotalRes = histSumTotal.Clone(histSumTotal.GetName()+"res")
         histSumProfiledRes = histSumProfiled.Clone(histSumProfiled.GetName()+"res")
-        genHistSumRes = genHistSum.Clone(genHistSum.GetName()+"res")
+        genHistSumsRes = []
+        for genHistSum in genHistSums:
+            genHistSumsRes.append(genHistSum["hist"].Clone(genHistSum["hist"].GetName()+"res"))
         
         for ibin in range(histSumTotal.GetNbinsX()):
             histSumTotalRes.SetBinContent(ibin+1,
@@ -483,15 +487,16 @@ class Drawing(Module):
             histSumProfiledRes.SetBinError(ibin+1,
                 histSumProfiled.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)
             )
-            genHistSumRes.SetBinContent(ibin+1,
-                genHistSum.GetBinContent(ibin+1)/histSumTotal.GetBinContent(ibin+1)
-            )
-            genHistSumRes.SetBinError(ibin+1,
-                genHistSum.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)
-            )
+            for igen,genHistSumRes in enumerate(genHistSumsRes):
+                genHistSumRes.SetBinContent(ibin+1,
+                    genHistSums[igen]["hist"].GetBinContent(ibin+1)/histSumTotal.GetBinContent(ibin+1)
+                )
+                genHistSumRes.SetBinError(ibin+1,
+                    genHistSums[igen]["hist"].GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)
+                )
             
-            
-        genHistSumRes.Draw("HISTSame")
+        for genHistSumRes in reversed(genHistSumsRes):
+            genHistSumRes.Draw("HISTSame")
         histSumTotalRes.Draw("PLSame")
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotalRes.GetBinCenter(ibin+1)

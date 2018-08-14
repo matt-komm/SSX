@@ -250,6 +250,55 @@ class PlotCrossSection(Module.getClass("Program")):
             result[h[0]].SetDirectory(0)
         return result
         
+    def getPredictions(self,channels,unfoldingName,unfoldingLevel):
+        
+        
+        predictions = [
+            {
+                "name":"ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1",
+                "color":newColor(0.1,0.6,0.95),
+                "style":2,
+                "width":6,
+                "legend":"aMC@NLO#kern[-0.6]{ }4FS#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
+            },
+            {
+                "name":"ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180731",
+                "color":newColor(0.99,0.7,0.15),
+                "style":9,
+                "width":5,
+                "legend":"aMC@NLO#kern[-0.6]{ }5FS#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
+            }
+        ]
+        
+        result = []
+        #TODO: this is a dirty hack -> uses muon for combined as well!!! does not work for fiducial!!!
+        if len(channels)==1:
+            channel = channels[0]
+        else:
+            channel = "mu"
+        
+        outputFolderGen = self.module("Response").getOutputFolder(channel,unfoldingName,"nominal")
+        genMCFileName = os.path.join(outputFolderGen,"genpredictions_"+unfoldingLevel+".root")
+        rootFile = ROOT.TFile(genMCFileName)
+        for prediction in predictions:
+            histInc = rootFile.Get(prediction["name"]).Clone(prediction["name"]+str(random.random()))
+            histInc.SetDirectory(0)
+            histPos = rootFile.Get(prediction["name"]+"_pos").Clone(prediction["name"]+str(random.random()))
+            histPos.SetDirectory(0)
+            histNeg = rootFile.Get(prediction["name"]+"_neg").Clone(prediction["name"]+str(random.random()))
+            histNeg.SetDirectory(0)
+            for h in [histInc,histPos,histNeg]:
+                h.SetLineColor(prediction["color"].GetNumber())
+                h.SetLineStyle(prediction["style"])
+                h.SetLineWidth(prediction["width"])
+            result.append({
+                0:histInc,1:histPos,-1:histNeg,"legend":prediction["legend"]
+            })
+        
+                
+        return result
+             
+        
     def execute(self):
         unfoldingName = self.module("Unfolding").getUnfoldingName()
         channels = self.getOption("channels").split(",")
@@ -417,8 +466,28 @@ class PlotCrossSection(Module.getClass("Program")):
         self.module("Utils").normalizeByCrossSection(genHistSum)
         genHistRatio = nominalResult["ratioGen"]
         
+        genHistSums = [
+            {"hist":genHistSum, "legend":"POWHEG#kern[-0.6]{ }4FS#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
+        ]
+        genHistSumsNorm = [
+            {"hist":genHistSumNorm, "legend":"POWHEG#kern[-0.6]{ }4FS#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
+        ]
         
-
+        genPredictions = self.getPredictions(channels,unfoldingName,unfoldingLevel)
+        for pred in genPredictions:
+            
+                
+            genPrediction = pred[0].Clone(pred[0].GetName()+str(random.random()))
+            self.module("Utils").normalizeByCrossSection(genPrediction)
+            genHistSums.append({
+                "hist":genPrediction,"legend":pred["legend"]
+            })
+            genPredictionNorm = pred[0].Clone(pred[0].GetName()+"norm")
+            genPredictionNorm.Scale(1./genPredictionNorm.Integral())
+            self.module("Utils").normalizeByBinWidth(genPredictionNorm)
+            genHistSumsNorm.append({
+                "hist":genPredictionNorm,"legend":pred["legend"]
+            })
         
         self.module("Utils").normalizeByBinWidth(histSumProfiledNorm)
         self.module("Utils").normalizeByBinWidth(histSumTotalNorm)
@@ -598,11 +667,12 @@ class PlotCrossSection(Module.getClass("Program")):
         yminNorm = 100000
         ymaxNorm = -10000
         for ibin in range(histSumTotal.GetNbinsX()):
-            ymin = min([ymin,genHistSum.GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)-histSumTotal.GetBinError(ibin+1)])
-            ymax = max([ymax,genHistSum.GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)+histSumTotal.GetBinError(ibin+1)])
-            
-            yminNorm = min([yminNorm,genHistSumNorm.GetBinContent(ibin+1),histSumTotalNorm.GetBinContent(ibin+1)-histSumTotalNorm.GetBinError(ibin+1)])
-            ymaxNorm = max([ymaxNorm,genHistSumNorm.GetBinContent(ibin+1),histSumTotalNorm.GetBinContent(ibin+1)+histSumTotalNorm.GetBinError(ibin+1)])
+            for genHistSum in genHistSums:
+                ymin = min([ymin,genHistSum["hist"].GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)-histSumTotal.GetBinError(ibin+1)])
+                ymax = max([ymax,genHistSum["hist"].GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)+histSumTotal.GetBinError(ibin+1)])
+            for genHistSumNorm in genHistSumsNorm:
+                yminNorm = min([yminNorm,genHistSumNorm["hist"].GetBinContent(ibin+1),histSumTotalNorm.GetBinContent(ibin+1)-histSumTotalNorm.GetBinError(ibin+1)])
+                ymaxNorm = max([ymaxNorm,genHistSumNorm["hist"].GetBinContent(ibin+1),histSumTotalNorm.GetBinContent(ibin+1)+histSumTotalNorm.GetBinError(ibin+1)])
             
         if logy:
             ymin = 10**math.floor(math.log10(0.7*ymin))
@@ -644,26 +714,26 @@ class PlotCrossSection(Module.getClass("Program")):
         
         
         self.module("Drawing").plotCrossSection(
-            genHistSum,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitleSum,xtitle,
+            genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitleSum,xtitle,
             self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
             legendPos,resRange,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sum")
         )  
         
         self.module("Drawing").plotCrossSection(
-            genHistSumNorm,histSumProfiledNorm,histSumTotalNorm,yminNorm,ymaxNorm,logy,ytitleSumNorm,xtitle,
+            genHistSumsNorm,histSumProfiledNorm,histSumTotalNorm,yminNorm,ymaxNorm,logy,ytitleSumNorm,xtitle,
             self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
             legendPos,resRange,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sumnorm")
         ) 
-        
+        '''
         self.module("Drawing").plotCrossSection(
             genHistRatio,histRatioProfiled,histRatioTotal,0.2,1.,0,ytitleRatio,xtitle,
             self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
             "LD",0.48,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_ratio")
         )    
- 
+        '''
 
 
 

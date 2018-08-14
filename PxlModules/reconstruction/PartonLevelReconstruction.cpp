@@ -177,7 +177,7 @@ class PartonLevelReconstruction:
                 {
                     continue;       
                 }
-                if (daughter==decayee)
+                if (daughter->getId()==decayee->getId())
                 {
                     return true;
                 }
@@ -533,7 +533,7 @@ class PartonLevelReconstruction:
                             unsigned int lIndex = 0;
                             for (unsigned int il = 0; il < lNotTop.size(); ++il)
                             {
-                                pxl::Particle* p = lquarkCandidates[il];
+                                pxl::Particle* p = lNotTop[il];
                                 if (!isInDecay(p,top))
                                 {
                                     pxl::LorentzVector v = p->getVector();
@@ -549,11 +549,11 @@ class PartonLevelReconstruction:
                             {
                                 if (il == lIndex)
                                 {
-                                    lquark = lquarkCandidates[il];
+                                    lquark = lNotTop[il];
                                 }
                                 else
                                 {
-                                    additionalLquarkCandidates.push_back(lquarkCandidates[il]);
+                                    additionalLquarkCandidates.push_back(lNotTop[il]);
                                 }
                             }
                             
