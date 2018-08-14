@@ -46,6 +46,20 @@ class Files(Module):
         self._logger.debug("found signal files "+str(len(rootFiles))+"/"+str(nFriends)+" in "+basedirSignalMC)
         return rootFiles
         
+    def getMCSignalGen(self,channel):
+        rootFiles = []
+        nFriends = 0
+    
+        basedirSignalMCGen = "/nfs/user/mkomm/SSX13/signalMCGen/"+channel+self.module("Files").getVersion()
+        matchSignalMCGen = re.compile("^signalMC_gen[0-9]+.root$")
+        
+        for f in os.listdir(basedirSignalMCGen):
+            if matchSignalMCGen.match(f):
+                rootFiles.append([os.path.join(basedirSignalMCGen,f)])
+                        
+        self._logger.debug("found signal gen files "+str(len(rootFiles))+" in "+basedirSignalMCGen)
+        return rootFiles
+        
 
     def getMCBackground(self,channel,requireFriends=True):
         rootFiles = []

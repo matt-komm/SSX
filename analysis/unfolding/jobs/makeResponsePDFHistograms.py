@@ -73,7 +73,7 @@ setupBins = {
 
 
 for channel in ["mu","ele"]:
-    for charge in [1]:
+    for charge in [-1,1]:
         for unfoldingSetup in sorted(setupBins.keys()):       
             
             for lheWeight in range(2001,2106)+range(3001,3056)+range(4001,4098):

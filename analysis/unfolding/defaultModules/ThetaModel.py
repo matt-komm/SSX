@@ -153,7 +153,7 @@ class ThetaModel(Module):
                 "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(50.0+20.0*fabs(SingleTop_1__LightJet_1__Eta)))",
                 #"bins":32,
                 "bins":30,
-                "range":[-150,150.]
+                "range":[-150.,150.]
             },
             #"3j1t": {
             #    "weight":self.module("Samples").getNjets(3)+"*"+self.module("Samples").getNbjets(1),
