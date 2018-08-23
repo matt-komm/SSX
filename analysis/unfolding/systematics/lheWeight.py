@@ -15,7 +15,8 @@ class SamplesLHEWeight(Module.getClass("Samples")):
         self._logger.setLevel(logging.DEBUG)
         
     def getGenWeight(self):
-        return "genweight*"+str(self.module("Samples").getLumi())+"*mcweight*(lheweight_"+self.getOption("lheWeight")+"/lheweight_1001)"
+        #note: -1e32 is approximately the lowest float32 value => was nan/inf in LHE
+        return "genweight*"+str(self.module("Samples").getLumi())+"*mcweight*(lheweight_1001>-1e+30)*(lheweight_"+self.getOption("lheWeight")+">-1e+30)*(lheweight_"+self.getOption("lheWeight")+"/lheweight_1001)"
 
 
 class UtilsLHEWeight(Module.getClass("Utils")):

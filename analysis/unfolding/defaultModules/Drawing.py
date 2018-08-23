@@ -278,7 +278,7 @@ class Drawing(Module):
         cvHist.Print(output+".pdf")
         cvHist.Print(output+".png")
         
-    def plotCrossSection(self,genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,legendPos,resRange,output):
+    def plotCrossSection(self,genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,legendPos,resRange,output,fillGen=False):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
         ROOT.TGaxis.SetMaxDigits(3)
         ROOT.gStyle.SetLineScalePS(2)
@@ -363,8 +363,32 @@ class Drawing(Module):
         axis.GetYaxis().SetTitleOffset(1.45)
         axis.Draw("AXIS")
         
-        for genHistSum in reversed(genHistSums):
-            genHistSum["hist"].Draw("HISTSAME")
+        if fillGen:
+            width = xmax-xmin
+            for igen,genHistSum in enumerate(reversed(genHistSums)):
+                for ibin in range(genHistSum["hist"].GetNbinsX()):
+                    w = genHistSum["hist"].GetBinWidth(ibin+1)
+                    x = genHistSum["hist"].GetBinCenter(ibin+1)+width*0.02*(1.*igen/(len(genHistSums)-1)-0.5)
+                    w*=0.65
+                    c = genHistSum["hist"].GetBinContent(ibin+1)
+                    e = genHistSum["hist"].GetBinError(ibin+1)
+                    box = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
+                    rootObj.append(box)
+                    box.SetLineColor(genHistSum["hist"].GetLineColor())
+                    box.SetFillColor(genHistSum["hist"].GetLineColor())
+                    box.SetFillStyle(genHistSum["hist"].GetFillStyle())
+                    box.Draw("SameF")
+                    box2 = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
+                    rootObj.append(box2)
+                    box2.SetLineWidth(2)
+                    box2.SetLineColor(genHistSum["hist"].GetLineColor())
+                    box2.SetFillColor(genHistSum["hist"].GetLineColor())
+                    box2.SetFillStyle(genHistSum["hist"].GetFillStyle())
+                    box2.Draw("SameL")
+        else:
+            for genHistSum in reversed(genHistSums):
+                genHistSum["hist"].Draw("HISTSAME")
+                
         histSumTotal.Draw("PESAME")
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotal.GetBinCenter(ibin+1)
@@ -416,9 +440,9 @@ class Drawing(Module):
         
         
         legendXL = [cvxmin+0.02,cvxmin+0.35]
-        legendXR = [0.53,cvxmax-0.12]
-        legendYD = [resHeight+0.03,resHeight+0.03+0.043*(1+len(genHistSums))]
-        legendYU = [cvymax-0.025,cvymax-0.025-0.043*(1+len(genHistSums))]
+        legendXR = [cvxmax-0.34,cvxmax-0.02]
+        legendYD = [resHeight+0.03,resHeight+0.03+0.044*(1+len(genHistSums))]
+        legendYU = [cvymax-0.025,cvymax-0.025-0.044*(1+len(genHistSums))]
         
         if legendPos[0]=="L":
             legendX = legendXL
@@ -494,9 +518,35 @@ class Drawing(Module):
                 genHistSumRes.SetBinError(ibin+1,
                     genHistSums[igen]["hist"].GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1)
                 )
-            
-        for genHistSumRes in reversed(genHistSumsRes):
-            genHistSumRes.Draw("HISTSame")
+                
+                
+                
+        if fillGen:
+            width = xmax-xmin
+            for igen,genHistSumRes in enumerate(reversed(genHistSumsRes)):
+                for ibin in range(genHistSumRes.GetNbinsX()):
+                    w = genHistSumRes.GetBinWidth(ibin+1)
+                    x = genHistSumRes.GetBinCenter(ibin+1)+width*0.02*(1.*igen/(len(genHistSumsRes)-1)-0.5)
+                    w*=0.65
+                    c = genHistSumRes.GetBinContent(ibin+1)
+                    e = genHistSumRes.GetBinError(ibin+1)
+                    box = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
+                    rootObj.append(box)
+                    box.SetLineColor(genHistSumRes.GetLineColor())
+                    box.SetFillColor(genHistSumRes.GetLineColor())
+                    box.SetFillStyle(genHistSumRes.GetFillStyle())
+                    box.Draw("SameF")
+                    box2 = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
+                    rootObj.append(box2)
+                    box2.SetLineWidth(2)
+                    box2.SetLineColor(genHistSumRes.GetLineColor())
+                    box2.SetFillColor(genHistSumRes.GetLineColor())
+                    box2.SetFillStyle(genHistSumRes.GetFillStyle())
+                    box2.Draw("SameL")
+        else:
+            for genHistSumRes in reversed(genHistSumsRes):
+                genHistSumRes.Draw("HISTSame")
+                
         histSumTotalRes.Draw("PLSame")
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotalRes.GetBinCenter(ibin+1)
@@ -529,6 +579,7 @@ class Drawing(Module):
         
         cv.Print(output+".pdf")
         cv.Print(output+".png")
+
         
         
     def plotDistribution(self,stack,data,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,lumi,output):

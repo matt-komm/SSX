@@ -478,6 +478,9 @@ class Response(Module):
         rootFile = ROOT.TFile(output,"RECREATE")
         responseHist.SetDirectory(rootFile)
         responseHist.Write()
+        for ibin in range(responseHist.GetXaxis().GetNbins()+2):
+            for jbin in range(responseHist.GetYaxis().GetNbins()+2):
+                print ibin,jbin,responseHist.GetBinContent(ibin,jbin)
         genHist = responseHist.ProjectionX("gen")
         genHistUnweighted = responseHistUnweighted.ProjectionX("genUnweighted")
         self._logger.info("Cross section in bin range: "+str(genHist.Integral()/self.module("Samples").getLumi())+"+-"+str(self.getError(genHist)/self.module("Samples").getLumi())+" pb")

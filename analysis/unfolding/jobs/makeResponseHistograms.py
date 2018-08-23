@@ -58,7 +58,8 @@ setupBins = {
     "setup/LeptonPtParton":{"ele":4,"mu":5},
     "setup/LeptonEtaParton":{"ele":3,"mu":5},
     "setup/TopCosParton":{"ele":6,"mu":6},
-    "setup/WCosParton":{"ele":6,"mu":6},
+    "setup/TopCosTauParton":{"ele":6,"mu":6},
+    #"setup/WCosParton":{"ele":6,"mu":6},
     "setup/WPtParton":{"ele":5,"mu":5},
     
     "setup/TopPtParticle":{"ele":5,"mu":5},
@@ -66,7 +67,7 @@ setupBins = {
     "setup/LeptonPtParticle":{"ele":4,"mu":5},
     "setup/LeptonEtaParticle":{"ele":3,"mu":5},
     "setup/TopCosParticle":{"ele":6,"mu":6},
-    "setup/WCosParticle":{"ele":6,"mu":6},
+    #"setup/WCosParticle":{"ele":6,"mu":6},
     "setup/WPtParticle":{"ele":5,"mu":5},
 }
 

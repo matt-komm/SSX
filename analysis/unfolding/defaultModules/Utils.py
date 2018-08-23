@@ -237,7 +237,7 @@ class Utils(Module):
         for ibin in range(hist.GetNbinsX()):
             hist.SetBinContent(ibin+1,hist.GetBinContent(ibin+1)/hist.GetBinWidth(ibin+1))
             hist.SetBinError(ibin+1,hist.GetBinError(ibin+1)/hist.GetBinWidth(ibin+1))
-            
+        return hist
                
     def normalizeHistByBinWidth2DPerCharge(self,genBinning,hist):
         #hist.Scale(1./hist.Integral())

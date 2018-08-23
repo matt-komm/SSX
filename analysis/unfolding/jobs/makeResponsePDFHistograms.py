@@ -59,7 +59,8 @@ setupBins = {
     "setup/LeptonPtParton":{"ele":4,"mu":5},
     "setup/LeptonEtaParton":{"ele":3,"mu":5},
     "setup/TopCosParton":{"ele":6,"mu":6},
-    "setup/WCosParton":{"ele":6,"mu":6},
+    "setup/TopCosTauParton":{"ele":6,"mu":6},
+    #"setup/WCosParton":{"ele":6,"mu":6},
     "setup/WPtParton":{"ele":5,"mu":5},
     
     "setup/TopPtParticle":{"ele":5,"mu":5},
@@ -67,21 +68,20 @@ setupBins = {
     "setup/LeptonPtParticle":{"ele":4,"mu":5},
     "setup/LeptonEtaParticle":{"ele":3,"mu":5},
     "setup/TopCosParticle":{"ele":6,"mu":6},
-    "setup/WCosParticle":{"ele":6,"mu":6},
+    #"setup/WCosParticle":{"ele":6,"mu":6},
     "setup/WPtParticle":{"ele":5,"mu":5},
 }
 
 
 for channel in ["mu","ele"]:
-    for charge in [-1,1]:
-        for unfoldingSetup in sorted(setupBins.keys()):       
-            
-            for lheWeight in range(2001,2106)+range(3001,3056)+range(4001,4098):
+    for unfoldingSetup in sorted(setupBins.keys()):       
         
-                #sys
-                config.inputParams.append([
-                    "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -m systematics/lheWeight -c lheWeight:"+str(lheWeight)+" -c channel:"+channel+" -c charge:"+str(charge)
-                ])
+        for lheWeight in range(2001,2106)+range(3001,3056)+range(4001,4098):
+    
+            #sys
+            config.inputParams.append([
+                "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -m systematics/lheWeight -c lheWeight:"+str(lheWeight)+" -c channel:"+channel+" -c charge:-1,1"
+            ])
             
             
                 

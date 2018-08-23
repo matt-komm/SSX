@@ -31,9 +31,9 @@ class GenHistograms(Module.getClass("Program")):
         
         genMCFileName = os.path.join(outputFolder,"genpredictions_"+unfoldingLevel+".root")
         
-        if os.path.exists(genMCFileName):
-            self._logger.info("Output file '"+genMCFileName+"' already exists! -> skip")
-            sys.exit(0)
+        #if os.path.exists(genMCFileName):
+        #    self._logger.info("Output file '"+genMCFileName+"' already exists! -> skip")
+        #    sys.exit(0)
             
         genBinning = self.module("Unfolding").getGenBinning(channel)
         self._logger.info("Gen binning: "+str(genBinning))
@@ -96,7 +96,7 @@ class GenHistograms(Module.getClass("Program")):
                     self.module("Utils").getHist1D(genPredictionNeg,fileName,processName,genVariable,
                         genWeight+"*"+genSelectionNeg+"*(1./veto_frac)"
                     )
-                    
+                               
             genPredictionInc = genPredictionPos.Clone(setName)
             genPredictionInc.SetDirectory(0)
             histograms.append(genPredictionInc)

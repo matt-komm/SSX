@@ -21,6 +21,9 @@ class Unfolding(Module):
     def getUnfoldingName(self):
         return "inc"
         
+    def getFitName(self):
+        return self.module("Unfolding").getUnfoldingName()
+        
     def getUnfoldingVariableName(self):
         raise NotImplementedError()
         

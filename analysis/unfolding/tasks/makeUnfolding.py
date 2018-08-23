@@ -22,6 +22,7 @@ class RunUnfolding(Module.getClass("Program")):
         channelName = self.module("Samples").getChannelName(channels)
         #inc,pt,y,cos
         unfoldingName = self.module("Unfolding").getUnfoldingName()
+        fitName = self.module("Unfolding").getFitName()
         if unfoldingName=="inc":
             self._logger.critical("Cannot unfolding inclusive xsec")
             sys.exit(1)
@@ -54,7 +55,7 @@ class RunUnfolding(Module.getClass("Program")):
         
         fitOutput = os.path.join(
             self.module("Utils").getOutputFolder("fit/profiled"),
-            self.module("ThetaModel").getFitFileName(channels,unfoldingName,"profiled")
+            self.module("ThetaModel").getFitFileName(channels,fitName,"profiled")
         )
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         

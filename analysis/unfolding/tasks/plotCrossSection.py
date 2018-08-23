@@ -178,7 +178,8 @@ ROOT.gStyle.SetLineScalePS(2)
 ROOT.gStyle.SetPalette(1)
 ROOT.gStyle.SetPaintTextFormat("7.4f")
 
-
+ROOT.gStyle.SetLineStyleString(11,"30 15")
+ROOT.gStyle.SetLineStyleString(12,"10 10")
 
 
 
@@ -258,15 +259,15 @@ class PlotCrossSection(Module.getClass("Program")):
                 "name":"ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1",
                 "color":newColor(0.1,0.6,0.95),
                 "style":2,
-                "width":6,
-                "legend":"aMC@NLO#kern[-0.6]{ }4FS#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
+                "width":4,
+                "legend":"aMC@NLO#kern[-0.6]{ }4FS",#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
             },
             {
                 "name":"ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180731",
-                "color":newColor(0.99,0.7,0.15),
-                "style":9,
-                "width":5,
-                "legend":"aMC@NLO#kern[-0.6]{ }5FS#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
+                "color":newColor(0.99,0.7,0.1),
+                "style":11,
+                "width":3,
+                "legend":"aMC@NLO#kern[-0.6]{ }5FS",#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
             }
         ]
         
@@ -297,6 +298,76 @@ class PlotCrossSection(Module.getClass("Program")):
         
                 
         return result
+        
+        
+    def applyLHEVariations(self,hist,unfoldingName,channels,unfoldingLevel,rangesPDF,rangesAlphaS,scalePos=1.,scaleNeg=1.):
+        uncertaintiesPDF = []
+        for r in rangesPDF:
+            uncertaintiesPDF.append("lheWeight_%i"%r)
+        uncertaintiesAlphaS = []
+        for r in rangesAlphaS:
+            uncertaintiesAlphaS.append("lheWeight_%i"%r)
+        responseMatrices = self.module("Response").gatherResponse(
+            unfoldingName,
+            unfoldingLevel,
+            channels,
+            uncertainties=uncertaintiesPDF+uncertaintiesAlphaS
+        )
+        if len(channels)==2:
+            responseMatrices = self.module("Response").combineResponseMatrices(responseMatrices)
+        channelName = self.module("Samples").getChannelName(channels)
+        
+        pdfVariationsPos = {}
+        pdfVariationsNeg = {}
+        
+        for unc in uncertaintiesPDF+uncertaintiesAlphaS:
+            posHist = responseMatrices[channelName][1][unc]
+            negHist = responseMatrices[channelName][-1][unc]
+                               
+        
+            pdfVariationsPos[unc] = responseMatrices[channelName][1][unc].ProjectionX(responseMatrices[channelName][1][unc].GetName()+unc+str(random.random()))
+            pdfVariationsNeg[unc] = responseMatrices[channelName][-1][unc].ProjectionX(responseMatrices[channelName][-1][unc].GetName()+unc+str(random.random()))
+ 
+        variationsTotalPDFPos = numpy.zeros(len(uncertaintiesPDF))
+        variationsTotalPDFNeg = numpy.zeros(len(uncertaintiesPDF))
+        for ibin in range(hist.GetNbinsX()):
+            variations = numpy.zeros(len(uncertaintiesPDF))
+            for ik,k in enumerate(uncertaintiesPDF):
+                posV = pdfVariationsPos[k].GetBinContent(ibin+1)*scalePos
+                negV = pdfVariationsNeg[k].GetBinContent(ibin+1)*scaleNeg
+                variations[ik] = posV/(posV+negV)
+                variationsTotalPDFPos[ik] += posV
+                variationsTotalPDFNeg[ik] += negV
+                #print ibin,ik,posV,negV
+            mean = numpy.mean(variations)
+            std = numpy.std(variations)
+            
+            print ibin,hist.GetBinContent(ibin+1),mean,std
+            print "   ",
+            for ik,k in enumerate(uncertaintiesAlphaS):
+                posV = pdfVariationsPos[k].GetBinContent(ibin+1)*scalePos
+                negV = pdfVariationsNeg[k].GetBinContent(ibin+1)*scaleNeg
+                print "%i=%6.4f, "%(ik,(posV/(posV+negV)-mean)),
+            print
+            
+            hist.SetBinContent(ibin+1,mean)
+            hist.SetBinError(ibin+1,std)
+            
+
+        meanAlt = numpy.mean(variationsTotalPDFPos/variationsTotalPDFNeg)
+        stdAlt = numpy.std(variationsTotalPDFPos/variationsTotalPDFNeg)
+        envUp = max(variationsTotalPDFPos/variationsTotalPDFNeg)-meanAlt
+        envDown = min(variationsTotalPDFPos/variationsTotalPDFNeg)-meanAlt
+        print "total",meanAlt,stdAlt,envUp,envDown
+        print "   ",
+        for ik,k in enumerate(uncertaintiesAlphaS):
+            posV = 0
+            negV = 0
+            for ibin in range(hist.GetNbinsX()):
+                posV += pdfVariationsPos[k].GetBinContent(ibin+1)*scalePos
+                negV += pdfVariationsNeg[k].GetBinContent(ibin+1)*scaleNeg
+            print "%i=%6.4f, "%(ik,(posV/(posV+negV)-mean)),
+        print
              
         
     def execute(self):
@@ -467,10 +538,10 @@ class PlotCrossSection(Module.getClass("Program")):
         genHistRatio = nominalResult["ratioGen"]
         
         genHistSums = [
-            {"hist":genHistSum, "legend":"POWHEG#kern[-0.6]{ }4FS#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
+            {"hist":genHistSum, "legend":"POWHEG#kern[-0.6]{ }4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
         ]
         genHistSumsNorm = [
-            {"hist":genHistSumNorm, "legend":"POWHEG#kern[-0.6]{ }4FS#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
+            {"hist":genHistSumNorm, "legend":"POWHEG#kern[-0.6]{ }4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
         ]
         
         genPredictions = self.getPredictions(channels,unfoldingName,unfoldingLevel)
@@ -511,7 +582,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 self._logger.critical("Covariance matrix and histogram error do not agree!")
                 sys.exit(1)
         
-        if unfoldingName=="cos" and unfoldingLevel=="parton":
+        if (unfoldingName=="cos" or unfoldingName=="cosTau") and unfoldingLevel=="parton":
             asymmetryGen = self.module("Asymmetry").calculateAsymmetry(genHistSumNorm)
             asymmetryStat = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal)
             asymmetryProfiled = self.module("Asymmetry").fitDistribution(histSumProfiled,covSumProfiled)
@@ -640,7 +711,7 @@ class PlotCrossSection(Module.getClass("Program")):
         #genColor = newColor(72./255,123./255,234./255)
         #genColor = newColor(226./255,128./255,22./255)
         #211, 42, 42
-        genColor = newColor(224./255,42./255,42./255)
+        genColor = newColor(224./255,50./255,50./255)
         genHistSum.SetLineColor(genColor.GetNumber())
         genHistSum.SetLineWidth(2)
         genHistSumNorm.SetLineColor(genColor.GetNumber())
@@ -659,6 +730,7 @@ class PlotCrossSection(Module.getClass("Program")):
         
         genHistRatio.SetLineColor(genColor.GetNumber())
         genHistRatio.SetLineWidth(2)
+        genHistRatio.SetFillStyle(1001)
         
         
         ymin = 100000
@@ -705,12 +777,72 @@ class PlotCrossSection(Module.getClass("Program")):
             
         if unfoldingName=="lpt" or unfoldingName=="y":
             legendPos = "RU"
-        elif unfoldingName=="cos":
+        elif unfoldingName=="cos" or unfoldingName=="cosTau":
             legendPos = "RD"
         else:
             legendPos = "LD"
             
             
+        genHistsRatioMMHT14 = genHistRatio.Clone(genHistRatio.GetName()+"mh")
+        #genHistsRatioMMHT14.SetLineColor(newColor(0,0.84,0.91).GetNumber())
+        genHistsRatioMMHT14.SetLineColor(newColor(1.,0.76,0.32).GetNumber())
+        genHistsRatioMMHT14.SetLineStyle(1)
+        genHistsRatioMMHT14.SetLineWidth(3)
+        genHistsRatioMMHT14.SetFillStyle(1001)
+        self.applyLHEVariations(
+            genHistsRatioMMHT14,
+            unfoldingName,
+            channels,
+            unfoldingLevel,
+            range(4001,4098),
+            [],
+            scalePos=138.3/136.02,
+            scaleNeg=83.5/80.95
+        )
+            
+        genHistsRatioNNPDF30 = genHistRatio.Clone(genHistRatio.GetName()+"nnpdf")
+        #genHistsRatioNNPDF30.SetLineColor(newColor(0.13,0.13,0.93).GetNumber())
+        genHistsRatioNNPDF30.SetLineColor(newColor(0.95,0.20,0.27).GetNumber())
+        genHistsRatioNNPDF30.SetLineStyle(1)
+        genHistsRatioNNPDF30.SetLineWidth(3)
+        genHistsRatioNNPDF30.SetFillStyle(1001)
+        self.applyLHEVariations(
+            genHistsRatioNNPDF30,
+            unfoldingName,
+            channels,
+            unfoldingLevel,
+            range(2001,2102),
+            range(2102,2106),
+            scalePos=1.,
+            scaleNeg=1.
+        )
+        
+        genHistsRatioCT14 = genHistRatio.Clone(genHistRatio.GetName()+"ct")
+        #genHistsRatioCT14.SetLineColor(newColor(0.82,0.45,0.89).GetNumber())
+        genHistsRatioCT14.SetLineColor(newColor(0.65,0.36,0.85).GetNumber())
+        genHistsRatioCT14.SetLineStyle(1)
+        genHistsRatioCT14.SetLineWidth(3)
+        genHistsRatioCT14.SetFillStyle(1001)
+        self.applyLHEVariations(
+            genHistsRatioCT14,
+            unfoldingName,
+            channels,
+            unfoldingLevel,
+            range(3001,3056),
+            [],
+            scalePos=135.2/136.02,
+            scaleNeg=79.3/80.95
+        )
+        
+        
+            
+        genHistsRatio = [
+            {"hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.6]{ }14"},
+            {"hist":genHistsRatioNNPDF30,"legend":"NNPDF#kern[-0.6]{ }3.0"},
+            {"hist":genHistsRatioCT14,"legend":"CT#kern[-0.6]{ }14"},
+            
+        ]
+        
         
         
         self.module("Drawing").plotCrossSection(
@@ -726,14 +858,17 @@ class PlotCrossSection(Module.getClass("Program")):
             legendPos,resRange,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sumnorm")
         ) 
-        '''
+        
+        ymin = 0.25 if channelName=="comb" else 0.2
+        ymax = 0.8 if channelName=="comb" else 1.1
         self.module("Drawing").plotCrossSection(
-            genHistRatio,histRatioProfiled,histRatioTotal,0.2,1.,0,ytitleRatio,xtitle,
+            genHistsRatio,histRatioProfiled,histRatioTotal,ymin,ymax,0,ytitleRatio,xtitle,
             self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
             "LD",0.48,
-            os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_ratio")
+            os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_ratio"),
+            fillGen=True
         )    
-        '''
+        
 
 
 
