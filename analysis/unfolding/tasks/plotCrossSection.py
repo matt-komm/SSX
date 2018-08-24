@@ -743,10 +743,14 @@ class PlotCrossSection(Module.getClass("Program")):
         ymaxNorm = -10000
         for ibin in range(histSumTotal.GetNbinsX()):
             for genHistSum in genHistSums:
-                ymin = min([ymin,genHistSum["hist"].GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)-histSumTotal.GetBinError(ibin+1)])
+                yminTest = min([genHistSum["hist"].GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)-histSumTotal.GetBinError(ibin+1)])
+                if yminTest>0:
+                    ymin = min(ymin,yminTest)
                 ymax = max([ymax,genHistSum["hist"].GetBinContent(ibin+1),histSumTotal.GetBinContent(ibin+1)+histSumTotal.GetBinError(ibin+1)])
             for genHistSumNorm in genHistSumsNorm:
-                yminNorm = min([yminNorm,genHistSumNorm["hist"].GetBinContent(ibin+1),histSumTotalNorm.GetBinContent(ibin+1)-histSumTotalNorm.GetBinError(ibin+1)])
+                yminNormTest = min([genHistSumNorm["hist"].GetBinContent(ibin+1),histSumTotalNorm.GetBinContent(ibin+1)-histSumTotalNorm.GetBinError(ibin+1)])
+                if yminNormTest>0:
+                    yminNorm=min(yminNorm,yminNormTest)
                 ymaxNorm = max([ymaxNorm,genHistSumNorm["hist"].GetBinContent(ibin+1),histSumTotalNorm.GetBinContent(ibin+1)+histSumTotalNorm.GetBinError(ibin+1)])
             
         if logy:
@@ -809,7 +813,7 @@ class PlotCrossSection(Module.getClass("Program")):
             range(2001,2101),
             [2101,2102],
             scalePos=134.3/136.02,
-            scaleNeg=79.7/80.95
+            scaleNeg=80.7/80.95
         )
         print "CT10",
         genHistsRatioCT10 = genHistRatio.Clone(genHistRatio.GetName()+"ct")
