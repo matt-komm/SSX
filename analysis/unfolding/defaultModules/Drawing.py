@@ -368,23 +368,30 @@ class Drawing(Module):
             for igen,genHistSum in enumerate(reversed(genHistSums)):
                 for ibin in range(genHistSum["hist"].GetNbinsX()):
                     w = genHistSum["hist"].GetBinWidth(ibin+1)
-                    x = genHistSum["hist"].GetBinCenter(ibin+1)+width*0.02*(1.*igen/(len(genHistSums)-1)-0.5)
-                    w*=0.65
+                    x = genHistSum["hist"].GetBinCenter(ibin+1)+width*0.018*(1.*igen/(len(genHistSums)-1)-0.5)
+                    w = w-width*0.02
                     c = genHistSum["hist"].GetBinContent(ibin+1)
                     e = genHistSum["hist"].GetBinError(ibin+1)
                     box = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
                     rootObj.append(box)
-                    box.SetLineColor(genHistSum["hist"].GetLineColor())
-                    box.SetFillColor(genHistSum["hist"].GetLineColor())
+                    box.SetLineColor(genHistSum["hist"].GetFillColor())
+                    box.SetFillColor(genHistSum["hist"].GetFillColor())
                     box.SetFillStyle(genHistSum["hist"].GetFillStyle())
                     box.Draw("SameF")
                     box2 = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
                     rootObj.append(box2)
                     box2.SetLineWidth(2)
-                    box2.SetLineColor(genHistSum["hist"].GetLineColor())
-                    box2.SetFillColor(genHistSum["hist"].GetLineColor())
+                    box2.SetLineColor(genHistSum["hist"].GetFillColor())
+                    box2.SetFillColor(genHistSum["hist"].GetFillColor())
                     box2.SetFillStyle(genHistSum["hist"].GetFillStyle())
                     box2.Draw("SameL")
+                    
+                    line = ROOT.TLine(x-0.5*w,c,x+0.5*w,c)
+                    rootObj.append(line)
+                    line.SetLineWidth(2)
+                    line.SetLineColor(genHistSum["hist"].GetLineColor())
+                    line.SetLineStyle(genHistSum["hist"].GetLineStyle())
+                    line.Draw("SameL")
         else:
             for genHistSum in reversed(genHistSums):
                 genHistSum["hist"].Draw("HISTSAME")
@@ -464,7 +471,10 @@ class Drawing(Module):
         legend.SetTextSize(27)
         legend.AddEntry(histSumTotal,"Data","P")
         for genHistSum in genHistSums:
-            legend.AddEntry(genHistSum["hist"],genHistSum["legend"],"L")
+            if fillGen:
+                legend.AddEntry(genHistSum["hist"],genHistSum["legend"],"FL")
+            else:
+                legend.AddEntry(genHistSum["hist"],genHistSum["legend"],"L")
         legend.Draw("Same")
         
         cv.cd(1)
@@ -526,23 +536,30 @@ class Drawing(Module):
             for igen,genHistSumRes in enumerate(reversed(genHistSumsRes)):
                 for ibin in range(genHistSumRes.GetNbinsX()):
                     w = genHistSumRes.GetBinWidth(ibin+1)
-                    x = genHistSumRes.GetBinCenter(ibin+1)+width*0.02*(1.*igen/(len(genHistSumsRes)-1)-0.5)
-                    w*=0.65
+                    x = genHistSumRes.GetBinCenter(ibin+1)+width*0.018*(1.*igen/(len(genHistSumsRes)-1)-0.5)
+                    w = w-width*0.02
                     c = genHistSumRes.GetBinContent(ibin+1)
                     e = genHistSumRes.GetBinError(ibin+1)
                     box = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
                     rootObj.append(box)
-                    box.SetLineColor(genHistSumRes.GetLineColor())
-                    box.SetFillColor(genHistSumRes.GetLineColor())
+                    box.SetLineColor(genHistSumRes.GetFillColor())
+                    box.SetFillColor(genHistSumRes.GetFillColor())
                     box.SetFillStyle(genHistSumRes.GetFillStyle())
                     box.Draw("SameF")
                     box2 = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
                     rootObj.append(box2)
                     box2.SetLineWidth(2)
-                    box2.SetLineColor(genHistSumRes.GetLineColor())
-                    box2.SetFillColor(genHistSumRes.GetLineColor())
+                    box2.SetLineColor(genHistSumRes.GetFillColor())
+                    box2.SetFillColor(genHistSumRes.GetFillColor())
                     box2.SetFillStyle(genHistSumRes.GetFillStyle())
                     box2.Draw("SameL")
+                    
+                    line = ROOT.TLine(x-0.5*w,c,x+0.5*w,c)
+                    rootObj.append(line)
+                    line.SetLineWidth(2)
+                    line.SetLineColor(genHistSumRes.GetLineColor())
+                    line.SetLineStyle(genHistSumRes.GetLineStyle())
+                    line.Draw("SameL")
         else:
             for genHistSumRes in reversed(genHistSumsRes):
                 genHistSumRes.Draw("HISTSame")
@@ -568,7 +585,12 @@ class Drawing(Module):
         
         
         
+        
         ROOT.gPad.RedrawAxis()
+        
+        cv.cd(2)
+        ROOT.gPad.RedrawAxis()
+        cv.cd(1)
         
 
         hidePave=ROOT.TPaveText(cvxmin-0.065,resHeight-0.04,cvxmin-0.005,resHeight+0.028,"NDC")

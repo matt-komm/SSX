@@ -192,7 +192,7 @@ def hex2rgb(value):
 
 def newColor(red,green,blue):
     newColor.colorindex+=1
-    color=ROOT.TColor(newColor.colorindex,red,green,blue)
+    color=ROOT.TColor(newColor.colorindex,min(red,1.),min(green,1.),min(blue,1.))
     colors.append(color)
     return color
     
@@ -330,6 +330,8 @@ class PlotCrossSection(Module.getClass("Program")):
  
         variationsTotalPDFPos = numpy.zeros(len(uncertaintiesPDF))
         variationsTotalPDFNeg = numpy.zeros(len(uncertaintiesPDF))
+        variationsTotalAlphaSPos = [0.,0.]
+        variationsTotalAlphaSNeg = [0.,0.]
         for ibin in range(hist.GetNbinsX()):
             variations = numpy.zeros(len(uncertaintiesPDF))
             for ik,k in enumerate(uncertaintiesPDF):
@@ -339,37 +341,38 @@ class PlotCrossSection(Module.getClass("Program")):
                 variationsTotalPDFPos[ik] += posV
                 variationsTotalPDFNeg[ik] += negV
                 #print ibin,ik,posV,negV
-            mean = numpy.mean(variations)
-            std = numpy.std(variations)
+                
+            alphasDownPos = pdfVariationsPos[uncertaintiesAlphaS[0]].GetBinContent(ibin+1)*scalePos
+            alphasUpPos = pdfVariationsPos[uncertaintiesAlphaS[1]].GetBinContent(ibin+1)*scaleNeg
             
-            print ibin,hist.GetBinContent(ibin+1),mean,std
-            print "   ",
-            for ik,k in enumerate(uncertaintiesAlphaS):
-                posV = pdfVariationsPos[k].GetBinContent(ibin+1)*scalePos
-                negV = pdfVariationsNeg[k].GetBinContent(ibin+1)*scaleNeg
-                print "%i=%6.4f, "%(ik,(posV/(posV+negV)-mean)),
-            print
+            alphasDownNeg = pdfVariationsNeg[uncertaintiesAlphaS[0]].GetBinContent(ibin+1)*scalePos
+            alphasUpNeg = pdfVariationsNeg[uncertaintiesAlphaS[1]].GetBinContent(ibin+1)*scaleNeg
+            
+            variationsTotalAlphaSPos[0]+=alphasDownPos
+            variationsTotalAlphaSPos[1]+=alphasUpPos
+            
+            variationsTotalAlphaSNeg[0]+=alphasDownNeg
+            variationsTotalAlphaSNeg[1]+=alphasUpNeg
+            
+            alphaSUp = alphasUpPos/(alphasUpPos+alphasUpNeg)
+            alphaSDown = alphasDownPos/(alphasDownPos+alphasDownNeg)
+                
+            mean = numpy.mean(variations)
+            alphaS = max(math.fabs(alphaSUp-mean),math.fabs(alphaSDown-mean))
+            std = numpy.std(variations)
             
             hist.SetBinContent(ibin+1,mean)
             hist.SetBinError(ibin+1,std)
             
 
         meanAlt = numpy.mean(variationsTotalPDFPos/variationsTotalPDFNeg)
+        alphaS = max(
+            math.fabs(variationsTotalAlphaSPos[0]/variationsTotalAlphaSNeg[0]-meanAlt),
+            math.fabs(variationsTotalAlphaSPos[1]/variationsTotalAlphaSNeg[1]-meanAlt),
+        )
         stdAlt = numpy.std(variationsTotalPDFPos/variationsTotalPDFNeg)
-        envUp = max(variationsTotalPDFPos/variationsTotalPDFNeg)-meanAlt
-        envDown = min(variationsTotalPDFPos/variationsTotalPDFNeg)-meanAlt
-        print "total",meanAlt,stdAlt,envUp,envDown
-        print "   ",
-        for ik,k in enumerate(uncertaintiesAlphaS):
-            posV = 0
-            negV = 0
-            for ibin in range(hist.GetNbinsX()):
-                posV += pdfVariationsPos[k].GetBinContent(ibin+1)*scalePos
-                negV += pdfVariationsNeg[k].GetBinContent(ibin+1)*scaleNeg
-            print "%i=%6.4f, "%(ik,(posV/(posV+negV)-mean)),
-        print
-             
-        
+        print "total",meanAlt,'+-',stdAlt,'+-',alphaS,"=",meanAlt,'+-',math.sqrt(stdAlt**2+alphaS**2)
+
     def execute(self):
         unfoldingName = self.module("Unfolding").getUnfoldingName()
         channels = self.getOption("channels").split(",")
@@ -759,33 +762,18 @@ class PlotCrossSection(Module.getClass("Program")):
             ymaxNorm = 1.1*ymaxNorm
             yminNorm = 0
         
-        resRanges = [0.46,1.]
-        
-        resRange = resRanges[-1]
-        rangeMax = 0
-        for ibin in range(histSumTotal.GetNbinsX()):
-            c = histSumTotal.GetBinContent(ibin+1)
-            e = histSumTotal.GetBinError(ibin+1)
-            rangeMax = max(rangeMax,e/c)
-        for r in resRanges:
-            if rangeMax<r:
-                resRange = r
-                break
         
             
-            
-            
-        if unfoldingName=="lpt" or unfoldingName=="y":
-            legendPos = "RU"
-        elif unfoldingName=="cos" or unfoldingName=="cosTau":
-            legendPos = "RD"
-        else:
-            legendPos = "LD"
-            
-            
+        print "MMHT",
         genHistsRatioMMHT14 = genHistRatio.Clone(genHistRatio.GetName()+"mh")
-        #genHistsRatioMMHT14.SetLineColor(newColor(0,0.84,0.91).GetNumber())
         genHistsRatioMMHT14.SetLineColor(newColor(1.,0.76,0.32).GetNumber())
+        genHistsRatioMMHT14.SetFillColor(newColor(1.,0.96,0.62).GetNumber())
+        
+        #genHistsRatioMMHT14.SetLineColor(newColor(1.,0.64,0.20).GetNumber())
+        #genHistsRatioMMHT14.SetFillColor(newColor(1.,0.72,0.40).GetNumber())
+        
+        #genHistsRatioMMHT14.SetLineColor(newColor(114./255,236./255,32./255).GetNumber())
+        #genHistsRatioMMHT14.SetFillColor(newColor(1.3*114./255,1.3*236./255,1.3*32./255).GetNumber())
         genHistsRatioMMHT14.SetLineStyle(1)
         genHistsRatioMMHT14.SetLineWidth(3)
         genHistsRatioMMHT14.SetFillStyle(1001)
@@ -794,15 +782,22 @@ class PlotCrossSection(Module.getClass("Program")):
             unfoldingName,
             channels,
             unfoldingLevel,
-            range(4001,4098),
-            [],
+            range(4001,4052),
+            [4053,4055],
             scalePos=138.3/136.02,
             scaleNeg=83.5/80.95
         )
-            
+        print "NNPDF",
         genHistsRatioNNPDF30 = genHistRatio.Clone(genHistRatio.GetName()+"nnpdf")
-        #genHistsRatioNNPDF30.SetLineColor(newColor(0.13,0.13,0.93).GetNumber())
         genHistsRatioNNPDF30.SetLineColor(newColor(0.95,0.20,0.27).GetNumber())
+        genHistsRatioNNPDF30.SetFillColor(newColor(0.95,0.56,0.67).GetNumber())
+        
+        genHistsRatioNNPDF30.SetLineColor(newColor(0.05,0.7,0.36).GetNumber())
+        genHistsRatioNNPDF30.SetFillColor(newColor(0.41,0.85,0.61).GetNumber())
+        
+        genHistsRatioNNPDF30.SetLineColor(newColor(83./255,131./255,241./255).GetNumber())
+        genHistsRatioNNPDF30.SetFillColor(newColor(153./255,191./255,241./255).GetNumber())
+        
         genHistsRatioNNPDF30.SetLineStyle(1)
         genHistsRatioNNPDF30.SetLineWidth(3)
         genHistsRatioNNPDF30.SetFillStyle(1001)
@@ -811,35 +806,79 @@ class PlotCrossSection(Module.getClass("Program")):
             unfoldingName,
             channels,
             unfoldingLevel,
-            range(2001,2102),
-            range(2102,2106),
-            scalePos=1.,
-            scaleNeg=1.
+            range(2001,2101),
+            [2101,2102],
+            scalePos=134.3/136.02,
+            scaleNeg=79.7/80.95
         )
+        print "CT10",
+        genHistsRatioCT10 = genHistRatio.Clone(genHistRatio.GetName()+"ct")
+        genHistsRatioCT10.SetLineColor(newColor(0.65,0.36,0.85).GetNumber())
+        genHistsRatioCT10.SetFillColor(newColor(0.95,0.66,0.99).GetNumber())
         
-        genHistsRatioCT14 = genHistRatio.Clone(genHistRatio.GetName()+"ct")
-        #genHistsRatioCT14.SetLineColor(newColor(0.82,0.45,0.89).GetNumber())
-        genHistsRatioCT14.SetLineColor(newColor(0.65,0.36,0.85).GetNumber())
-        genHistsRatioCT14.SetLineStyle(1)
-        genHistsRatioCT14.SetLineWidth(3)
-        genHistsRatioCT14.SetFillStyle(1001)
+        genHistsRatioCT10.SetLineColor(newColor(0.21,0.38,0.83).GetNumber())
+        genHistsRatioCT10.SetFillColor(newColor(0.44,0.53,0.83).GetNumber())
+        
+        genHistsRatioCT10.SetLineColor(newColor(211./255,28./255,230./255).GetNumber())
+        genHistsRatioCT10.SetFillColor(newColor(221./255,190./255,240./255).GetNumber())
+        genHistsRatioCT10.SetLineStyle(1)
+        genHistsRatioCT10.SetLineWidth(3)
+        genHistsRatioCT10.SetFillStyle(1001)
         self.applyLHEVariations(
-            genHistsRatioCT14,
+            genHistsRatioCT10,
             unfoldingName,
             channels,
             unfoldingLevel,
-            range(3001,3056),
-            [],
+            range(3001,3053),
+            [3054,3055],
             scalePos=135.2/136.02,
             scaleNeg=79.3/80.95
         )
+        
+        
+        
+        #choose suitable res range for plot
+        resRanges = [0.23,0.46,1.]
+        resRange = resRanges[-1]
+        rangeMax = 0
+        for ibin in range(histSumTotal.GetNbinsX()):
+            c = histSumTotal.GetBinContent(ibin+1)
+            e = histSumTotal.GetBinError(ibin+1)*1.2
+            rangeMax = max(rangeMax,e/c)
+        print "Plot max res range: ",rangeMax
+        for r in resRanges:
+            if rangeMax<r:
+                resRange = r
+                break
+        
+        
+        #choose suitable res range for ratio
+        resRangesRatio = [0.11,0.23,0.48]
+        resRangeRatio = resRangesRatio[-1]
+        rangeMaxRatio = 0
+        for ibin in range(histRatioTotal.GetNbinsX()):
+            e = histRatioTotal.GetBinError(ibin+1)*1.2
+            rangeMaxRatio = max(rangeMaxRatio,e)
+        print "Ratio max res range: ",rangeMaxRatio
+        for r in resRangesRatio:
+            if rangeMaxRatio<r:
+                resRangeRatio = r
+                break
+            
+            
+        if unfoldingName=="lpt" or unfoldingName=="y":
+            legendPos = "RU"
+        elif unfoldingName=="cos" or unfoldingName=="cosTau":
+            legendPos = "RD"
+        else:
+            legendPos = "LD"
         
         
             
         genHistsRatio = [
             {"hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.6]{ }14"},
             {"hist":genHistsRatioNNPDF30,"legend":"NNPDF#kern[-0.6]{ }3.0"},
-            {"hist":genHistsRatioCT14,"legend":"CT#kern[-0.6]{ }14"},
+            {"hist":genHistsRatioCT10,"legend":"CT#kern[-0.6]{ }10"},
             
         ]
         
@@ -859,12 +898,12 @@ class PlotCrossSection(Module.getClass("Program")):
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sumnorm")
         ) 
         
-        ymin = 0.25 if channelName=="comb" else 0.2
-        ymax = 0.8 if channelName=="comb" else 1.1
+        ymin = 0.25 if channelName=="comb" else 0.
+        ymax = 0.8 if channelName=="comb" else 1.
         self.module("Drawing").plotCrossSection(
             genHistsRatio,histRatioProfiled,histRatioTotal,ymin,ymax,0,ytitleRatio,xtitle,
             self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
-            "LD",0.48,
+            "LD",resRangeRatio,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_ratio"),
             fillGen=True
         )    
