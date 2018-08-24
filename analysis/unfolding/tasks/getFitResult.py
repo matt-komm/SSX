@@ -218,7 +218,13 @@ class PlotCrossSection(Module.getClass("Program")):
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         
-   
+    def roundToSig(self,value,err):
+        ndigits = int(math.log10(err))-1
+        if ndigits>0:
+            errClip = (int(round(err))/10**ndigits)*10**ndigits
+            valueClip = (int(round(value))/10**ndigits)*10**ndigits
+            return valueClip,errClip
+        return value,err
         
     def execute(self):
         channels = self.getOption("channels").split(",")
@@ -416,7 +422,7 @@ class PlotCrossSection(Module.getClass("Program")):
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
                 '''
                 
-        NTOYS = 50000
+        NTOYS = 5000
         toysSum = {} 
         toysCompSum = {}
         for channel in channels:
@@ -484,21 +490,22 @@ class PlotCrossSection(Module.getClass("Program")):
             print "%30s  "%(properName[compName]),
             for channel in channels:
                 hist = reducedHists[channel][compName]
-                print "  &  %8.0f &%5.0f"%(hist.GetBinContent(2),math.sqrt(hist.GetBinError(2)**2+numpy.std(toysCompSum[channel][compName][1])**2)),
-                print "  &  %8.0f &%5.0f"%(hist.GetBinContent(1),math.sqrt(hist.GetBinError(1)**2+numpy.std(toysCompSum[channel][compName][0])**2)),
+                print "  &  %8.0f &%5.0f"%self.roundToSig(hist.GetBinContent(2),math.sqrt(hist.GetBinError(2)**2+numpy.std(toysCompSum[channel][compName][1])**2)),
+                print "  &  %8.0f &%5.0f"%self.roundToSig(hist.GetBinContent(1),math.sqrt(hist.GetBinError(1)**2+numpy.std(toysCompSum[channel][compName][0])**2)),
             print "\\\\"
         print "%30s  "%("Total"),
         for channel in channels:
-            print "  &  %8.0f &%5.0f"%(reducedHistsSum[channel].GetBinContent(2),math.sqrt(reducedHistsSum[channel].GetBinError(2)**2+numpy.std(toysSum[channel][1])**2)),
-            print "  &  %8.0f &%5.0f"%(reducedHistsSum[channel].GetBinContent(1),math.sqrt(reducedHistsSum[channel].GetBinError(1)**2+numpy.std(toysSum[channel][0])**2)),
+            print "  &  %8.0f &%5.0f"%self.roundToSig(reducedHistsSum[channel].GetBinContent(2),math.sqrt(reducedHistsSum[channel].GetBinError(2)**2+numpy.std(toysSum[channel][1])**2)),
+            print "  &  %8.0f &%5.0f"%self.roundToSig(reducedHistsSum[channel].GetBinContent(1),math.sqrt(reducedHistsSum[channel].GetBinError(1)**2+numpy.std(toysSum[channel][0])**2)),
         print "\\\\"
         print "%30s  "%("Data"),
         for channel in channels:
             hist = histogramsPerComponentAndUncertainty[channel]["data"]
             hist.Rebin(16)
-            print "  &  %8.0f &%5.0f"%(hist.GetBinContent(2),hist.GetBinError(2)),
-            print "  &  %8.0f &%5.0f"%(hist.GetBinContent(1),hist.GetBinError(1)),
-        print "\\\\\\hline"
+            print "  &  \\multicolumn{2}{c}{%.0f}"%self.roundToSig(hist.GetBinContent(2),math.sqrt(reducedHistsSum[channel].GetBinError(2)**2+numpy.std(toysSum[channel][1])**2))[0],
+            print "  &  \\multicolumn{2}{c}{%.0f}"%self.roundToSig(hist.GetBinContent(1),math.sqrt(reducedHistsSum[channel].GetBinError(1)**2+numpy.std(toysSum[channel][0])**2))[0],
+        print "\\\\"
+        #print "\\hline"
         '''
             print channel,"data",histogramsPerComponentAndUncertainty[channel]["data"].Integral(17,32),"/",sumPos
             print channel,"data",histogramsPerComponentAndUncertainty[channel]["data"].Integral(1,16),"/",sumNeg
