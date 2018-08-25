@@ -118,32 +118,32 @@ class Unfolding(Module):
     def applyEfficiencyCorrection1D(self,hist):
         binMap = self.module("Unfolding").buildGlobalGenBinMap()
         eff = {}
-        for ibin in range(len(self.module("Unfolding").getGenBinning("comb"))-1):
-            eff=0.
-            for channel in ["ele","mu"]:
-                if binMap[channel].has_key(ibin):
-                    eff+=1.
-            c = hist.GetBinContent(ibin+1)
-            err = hist.GetBinError(ibin+1)
-            hist.SetBinContent(ibin+1,c/eff)
-            hist.SetBinError(ibin+1,err/eff)
+        for channel in ["ele","mu"]:
+            for channelBin,globalBin in binMap[channel].iteritems():
+                if not eff.has_key(globalBin):
+                    eff[globalBin] = 0.
+                eff[globalBin]+=1.
+        
+        for globalBin,efficiency in eff.iteritems():
+            c = hist.GetBinContent(globalBin+1)
+            err = hist.GetBinError(globalBin+1)
+            hist.SetBinContent(globalBin+1,c/efficiency)
+            hist.SetBinError(globalBin+1,err/efficiency)
             
     def applyEfficiencyCorrection2D(self,hist):
         #need to apply propagation of uncertainty Y=J*X*J^T=l(i)*X(ij)*l(j)
         binMap = self.module("Unfolding").buildGlobalGenBinMap()
         L = len(self.module("Unfolding").getGenBinning("comb"))-1
-        for ibin in range(L):
-            for jbin in range(L):
-                ieff=0.
-                jeff=0.
-                for channel in ["ele","mu"]:
-                    if binMap[channel].has_key(ibin):
-                        ieff+=1.
-                for channel in ["ele","mu"]:
-                    if binMap[channel].has_key(jbin):
-                        jeff+=1.
+        eff = {}
+        for channel in ["ele","mu"]:
+            for channelBin,globalBin in binMap[channel].iteritems():
+                if not eff.has_key(globalBin):
+                    eff[globalBin] = 0.
+                eff[globalBin]+=1.
                 
-                
+        for ibin,ieff in eff.iteritems():
+            for jbin,jeff in eff.iteritems():
+                #print ibin,jbin,ieff*jeff
                 #diagonal
                 c = hist.GetBinContent(ibin+1,jbin+1)
                 err = hist.GetBinError(ibin+1,jbin+1)

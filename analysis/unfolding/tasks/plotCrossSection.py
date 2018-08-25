@@ -272,30 +272,73 @@ class PlotCrossSection(Module.getClass("Program")):
         ]
         
         result = []
-        #TODO: this is a dirty hack -> uses muon for combined as well!!! does not work for fiducial!!!
-        if len(channels)==1:
-            channel = channels[0]
-        else:
-            channel = "mu"
         
-        outputFolderGen = self.module("Response").getOutputFolder(channel,unfoldingName,"nominal")
-        genMCFileName = os.path.join(outputFolderGen,"genpredictions_"+unfoldingLevel+".root")
-        rootFile = ROOT.TFile(genMCFileName)
         for prediction in predictions:
-            histInc = rootFile.Get(prediction["name"]).Clone(prediction["name"]+str(random.random()))
-            histInc.SetDirectory(0)
-            histPos = rootFile.Get(prediction["name"]+"_pos").Clone(prediction["name"]+str(random.random()))
-            histPos.SetDirectory(0)
-            histNeg = rootFile.Get(prediction["name"]+"_neg").Clone(prediction["name"]+str(random.random()))
-            histNeg.SetDirectory(0)
-            for h in [histInc,histPos,histNeg]:
-                h.SetLineColor(prediction["color"].GetNumber())
-                h.SetLineStyle(prediction["style"])
-                h.SetLineWidth(prediction["width"])
-            result.append({
-                0:histInc,1:histPos,-1:histNeg,"legend":prediction["legend"]
-            })
-        
+            histsInc = []
+            histsPos = []
+            histsNeg = []
+            for channel in channels:
+                outputFolderGen = self.module("Response").getOutputFolder(channel,unfoldingName,"nominal")
+                genMCFileName = os.path.join(outputFolderGen,"genpredictions_"+unfoldingLevel+".root")
+                rootFile = ROOT.TFile(genMCFileName)
+                
+                histInc = rootFile.Get(prediction["name"]).Clone(prediction["name"]+str(random.random()))
+                histInc.SetDirectory(0)
+                histPos = rootFile.Get(prediction["name"]+"_pos").Clone(prediction["name"]+str(random.random()))
+                histPos.SetDirectory(0)
+                histNeg = rootFile.Get(prediction["name"]+"_neg").Clone(prediction["name"]+str(random.random()))
+                histNeg.SetDirectory(0)
+                for h in [histInc,histPos,histNeg]:
+                    h.SetLineColor(prediction["color"].GetNumber())
+                    h.SetLineStyle(prediction["style"])
+                    h.SetLineWidth(prediction["width"])
+                    
+                histsInc.append(histInc)
+                histsPos.append(histPos)
+                histsNeg.append(histNeg)
+            
+            if len(channels)==1:  
+                result.append({
+                    0:histsInc[0],1:histsPos[0],-1:histsNeg[0],"legend":prediction["legend"]
+                })
+            else:
+                combGenBinning = self.module("Unfolding").getGenBinning("comb")
+                globalBinMap = self.module("Unfolding").buildGlobalGenBinMap()
+                histIncComb = ROOT.TH1F("histCombInc"+prediction["name"]+str(random.random()),"",len(combGenBinning)-1,combGenBinning)
+                histIncComb.SetDirectory(0)
+                histPosComb = ROOT.TH1F("histCombPos"+prediction["name"]+str(random.random()),"",len(combGenBinning)-1,combGenBinning)
+                histPosComb.SetDirectory(0)
+                histNegComb = ROOT.TH1F("histCombNeg"+prediction["name"]+str(random.random()),"",len(combGenBinning)-1,combGenBinning)
+                histNegComb.SetDirectory(0)
+                
+                for h in [histIncComb,histPosComb,histNegComb]:
+                    h.SetLineColor(prediction["color"].GetNumber())
+                    h.SetLineStyle(prediction["style"])
+                    h.SetLineWidth(prediction["width"])
+                
+                for ichannel, channel in enumerate(channels):
+                    for channelBin,globalBin in globalBinMap[channel].iteritems():
+                        histIncComb.SetBinContent(
+                            globalBin+1,
+                            histsInc[ichannel].GetBinContent(channelBin+1)+\
+                            histIncComb.GetBinContent(globalBin+1)
+                        )
+                        histPosComb.SetBinContent(
+                            globalBin+1,
+                            histsPos[ichannel].GetBinContent(channelBin+1)+\
+                            histPosComb.GetBinContent(globalBin+1)
+                        )
+                        histNegComb.SetBinContent(
+                            globalBin+1,
+                            histsNeg[ichannel].GetBinContent(channelBin+1)+\
+                            histNegComb.GetBinContent(globalBin+1)
+                        )
+                self.module("Unfolding").applyEfficiencyCorrection1D(histIncComb)
+                self.module("Unfolding").applyEfficiencyCorrection1D(histPosComb)
+                self.module("Unfolding").applyEfficiencyCorrection1D(histNegComb)
+                result.append({
+                    0:histIncComb,1:histPosComb,-1:histNegComb,"legend":prediction["legend"]
+                })
                 
         return result
         

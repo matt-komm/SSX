@@ -242,7 +242,7 @@ class RunUnfolding(Module.getClass("Program")):
             unfoldedHists[-1].SetBinContent(ibin+1,combinedUnfoldedHist.GetBinContent(ibin+1+(len(genBinning)-1)))
             unfoldedHists[-1].SetBinError(ibin+1,combinedUnfoldedHist.GetBinError(ibin+1+(len(genBinning)-1)))
             
-            
+        
         if len(channels)==2:
              self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[1])
              self.module("Unfolding").applyEfficiencyCorrection1D(nominalGenHists[-1])
