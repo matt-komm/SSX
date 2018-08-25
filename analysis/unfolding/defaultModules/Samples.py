@@ -51,11 +51,11 @@ class Samples(Module):
         
     def getChannelTitle(self,channels,charge=None):
         if len(channels)==1 and channels[0]=="mu":
-            return "#mu#kern[-0.65]{ }"
+            return "#mu"
         elif len(channels)==1 and channels[0]=="ele":
-            return "e#kern[-0.65]{ }"
+            return "e"
         elif "mu" in channels and "ele" in channels:
-            return "e#kern[-0.5]{ }/#kern[-0.5]{ }#mu#kern[-0.65]{ }"
+            return "e#kern[-0.5]{ }/#kern[-0.5]{ }#mu"
             
     def getChargeTitle(self,charge=None):
         if charge == -1:
