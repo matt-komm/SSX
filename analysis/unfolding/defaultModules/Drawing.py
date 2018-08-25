@@ -368,8 +368,8 @@ class Drawing(Module):
             for igen,genHistSum in enumerate(reversed(genHistSums)):
                 for ibin in range(genHistSum["hist"].GetNbinsX()):
                     w = genHistSum["hist"].GetBinWidth(ibin+1)
-                    x = genHistSum["hist"].GetBinCenter(ibin+1)+(w*0.02+width*0.02)*(1.*igen/(len(genHistSums)-1)-0.5)
-                    w = w-width*0.034-w*0.02
+                    x = genHistSum["hist"].GetBinCenter(ibin+1)+(w*0.2+width*0.01)*(1.*igen/(len(genHistSums)-1)-0.5)
+                    w = w-w*0.25-width*0.015
                     c = genHistSum["hist"].GetBinContent(ibin+1)
                     e = genHistSum["hist"].GetBinError(ibin+1)
                     box = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
@@ -536,8 +536,8 @@ class Drawing(Module):
             for igen,genHistSumRes in enumerate(reversed(genHistSumsRes)):
                 for ibin in range(genHistSumRes.GetNbinsX()):
                     w = genHistSumRes.GetBinWidth(ibin+1)
-                    x = genHistSumRes.GetBinCenter(ibin+1)+(w*0.02+width*0.02)*(1.*igen/(len(genHistSumsRes)-1)-0.5)
-                    w = w-width*0.034-w*0.02
+                    x = genHistSumRes.GetBinCenter(ibin+1)+(w*0.2+width*0.01)*(1.*igen/(len(genHistSumsRes)-1)-0.5)
+                    w = w-w*0.25-width*0.015
                     c = genHistSumRes.GetBinContent(ibin+1)
                     e = genHistSumRes.GetBinError(ibin+1)
                     box = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)

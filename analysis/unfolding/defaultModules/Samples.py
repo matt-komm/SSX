@@ -49,6 +49,23 @@ class Samples(Module):
         elif "mu" in channels and "ele" in channels:
             return chargeTitle+", e#kern[-0.5]{ }/#kern[-0.5]{ }#mu#kern[-0.65]{ }"
         
+    def getChannelTitle(self,channels,charge=None):
+        if len(channels)==1 and channels[0]=="mu":
+            return "#mu#kern[-0.65]{ }"
+        elif len(channels)==1 and channels[0]=="ele":
+            return "e#kern[-0.65]{ }"
+        elif "mu" in channels and "ele" in channels:
+            return "e#kern[-0.5]{ }/#kern[-0.5]{ }#mu#kern[-0.65]{ }"
+            
+    def getChargeTitle(self,charge=None):
+        if charge == -1:
+            return "#bar{t}"
+        elif charge == 1:
+            return "t"
+        else:
+            return "t#kern[-0.5]{ }+#kern[-0.5]{ }#bar{t}"
+  
+    
         
     def getRecoCharge(self):
         return "SingleTop_1__TightLepton_1__Charge"

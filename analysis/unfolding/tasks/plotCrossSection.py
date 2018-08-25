@@ -848,8 +848,9 @@ class PlotCrossSection(Module.getClass("Program")):
         resRangeRatio = resRangesRatio[-1]
         rangeMaxRatio = 0
         for ibin in range(histRatioTotal.GetNbinsX()):
+            c = histRatioTotal.GetBinContent(ibin+1)
             e = histRatioTotal.GetBinError(ibin+1)*1.3
-            rangeMaxRatio = max(rangeMaxRatio,e)
+            rangeMaxRatio = max(rangeMaxRatio,e/c)
         print "Ratio max res range: ",rangeMaxRatio
         for r in resRangesRatio:
             if rangeMaxRatio<r:
@@ -868,8 +869,8 @@ class PlotCrossSection(Module.getClass("Program")):
             
         genHistsRatio = [
             {"hist":genHistsRatioNNPDF30,"legend":"NNPDF#kern[-0.6]{ }3.0"},
-            {"hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.6]{ }14"},
             {"hist":genHistsRatioCT10,"legend":"CT#kern[-0.6]{ }10"},
+            {"hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.6]{ }14"},
             
         ]
         
@@ -877,14 +878,14 @@ class PlotCrossSection(Module.getClass("Program")):
         
         self.module("Drawing").plotCrossSection(
             genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitleSum,xtitle,
-            self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
+            self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
             legendPos,resRange,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sum")
         )  
         
         self.module("Drawing").plotCrossSection(
             genHistSumsNorm,histSumProfiledNorm,histSumTotalNorm,yminNorm,ymaxNorm,logy,ytitleSumNorm,xtitle,
-            self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
+            self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
             legendPos,resRange,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sumnorm")
         ) 
@@ -893,7 +894,7 @@ class PlotCrossSection(Module.getClass("Program")):
         ymax = 0.85 if channelName=="comb" else 1.
         self.module("Drawing").plotCrossSection(
             genHistsRatio,histRatioProfiled,histRatioTotal,ymin,ymax,0,ytitleRatio,xtitle,
-            self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
+            self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
             "LD",resRangeRatio,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_ratio"),
             fillGen=True
