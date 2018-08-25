@@ -272,6 +272,7 @@ class PlotCrossSection(Module.getClass("Program")):
         cut = ""
         region = ""
         resRange = 0.4
+        marks = []
         for histSetup in self.module("Plots").getHistSetups("ele"): #only interested in xaxis title
             if histSetup["obsname"]==plotName[0] and histSetup["name"]==plotName[1]:
                 xtitle = histSetup["xtitle"]
@@ -282,6 +283,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 cut = histSetup["cut"]
                 region = histSetup["region"]
                 resRange = histSetup["resRange"]
+                marks = histSetup["marks"]
         
         systematicsProfiled = [] if self.getOption("profiled")==None else self.getOption("profiled").split(",")
         systematicsExtern = [] if self.getOption("extern")==None else self.getOption("extern").split(",")
@@ -503,7 +505,7 @@ class PlotCrossSection(Module.getClass("Program")):
                         cov[ipar][jpar] = fitResult["parameters"][parName1]["unc_fit"]**2
                 else:
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
-        NTOYS = 2000
+        NTOYS = 10000
         toysSum = numpy.zeros((NTOYS,NBINS))
         numpy.zeros((NTOYS,NBINS))
         for itoy in range(NTOYS):
@@ -594,14 +596,15 @@ class PlotCrossSection(Module.getClass("Program")):
             lumi +="#mu"
         elif channelName=="comb":
             lumi += "e/#mu"
-        lumi+="#kern[-0.2]{ }+#kern[-0.2]{ }"+region+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+        lumi+="#kern[-0.5]{ }+#kern[-0.5]{ }"+region+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
             
         cvxmin=0.185
         if plotName[0]=="2j0t":
             cvxmin=0.21
         self.module("Drawing").plotDistribution(
             stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,lumi,
-            os.path.join(finalFolder,plotName[1])
+            os.path.join(finalFolder,plotName[1]),
+            marks=marks
         )
             
                 

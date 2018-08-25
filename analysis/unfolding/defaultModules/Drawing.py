@@ -604,7 +604,7 @@ class Drawing(Module):
 
         
         
-    def plotDistribution(self,stack,data,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,lumi,output):
+    def plotDistribution(self,stack,data,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,lumi,output,marks=[]):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
         ROOT.TGaxis.SetMaxDigits(3)
         ROOT.gStyle.SetLineScalePS(2)
@@ -706,6 +706,8 @@ class Drawing(Module):
         data.SetMarkerStyle(20)
         data.SetMarkerSize(1.4)
         
+        
+        
         ROOT.gPad.RedrawAxis()
             
         #histSumProfiled.Draw("PESAME")
@@ -805,6 +807,60 @@ class Drawing(Module):
                 
             else:
                 dataRes.SetBinContent(ibin+1,0)
+                
+        #markColor = newColor(0.75,0.75,0.75)
+        for mark in marks:
+            xminL = mark["xmin"]
+            xmaxL = mark["xmax"]
+            
+            if xminL>xmin:
+                lineMin = ROOT.TLine(xminL,1+resRange*0.42,xminL,1+resRange*0.70)
+                rootObj.append(lineMin)
+                lineMin.SetLineWidth(2)
+                lineMin.SetLineColor(ROOT.kGray)
+                lineMin.Draw("SameL")
+            if xmaxL<xmax:
+                lineMax = ROOT.TLine(xmaxL,1+resRange*0.42,xmaxL,1+resRange*0.70)
+                rootObj.append(lineMax)
+                lineMax.SetLineWidth(2)
+                lineMax.SetLineColor(ROOT.kGray)
+                lineMax.Draw("SameL")
+            
+            lineH = ROOT.TLine(max(xminL,xmin),1+resRange*0.56,min(xmaxL,xmax),1+resRange*0.56)
+            rootObj.append(lineH)
+            lineH.SetLineWidth(2)
+            lineH.SetLineColor(ROOT.kGray)
+            lineH.Draw("SameL")
+            
+            xmean = (max(xminL,xmin)+min(xmaxL,xmax))*0.5
+            width = xmax-xmin
+            '''
+            boxL = ROOT.TBox(max(xminL,xmin),1+resRange*0.44,xmean-0.11*width,1+resRange*0.66)
+            rootObj.append(boxL)
+            #boxL.SetFillStyle(3395)
+            boxL.SetFillStyle(1001)
+            boxL.SetFillColor(markColor.GetNumber())
+            boxL.Draw("SameF")
+            
+            boxH = ROOT.TBox(min(xmaxL,xmax),1+resRange*0.44,xmean+0.11*width,1+resRange*0.66)
+            rootObj.append(boxH)
+            #boxH.SetFillStyle(3395)
+            boxH.SetFillStyle(1001)
+            boxH.SetFillColor(markColor.GetNumber())
+            boxH.Draw("SameF")
+            '''
+            pText = ROOT.TPaveText(xmean-0.097*width,1+resRange*0.58,xmean+0.097*width,1+resRange*0.54)
+            rootObj.append(pText)
+            pText.SetTextFont(63)
+            pText.SetLineWidth(0)
+            #pText.SetFillStyle(0)
+            pText.SetFillColor(ROOT.kWhite)
+            pText.SetTextSize(25)
+            pText.SetTextAlign(22)
+            pText.SetTextColor(ROOT.kGray)
+            pText.AddText(mark["title"])
+            pText.Draw("Same")
+                
             
         cv.cd(2)
         legend.AddEntry(box,"Fit unc.","F")
