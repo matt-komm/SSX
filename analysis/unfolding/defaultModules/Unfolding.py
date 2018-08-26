@@ -568,7 +568,7 @@ class Unfolding(Module):
         
     
                 
-    def unfold(self,responseMatrix,data,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None):
+    def unfold(self,responseMatrix,data,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None,scaleReg=1.):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
         genBinning = numpy.zeros((genHist.GetNbinsX()+1))
         for i in range(len(genBinning)):
@@ -601,7 +601,7 @@ class Unfolding(Module):
         #!!!! NOTE: the following slightly increases regularization !!!!!
 
         if fixedTau==None:
-            bestTau = 2*self.module("Unfolding").doScan(tunfold,genBinning,scanOutput)
+            bestTau = scaleReg*self.module("Unfolding").doScan(tunfold,genBinning,scanOutput)
         else:
             bestTau=fixedTau
 

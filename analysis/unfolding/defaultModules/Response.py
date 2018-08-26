@@ -96,19 +96,25 @@ class Response(Module):
         return morphedHists
         
         
-    def buildCombinedConvarianceMatrix(self,recoBinning,measuredRecoHists,fitResult,binMapReco):
+    def buildCombinedConvarianceMatrix(self,recoBinning,measuredRecoHists,fitResult,binMapReco,skipFitResult=False):
         combinedRecoBinning = numpy.linspace(0,2*len(recoBinning)-2,num=2*len(recoBinning)-1)
-        combinedCovarianceMatrix = ROOT.TH2F("combinedCovarianceMatrix","",
+        combinedCovarianceMatrix = ROOT.TH2F("combinedCovarianceMatrix"+str(random.random()),"",
             len(combinedRecoBinning)-1,combinedRecoBinning,
             len(combinedRecoBinning)-1,combinedRecoBinning
         )
         #covariance (need loop over reco binning here)
         for ibin in range(len(recoBinning)-1):
             for jbin in range(len(recoBinning)-1):
-                signalFitResultCovPP = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[jbin])]
-                signalFitResultCovPN = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[jbin])]
-                signalFitResultCovNP = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[jbin])]
-                signalFitResultCovNN = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[jbin])]
+                if skipFitResult:
+                    signalFitResultCovPP = 0.01 if ibin==jbin else 0.
+                    signalFitResultCovPN = 0.
+                    signalFitResultCovNP = 0.
+                    signalFitResultCovNN = 0.01 if ibin==jbin else 0.
+                else:
+                    signalFitResultCovPP = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[jbin])]
+                    signalFitResultCovPN = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[jbin])]
+                    signalFitResultCovNP = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[jbin])]
+                    signalFitResultCovNN = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[jbin])]
                 combinedCovarianceMatrix.SetBinContent(
                     ibin+1,
                     jbin+1,
@@ -135,11 +141,11 @@ class Response(Module):
         combinedRecoBinning = numpy.linspace(0,2*len(recoBinning)-2,num=2*len(recoBinning)-1)
         combinedGenBinning = numpy.linspace(0,2*len(genBinning)-2,num=2*len(genBinning)-1)
         
-        combinedNominalRecoHist = ROOT.TH1F("combinedNominalRecoHist","",len(combinedRecoBinning)-1,combinedRecoBinning)
-        combinedNominalGenHist = ROOT.TH1F("combinedNominalGenHist","",len(combinedRecoBinning)-1,combinedRecoBinning)
-        combinedMeasuredRecoHist = ROOT.TH1F("combinedMeasuredRecoHist","",len(combinedRecoBinning)-1,combinedRecoBinning)
+        combinedNominalRecoHist = ROOT.TH1F("combinedNominalRecoHist"+str(random.random()),"",len(combinedRecoBinning)-1,combinedRecoBinning)
+        combinedNominalGenHist = ROOT.TH1F("combinedNominalGenHist"+str(random.random()),"",len(combinedRecoBinning)-1,combinedRecoBinning)
+        combinedMeasuredRecoHist = ROOT.TH1F("combinedMeasuredRecoHist"+str(random.random()),"",len(combinedRecoBinning)-1,combinedRecoBinning)
         
-        combinedResponseMatrix = ROOT.TH2F("combinedResponseMatrix","",
+        combinedResponseMatrix = ROOT.TH2F("combinedResponseMatrix"+str(random.random()),"",
             len(combinedGenBinning)-1,combinedGenBinning,
             len(combinedRecoBinning)-1,combinedRecoBinning
         )
