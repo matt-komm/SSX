@@ -170,7 +170,15 @@ class RunUnfolding(Module.getClass("Program")):
             legend.AddEntry(graphRatio,"Bin %i"%(ibin+1),"L")
         
         legend.Draw("Same")
-            
+        
+        pText = ROOT.TPaveText(1-cv.GetRightMargin(),0.97,1-cv.GetRightMargin(),0.97,"NDC")
+        pText.SetTextAlign(33)
+        pText.SetTextFont(43)
+        pText.SetTextSize(30)
+        #pText.SetFillStyle(0)
+        pText.AddText(unfoldingLevel+" "+self.module("Unfolding").getUnfoldingVariableName())
+        pText.Draw("Same")
+        
         cv.Update()
         cv.Print(os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_bias.pdf"))
         cv.Print(os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_bias.png"))
