@@ -110,60 +110,66 @@ class FitHistograms(Module.getClass("Program")):
             self.module("Utils").getOutputFolder("fit/"+uncertainty),
             self.module("ThetaModel").getFitFileName(channels,unfoldingName,uncertainty)
         )
-        success = False
-        retry = 5
-        itry = 0
-        while (not success and itry<retry):
-            self.module("ThetaModel").makeModel(
-                fitOutput+".cfg",
-                fitSetup,parametersDict,
-                outputFile=fitOutput+".root",
-                pseudo=False,
-                seed = 123+7*itry-31*itry+173*itry
-            )
-            itry+=1
-            success = self.module("ThetaFit").run(fitOutput+".cfg")
-            try:
-                fitResult = self.module("ThetaFit").parseFitResult(
-                    fitOutput+".root",
-                    parametersDict
+        
+        fitResultsSucess = []
+        while (len(fitResultsSucess)<4):
+            success = False
+            retry = 20
+            itry = 0
+            while (not success and itry<retry):
+                self.module("ThetaModel").makeModel(
+                    fitOutput+".cfg",
+                    fitSetup,parametersDict,
+                    outputFile=fitOutput+".root",
+                    pseudo=False,
+                    seed = 123+7*itry-31*itry+173*itry
                 )
-            except Exception,e:
-                success = False
-                self._logger.error(str(e))
-            
+                itry+=1
+                success = self.module("ThetaFit").run(fitOutput+".cfg")
+                try:
+                    fitResult = self.module("ThetaFit").parseFitResult(
+                        fitOutput+".root",
+                        parametersDict
+                    )
+                    avgcorr = self.module("ThetaFit").checkDegenerated(fitResult)
+                    self._logger.info("Fit avg correlation: "+str(avgcorr))
+                    if (avgcorr>0.4):
+                        raise Exception("Degenerated fit: "+str(avgcorr))
+                    
+                    fitResultsSucess.append(fitResult)
+                except Exception,e:
+                    success = False
+                    self._logger.error(str(e))
+                
+                if (not success):
+                    self._logger.info("Retry with new seed")
+                    
             if (not success):
-                self._logger.info("Retry with new seed")
+                self._logger.critical("No theta run succeeded")
+                sys.exit(1)
                 
-        if (not success):
-            self._logger.critical("No theta run succeeded")
-            sys.exit(1)
-                
-        print fitResult["covariances"]["values"].keys()
-        self.module("ThetaFit").saveFitResult(fitOutput+".json",fitResult)
-        '''
+        fitResult = self.module("ThetaFit").averageFitResults(fitResultsSucess)
+        
         ROOT.gStyle.SetPaintTextFormat("4.0f")
         cv = ROOT.TCanvas("corr","",1000,900)
-        cv.SetLeftMargin(0.32)
+        cv.SetLeftMargin(0.3 if unfoldingName=="inc" else 0.16)
         cv.SetRightMargin(0.15)
-        cv.SetBottomMargin(0.36)
-        fitResult["correlations"]["hist"].SetMarkerSize(1.)
+        cv.SetBottomMargin(0.34 if unfoldingName=="inc" else 0.19)
+        fitResult["correlations"]["hist"].SetMarkerSize(1. if unfoldingName=="inc" else 0.35)
         fitResult["correlations"]["hist"].Scale(100.)
         fitResult["correlations"]["hist"].GetXaxis().SetTitleSize(0.5)
         fitResult["correlations"]["hist"].GetXaxis().LabelsOption("v")
+        fitResult["correlations"]["hist"].GetXaxis().SetLabelSize(22 if unfoldingName=="inc" else 12)
+        fitResult["correlations"]["hist"].GetYaxis().SetLabelSize(22 if unfoldingName=="inc" else 12)
+        fitResult["correlations"]["hist"].GetZaxis().SetLabelSize(25)
         fitResult["correlations"]["hist"].GetYaxis().SetTitleSize(0.5)
         fitResult["correlations"]["hist"].GetZaxis().SetTitle("Correlation (%)")
-        fitResult["correlations"]["hist"].GetZaxis().SetTitleSize(0.5)
+        fitResult["correlations"]["hist"].GetZaxis().SetTitleSize(25)
         fitResult["correlations"]["hist"].Draw("colztext")
-        cv.Print(os.path.join(
-            self.module("Utils").getOutputFolder(),
-            self.module("ThetaModel").getFitFileName(channels,unfoldingName)+"_correlation.pdf"
-        ))
-        '''
-        #print fitResult["covariances"]["values"]["tChannel_neg_bin0"]["tChannel_pos_bin0"]
-        #print fitResult["parameters"]["tChannel_neg_bin0"]
-        #print fitResult["parameters"]["tChannel_pos_bin0"]
-        #print fitResult["parameters"]["en"]
+        cv.Print(fitOutput+"_correlation.pdf")
+                
+        print fitResult["covariances"]["values"].keys()
+        self.module("ThetaFit").saveFitResult(fitOutput+".json",fitResult)
         
         for channel in channels:
             observableDict = self.module("ThetaModel").getObservablesDict(channel)

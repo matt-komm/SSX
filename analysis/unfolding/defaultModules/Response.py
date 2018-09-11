@@ -388,12 +388,15 @@ class Response(Module):
             1,
             numpy.array([-100.,100.])
         )
+        '''
         xsecGenSelectionNoTauHist = ROOT.TH1F(
             "xsecGenSelectionNoTau",
             ";xsec;",
             1,
             numpy.array([-100.,100.])
         )
+        '''
+        
         #will automatically get the sys varied samples names
         for processName in self.module("Samples").getSample("tChannel",channel)["processes"]:
             self._logger.info("Projecting events from '"+processName+"'")
@@ -418,10 +421,11 @@ class Response(Module):
                 self.module("Utils").getHist1D(xsecGenSelectionHist,fileName,processName,"0",
                     genWeight+"*"+genSelection
                 )
+                '''
                 self.module("Utils").getHist1D(xsecGenSelectionNoTauHist,fileName,processName,"0",
                     genWeight+"*"+genSelection+"*(Parton_1__Lepton_1__fromTau==0)"
                 ) 
-                     
+                '''
                         
         self._logger.info("Projected selected events "+str(responseHist.Integral())+" in response matrix") 
         self._logger.info("Projected unselected events "+str(efficiencyHistMatrix.Integral())+" in efficiency hist")
@@ -443,9 +447,11 @@ class Response(Module):
                 self.module("Utils").getHist1D(xsecGenSelectionHist,fileName,processName,"0",
                     genWeight+"*"+genSelection+"*(1./veto_frac)"
                 )  
+                '''
                 self.module("Utils").getHist1D(xsecGenSelectionNoTauHist,fileName,processName,"0",
                     genWeight+"*"+genSelection+"*(Parton_1__Lepton_1__fromTau==0)"+"*(1./veto_frac)"
                 ) 
+                '''
         self._logger.info("Projected unselected events from veto "+str(efficiencyHistVeto.Integral())+" in efficiency hist")
         
         efficiencyHist.Add(efficiencyHistMatrix)
@@ -492,7 +498,7 @@ class Response(Module):
         self._logger.info("Cross section in bin range: "+str(genHist.Integral()/self.module("Samples").getLumi())+"+-"+str(self.getError(genHist)/self.module("Samples").getLumi())+" pb")
         self._logger.info("Cross section in bin range (unweighted): "+str(genHistUnweighted.Integral()/self.module("Samples").getLumi())+" pb")
         self._logger.info("Cross section after gen selection: "+str(xsecGenSelectionHist.Integral()/self.module("Samples").getLumi())+" pb")
-        self._logger.info("Cross section after gen selection (no tau): "+str(xsecGenSelectionNoTauHist.Integral()/self.module("Samples").getLumi())+" pb")
+        #self._logger.info("Cross section after gen selection (no tau): "+str(xsecGenSelectionNoTauHist.Integral()/self.module("Samples").getLumi())+" pb")
         self._logger.info("Total cross section: "+str(xsecHist.Integral()/self.module("Samples").getLumi())+" pb")
         if math.fabs(xsecHist.Integral()/self.module("Samples").getLumi()-217.0)>1.:
             self._logger.warning("Inclusive cross section not 217 pb. Check normalization of sample!")

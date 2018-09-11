@@ -8,6 +8,7 @@ import os
 import json
 import csv
 import sys
+import copy
 
 class ThetaFit(Module):
     def __init__(self,options=[]):
@@ -72,12 +73,12 @@ class ThetaFit(Module):
         correlations = ROOT.TH2D("correlations","",Npar,0,Npar,Npar,0,Npar)
         correlations.SetDirectory(0)
         
-        #result["covariances"]={"hist":covariances,"values":{}}
-        #result["correlations"]={"hist":correlations,"values":{}}
+        result["covariances"]={"hist":covariances,"values":{}}
+        result["correlations"]={"hist":correlations,"values":{}}
         
         #store only plain values for saving to file
-        result["covariances"]={"values":{}}
-        result["correlations"]={"values":{}}
+        #result["covariances"]={"values":{}}
+        #result["correlations"]={"values":{}}
         
         for ibin,ibinLabel in enumerate(sorted(parameterDict.keys())):
             for jbin,jbinLabel in enumerate(sorted(parameterDict.keys())):
@@ -122,14 +123,58 @@ class ThetaFit(Module):
         
         return result
         
+    def checkDegenerated(self,fitResult):
+        corrAvg = 0.
+        nCorr = 0.
+        for ibin in fitResult["correlations"]["values"].keys():
+            for jbin in fitResult["correlations"]["values"].keys():
+                if ibin!=jbin:
+                    corrAvg+=math.fabs(fitResult["correlations"]["values"][ibin][jbin])
+                    nCorr+=1.
+        return corrAvg/nCorr
+        
+    def averageFitResults(self,fitResults):
+    
+        fitResultAvg = copy.deepcopy(fitResults[0])
+        for ibin in fitResultAvg["correlations"]["values"].keys():
+            for fitResult in fitResults[1:]:
+                fitResultAvg["parameters"][ibin]["mean_fit"]+=fitResult["parameters"][ibin]["mean_fit"]
+                fitResultAvg["parameters"][ibin]["unc_fit"]+=fitResult["parameters"][ibin]["unc_fit"]
+                for jbin in fitResultAvg["correlations"]["values"].keys():
+                    fitResultAvg["covariances"]["values"][ibin][jbin]+=fitResult["covariances"]["values"][ibin][jbin]
+                        
+        for ibin in fitResultAvg["correlations"]["values"].keys():
+            fitResultAvg["parameters"][ibin]["mean_fit"]/=len(fitResults)
+            fitResultAvg["parameters"][ibin]["unc_fit"]/=len(fitResults)
+            for jbin in fitResultAvg["correlations"]["values"].keys():
+                fitResultAvg["covariances"]["values"][ibin][jbin]/=len(fitResults)
+                
+        for fitResult in fitResults[1:]:
+            fitResultAvg["covariances"]["hist"].Add(fitResult["covariances"]["hist"])
+            fitResultAvg["correlations"]["hist"].Add(fitResult["correlations"]["hist"])
+        fitResultAvg["covariances"]["hist"].Scale(1./len(fitResults))
+        fitResultAvg["correlations"]["hist"].Scale(1./len(fitResults))    
+        
+        for ibin in fitResultAvg["correlations"]["values"].keys():
+            for jbin in fitResultAvg["correlations"]["values"].keys():
+                fitResultAvg["correlations"]["values"][ibin][jbin] = fitResultAvg["covariances"]["values"][ibin][jbin]/math.sqrt(
+                    fitResultAvg["correlations"]["values"][ibin][ibin]*fitResultAvg["correlations"]["values"][jbin][jbin]
+                )
+                
+        return fitResultAvg
+        
+        
     def saveFitResult(self,fullPath,fitResult):
         f = open(fullPath,"w")
+        del fitResult["covariances"]["hist"]
+        del fitResult["correlations"]["hist"]
         json.dump(fitResult,f)
         f.close()
         f = open(fullPath+".yields","w")
         for p in sorted(fitResult["parameters"].keys()):
             f.write("%30s: %6.3f +- %6.3f\n"%(p,fitResult["parameters"][p]["mean_fit"],fitResult["parameters"][p]["unc_fit"]))
         f.close()
+        
     def loadFitResult(self,fullPath):
         f = open(fullPath)
         fitResult = json.load(f)

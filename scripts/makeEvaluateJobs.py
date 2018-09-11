@@ -20,7 +20,7 @@ rootFiles=[]
 
 matchSignalMC = re.compile("^signalMC[A-Za-z_]*[0-9]+.root$")
 matchBackgroundMC = re.compile("^backgroundMC[A-Za-z_]*[0-9]+.root$")
-matchData = re.compile("^data[0-9]+.root$")
+matchData = re.compile("^data(_fit)?[0-9]+.root$")
 
 for f in os.listdir(options.out):
     if matchSignalMC.match(f) and f.find("veto")<0:

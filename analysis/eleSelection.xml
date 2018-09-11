@@ -108,9 +108,9 @@ True    </option>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[11:53:31]]>      </entry>
       <entry name="xPos"  type="double" >
-1135      </entry>
+1079      </entry>
       <entry name="yPos"  type="double" >
-879      </entry>
+651      </entry>
     </userrecords>
   </module>
   <module name="in"  type="File Input"  isEnabled="true" >
@@ -201,6 +201,34 @@ True    </option>
 84      </entry>
     </userrecords>
   </module>
+  <module name="BTagSelectionTight4"  type="BTagSelection"  isEnabled="true" >
+    <option name="event view"  type="string" >
+<![CDATA[Reconstructed]]>    </option>
+    <option name="input jet name"  type="string" >
+<![CDATA[SelectedJet]]>    </option>
+    <option name="name of selected b-jets"  type="string" >
+<![CDATA[SelectedBJetTight]]>    </option>
+    <option name="name of untagged-jets"  type="string" >
+<![CDATA[SelectedLJetTight]]>    </option>
+    <option name="b Tagging Algorithm"  type="string" >
+<![CDATA[pfCombinedMVAV2BJetTags]]>    </option>
+    <option name="maximum b-jet eta"  type="double" >
+2.4    </option>
+    <option name="working point"  type="double" >
+0.9432    </option>
+    <option name="copy selected jets"  type="boolean" >
+True    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+1009      </entry>
+      <entry name="yPos"  type="double" >
+831      </entry>
+    </userrecords>
+  </module>
   <connection>
     <source module="ElectronVeto1"  name="veto loose electrons" >
     </source>
@@ -211,18 +239,6 @@ True    </option>
     <source module="MuonVeto1"  name="veto loose muons" >
     </source>
     <sink module="ElectronVeto1"  name="input" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="BTagSelectionTight3"  name=">2 b-Tags" >
-    </source>
-    <sink module="selected"  name="in" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="BTagSelectionTight3"  name="2 b-Tags" >
-    </source>
-    <sink module="selected"  name="in" >
     </sink>
   </connection>
   <connection>
@@ -292,13 +308,7 @@ True    </option>
     </sink>
   </connection>
   <connection>
-    <source module="JetSelection1"  name=">4 Jets" >
-    </source>
-    <sink module="BTagSelectionTight3"  name="input" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="JetSelection1"  name="4 Jets" >
+    <source module="JetSelection1"  name="2 Jets" >
     </source>
     <sink module="BTagSelectionTight3"  name="input" >
     </sink>
@@ -306,21 +316,63 @@ True    </option>
   <connection>
     <source module="JetSelection1"  name="3 Jets" >
     </source>
-    <sink module="BTagSelectionTight3"  name="input" >
+    <sink module="BTagSelectionTight4"  name="input" >
     </sink>
   </connection>
   <connection>
-    <source module="JetSelection1"  name="2 Jets" >
+    <source module="BTagSelectionTight4"  name="1 b-Tags" >
     </source>
-    <sink module="BTagSelectionTight3"  name="input" >
+    <sink module="selected"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight4"  name="2 b-Tags" >
+    </source>
+    <sink module="selected"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection1"  name="4 Jets" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="JetSelection1"  name=">4 Jets" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight3"  name="2 b-Tags" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight3"  name=">2 b-Tags" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight4"  name="0 b-Tags" >
+    </source>
+    <sink module="veto"  name="in" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="BTagSelectionTight4"  name=">2 b-Tags" >
+    </source>
+    <sink module="veto"  name="in" >
     </sink>
   </connection>
   <userrecords>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-03-17]]>    </entry>
+<![CDATA[2018-08-31]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[13:15:45]]>    </entry>
+<![CDATA[21:46:05]]>    </entry>
   </userrecords>
 </analysis>

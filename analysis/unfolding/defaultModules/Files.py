@@ -15,7 +15,7 @@ class Files(Module):
         
         
     def getVersion(self):
-        return "7"
+        return "8"
         
         
     def getSystematicPostfix(self):
@@ -27,7 +27,7 @@ class Files(Module):
         nFriends = 0
     
         basedirSignalMC = "/nfs/user/mkomm/SSX13/signalMC/"+channel+self.module("Files").getVersion()
-        matchSignalMC = re.compile("^signalMC[A-Za-z0-9_\-]*[0-9]+.root$")
+        matchSignalMC = re.compile("^signalMC[A-Za-z0-9_\-]*_fit[0-9]+.root$")
         
         for f in os.listdir(basedirSignalMC):
             if matchSignalMC.match(f) and f.find("veto")<0 and f.find("train")<0 and f.find("test")<0:
@@ -66,7 +66,7 @@ class Files(Module):
         nFriends = 0
 
         basedirBackgroundMC = "/nfs/user/mkomm/SSX13/backgroundMC/"+channel+self.module("Files").getVersion()
-        matchBackgroundMC = re.compile("^backgroundMC[A-Za-z0-9_\-]*[0-9]+.root$")
+        matchBackgroundMC = re.compile("^backgroundMC[A-Za-z0-9_\-]*_fit[0-9]+.root$")
         
         for f in os.listdir(basedirBackgroundMC):
             if matchBackgroundMC.match(f) and f.find("veto")<0 and f.find("train")<0 and f.find("test")<0:
@@ -91,7 +91,7 @@ class Files(Module):
         nFriends = 0
 
         basedirData = "/nfs/user/mkomm/SSX13/data/"+channel+self.module("Files").getVersion()
-        matchData = re.compile("^data[0-9]+.root$")
+        matchData = re.compile("^data_fit[0-9]+.root$")
         
         for f in os.listdir(basedirData):
             if matchData.match(f):

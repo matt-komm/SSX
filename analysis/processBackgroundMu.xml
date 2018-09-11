@@ -223,24 +223,6 @@ True    </option>
 206      </entry>
     </userrecords>
   </module>
-  <module name="RootTreeWriter7"  type="RootTreeWriter"  isEnabled="true" >
-    <option name="root file"  type="string" >
-<![CDATA[backgroundMC_sysUnc.root]]>    </option>
-    <option name="variables"  type="string_vector" >
-<![CDATA[()]]>    </option>
-    <option name="variablesFile"  type="string" >
-<![CDATA[outputVariables.txt]]>    </option>
-    <userrecords>
-      <entry name="Compilation Date"  type="string" >
-<![CDATA[Mar 22 2017]]>      </entry>
-      <entry name="Compilation Time"  type="string" >
-<![CDATA[11:53:31]]>      </entry>
-      <entry name="xPos"  type="double" >
-1296      </entry>
-      <entry name="yPos"  type="double" >
-755      </entry>
-    </userrecords>
-  </module>
   <module name="JetMETVariations1"  type="JetMETVariations"  isEnabled="true" >
     <option name="event view name"  type="string" >
 <![CDATA[Reconstructed]]>    </option>
@@ -345,24 +327,6 @@ True    </option>
 1033      </entry>
       <entry name="yPos"  type="double" >
 748      </entry>
-    </userrecords>
-  </module>
-  <module name="RootTreeWriter9"  type="RootTreeWriter"  isEnabled="true" >
-    <option name="root file"  type="string" >
-<![CDATA[backgroundMC_sysEn.root]]>    </option>
-    <option name="variables"  type="string_vector" >
-<![CDATA[()]]>    </option>
-    <option name="variablesFile"  type="string" >
-<![CDATA[outputVariables.txt]]>    </option>
-    <userrecords>
-      <entry name="Compilation Date"  type="string" >
-<![CDATA[Mar 22 2017]]>      </entry>
-      <entry name="Compilation Time"  type="string" >
-<![CDATA[11:53:31]]>      </entry>
-      <entry name="xPos"  type="double" >
-1289      </entry>
-      <entry name="yPos"  type="double" >
-873      </entry>
     </userrecords>
   </module>
   <module name="applyWeights4"  type="SubAnalysis"  isEnabled="true" >
@@ -477,22 +441,76 @@ True    </option>
 1000      </entry>
     </userrecords>
   </module>
-  <module name="RootTreeWriter10"  type="RootTreeWriter"  isEnabled="true" >
+  <module name="RootTreeWriter11"  type="RootTreeWriter"  isEnabled="true" >
     <option name="root file"  type="string" >
-<![CDATA[backgroundMC_sysRes.root]]>    </option>
+<![CDATA[backgroundMC_fit.root]]>    </option>
     <option name="variables"  type="string_vector" >
 <![CDATA[()]]>    </option>
     <option name="variablesFile"  type="string" >
-<![CDATA[outputVariables.txt]]>    </option>
+<![CDATA[outputVariablesFit.txt]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
-<![CDATA[Mar 22 2017]]>      </entry>
+<![CDATA[Nov 28 2017]]>      </entry>
       <entry name="Compilation Time"  type="string" >
-<![CDATA[11:53:31]]>      </entry>
+<![CDATA[17:51:46]]>      </entry>
       <entry name="xPos"  type="double" >
-1279      </entry>
+1514      </entry>
       <entry name="yPos"  type="double" >
-987      </entry>
+286      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter12"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[backgroundMC_sysUnc_fit.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[outputVariablesFit.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+1538      </entry>
+      <entry name="yPos"  type="double" >
+754      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter13"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[backgroundMC_sysEn_fit.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[outputVariablesFit.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+1531      </entry>
+      <entry name="yPos"  type="double" >
+872      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter14"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[backgroundMC_sysRes_fit.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[outputVariablesFit.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+1521      </entry>
+      <entry name="yPos"  type="double" >
+986      </entry>
     </userrecords>
   </module>
   <connection>
@@ -574,12 +592,6 @@ True    </option>
     </sink>
   </connection>
   <connection>
-    <source module="runReconstruction2"  name="out" >
-    </source>
-    <sink module="RootTreeWriter7"  name="input" >
-    </sink>
-  </connection>
-  <connection>
     <source module="JetMETVariations1"  name="UncUp" >
     </source>
     <sink module="muSelection2"  name="in" >
@@ -589,12 +601,6 @@ True    </option>
     <source module="applyTriggers4"  name="out" >
     </source>
     <sink module="runReconstruction4"  name="in" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="runReconstruction4"  name="out" >
-    </source>
-    <sink module="RootTreeWriter9"  name="input" >
     </sink>
   </connection>
   <connection>
@@ -619,12 +625,6 @@ True    </option>
     <source module="muSelection4"  name="selected" >
     </source>
     <sink module="applyWeights4"  name="in" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="runReconstruction5"  name="out" >
-    </source>
-    <sink module="RootTreeWriter10"  name="input" >
     </sink>
   </connection>
   <connection>
@@ -693,12 +693,36 @@ True    </option>
     <sink module="RootTreeWriter6"  name="input" >
     </sink>
   </connection>
+  <connection>
+    <source module="RootTreeWriter6"  name="output" >
+    </source>
+    <sink module="RootTreeWriter11"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="runReconstruction2"  name="out" >
+    </source>
+    <sink module="RootTreeWriter12"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="runReconstruction4"  name="out" >
+    </source>
+    <sink module="RootTreeWriter13"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="runReconstruction5"  name="out" >
+    </source>
+    <sink module="RootTreeWriter14"  name="input" >
+    </sink>
+  </connection>
   <userrecords>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-06-01]]>    </entry>
+<![CDATA[2018-08-31]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[16:02:08]]>    </entry>
+<![CDATA[21:42:13]]>    </entry>
   </userrecords>
 </analysis>

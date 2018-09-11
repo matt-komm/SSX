@@ -341,24 +341,6 @@ False    </option>
 51      </entry>
     </userrecords>
   </module>
-  <module name="RootTreeWriter8"  type="RootTreeWriter"  isEnabled="true" >
-    <option name="root file"  type="string" >
-<![CDATA[signalMC_sysUnc.root]]>    </option>
-    <option name="variables"  type="string_vector" >
-<![CDATA[()]]>    </option>
-    <option name="variablesFile"  type="string" >
-<![CDATA[outputVariables.txt]]>    </option>
-    <userrecords>
-      <entry name="Compilation Date"  type="string" >
-<![CDATA[Mar 22 2017]]>      </entry>
-      <entry name="Compilation Time"  type="string" >
-<![CDATA[11:53:31]]>      </entry>
-      <entry name="xPos"  type="double" >
-1546      </entry>
-      <entry name="yPos"  type="double" >
-600      </entry>
-    </userrecords>
-  </module>
   <module name="applyWeights2"  type="SubAnalysis"  isEnabled="true" >
     <option name="analysis file"  type="string" >
 <![CDATA[applyWeights.xml]]>    </option>
@@ -545,24 +527,6 @@ True    </option>
 773      </entry>
     </userrecords>
   </module>
-  <module name="RootTreeWriter10"  type="RootTreeWriter"  isEnabled="true" >
-    <option name="root file"  type="string" >
-<![CDATA[signalMC_sysEn.root]]>    </option>
-    <option name="variables"  type="string_vector" >
-<![CDATA[()]]>    </option>
-    <option name="variablesFile"  type="string" >
-<![CDATA[outputVariables.txt]]>    </option>
-    <userrecords>
-      <entry name="Compilation Date"  type="string" >
-<![CDATA[Mar 22 2017]]>      </entry>
-      <entry name="Compilation Time"  type="string" >
-<![CDATA[11:53:31]]>      </entry>
-      <entry name="xPos"  type="double" >
-1514      </entry>
-      <entry name="yPos"  type="double" >
-773      </entry>
-    </userrecords>
-  </module>
   <module name="electronSelection5"  type="SubAnalysis"  isEnabled="true" >
     <option name="analysis file"  type="string" >
 <![CDATA[eleSelection.xml]]>    </option>
@@ -631,22 +595,76 @@ True    </option>
 951      </entry>
     </userrecords>
   </module>
-  <module name="RootTreeWriter11"  type="RootTreeWriter"  isEnabled="true" >
+  <module name="RootTreeWriter12"  type="RootTreeWriter"  isEnabled="true" >
     <option name="root file"  type="string" >
-<![CDATA[signalMC_sysRes.root]]>    </option>
+<![CDATA[signalMC_fit.root]]>    </option>
     <option name="variables"  type="string_vector" >
 <![CDATA[()]]>    </option>
     <option name="variablesFile"  type="string" >
-<![CDATA[outputVariables.txt]]>    </option>
+<![CDATA[outputVariablesFit.txt]]>    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
-<![CDATA[Mar 22 2017]]>      </entry>
+<![CDATA[Nov 28 2017]]>      </entry>
       <entry name="Compilation Time"  type="string" >
-<![CDATA[11:53:31]]>      </entry>
+<![CDATA[17:51:46]]>      </entry>
       <entry name="xPos"  type="double" >
-1489      </entry>
+2222      </entry>
       <entry name="yPos"  type="double" >
-951      </entry>
+108      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter13"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[signalMC_sysUnc_fit.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[outputVariablesFit.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+1781      </entry>
+      <entry name="yPos"  type="double" >
+612      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter14"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[signalMC_sysEn_fit.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[outputVariablesFit.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+1751      </entry>
+      <entry name="yPos"  type="double" >
+785      </entry>
+    </userrecords>
+  </module>
+  <module name="RootTreeWriter15"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[signalMC_sysRes_fit.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[outputVariablesFit.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+1726      </entry>
+      <entry name="yPos"  type="double" >
+963      </entry>
     </userrecords>
   </module>
   <connection>
@@ -776,12 +794,6 @@ True    </option>
     </sink>
   </connection>
   <connection>
-    <source module="Matching2"  name="out" >
-    </source>
-    <sink module="RootTreeWriter8"  name="input" >
-    </sink>
-  </connection>
-  <connection>
     <source module="runPartonParticleLevel1"  name="out" >
     </source>
     <sink module="JetMETVariations1"  name="input" >
@@ -827,12 +839,6 @@ True    </option>
     <source module="runReconstruction4"  name="out" >
     </source>
     <sink module="Matching4"  name="input" >
-    </sink>
-  </connection>
-  <connection>
-    <source module="Matching4"  name="out" >
-    </source>
-    <sink module="RootTreeWriter10"  name="input" >
     </sink>
   </connection>
   <connection>
@@ -884,12 +890,6 @@ True    </option>
     </sink>
   </connection>
   <connection>
-    <source module="Matching5"  name="out" >
-    </source>
-    <sink module="RootTreeWriter11"  name="input" >
-    </sink>
-  </connection>
-  <connection>
     <source module="RootTreeWriter5"  name="output" >
     </source>
     <sink module="RootTreeWriter6"  name="input" >
@@ -919,12 +919,36 @@ True    </option>
     <sink module="Split for VETO1"  name="input" >
     </sink>
   </connection>
+  <connection>
+    <source module="RootTreeWriter6"  name="output" >
+    </source>
+    <sink module="RootTreeWriter12"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Matching2"  name="out" >
+    </source>
+    <sink module="RootTreeWriter13"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Matching4"  name="out" >
+    </source>
+    <sink module="RootTreeWriter14"  name="input" >
+    </sink>
+  </connection>
+  <connection>
+    <source module="Matching5"  name="out" >
+    </source>
+    <sink module="RootTreeWriter15"  name="input" >
+    </sink>
+  </connection>
   <userrecords>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-06-01]]>    </entry>
+<![CDATA[2018-08-31]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[16:01:35]]>    </entry>
+<![CDATA[21:39:41]]>    </entry>
   </userrecords>
 </analysis>

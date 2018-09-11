@@ -145,16 +145,16 @@ True    </option>
     <option name="add tau decays"  type="boolean" >
 False    </option>
     <option name="last copies"  type="boolean" >
-True    </option>
+False    </option>
     <option name="sum add neutrinos"  type="boolean" >
-True    </option>
+False    </option>
     <userrecords>
       <entry name="Compilation Date"  type="string" >
 <![CDATA[Nov 28 2017]]>      </entry>
       <entry name="Compilation Time"  type="string" >
 <![CDATA[17:51:46]]>      </entry>
       <entry name="xPos"  type="double" >
-273      </entry>
+274      </entry>
       <entry name="yPos"  type="double" >
 498      </entry>
     </userrecords>
@@ -223,8 +223,8 @@ True    </option>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-06-22]]>    </entry>
+<![CDATA[2018-08-31]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[18:43:08]]>    </entry>
+<![CDATA[22:30:43]]>    </entry>
   </userrecords>
 </analysis>

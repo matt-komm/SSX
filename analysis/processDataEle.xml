@@ -77,6 +77,24 @@
 400      </entry>
     </userrecords>
   </module>
+  <module name="RootTreeWriter7"  type="RootTreeWriter"  isEnabled="true" >
+    <option name="root file"  type="string" >
+<![CDATA[data_fit.root]]>    </option>
+    <option name="variables"  type="string_vector" >
+<![CDATA[()]]>    </option>
+    <option name="variablesFile"  type="string" >
+<![CDATA[outputVariablesFit.txt]]>    </option>
+    <userrecords>
+      <entry name="Compilation Date"  type="string" >
+<![CDATA[Nov 28 2017]]>      </entry>
+      <entry name="Compilation Time"  type="string" >
+<![CDATA[17:51:46]]>      </entry>
+      <entry name="xPos"  type="double" >
+1017      </entry>
+      <entry name="yPos"  type="double" >
+389      </entry>
+    </userrecords>
+  </module>
   <connection>
     <source module="applyTriggers"  name="out" >
     </source>
@@ -101,12 +119,18 @@
     <sink module="RootTreeWriter6"  name="input" >
     </sink>
   </connection>
+  <connection>
+    <source module="RootTreeWriter6"  name="output" >
+    </source>
+    <sink module="RootTreeWriter7"  name="input" >
+    </sink>
+  </connection>
   <userrecords>
     <entry name="Author"  type="string" >
 <![CDATA[matthias]]>    </entry>
     <entry name="Modification date"  type="string" >
-<![CDATA[2018-06-01]]>    </entry>
+<![CDATA[2018-08-31]]>    </entry>
     <entry name="Modification time"  type="string" >
-<![CDATA[16:02:28]]>    </entry>
+<![CDATA[21:42:51]]>    </entry>
   </userrecords>
 </analysis>
