@@ -112,10 +112,12 @@ class FitHistograms(Module.getClass("Program")):
         )
         
         fitResultsSucess = []
-        while (len(fitResultsSucess)<4):
+        isuccess = -1
+        while (len(fitResultsSucess)<4 and isuccess<20):
             success = False
             retry = 20
             itry = 0
+            isuccess+=1
             while (not success and itry<retry):
                 self.module("ThetaModel").makeModel(
                     fitOutput+".cfg",
@@ -135,6 +137,11 @@ class FitHistograms(Module.getClass("Program")):
                     self._logger.info("Fit avg correlation: "+str(avgcorr))
                     if (avgcorr>0.4):
                         raise Exception("Degenerated fit: "+str(avgcorr))
+                        
+                    dets = self.module("ThetaFit").checkSignalDeterminant(fitResult,channelName)
+                    self._logger.info("Fit signal dets: "+str(dets))
+                    if (unfoldingName!="inc") and (min(dets)<10.**(-60) or max(dets)>10.**(60)):
+                        raise Exception("Degenerated fit with signal determinant: "+str(dets))
                     
                     fitResultsSucess.append(fitResult)
                 except Exception,e:
@@ -147,6 +154,10 @@ class FitHistograms(Module.getClass("Program")):
             if (not success):
                 self._logger.critical("No theta run succeeded")
                 sys.exit(1)
+                
+        if (isuccess>=20 or len(fitResultsSucess)<4):
+            self._logger.critical("No sufficient sucessful fits")
+            sys.exit(1)
                 
         fitResult = self.module("ThetaFit").averageFitResults(fitResultsSucess)
         

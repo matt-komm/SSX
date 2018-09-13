@@ -9,6 +9,8 @@ import json
 import csv
 import sys
 import copy
+import numpy
+import numpy.linalg
 
 class ThetaFit(Module):
     def __init__(self,options=[]):
@@ -133,8 +135,20 @@ class ThetaFit(Module):
                     nCorr+=1.
         return corrAvg/nCorr
         
+    def checkSignalDeterminant(self,fitResult,channelName):
+        recoBinning = self.module("Unfolding").getRecoBinning(channelName)
+        binMapReco = self.module("Unfolding").buildGlobalRecoBinMap()[channelName]
+        dets = []
+        for charge in [-1,1]:
+            matrix = numpy.identity(len(recoBinning)-1)
+            for ibin in range(len(recoBinning)-1):
+                for jbin in range(len(recoBinning)-1):
+                    cov = fitResult["covariances"]["values"]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(1+binMapReco[ibin])]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(1+binMapReco[jbin])]
+                    matrix[ibin][jbin] = cov
+            dets.append(numpy.linalg.det(matrix))
+        return dets
+        
     def averageFitResults(self,fitResults):
-    
         fitResultAvg = copy.deepcopy(fitResults[0])
         for ibin in fitResultAvg["correlations"]["values"].keys():
             for fitResult in fitResults[1:]:
