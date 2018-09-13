@@ -35,9 +35,9 @@ class ResponseHistograms(Module.getClass("Program")):
             
             responseOutputFile = self.module("Response").getOutputResponseFile(channel,unfoldingName,unfoldingLevel,self.module("Utils").getUncertaintyName(),genCharge)
             
-            #if os.path.exists(responseOutputFile):
-            #    self._logger.info("Output file '"+responseOutputFile+"' already exists! -> skip")
-            #    sys.exit(0)
+            if os.path.exists(responseOutputFile):
+                self._logger.info("Output file '"+responseOutputFile+"' already exists! -> skip")
+                sys.exit(0)
             
             self.module("Response").makeResponse(
                 channel,
