@@ -6,6 +6,7 @@ for channels in ele mu ele,mu
         do
         echo $setup $channels
         #echo "ADD PDF SYST!!!!"
-        python driver.py -m setup/$setup -m tasks/plotCrossSection -c channels:$channels -c systematics:$syst
+        python driver.py -m setup/$setup -m tasks/plotCrossSection -c channels:$channels -c systematics:$syst &
         done
+    wait ${!}
     done

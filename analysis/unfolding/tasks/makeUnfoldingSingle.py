@@ -88,7 +88,7 @@ class RunUnfolding(Module.getClass("Program")):
         for charge in [-1,1]:
             
             nominalGenHists[charge] = responseMatrices[charge]["nominal"].ProjectionX() 
-            unfoldedHists[charge] = nominalGenHists[charge].Clone(nominalGenHists[charge].GetName()+"meas")
+            unfoldedHists[charge] = nominalGenHists[charge].Clone(nominalGenHists[charge].GetName()+"unfolded")
             
             nominalRecoHists[charge] = responseMatrices[charge]["nominal"].ProjectionY()
             
@@ -106,13 +106,13 @@ class RunUnfolding(Module.getClass("Program")):
                 signalFitResult = fitResult["parameters"]["tChannel_"+self.module("Samples").getChargeName(charge)+"_bin"+str(1+binMapReco[ibin])]
                 measuredRecoHists[charge].SetBinContent(
                     ibin+1,
-                    sysRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["mean_fit"]
+                    measuredRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["mean_fit"]
                 )
                 measuredRecoHists[charge].SetBinError(
                     ibin+1,
                     math.sqrt(
-                        (sysRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["unc_fit"])**2 + \
-                        sysRecoHists[charge].GetBinError(ibin+1)**2
+                        (measuredRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["unc_fit"])**2 + \
+                        measuredRecoHists[charge].GetBinError(ibin+1)**2
                     )
                 )
                 
@@ -123,7 +123,7 @@ class RunUnfolding(Module.getClass("Program")):
                     measuredRecoCovariances[charge].SetBinContent(
                         ibin+1,
                         jbin+1,
-                        sysRecoHists[charge].GetBinContent(ibin+1)*sysRecoHists[charge].GetBinContent(jbin+1)*signalFitResultCov
+                        measuredRecoHists[charge].GetBinContent(ibin+1)*measuredRecoHists[charge].GetBinContent(jbin+1)*signalFitResultCov
                     )
                  
             #draw reco hists
@@ -207,10 +207,11 @@ class RunUnfolding(Module.getClass("Program")):
             combinedHists["measuredReco"],
             #regularize only between the two merged histograms
             regularizations=range(1,len(genBinning)-2)+range(1+(len(genBinning)-1),len(genBinning)-2+(len(genBinning)-1)),
+            #ignoreCovInScan=True,
             dataCovariance=combinedCovarianceMatrix,
             scanOutput=os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_comb_tauScan"),
             fixedTau=1e-10 if (unfoldingName=="lpt" or unfoldingName=="leta") else None,
-            scaleReg=1.
+            scaleReg=2.1
         )
         #draw unfolded hist
         self.module("Drawing").plotDataHistogram([combinedHists["nominalGen"]],combinedUnfoldedHist,
@@ -291,6 +292,13 @@ class RunUnfolding(Module.getClass("Program")):
             #uncBand=ratioUncBand
         )
         
+        for charge in [-1,1]:
+            print "Charge: ",charge
+            for ibin in range(measuredRecoHists[charge].GetNbinsX()):
+                print "Reco/unfolded error ",ibin+1,": ",
+                print measuredRecoHists[charge].GetBinError(ibin+1)/measuredRecoHists[charge].GetBinContent(ibin+1),
+                print "/",
+                print unfoldedHists[charge].GetBinError(ibin+1)/unfoldedHists[charge].GetBinContent(ibin+1)
         
         
         outputPath = os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_result.root")

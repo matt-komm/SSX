@@ -141,7 +141,10 @@ class FitHistograms(Module.getClass("Program")):
                         #add shape uncertainties
                         for sysName in uncertaintyList:
                             if not parametersDict.has_key(sysName):
-                                parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1)
+                                if sysName.find("eleEff")>=0 or sysName.find("muEff")>=0 or sysName.find("eleMultiIso")>=0 or sysName.find("eleMultiVeto")>=0 or sysName.find("muMulti")>=0 or sysName.find("ltag")>=0:
+                                    parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1,r=[-2.5,2.5])
+                                else:
+                                    parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1)
                             fitSetup[obsName]["components"][channel+"_"+componentName]["shape"].append({
                                 "parameter":sysName,
                                 "up":histogramsPerChannelAndUncertainty[channel][sysName][binName][0][obserableName][componentName],
@@ -183,14 +186,18 @@ class FitHistograms(Module.getClass("Program")):
                     #for ["correlations"]["values"]
                     avgcorr = self.module("ThetaFit").checkDegenerated(fitResult)
                     self._logger.info("Fit avg correlation: "+str(avgcorr))
-                    if (avgcorr>0.4):
-                        raise Exception("Degenerated fit with average covariance: "+str(avgcorr))
-                    
-                    dets = self.module("ThetaFit").checkSignalDeterminant(fitResult,channelName)
-                    self._logger.info("Fit signal dets: "+str(dets))
-                    if (unfoldingName!="inc") and (min(dets)<10.**(-60) or max(dets)>10.**(60)):
-                        raise Exception("Degenerated fit with signal determinant: "+str(dets))
-                    
+                    if (unfoldingName!="inc"):
+                        if (avgcorr>0.4):
+                            raise Exception("Degenerated fit with average covariance: "+str(avgcorr))
+                    else:
+                        if (avgcorr>0.6):
+                            raise Exception("Degenerated fit with average covariance: "+str(avgcorr))
+                    if (unfoldingName!="inc"):
+                        dets = self.module("ThetaFit").checkSignalDeterminant(fitResult,channelName)
+                        self._logger.info("Fit signal dets: "+str(dets))
+                        if (min(dets)<10.**(-60) or max(dets)>10.**(60)):
+                            raise Exception("Degenerated fit with signal determinant: "+str(dets))
+                        
                     fitResultsSucess.append(fitResult)
                                     
                 except Exception,e:
@@ -222,8 +229,8 @@ class FitHistograms(Module.getClass("Program")):
         fitResult["correlations"]["hist"].Scale(100.)
         fitResult["correlations"]["hist"].GetXaxis().SetTitleSize(0.5)
         fitResult["correlations"]["hist"].GetXaxis().LabelsOption("v")
-        fitResult["correlations"]["hist"].GetXaxis().SetLabelSize(20 if unfoldingName=="inc" else 12)
-        fitResult["correlations"]["hist"].GetYaxis().SetLabelSize(20 if unfoldingName=="inc" else 12)
+        fitResult["correlations"]["hist"].GetXaxis().SetLabelSize(20 if unfoldingName=="inc" else 10)
+        fitResult["correlations"]["hist"].GetYaxis().SetLabelSize(20 if unfoldingName=="inc" else 10)
         fitResult["correlations"]["hist"].GetZaxis().SetLabelSize(25)
         fitResult["correlations"]["hist"].GetYaxis().SetTitleSize(0.5)
         fitResult["correlations"]["hist"].GetZaxis().SetTitle("Correlation (%)")

@@ -57,8 +57,8 @@ class GenHistograms(Module.getClass("Program")):
             "ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1":[
                 "ST_t-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1"
             ],
-            "ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180731":[
-                "ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180731"
+            "ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180904":[
+                "ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180904"
             ],
             #"ST_t-channel_4f_inclusiveDecays_13TeV-powhegV2-madspin-herwigpp":[
             #    "ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-herwigpp",

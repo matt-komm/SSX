@@ -135,13 +135,17 @@ class FitHistograms(Module.getClass("Program")):
                     )
                     avgcorr = self.module("ThetaFit").checkDegenerated(fitResult)
                     self._logger.info("Fit avg correlation: "+str(avgcorr))
-                    if (avgcorr>0.4):
-                        raise Exception("Degenerated fit: "+str(avgcorr))
-                        
-                    dets = self.module("ThetaFit").checkSignalDeterminant(fitResult,channelName)
-                    self._logger.info("Fit signal dets: "+str(dets))
-                    if (unfoldingName!="inc") and (min(dets)<10.**(-60) or max(dets)>10.**(60)):
-                        raise Exception("Degenerated fit with signal determinant: "+str(dets))
+                    if (unfoldingName!="inc"):
+                        if (avgcorr>0.4):
+                            raise Exception("Degenerated fit with average covariance: "+str(avgcorr))
+                    else:
+                        if (avgcorr>0.6):
+                            raise Exception("Degenerated fit with average covariance: "+str(avgcorr))
+                    if (unfoldingName!="inc"):
+                        dets = self.module("ThetaFit").checkSignalDeterminant(fitResult,channelName)
+                        self._logger.info("Fit signal dets: "+str(dets))
+                        if (min(dets)<10.**(-60) or max(dets)>10.**(60)):
+                            raise Exception("Degenerated fit with signal determinant: "+str(dets))
                     
                     fitResultsSucess.append(fitResult)
                 except Exception,e:
@@ -170,8 +174,8 @@ class FitHistograms(Module.getClass("Program")):
         fitResult["correlations"]["hist"].Scale(100.)
         fitResult["correlations"]["hist"].GetXaxis().SetTitleSize(0.5)
         fitResult["correlations"]["hist"].GetXaxis().LabelsOption("v")
-        fitResult["correlations"]["hist"].GetXaxis().SetLabelSize(22 if unfoldingName=="inc" else 12)
-        fitResult["correlations"]["hist"].GetYaxis().SetLabelSize(22 if unfoldingName=="inc" else 12)
+        fitResult["correlations"]["hist"].GetXaxis().SetLabelSize(22 if unfoldingName=="inc" else 11)
+        fitResult["correlations"]["hist"].GetYaxis().SetLabelSize(22 if unfoldingName=="inc" else 11)
         fitResult["correlations"]["hist"].GetZaxis().SetLabelSize(25)
         fitResult["correlations"]["hist"].GetYaxis().SetTitleSize(0.5)
         fitResult["correlations"]["hist"].GetZaxis().SetTitle("Correlation (%)")

@@ -3,7 +3,7 @@
 #SBATCH --partition=cp3
 #SBATCH --qos=cp3
 #SBATCH --workdir=/home/ucl/cp3/mkomm/SSX/analysis/unfolding/jobs
-#SBATCH --time=0-4:00
+#SBATCH --time=0-6:00
 #SBATCH --mem-per-cpu=1000
 #SBATCH --array=1-6682%250
 #SBATCH --output=/dev/null

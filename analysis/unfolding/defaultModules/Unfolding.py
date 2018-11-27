@@ -568,8 +568,9 @@ class Unfolding(Module):
         
     
                 
-    def unfold(self,responseMatrix,data,regularizations=[],dataCovariance=None,scanOutput=None,fixedTau=None,scaleReg=1.):
+    def unfold(self,responseMatrix,data,regularizations=[],ignoreCovInScan=False,dataCovariance=None,scanOutput=None,fixedTau=None,scaleReg=1.):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
+        recoHist = responseMatrix.ProjectionY(responseMatrix.GetName()+"recoY")
         genBinning = numpy.zeros((genHist.GetNbinsX()+1))
         for i in range(len(genBinning)):
             genBinning[i]=genHist.GetXaxis().GetBinLowEdge(i+1)
@@ -589,21 +590,29 @@ class Unfolding(Module):
         for reg in regularizations:
             tunfold.addRegularization(reg)
             
-        if (tunfold.setData(data,dataCovariance)>=10000):
-            self._logger.critical("TUnfold indicates a fatal error")
-            sys.exit(1)
-
-        #!!!! NOTE: the following slightly increases regularization !!!!!
-        #!!!! NOTE: the following slightly increases regularization !!!!!
-        #!!!! NOTE: the following slightly increases regularization !!!!!
-        #!!!! NOTE: the following slightly increases regularization !!!!!
-        #!!!! NOTE: the following slightly increases regularization !!!!!
-        #!!!! NOTE: the following slightly increases regularization !!!!!
+        if ignoreCovInScan:
+            simpleCov = dataCovariance.Clone(dataCovariance.GetName()+"simple"+str(random.random()))
+            simpleCov.Scale(0.)
+            for ibin in range(data.GetNbinsX()):
+                simpleCov.SetBinContent(ibin+1,ibin+1,
+                    0.04**2*recoHist.GetBinContent(ibin+1)*recoHist.GetBinContent(ibin+1)
+                )
+            if (tunfold.setData(data,simpleCov)>=10000):
+                self._logger.critical("TUnfold indicates a fatal error")
+                sys.exit(1)
+        else:
+            if (tunfold.setData(data,dataCovariance)>=10000):
+                self._logger.critical("TUnfold indicates a fatal error")
+                sys.exit(1)
 
         if fixedTau==None:
             bestTau = scaleReg*self.module("Unfolding").doScan(tunfold,genBinning,scanOutput)
         else:
             bestTau=fixedTau
+            
+        if (tunfold.setData(data,dataCovariance)>=10000):
+            self._logger.critical("TUnfold indicates a fatal error")
+            sys.exit(1)
 
         self._logger.info("Found tau for regularization: "+str(bestTau))
         

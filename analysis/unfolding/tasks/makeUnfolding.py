@@ -97,7 +97,7 @@ class RunUnfolding(Module.getClass("Program")):
             
 
             nominalGenHists[charge] = responseMatrices[charge]["nominal"].ProjectionX() 
-            unfoldedHists[charge] = nominalGenHists[charge].Clone(nominalGenHists[charge].GetName()+"meas")
+            unfoldedHists[charge] = nominalGenHists[charge].Clone(nominalGenHists[charge].GetName()+"unfolded")
             
             nominalRecoHists[charge] = responseMatrices[charge]["nominal"].ProjectionY()
             
@@ -119,8 +119,8 @@ class RunUnfolding(Module.getClass("Program")):
                 measuredRecoHists[charge].SetBinError(
                     ibin+1,
                     math.sqrt(
-                        (nominalRecoHistsMorphed[charge].GetBinContent(ibin+1)*signalFitResult["unc_fit"])**2 + \
-                        nominalRecoHistsMorphed[charge].GetBinError(ibin+1)**2
+                        (measuredRecoHists[charge].GetBinContent(ibin+1)*signalFitResult["unc_fit"])**2 + \
+                        measuredRecoHists[charge].GetBinError(ibin+1)**2
                     )
                 )
                 
@@ -130,7 +130,7 @@ class RunUnfolding(Module.getClass("Program")):
                     measuredRecoCovariances[charge].SetBinContent(
                         ibin+1,
                         jbin+1,
-                        nominalRecoHistsMorphed[charge].GetBinContent(ibin+1)*nominalRecoHistsMorphed[charge].GetBinContent(jbin+1)*signalFitResultCov
+                        measuredRecoHists[charge].GetBinContent(ibin+1)*measuredRecoHists[charge].GetBinContent(jbin+1)*signalFitResultCov
                     )
 
                     
@@ -225,10 +225,11 @@ class RunUnfolding(Module.getClass("Program")):
             combinedHists["measuredReco"],
             #regularize only between the two merged histograms
             regularizations=range(1,len(genBinning)-2)+range(1+(len(genBinning)-1),len(genBinning)-2+(len(genBinning)-1)),
+            #ignoreCovInScan=True,
             dataCovariance=combinedCovarianceMatrix,
             scanOutput=os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_comb_tauScan"),
             fixedTau=1e-10 if (unfoldingName=="lpt" or unfoldingName=="leta") else None,
-            scaleReg=2.
+            scaleReg=1.9
         )
         #draw unfolded hist
         self.module("Drawing").plotDataHistogram([combinedHists["nominalGen"]],combinedUnfoldedHist,

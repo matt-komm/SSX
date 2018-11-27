@@ -26,7 +26,7 @@ Parton[A-Za-z0-9_\-]*->Lepton->Charge
 Parton[A-Za-z0-9_\-]*->Lepton->pdg
 Parton[A-Za-z0-9_\-]*->Lepton->fromTau
 Parton[A-Za-z0-9_\-]*->Top->Pt
-Parton[A-Za-z0-9_\-]*->Top->Y
+Parton[A-Za-z0-9_\-]*->Top->y
 Parton[A-Za-z0-9_\-]*->W->Pt
 Parton[A-Za-z0-9_\-]*->cosTheta_tPLz
 Reconstructed->EleTight32_vALL

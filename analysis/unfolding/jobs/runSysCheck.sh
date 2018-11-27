@@ -1,5 +1,5 @@
 systProfiled="en res unc"
-systExternalized="topMass"
+systExternalized="ttbarUE pdf topMass tchanHdampPS tchanScaleME tchanScalePS ttbarScaleME ttbarHdampPS ttbarPt ttbarScaleFSRPS ttbarScaleISRPS wjetsScaleME"
 syst="$systProfiled $systExternalized"
 
 for channel in ele mu

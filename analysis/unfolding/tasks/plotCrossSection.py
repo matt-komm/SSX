@@ -263,7 +263,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 "legend":"aMC@NLO#kern[-0.6]{ }4FS",#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
             },
             {
-                "name":"ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180731",
+                "name":"ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180904",
                 "color":newColor(0.99,0.7,0.1),
                 "style":11,
                 "width":3,
@@ -281,6 +281,9 @@ class PlotCrossSection(Module.getClass("Program")):
                 outputFolderGen = self.module("Response").getOutputFolder(channel,unfoldingName,"nominal")
                 genMCFileName = os.path.join(outputFolderGen,"genpredictions_"+unfoldingLevel+".root")
                 rootFile = ROOT.TFile(genMCFileName)
+                if not rootFile.IsOpen():
+                    self._logger.critical("Cannot find prediction file '"+genMCFileName+"'")
+                    sys.exit(1)
                 
                 histInc = rootFile.Get(prediction["name"]).Clone(prediction["name"]+str(random.random()))
                 histInc.SetDirectory(0)
@@ -460,12 +463,38 @@ class PlotCrossSection(Module.getClass("Program")):
         for isys,sys in enumerate(sorted(systematics)):
             results = {-1:{},1:{}}
             
-            for v in ["Up","Down"]:
-                sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+v)
+            #self._logger.info(str(isys)+": "+sys)
+            if sys.find("topMass")>=0:
+                sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+"Up")
                 rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
                 result = self.getResult(rootFile)
-                results[-1][v]=result["unfolded_neg"]
-                results[1][v]=result["unfolded_pos"]
+                results[-1]["Up"]=result["unfolded_neg"]
+                results[1]["Up"]=result["unfolded_pos"]
+                results[-1]["Down"] = result["unfolded_neg"].Clone(result["unfolded_neg"].GetName()+"Down")
+                results[1]["Down"] = result["unfolded_pos"].Clone(result["unfolded_pos"].GetName()+"Down")
+                
+                results[-1]["Down"].SetDirectory(0)
+                results[1]["Down"].SetDirectory(0)
+                for ibin in range(results[-1]["Down"].GetNbinsX()): 
+                    cneg = nominalResult["unfolded_neg"].GetBinContent(ibin+1)
+                    cpos = nominalResult["unfolded_pos"].GetBinContent(ibin+1)
+                   
+                    uneg = result["unfolded_neg"].GetBinContent(ibin+1)
+                    upos = result["unfolded_pos"].GetBinContent(ibin+1)
+                    
+                    dneg = cneg-(uneg-cneg)
+                    dpos = cpos-(upos-cpos)
+                    
+                    results[-1]["Down"].SetBinContent(ibin+1,dneg)
+                    results[1]["Down"].SetBinContent(ibin+1,dpos)
+                
+            else:
+                for v in ["Up","Down"]:
+                    sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+v)
+                    rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
+                    result = self.getResult(rootFile)
+                    results[-1][v]=result["unfolded_neg"]
+                    results[1][v]=result["unfolded_pos"]
             sysResults.append(results)
             
             self.module("Drawing").plotEnvelopeHistogram(
@@ -606,6 +635,19 @@ class PlotCrossSection(Module.getClass("Program")):
             genHistSumsNorm.append({
                 "hist":genPredictionNorm,"legend":pred["legend"]
             })
+            
+            
+        if (unfoldingName=="cos" or unfoldingName=="cosTau") and unfoldingLevel=="parton":
+            asymmetryGen = self.module("Asymmetry").calculateAsymmetry(genHistSumNorm)
+            asymmetryStat = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal)
+            asymmetryProfiled = self.module("Asymmetry").fitDistribution(histSumProfiled,covSumProfiled)
+            asymmetryTotal = self.module("Asymmetry").fitDistribution(histSumTotal,covSumTotal)
+            
+            self._logger.info("Gen asymmetry: %5.3f"%(asymmetryGen))
+            self._logger.info("Meas. asymmetry (stat): %5.3f+-%5.3f"%(asymmetryStat[0],asymmetryStat[1]))
+            self._logger.info("Meas. asymmetry (exp): %5.3f+-%5.3f"%(asymmetryProfiled[0],asymmetryProfiled[1]))
+            self._logger.info("Meas. asymmetry (tot): %5.3f+-%5.3f"%(asymmetryTotal[0],asymmetryTotal[1]))
+
         
         self.module("Utils").normalizeByBinWidth(histSumProfiledNorm)
         self.module("Utils").normalizeByBinWidth(histSumTotalNorm)
@@ -629,17 +671,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 self._logger.critical("Covariance matrix and histogram error do not agree!")
                 sys.exit(1)
         
-        if (unfoldingName=="cos" or unfoldingName=="cosTau") and unfoldingLevel=="parton":
-            asymmetryGen = self.module("Asymmetry").calculateAsymmetry(genHistSumNorm)
-            asymmetryStat = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal)
-            asymmetryProfiled = self.module("Asymmetry").fitDistribution(histSumProfiled,covSumProfiled)
-            asymmetryTotal = self.module("Asymmetry").fitDistribution(histSumTotal,covSumTotal)
-            
-            self._logger.info("Gen asymmetry: %5.3f"%(asymmetryGen))
-            self._logger.info("Meas. asymmetry (stat): %5.3f+-%5.3f"%(asymmetryStat[0],asymmetryStat[1]))
-            self._logger.info("Meas. asymmetry (exp): %5.3f+-%5.3f"%(asymmetryProfiled[0],asymmetryProfiled[1]))
-            self._logger.info("Meas. asymmetry (tot): %5.3f+-%5.3f"%(asymmetryTotal[0],asymmetryTotal[1]))
-        
+                
         #tabSys= "\\hline\n"
         if unit!="":
             tabSys= "%20s"%("Bin range / "+unit)
@@ -824,6 +856,7 @@ class PlotCrossSection(Module.getClass("Program")):
         genHistsRatioNNPDF30.SetLineStyle(1)
         genHistsRatioNNPDF30.SetLineWidth(2)
         genHistsRatioNNPDF30.SetFillStyle(1001)
+        
         self.applyLHEVariations(
             genHistsRatioNNPDF30,
             unfoldingName,
@@ -834,6 +867,7 @@ class PlotCrossSection(Module.getClass("Program")):
             scalePos=134.3/136.02,
             scaleNeg=80.7/80.95
         )
+        
         print "MMHT",
         genHistsRatioMMHT14 = genHistRatio.Clone(genHistRatio.GetName()+"mh")
         genHistsRatioMMHT14.SetLineColor(newColor(211./255,28./255,230./255).GetNumber())
@@ -841,6 +875,7 @@ class PlotCrossSection(Module.getClass("Program")):
         genHistsRatioMMHT14.SetLineStyle(1)
         genHistsRatioMMHT14.SetLineWidth(2)
         genHistsRatioMMHT14.SetFillStyle(1001)
+        
         self.applyLHEVariations(
             genHistsRatioMMHT14,
             unfoldingName,
@@ -851,6 +886,7 @@ class PlotCrossSection(Module.getClass("Program")):
             scalePos=138.3/136.02,
             scaleNeg=83.5/80.95
         )
+        
         print "CT10",
         genHistsRatioCT10 = genHistRatio.Clone(genHistRatio.GetName()+"ct")
         genHistsRatioCT10.SetLineColor(newColor(83./255,131./255,241./255).GetNumber())
@@ -858,6 +894,7 @@ class PlotCrossSection(Module.getClass("Program")):
         genHistsRatioCT10.SetLineStyle(1)
         genHistsRatioCT10.SetLineWidth(2)
         genHistsRatioCT10.SetFillStyle(1001)
+        
         self.applyLHEVariations(
             genHistsRatioCT10,
             unfoldingName,

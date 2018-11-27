@@ -149,9 +149,9 @@ class ThetaModel(Module):
         observables = {
             "2j1t": {
                 "weight":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1),
-                #"variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(((1.0*"+tch+"+0.0*"+ttw+")<0.)*(100.+50.*"+ttw+")+((1.0*"+tch+"+0.0*"+ttw+")>0.)*(150.+50.*"+tch+")))",
+                "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(((1.0*"+tch+"+0.0*"+ttw+")<0.)*(100.+50.*"+ttw+")+((1.0*"+tch+"+0.0*"+ttw+")>0.)*(150.+50.*"+tch+")))",
                 #"variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(50.0+20.0*fabs(SingleTop_1__LightJet_1__Eta)))",
-                "variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(((1.0*"+tch+"+0.0*"+ttw+")<-0.5)*(87.5+37.5*"+ttw+")+((1.0*"+tch+"+0.0*"+ttw+")>-0.5)*(150.+50.*"+tch+")))",
+                #"variable":charge+"*((SingleTop_1__mtw_beforePz<50.0)*SingleTop_1__mtw_beforePz+(SingleTop_1__mtw_beforePz>50.0)*(((1.0*"+tch+"+0.0*"+ttw+")<-0.5)*(87.5+37.5*"+ttw+")+((1.0*"+tch+"+0.0*"+ttw+")>-0.5)*(150.+50.*"+tch+")))",
                 "bins":32,
                 #"bins":30,
                 "range":[-200.,200.],

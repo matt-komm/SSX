@@ -107,9 +107,11 @@ class RunUnfolding(Module.getClass("Program")):
                 reweightedReco,
                 #regularize only between the two merged histograms
                 regularizations=range(1,len(genBinning)-2),
+                #ignoreCovInScan=True,
                 dataCovariance=reweightedRecoCovariance,
                 scanOutput=None,#os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_comb_tauScan"),
-                fixedTau=1e-10 if (unfoldingName=="lpt" or unfoldingName=="leta") else None
+                fixedTau=1e-10 if (unfoldingName=="lpt" or unfoldingName=="leta") else None,
+                scaleReg=1.7
             )
             
             for ibin in range(unfoldedHistReweighted.GetNbinsX()):

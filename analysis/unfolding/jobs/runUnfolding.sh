@@ -6,7 +6,8 @@ for channels in ele mu ele,mu
         do
         echo $setup $channels
         #echo "!!!! ADD LTAG SYST !!!!"
-        python driver.py -m setup/$setup -m tasks/makeUnfoldingBiasCheck -c channels:$channels
-        python driver.py -m setup/$setup -m tasks/makeUnfolding -c channels:$channels -c systematics:$syst
+        python driver.py -m setup/$setup -m tasks/makeUnfoldingBiasCheck -c channels:$channels &
+        python driver.py -m setup/$setup -m tasks/makeUnfolding -c channels:$channels -c systematics:$syst &
         done
+    wait ${!}
     done

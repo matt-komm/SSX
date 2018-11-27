@@ -75,9 +75,9 @@ class Asymmetry(Module):
         cosDown = 0.
         for ibin in range(hist.GetNbinsX()):
             if hist.GetBinCenter(ibin+1)<0:
-                cosDown+=hist.GetBinContent(ibin+1)
+                cosDown+=hist.GetBinContent(ibin+1)*hist.GetBinWidth(ibin+1)
             else:
-                cosUp+=hist.GetBinContent(ibin+1)
+                cosUp+=hist.GetBinContent(ibin+1)*hist.GetBinWidth(ibin+1)
         return (cosUp-cosDown)/(cosUp+cosDown)
             
 
@@ -86,14 +86,14 @@ class Asymmetry(Module):
         minimizer = ROOT.Math.Factory.CreateMinimizer("Minuit2", "")
         minimizer.SetMaxFunctionCalls(10000000)
         minimizer.SetMaxIterations(1000000)
-        minimizer.SetTolerance(0.0001)
+        minimizer.SetTolerance(0.00001)
         minimizer.SetPrintLevel(0)
        
         #fct = ROOT.Math.Functor()
         chi2 = MakeChi2(hist,cov)
         
         minimizer.SetFunction(chi2)
-        minimizer.SetVariable(0,"A",0.35,0.02)
+        minimizer.SetVariable(0,"A",0.44,0.002)
         minimizer.SetVariable(1,"N",hist.Integral(),hist.Integral()*1e-4)
         minimizer.Minimize()
         
@@ -108,14 +108,14 @@ class Asymmetry(Module):
         minimizer = ROOT.Math.Factory.CreateMinimizer("Minuit2", "")
         minimizer.SetMaxFunctionCalls(10000000)
         minimizer.SetMaxIterations(1000000)
-        minimizer.SetTolerance(0.0001)
+        minimizer.SetTolerance(0.00001)
         minimizer.SetPrintLevel(0)
        
         #fct = ROOT.Math.Functor()
         chi2 = MakeChi2Norm(hist,cov)
         
         minimizer.SetFunction(chi2)
-        minimizer.SetVariable(0,"A",0.35,0.02)
+        minimizer.SetVariable(0,"A",0.44,0.002)
         minimizer.Minimize()
         
         #err = numpy.zeros((1,1))

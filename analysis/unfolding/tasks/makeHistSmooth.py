@@ -272,8 +272,8 @@ class SmoothHistograms(Module.getClass("Program")):
                             
                             #add some noise to let fits see some numerical differences
                             #if compName.find("QCD")>=0 and sysName in ["eleMultiIso","eleMultiVeto","muMulti"]:
-                            #cUp*=numpy.random.normal(loc=1.0, scale=0.0001)
-                            #cDown*=numpy.random.normal(loc=1.0, scale=0.0001)
+                            cUp*=numpy.random.normal(loc=1.0, scale=0.0001)
+                            cDown*=numpy.random.normal(loc=1.0, scale=0.0001)
                             
                             if cNom>0.1:
                                 histRelUp.SetBinContent(ibin,cUp/cNom)
