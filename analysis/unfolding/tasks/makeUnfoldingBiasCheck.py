@@ -60,65 +60,99 @@ class RunUnfolding(Module.getClass("Program")):
         #use either per channel or their combination - no need to keep the rest
         responseMatrices = responseMatricesPerChannel[channelName]
         
-        
         recoBinning = self.module("Unfolding").getRecoBinning(channelName)
         genBinning = self.module("Unfolding").getGenBinning(channelName)
         binMapReco = self.module("Unfolding").buildGlobalRecoBinMap()[channelName]
         binMapGen = self.module("Unfolding").buildGlobalGenBinMap()[channelName]
         
-        responseMatrixNominal = responseMatrices[-1]["nominal"].Clone(responseMatrices[-1]["nominal"].GetName()+"sum")
-        responseMatrixNominal.Add(responseMatrices[1]["nominal"])
-        
-        nominalGenHist = responseMatrixNominal.ProjectionX(responseMatrixNominal.GetName()+"gen"+str(random.random()))
-
+        genNominal = {}
+        for charge in [-1,1]:
+            genNominal[charge] = responseMatrices[charge]["nominal"].ProjectionX()
+            responseMatrices[charge] = responseMatrices[charge]["nominal"]
+       
         slopes = numpy.linspace(-0.2,0.2,num=21)
-        unfoldedValues = numpy.zeros((nominalGenHist.GetNbinsX(),len(slopes)))
-        expectedValues = numpy.zeros((nominalGenHist.GetNbinsX(),len(slopes)))
+        genRelValues = numpy.zeros((len(genBinning)-1,len(slopes)))
+        unfoldedValues = numpy.zeros((len(genBinning)-1,len(slopes)))
+        expectedValues = numpy.zeros((len(genBinning)-1,len(slopes)))
+        
+
+
+        fitOutput = os.path.join(
+            self.module("Utils").getOutputFolder("fit/nominal"),
+            self.module("ThetaModel").getFitFileName(channels,fitName,"nominal")
+        )
+        fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
+        
+        
+        
 
         for islope,slope in enumerate(slopes):
             reweightedRecoPerCharge = {}
             reweightedGenPerCharge = {}
+            measuredRecoCovariances = {}
             
             for charge in [-1,1]:
-                reweightedRepsonse = responseMatrices[charge]["nominal"].Clone("reweighed"+str(charge)+str(random.random())+str(slope))
+                
+                reweightedRepsonse = responseMatrices[charge].Clone("reweighed"+str(charge)+str(random.random())+str(slope))
                 self.reweightRepsonse(reweightedRepsonse,slope)
                 #reweightedRepsonse.Scale(0.5)
                 reweightedRecoPerCharge[charge] = reweightedRepsonse.ProjectionY()
                 reweightedGenPerCharge[charge] = reweightedRepsonse.ProjectionX()
-                
-            reweightedReco = reweightedRecoPerCharge[-1].Clone(reweightedRecoPerCharge[-1].GetName()+"sum")
-            reweightedReco.Add(reweightedRecoPerCharge[1])
+
+           
+                measuredRecoCovariances[charge] = ROOT.TH2F(
+                    "covariance"+str(charge),"",
+                    len(recoBinning)-1,recoBinning,
+                    len(recoBinning)-1,recoBinning
+                )
             
-            reweightedGen = reweightedGenPerCharge[-1].Clone(reweightedGenPerCharge[-1].GetName()+"sum")
-            reweightedGen.Add(reweightedGenPerCharge[1])
-                
-            reweightedRecoCovariance = ROOT.TH2F(
-                "cov"+str(charge)+str(slope)+str(random.random()),"",
-                len(recoBinning)-1,recoBinning,len(recoBinning)-1,recoBinning
+            combinedHists = self.module("Response").buildCombinedResponseMatrix(
+                genBinning,
+                recoBinning,
+                reweightedRecoPerCharge,
+                reweightedRecoPerCharge,
+                responseMatrices,
+                reweightedGenPerCharge
             )
-                
+            
+            
+            
+            combinedCovarianceMatrix = self.module("Response").buildCombinedConvarianceMatrix(
+                recoBinning,
+                reweightedRecoPerCharge,
+                fitResult,
+                binMapReco
+            )
+            '''
             reweightedRecoCovariance.SetDirectory(0)
             for ibin in range(reweightedRecoCovariance.GetNbinsX()):
                 c = reweightedReco.GetBinContent(ibin+1)
                 reweightedRecoCovariance.SetBinContent(ibin+1,ibin+1,c)
-            
+            '''
             unfoldedHistReweighted,unfoldedCovarianceReweighted,bestTau = self.module("Unfolding").unfold(
-                responseMatrixNominal,
-                reweightedReco,
+                combinedHists["response"],
+                combinedHists["measuredReco"],
+                channels,
                 #regularize only between the two merged histograms
-                regularizations=range(1,len(genBinning)-2),
-                #ignoreCovInScan=True,
-                dataCovariance=reweightedRecoCovariance,
+                regularizations=range(1,len(genBinning)-2)+range(1+(len(genBinning)-1),len(genBinning)-2+(len(genBinning)-1)),
+                ignoreCovInScan=True,
+                dataCovariance=combinedCovarianceMatrix,
                 scanOutput=None,#os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_comb_tauScan"),
                 fixedTau=1e-10 if (unfoldingName=="lpt" or unfoldingName=="leta") else None,
-                scaleReg=1.7
+                scaleReg=0.5
             )
             
-            for ibin in range(unfoldedHistReweighted.GetNbinsX()):
-                unfolded = unfoldedHistReweighted.GetBinContent(ibin+1)
-                expected = reweightedGen.GetBinContent(ibin+1)
-                unfoldedValues[ibin][islope]=unfolded
-                expectedValues[ibin][islope]=expected
+            
+            for ibin in range(unfoldedHistReweighted.GetNbinsX()/2):
+                unfoldedPos = unfoldedHistReweighted.GetBinContent(ibin+1)
+                expectedPos = combinedHists["nominalGen"].GetBinContent(ibin+1)
+                unfoldedNeg = unfoldedHistReweighted.GetBinContent(ibin+1+unfoldedHistReweighted.GetNbinsX()/2)
+                expectedNeg = combinedHists["nominalGen"].GetBinContent(ibin+1+unfoldedHistReweighted.GetNbinsX()/2)
+                unfoldedValues[ibin][islope]=unfoldedPos+unfoldedNeg
+                expectedValues[ibin][islope]=expectedPos+expectedNeg
+                genRelValues[ibin][islope]=expectedValues[ibin][islope]/(genNominal[1].GetBinContent(ibin+1)+genNominal[-1].GetBinContent(ibin+1))-1
+                
+                
             '''
             self.module("Drawing").plotDataHistogram([reweightedGen,nominalGenHist],unfoldedHistReweighted,
                 os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_unfoldedHist_biascheck%.2f"%slope),
@@ -126,6 +160,8 @@ class RunUnfolding(Module.getClass("Program")):
                 title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets"
             )
             '''
+            
+        
         cv = ROOT.TCanvas("cvbias"+str(random.random()),"",800,650)
         cv.SetLeftMargin(0.14)
         cv.SetBottomMargin(0.13)
@@ -137,14 +173,14 @@ class RunUnfolding(Module.getClass("Program")):
         )
         axixBias.Draw("AXIS")
         
-        legend = ROOT.TLegend(1-cv.GetRightMargin()+0.01,1-cv.GetTopMargin(),0.999,1-cv.GetTopMargin()-0.06*nominalGenHist.GetNbinsX())
+        legend = ROOT.TLegend(1-cv.GetRightMargin()+0.01,1-cv.GetTopMargin(),0.999,1-cv.GetTopMargin()-0.06*(len(genBinning)-1))
         legend.SetBorderSize(0)
         legend.SetFillStyle(0)
         legend.SetTextFont(43)
         legend.SetTextSize(30)
         
         rootObj = []
-        for ibin in range(nominalGenHist.GetNbinsX()):
+        for ibin in range(len(genBinning)-1):
             '''
             graphExpected = ROOT.TGraph(len(slopes),slopes,expectedValues[ibin])
             rootObj.append(graphExpected)
@@ -162,7 +198,7 @@ class RunUnfolding(Module.getClass("Program")):
             '''
             graphRatio = ROOT.TGraph(len(slopes),slopes*100,(unfoldedValues[ibin]/expectedValues[ibin]-1)*100)
             rootObj.append(graphRatio)
-            graphRatio.SetLineWidth((nominalGenHist.GetNbinsX()-ibin)/2*2+1)
+            graphRatio.SetLineWidth((len(genBinning)-1-ibin)/2*2+1)
             graphRatio.SetLineStyle(1+ibin%3)
             graphRatio.SetLineColor(ROOT.kRed+ibin/2)
             graphRatio.SetMarkerColor(ROOT.kRed+ibin/2)

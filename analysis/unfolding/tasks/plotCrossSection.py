@@ -444,6 +444,14 @@ class PlotCrossSection(Module.getClass("Program")):
         nominalResult = self.getResult(rootFileNominal)
         rootFileNominal.Close()
         
+        #this is a reflection of the stat uncertainty only
+        histSumNominal,covSumNominal = self.module("Unfolding").calculateSum(
+            nominalResult["unfolded_pos"],
+            nominalResult["unfolded_neg"],
+            nominalResult["covarianceUnfolded"]
+        )
+
+        
         
         xtitle = self.module("Unfolding").getUnfoldingLevel().capitalize()+"-level "+self.module("Unfolding").getUnfoldingVariableName()
         ytitleSum = "d#kern[-0.5]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
@@ -460,9 +468,10 @@ class PlotCrossSection(Module.getClass("Program")):
             ytitleSum += " (pb)"
         
         sysResults = []
+        sysCov = []
         for isys,sys in enumerate(sorted(systematics)):
-            results = {-1:{},1:{}}
-            
+            results = {-1:{},1:{},0:{}}
+            covDict = {}
             #self._logger.info(str(isys)+": "+sys)
             if sys.find("topMass")>=0:
                 sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+"Up")
@@ -472,13 +481,17 @@ class PlotCrossSection(Module.getClass("Program")):
                 results[1]["Up"]=result["unfolded_pos"]
                 results[-1]["Down"] = result["unfolded_neg"].Clone(result["unfolded_neg"].GetName()+"Down")
                 results[1]["Down"] = result["unfolded_pos"].Clone(result["unfolded_pos"].GetName()+"Down")
+                covDict["Up"] = result["covarianceUnfolded"]
                 
                 results[-1]["Down"].SetDirectory(0)
                 results[1]["Down"].SetDirectory(0)
+                covDict["Down"] = result["covarianceUnfolded"].Clone(result["covarianceUnfolded"].GetName()+"Down")
+                covDict["Down"].SetDirectory(0)
+                
                 for ibin in range(results[-1]["Down"].GetNbinsX()): 
                     cneg = nominalResult["unfolded_neg"].GetBinContent(ibin+1)
                     cpos = nominalResult["unfolded_pos"].GetBinContent(ibin+1)
-                   
+
                     uneg = result["unfolded_neg"].GetBinContent(ibin+1)
                     upos = result["unfolded_pos"].GetBinContent(ibin+1)
                     
@@ -487,7 +500,7 @@ class PlotCrossSection(Module.getClass("Program")):
                     
                     results[-1]["Down"].SetBinContent(ibin+1,dneg)
                     results[1]["Down"].SetBinContent(ibin+1,dpos)
-                
+                    
             else:
                 for v in ["Up","Down"]:
                     sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+v)
@@ -495,6 +508,9 @@ class PlotCrossSection(Module.getClass("Program")):
                     result = self.getResult(rootFile)
                     results[-1][v]=result["unfolded_neg"]
                     results[1][v]=result["unfolded_pos"]
+                    covDict[v]=result["covarianceUnfolded"]
+                    
+            sysCov.append(covDict)
             sysResults.append(results)
             
             self.module("Drawing").plotEnvelopeHistogram(
@@ -514,7 +530,50 @@ class PlotCrossSection(Module.getClass("Program")):
                 normalizeByCrossSection=True
             )
             
-       
+        
+        self.module("Unfolding").symmetrizeSyst(
+            profiledResult["unfolded_pos"],
+            profiledResult["unfolded_neg"],
+            {1:nominalResult["unfolded_pos"],-1:nominalResult["unfolded_neg"]},
+            sysResults
+        )
+        
+        for isys,sys in enumerate(sorted(systematics)):
+            for v in ["Up","Down"]:
+                histSystSum,covSystSum = self.module("Unfolding").calculateSum(
+                    sysResults[isys][1][v],
+                    sysResults[isys][-1][v],
+                    sysCov[isys][v]
+                )
+                sysResults[isys][0][v] = {"hist":histSystSum,"cov":covSystSum}
+                
+            self.module("Drawing").plotEnvelopeHistogram(
+                nominalResult["nominalGen_pos"],nominalResult["unfolded_pos"],sysResults[isys][1]["Up"],sysResults[isys][1]["Down"],
+                os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_possym_"+sys),
+                title=self.module("Samples").getPlotTitle(channels,1)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
+                xaxis=xtitle,yaxis=ytitleSum,logy=logy,
+                normalizeByCrossSection=True
+            )
+            
+            
+            self.module("Drawing").plotEnvelopeHistogram(
+                nominalResult["nominalGen_neg"],nominalResult["unfolded_neg"],sysResults[isys][-1]["Up"],sysResults[isys][-1]["Down"],
+                os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_negsym_"+sys),
+                title=self.module("Samples").getPlotTitle(channels,-1)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
+                xaxis=xtitle,yaxis=ytitleSum,logy=logy,
+                normalizeByCrossSection=True
+            )
+                
+            nominalResultSum = nominalResult["nominalGen_pos"].Clone(nominalResult["nominalGen_pos"].GetName()+sys+str(random.random()))
+            nominalResultSum.Add(nominalResult["nominalGen_neg"])
+            self.module("Drawing").plotEnvelopeHistogram(
+                nominalResultSum,histSumNominal,sysResults[isys][0]["Up"]["hist"],sysResults[isys][0]["Down"]["hist"],
+                os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_sum_"+sys),
+                title=self.module("Samples").getPlotTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
+                xaxis=xtitle,yaxis=ytitleSum,logy=logy,
+                normalizeByCrossSection=True
+            )
+            
         
         genBinning = self.module("Unfolding").getGenBinning(channelName)
         
@@ -592,7 +651,17 @@ class PlotCrossSection(Module.getClass("Program")):
         )
         
         
- 
+        self.module("Drawing").plotCompareHistogram(nominalResult["nominalGen_pos"],
+            [nominalResult["unfolded_pos"],profiledResult["unfolded_pos"],profiledResult["unfolded_pos"]],
+            os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(1)+"_compareHist"),
+            title=self.module("Samples").getPlotTitle(channels,1)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis=xtitle,yaxis=ytitleSum,logy=unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt",normalizeByCrossSection=True
+        )
+        
+        self.module("Drawing").plotCompareHistogram(nominalResult["nominalGen_neg"],
+            [nominalResult["unfolded_neg"],profiledResult["unfolded_neg"],profiledResult["unfolded_neg"]],
+            os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_"+self.module("Samples").getChargeName(-1)+"_compareHist"),
+            title=self.module("Samples").getPlotTitle(channels,-1)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",xaxis=xtitle,yaxis=ytitleSum,logy=unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt",normalizeByCrossSection=True
+        )
         
         self.module("Drawing").plotCompareHistogram(nominalResult["nominalGen_inc"],
             [histSumNominal,histSumProfiled,histSumTotal],
@@ -637,17 +706,52 @@ class PlotCrossSection(Module.getClass("Program")):
             })
             
             
+        sysDictNames = {
+            "pdf":"PDF",
+            "tchanHdampPS":"$t$-ch. $h_\\mathrm{damp}$",
+            "tchanScaleME":"$t$-ch. ME scale",
+            "tchanScalePS":"$t$-ch. PS scale",
+            "topMass":"Top mass",
+            "ttbarHdampPS":"\\ttbar $h_\\mathrm{damp}$",
+            "ttbarPt":"\\ttbar \\pt rew.",
+            "ttbarScaleFSRPS":"\\ttbar FSR PS scale",
+            "ttbarScaleISRPS":"\\ttbar ISR PS scale",
+            "ttbarScaleME":"\\ttbar ME scale",
+            "ttbarUE":"\\ttbar UE tune",
+            "wjetsScaleME":"\\wjets ME scale"
+        }
+            
         if (unfoldingName=="cos" or unfoldingName=="cosTau") and unfoldingLevel=="parton":
             asymmetryGen = self.module("Asymmetry").calculateAsymmetry(genHistSumNorm)
             asymmetryStat = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal)
             asymmetryProfiled = self.module("Asymmetry").fitDistribution(histSumProfiled,covSumProfiled)
             asymmetryTotal = self.module("Asymmetry").fitDistribution(histSumTotal,covSumTotal)
             
+            asymUnc2 = (asymmetryProfiled[1])**2
+            for isys,sys in enumerate(sorted(systematics)):
+                
+
+                asyUp = self.module("Asymmetry").fitDistribution(
+                    sysResults[isys][0]["Up"]["hist"],
+                    sysResults[isys][0]["Up"]["cov"]
+                )
+                asyDown = self.module("Asymmetry").fitDistribution(
+                    sysResults[isys][0]["Down"]["hist"],
+                    sysResults[isys][0]["Down"]["cov"]
+                )
+                maxSystAsym = 0.5*(
+                    math.fabs(asyUp[0]-asymmetryStat[0])+
+                    math.fabs(asyDown[0]-asymmetryStat[0])
+                )
+                print "%20s, %5.3f,%5.3f"%(sysDictNames[sys],asyUp[0]-asymmetryStat[0],asyDown[0]-asymmetryStat[0])
+                asymUnc2+=maxSystAsym**2
+            
+            
             self._logger.info("Gen asymmetry: %5.3f"%(asymmetryGen))
             self._logger.info("Meas. asymmetry (stat): %5.3f+-%5.3f"%(asymmetryStat[0],asymmetryStat[1]))
             self._logger.info("Meas. asymmetry (exp): %5.3f+-%5.3f"%(asymmetryProfiled[0],asymmetryProfiled[1]))
             self._logger.info("Meas. asymmetry (tot): %5.3f+-%5.3f"%(asymmetryTotal[0],asymmetryTotal[1]))
-
+            self._logger.info("Tot summed unc: +-%5.3f"%(math.sqrt(asymUnc2)))
         
         self.module("Utils").normalizeByBinWidth(histSumProfiledNorm)
         self.module("Utils").normalizeByBinWidth(histSumTotalNorm)
@@ -710,33 +814,18 @@ class PlotCrossSection(Module.getClass("Program")):
             tabSys+= "& $\\pm%6.1f$\\%%"%(100.*histSumProfiled.GetBinError(ibin+1)/histSumProfiled.GetBinContent(ibin+1))
         tabSys+= "\\\\\n"
         
-        sysDictNames = {
-            "pdf":"PDF",
-            "tchanHdampPS":"$t$-ch. $h_\\mathrm{damp}$",
-            "tchanScaleME":"$t$-ch. ME scale",
-            "tchanScalePS":"$t$-ch. PS scale",
-            "topMass":"Top mass",
-            "ttbarHdampPS":"\\ttbar $h_\\mathrm{damp}$",
-            "ttbarPt":"\\ttbar \\pt rew.",
-            "ttbarScaleFSRPS":"\\ttbar FSR PS scale",
-            "ttbarScaleISRPS":"\\ttbar ISR PS scale",
-            "ttbarScaleME":"\\ttbar ME scale",
-            "ttbarUE":"\\ttbar UE tune",
-            "wjetsScaleME":"\\wjets ME scale"
-        }
+        
         
         binSum2 = numpy.zeros(len(genBinning)-1)
         for isys,sys in enumerate(sorted(systematics)):
             tabSys+= "%20s"%(sysDictNames[sys])
             for ibin in range(len(genBinning)-1):
                 relUp = math.fabs(
-                    sysResults[isys][-1]["Up"].GetBinContent(ibin+1)+\
-                    sysResults[isys][1]["Up"].GetBinContent(ibin+1)-\
+                    sysResults[isys][0]["Up"]["hist"].GetBinContent(ibin+1)-\
                     histSumNominal.GetBinContent(ibin+1)
                 )/histSumNominal.GetBinContent(ibin+1)
                 relDown = math.fabs(
-                    sysResults[isys][-1]["Down"].GetBinContent(ibin+1)+\
-                    sysResults[isys][1]["Down"].GetBinContent(ibin+1)-\
+                    sysResults[isys][0]["Down"]["hist"].GetBinContent(ibin+1)-\
                     histSumNominal.GetBinContent(ibin+1)
                 )/histSumNominal.GetBinContent(ibin+1)
                 binSum2[ibin] += max(relUp,relDown)**2
@@ -915,11 +1004,30 @@ class PlotCrossSection(Module.getClass("Program")):
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotal.GetBinContent(ibin+1)
             e = histSumTotal.GetBinError(ibin+1)*1.3
-            rangeMax = max(rangeMax,e/c)
+            g = 0
+            for genHistSum in genHistSums:
+                g = max(g,math.fabs(genHistSum["hist"].GetBinContent(ibin+1)/c-1))
+            rangeMax = max([rangeMax,e/c,g])
         print "Plot max res range: ",rangeMax
         for r in resRanges:
             if rangeMax<r:
                 resRange = r
+                break
+                
+        #choose suitable res range for plot normalized
+        resRangeNorm = resRanges[-1]
+        rangeMaxNorm = 0
+        for ibin in range(histSumTotalNorm.GetNbinsX()):
+            c = histSumTotalNorm.GetBinContent(ibin+1)
+            e = histSumTotalNorm.GetBinError(ibin+1)*1.3
+            g = 0
+            for genHistSumNorm in genHistSumsNorm:
+                g = max(g,math.fabs(genHistSumNorm["hist"].GetBinContent(ibin+1)/c-1))
+            rangeMaxNorm = max([rangeMaxNorm,e/c,g])
+        print "Plot max res range: ",rangeMaxNorm
+        for r in resRanges:
+            if rangeMaxNorm<r:
+                resRangeNorm = r
                 break
         
         
@@ -966,7 +1074,7 @@ class PlotCrossSection(Module.getClass("Program")):
         self.module("Drawing").plotCrossSection(
             genHistSumsNorm,histSumProfiledNorm,histSumTotalNorm,yminNorm,ymaxNorm,logy,ytitleSumNorm,xtitle,
             self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
-            legendPos,resRange,
+            legendPos,resRangeNorm,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sumnorm")
         ) 
         

@@ -445,6 +445,70 @@ class Unfolding(Module):
         )
         
             
+    def symmetrizeSyst(self,hist1,hist2,nominal,systematics=[]):
+        for i in range(nominal[1].GetNbinsX()):
+            for isys,sysDict in enumerate(systematics):
+                rel_up_pos = sysDict[1]["Up"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
+                rel_up_neg = sysDict[-1]["Up"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
+                
+                rel_down_pos = sysDict[1]["Down"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
+                rel_down_neg = sysDict[-1]["Down"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
+                
+                if rel_up_pos<0 or rel_down_pos<0 or rel_up_neg<0 or rel_down_neg<0:
+                    self._logger.critical("Discovered inconsitent systematic envelope for uncertainty "+str(isys))
+                    self._logger.critical("Rel. up variations: "+str(rel_up_pos)+"/"+str(rel_up_neg)+" (pos/neg)")
+                    self._logger.critical("Rel. down variations: "+str(rel_down_pos)+"/"+str(rel_down_neg)+" (pos/neg)")
+                    sys.exit(1)
+                    
+                #print "toy=",itoy,", i=",i,", sys=",isys,", raw=",sysDict[1]["Up"].GetBinContent(i+1),sysDict[1]["Down"].GetBinContent(i+1),nominal[1].GetBinContent(i+1),sysDict[-1]["Up"].GetBinContent(i+1),sysDict[-1]["Down"].GetBinContent(i+1),nominal[-1].GetBinContent(i+1)
+                #print "toy=",itoy,", i=",i,", sys=",isys,", var=",rel_up_pos,rel_down_pos,rel_up_neg,rel_down_neg
+                
+                #TODO: study if this is not giving too large uncertainties since symmetrization is
+                # done for both channels indepdently
+                #symmetrize uncertainties
+                '''
+                print "sys=%i,bin=%i,up=%6.4f/%6.4f,up=%6.4f/%6.4f"%(
+                    isys,i,
+                    rel_up_pos-1,rel_up_neg-1,
+                    rel_down_pos-1,rel_down_neg-1
+                )
+                '''
+                if math.fabs(rel_up_pos-1)>math.fabs(rel_down_pos-1):
+                    rel_down_pos = 1.-numpy.sign(rel_up_pos-1)*math.fabs(rel_up_pos-1)
+                else:
+                    rel_up_pos = 1.-numpy.sign(rel_down_pos-1)*math.fabs(rel_down_pos-1)
+                    
+                if math.fabs(rel_up_neg-1)>math.fabs(rel_down_neg-1):
+                    rel_down_neg = 1.-numpy.sign(rel_up_neg-1)*math.fabs(rel_up_neg-1)
+                else:
+                    rel_up_neg = 1.-numpy.sign(rel_down_neg-1)*math.fabs(rel_down_neg-1)
+                
+                '''
+                nominal_pos = hist1.GetBinContent(i+1)
+                nominal_neg = hist2.GetBinContent(i+1)
+                '''
+                nominal_pos = nominal[1].GetBinContent(i+1)
+                nominal_neg = nominal[-1].GetBinContent(i+1)
+                
+                
+                up_pos = rel_up_pos*nominal_pos
+                up_neg = rel_up_neg*nominal_neg
+                
+                down_pos = rel_down_pos*nominal_pos
+                down_neg = rel_down_neg*nominal_neg
+                '''
+                print "     -> up=%6.4f/%6.4f,up=%6.4f/%6.4f"%(
+                    rel_up_pos-1,rel_up_neg-1,
+                    rel_down_pos-1,rel_down_neg-1
+                )
+                '''
+                
+                sysDict[1]["Up"].SetBinContent(i+1,up_pos)
+                sysDict[-1]["Up"].SetBinContent(i+1,up_neg)
+                
+                sysDict[1]["Down"].SetBinContent(i+1,down_pos)
+                sysDict[-1]["Down"].SetBinContent(i+1,down_neg)
+                 
         
     def calculate(self,fct,hist1,hist2,covariance,nominal=None,systematics=[]):
         if hist1.GetNbinsX()!=hist2.GetNbinsX():
@@ -471,6 +535,8 @@ class Unfolding(Module):
         numpy.random.seed(seed=12345)
         toys = numpy.zeros((NTOYS,N))
         
+           
+        
         diced_result_pos = numpy.zeros(N)
         diced_result_neg = numpy.zeros(N)
         for itoy in range(NTOYS):
@@ -485,50 +551,17 @@ class Unfolding(Module):
                 #print itoy,i,diced_neg
                 
                 for isys,sysDict in enumerate(systematics):
-                    rel_up_pos = sysDict[1]["Up"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
-                    rel_up_neg = sysDict[-1]["Up"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
-                    
-                    rel_down_pos = sysDict[1]["Down"].GetBinContent(i+1)/nominal[1].GetBinContent(i+1)
-                    rel_down_neg = sysDict[-1]["Down"].GetBinContent(i+1)/nominal[-1].GetBinContent(i+1)
-                    
-                    if rel_up_pos<0 or rel_down_pos<0 or rel_up_neg<0 or rel_down_neg<0:
-                        self._logger.critical("Discovered inconsitent systematic envelope for uncertainty "+str(isys))
-                        self._logger.critical("Rel. up variations: "+str(rel_up_pos)+"/"+str(rel_up_neg)+" (pos/neg)")
-                        self._logger.critical("Rel. down variations: "+str(rel_down_pos)+"/"+str(rel_down_neg)+" (pos/neg)")
-                        sys.exit(1)
-                        
-                    #print "toy=",itoy,", i=",i,", sys=",isys,", raw=",sysDict[1]["Up"].GetBinContent(i+1),sysDict[1]["Down"].GetBinContent(i+1),nominal[1].GetBinContent(i+1),sysDict[-1]["Up"].GetBinContent(i+1),sysDict[-1]["Down"].GetBinContent(i+1),nominal[-1].GetBinContent(i+1)
-                    #print "toy=",itoy,", i=",i,", sys=",isys,", var=",rel_up_pos,rel_down_pos,rel_up_neg,rel_down_neg
-                    
-                    #TODO: study if this is not giving too large uncertainties since symmetrization is
-                    # done for both channels indepdently
-                    #symmetrize uncertainties
-                    if math.fabs(rel_up_pos-1)>math.fabs(rel_down_pos-1):
-                        rel_down_pos = 1.-numpy.sign(rel_up_pos-1)*math.fabs(rel_up_pos-1)
-                    else:
-                        rel_up_pos = 1.-numpy.sign(rel_down_pos-1)*math.fabs(rel_down_pos-1)
-                        
-                    if math.fabs(rel_up_neg-1)>math.fabs(rel_down_neg-1):
-                        rel_down_neg = 1.-numpy.sign(rel_up_neg-1)*math.fabs(rel_up_neg-1)
-                    else:
-                        rel_up_neg = 1.-numpy.sign(rel_down_neg-1)*math.fabs(rel_down_neg-1)
-                        
-
-                    nominal_pos = means[i]
-                    nominal_neg = means[i+N]
-                    
-                    up_pos = rel_up_pos*nominal_pos
-                    up_neg = rel_up_neg*nominal_neg
-                    
-                    down_pos = rel_down_pos*nominal_pos
-                    down_neg = rel_down_neg*nominal_neg
-                    '''
-                    up_pos = sys[1]["Up"].GetBinContent(i+1)
-                    up_neg = sys[-1]["Up"].GetBinContent(i+1)
+                    #symmetrization is already done in 'symmetrizeSyst'
                    
-                    down_pos = sys[1]["Down"].GetBinContent(i+1)
-                    down_neg = sys[-1]["Down"].GetBinContent(i+1)
-                    '''
+                    nominal_pos = nominal[1].GetBinContent(i+1)#means[i]
+                    nominal_neg = nominal[-1].GetBinContent(i+1)#means[i+N]
+                   
+                    up_pos = sysDict[1]["Up"].GetBinContent(i+1)#/nominal[1].GetBinContent(i+1)*nominal_pos
+                    up_neg = sysDict[-1]["Up"].GetBinContent(i+1)#/nominal[-1].GetBinContent(i+1)*nominal_neg
+                   
+                    down_pos = sysDict[1]["Down"].GetBinContent(i+1)#/nominal[1].GetBinContent(i+1)*nominal_pos
+                    down_neg = sysDict[-1]["Down"].GetBinContent(i+1)#/nominal[-1].GetBinContent(i+1)*nominal_neg
+                    
                     #print i,isys,sys[-1]["Down"].GetBinContent(i+1),sys[-1]["Up"].GetBinContent(i+1)
                     #print i,isys,rel_up_pos-1,rel_down_pos-1
                     #print i,isys,rel_up_neg-1,rel_down_neg-1
@@ -556,7 +589,7 @@ class Unfolding(Module):
                 toys[itoy][i]=fct(i,diced_result_pos,diced_result_neg)
                 
         histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName()+str(random.random()))
-                
+        histResult.SetDirectory(0)
         meanResult = numpy.mean(toys,axis=0)
         covResult = numpy.cov(toys,rowvar=False)
         
@@ -568,7 +601,7 @@ class Unfolding(Module):
         
     
                 
-    def unfold(self,responseMatrix,data,regularizations=[],ignoreCovInScan=False,dataCovariance=None,scanOutput=None,fixedTau=None,scaleReg=1.):
+    def unfold(self,responseMatrix,data,channels,regularizations=[],ignoreCovInScan=False,dataCovariance=None,scanOutput=None,fixedTau=None,scaleReg=1.):
         genHist = responseMatrix.ProjectionX(responseMatrix.GetName()+"genX")
         recoHist = responseMatrix.ProjectionY(responseMatrix.GetName()+"recoY")
         genBinning = numpy.zeros((genHist.GetNbinsX()+1))
@@ -593,10 +626,29 @@ class Unfolding(Module):
         if ignoreCovInScan:
             simpleCov = dataCovariance.Clone(dataCovariance.GetName()+"simple"+str(random.random()))
             simpleCov.Scale(0.)
-            for ibin in range(data.GetNbinsX()):
+            
+            fitName = self.module("Unfolding").getFitName()
+            channelName = self.module("Samples").getChannelName(channels)
+            
+            fitOutputNominal = os.path.join(
+                self.module("Utils").getOutputFolder("fit/nominal"),
+                self.module("ThetaModel").getFitFileName(channels,fitName,"nominal")
+            )
+            fitResultNominal = self.module("ThetaFit").loadFitResult(fitOutputNominal+".json")
+            
+            binMapReco = self.module("Unfolding").buildGlobalRecoBinMap()[channelName]
+            
+            
+            for ibin in range(data.GetNbinsX()/2):
+                signalFitResultNominalNeg = fitResultNominal["parameters"]["tChannel_"+self.module("Samples").getChargeName(-1)+"_bin"+str(1+binMapReco[ibin])]
+                signalFitResultNominalPos = fitResultNominal["parameters"]["tChannel_"+self.module("Samples").getChargeName(1)+"_bin"+str(1+binMapReco[ibin])]
                 simpleCov.SetBinContent(ibin+1,ibin+1,
-                    0.04**2*recoHist.GetBinContent(ibin+1)*recoHist.GetBinContent(ibin+1)
+                    (signalFitResultNominalNeg["unc_fit"]*recoHist.GetBinContent(ibin+1))**2
                 )
+                simpleCov.SetBinContent(ibin+1+data.GetNbinsX()/2,ibin+1+data.GetNbinsX()/2,
+                    (signalFitResultNominalPos["unc_fit"]*recoHist.GetBinContent(ibin+1))**2
+                )
+                
             if (tunfold.setData(data,simpleCov)>=10000):
                 self._logger.critical("TUnfold indicates a fatal error")
                 sys.exit(1)

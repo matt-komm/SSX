@@ -205,13 +205,14 @@ class RunUnfolding(Module.getClass("Program")):
         combinedUnfoldedHist,combinedUnfoldedCovariance,bestTau = self.module("Unfolding").unfold(
             combinedHists["response"],
             combinedHists["measuredReco"],
+            channels,
             #regularize only between the two merged histograms
             regularizations=range(1,len(genBinning)-2)+range(1+(len(genBinning)-1),len(genBinning)-2+(len(genBinning)-1)),
-            #ignoreCovInScan=True,
+            ignoreCovInScan=True,
             dataCovariance=combinedCovarianceMatrix,
             scanOutput=os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_comb_tauScan"),
             fixedTau=1e-10 if (unfoldingName=="lpt" or unfoldingName=="leta") else None,
-            scaleReg=2.1
+            scaleReg=2.
         )
         #draw unfolded hist
         self.module("Drawing").plotDataHistogram([combinedHists["nominalGen"]],combinedUnfoldedHist,
