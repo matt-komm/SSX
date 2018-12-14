@@ -213,6 +213,21 @@ class Utils(Module):
                 )
         return histCorr
         
+    def calculateCorrelationsNumpy(self,hist):
+        histCorr = ROOT.TH2F("cov"+str(random.random()),"",hist.shape[0],0,hist.shape[0],hist.shape[1],0,hist.shape[1])
+        histCorr.SetDirectory(0)
+        for ibin in range(hist.shape[0]):
+            for jbin in range(hist.shape[0]):
+                covij = hist[ibin,jbin]
+                covii = hist[ibin,ibin]
+                covjj = hist[jbin,jbin]
+                histCorr.SetBinContent(
+                    ibin+1,
+                    jbin+1,
+                    covij/math.sqrt(covii*covjj)
+                )
+        return histCorr
+        
     def getHistogramFile(self,prefix,channel,unfoldingName,unfoldingBin=-1,uncertainty="nominal"):
         if not uncertainty:
             uncertainty = "nominal"

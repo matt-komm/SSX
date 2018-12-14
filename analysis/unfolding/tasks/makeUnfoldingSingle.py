@@ -212,7 +212,7 @@ class RunUnfolding(Module.getClass("Program")):
             dataCovariance=combinedCovarianceMatrix,
             scanOutput=os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_comb_tauScan"),
             fixedTau=1e-10 if (unfoldingName=="lpt" or unfoldingName=="leta") else None,
-            scaleReg=2.
+            scaleReg=2.2
         )
         #draw unfolded hist
         self.module("Drawing").plotDataHistogram([combinedHists["nominalGen"]],combinedUnfoldedHist,

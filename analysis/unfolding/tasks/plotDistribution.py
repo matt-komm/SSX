@@ -578,7 +578,8 @@ class PlotCrossSection(Module.getClass("Program")):
         scale = 0
         if plotName[1]=="cos2j1t_CR":
             scale=0.5
-                   
+        if plotName[1]=="leta2j1t_CR":
+            scale=0.2   
         if logy:
             ymin = 1#math.exp(math.log(ymin)-0.05*(math.log(ymax)-math.log(ymin)))
             ymax = math.exp((scale+0.3)*(math.log(ymax)-math.log(ymin))+math.log(ymax))

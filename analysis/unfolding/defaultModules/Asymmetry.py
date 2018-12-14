@@ -39,7 +39,7 @@ class MakeChi2(ROOT.TPyMultiGenFunction):
         chi2 = 0.0
         for ibin in range(self.N):
             for jbin in range(self.N):
-                chi2 += (asym(self.x[ibin],x[0],x[1])-self.val[ibin])*self.invcov[ibin][jbin]*(asym(self.x[jbin],x[0],x[1])-self.val[jbin])
+                chi2 += (asym(self.x[ibin],x[0],x[1])-self.val[ibin])*self.invcov[ibin,jbin]*(asym(self.x[jbin],x[0],x[1])-self.val[jbin])
         return chi2
 
 class MakeChi2Norm(MakeChi2):
@@ -61,7 +61,7 @@ class MakeChi2Norm(MakeChi2):
         chi2 = 0.0
         for ibin in range(self.N):
             for jbin in range(self.N):
-                chi2 += (asym(self.x[ibin],x[0])-self.val[ibin])*self.invcov[ibin][jbin]*(asym(self.x[jbin],x[0])-self.val[jbin])
+                chi2 += (asym(self.x[ibin],x[0])-self.val[ibin])*self.invcov[ibin,jbin]*(asym(self.x[jbin],x[0])-self.val[jbin])
         return chi2
 
 class Asymmetry(Module):
@@ -81,7 +81,7 @@ class Asymmetry(Module):
         return (cosUp-cosDown)/(cosUp+cosDown)
             
 
-    def fitDistribution(self,hist,cov):
+    def fitDistribution(self,hist,cov,ignoreCorr=False):
         
         minimizer = ROOT.Math.Factory.CreateMinimizer("Minuit2", "")
         minimizer.SetMaxFunctionCalls(10000000)
@@ -89,8 +89,14 @@ class Asymmetry(Module):
         minimizer.SetTolerance(0.00001)
         minimizer.SetPrintLevel(0)
        
+        covForFit = numpy.copy(cov)
+        if ignoreCorr:
+            covForFit*=0
+            for ibin in range(cov.shape[0]):
+                covForFit[ibin,ibin] = cov[ibin,ibin]
+       
         #fct = ROOT.Math.Functor()
-        chi2 = MakeChi2(hist,cov)
+        chi2 = MakeChi2(hist,covForFit)
         
         minimizer.SetFunction(chi2)
         minimizer.SetVariable(0,"A",0.44,0.002)
