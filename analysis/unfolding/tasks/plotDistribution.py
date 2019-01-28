@@ -230,7 +230,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 "hists": ["tChannel_pos","tChannel_neg"],
                 "fill":newColor(0.98,0.1,0.1),
                 #"fill":newColor(1,0.02,0.02),
-                "title":"#it{t}-channel",
+                "title":"#it{t} channel",
             },
             "TopBkg": {
                 "hists":["TopBkg_pos","TopBkg_neg"],
@@ -549,7 +549,7 @@ class PlotCrossSection(Module.getClass("Program")):
             
         for ibin in range(NBINS):
             totalMCSum.SetBinError(ibin+1,
-                math.sqrt(totalMCSum.GetBinError(ibin+1)**2+sumMCerr[ibin]**2)
+                math.sqrt(max(totalMCSum.GetBinError(ibin+1)**2+sumMCerr[ibin]**2,0))
             )
             
 

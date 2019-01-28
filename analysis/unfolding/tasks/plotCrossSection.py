@@ -1035,7 +1035,7 @@ class PlotCrossSection(Module.getClass("Program")):
         tabSys+= "%25s "%("Luminosity")
         for ibin in range(len(genBinning)-1):
             lumiSyst = 0.025#*histSumTotal.GetBinContent(ibin+1)
-            tabSys+= "& $\\pm%6.3f$"%(100.*0.025)
+            tabSys+= "& $\\pm%6.1f$\\%%"%(100.*0.025)
             totalSystSum2[ibin] += lumiSyst**2
         tabSys+= "\\\\\n"
             

@@ -761,7 +761,7 @@ class Drawing(Module):
         
         cv.cd(1)
         
-        axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Data/Pred.",50,xmin,xmax,50,1-resRange,1+resRange)
+        axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Data/Fit",50,xmin,xmax,50,1-resRange,1+resRange)
         axisRes.GetYaxis().SetNdivisions(406)
         axisRes.GetXaxis().SetTitle(xtitle)
         axisRes.GetXaxis().SetTickLength(0.017/(1-cv.GetPad(1).GetLeftMargin()-cv.GetPad(1).GetRightMargin()))
