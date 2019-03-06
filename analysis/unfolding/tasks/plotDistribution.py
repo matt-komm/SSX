@@ -596,7 +596,7 @@ class PlotCrossSection(Module.getClass("Program")):
         elif channelName=="mu":
             lumi +="#mu"
         elif channelName=="comb":
-            lumi += "e/#mu"
+            lumi += "e,#kern[-0.5]{ }#mu"
         lumi+="#kern[-0.5]{ }+#kern[-0.5]{ }"+region+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
             
         cvxmin=0.185

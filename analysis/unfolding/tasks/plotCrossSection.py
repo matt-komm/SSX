@@ -903,6 +903,14 @@ class PlotCrossSection(Module.getClass("Program")):
         self.module("Utils").normalizeCovByBinWidth(genBinning,covSumProfiledNorm)
         self.module("Utils").normalizeCovByBinWidth(genBinning,covSumTotalNorm)
         
+        chi2Total = 0.
+        chi2Norm = 0.
+        chi2Ratio = 0.
+        
+        covSumTotalInv = numpy.linalg.inv(covSumTotal)
+        #cannot invert norm => singular as expected; so throw last bin away
+        covSumTotalNormInv = numpy.linalg.inv(covSumTotalNorm[:-1,:-1])
+        covRatioTotalInv = numpy.linalg.inv(covRatioTotal)
         
         for ibin in range(histSumProfiledNorm.GetNbinsX()):
             if math.fabs(histSumProfiled.GetBinError(ibin+1)-math.sqrt(covSumProfiled[ibin][ibin]))/histSumProfiled.GetBinError(ibin+1)>0.0001:
@@ -917,7 +925,21 @@ class PlotCrossSection(Module.getClass("Program")):
             if math.fabs(histSumTotalNorm.GetBinError(ibin+1)-math.sqrt(covSumTotalNorm[ibin][ibin]))/histSumTotalNorm.GetBinError(ibin+1)>0.0001:
                 self._logger.critical("Covariance matrix and histogram error do not agree!")
                 sys.exit(1)
-        
+            
+            
+            for jbin in range(histSumProfiledNorm.GetNbinsX()):
+                chi2Total+=(genHistSum.GetBinContent(ibin+1)-histSumTotal.GetBinContent(ibin+1))*covSumTotalInv[ibin,jbin]*(genHistSum.GetBinContent(jbin+1)-histSumTotal.GetBinContent(jbin+1))
+                chi2Ratio+=(genHistRatio.GetBinContent(ibin+1)-histRatioTotal.GetBinContent(ibin+1))*covRatioTotalInv[ibin,jbin]*(genHistRatio.GetBinContent(jbin+1)-histRatioTotal.GetBinContent(jbin+1))
+                #throw last bin away
+                if ibin<(histSumProfiledNorm.GetNbinsX()-1) and jbin<(histSumProfiledNorm.GetNbinsX()-1):
+                    chi2Norm+=(genHistSumNorm.GetBinContent(ibin+1)-histSumTotalNorm.GetBinContent(ibin+1))*covSumTotalNormInv[ibin,jbin]*(genHistSumNorm.GetBinContent(jbin+1)-histSumTotalNorm.GetBinContent(jbin+1))
+ 
+        print "chi2/ndof: total=%.3f, norm=%.3f, ratio=%.3f"%(
+            chi2Total/histSumProfiledNorm.GetNbinsX(),
+            chi2Norm/(histSumProfiledNorm.GetNbinsX()-1),
+            chi2Ratio/histSumProfiledNorm.GetNbinsX()
+        ) 
+ 
                 
         tabSys=""#\\hline\n"
         tabSysRatio=""#\\hline\n"
