@@ -47,7 +47,7 @@ class Samples(Module):
         elif len(channels)==1 and channels[0]=="ele":
             return chargeTitle+", e#kern[-0.65]{ }"
         elif "mu" in channels and "ele" in channels:
-            return chargeTitle+", e#kern[-0.65]{ }/#kern[-0.85]{ }#mu#kern[-0.65]{ }"
+            return chargeTitle+", #mu#kern[-0.65]{ }/#kern[-0.85]{ }e#kern[-0.65]{ }"
         
     def getChannelTitle(self,channels,charge=None):
         if len(channels)==1 and channels[0]=="mu":
@@ -55,7 +55,7 @@ class Samples(Module):
         elif len(channels)==1 and channels[0]=="ele":
             return "e"
         elif "mu" in channels and "ele" in channels:
-            return "e#kern[-0.65]{ }/#kern[-0.85]{ }#mu"
+            return "#mu#kern[-0.65]{ }/#kern[-0.85]{ }e"
             
     def getChargeTitle(self,charge=None):
         if charge == -1:

@@ -243,7 +243,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 "fill":newColor(0.25,0.68,0.27),
                 #"fill":ROOT.gROOT.GetColor(ROOT.kGreen-2),
                 #"fill":newColor(0.2,0.65,0.25),
-                "title":"W/Z/#gamma#scale[0.9]{*}+jets",
+                "title":"W/Z/#gamma#scale[0.9]{*}+#kern[-0.6]{ }jets",
             },
             "QCD": {
                 "hists": ["QCD_"+plotName[0]+"_pos","QCD_"+plotName[0]+"_neg"],
@@ -505,7 +505,7 @@ class PlotCrossSection(Module.getClass("Program")):
                         cov[ipar][jpar] = fitResult["parameters"][parName1]["unc_fit"]**2
                 else:
                     cov[ipar][jpar] = fitResult["covariances"]["values"][parName1][parName2]
-        NTOYS = 10000
+        NTOYS = 20000
         toysSum = numpy.zeros((NTOYS,NBINS))
         numpy.zeros((NTOYS,NBINS))
         for itoy in range(NTOYS):
@@ -596,14 +596,16 @@ class PlotCrossSection(Module.getClass("Program")):
         elif channelName=="mu":
             lumi +="#mu"
         elif channelName=="comb":
-            lumi += "(e,#kern[-0.5]{ }#mu)"
+            lumi += "(#mu,#kern[-0.5]{ }e)"
         lumi+="#kern[-0.5]{ }+#kern[-0.5]{ }"+region+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
             
         cvxmin=0.185
+        yoffset = 1.77
         if plotName[0]=="2j0t":
             cvxmin=0.21
+            yoffset = 2.05
         self.module("Drawing").plotDistribution(
-            stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,lumi,
+            stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,yoffset,lumi,
             os.path.join(finalFolder,plotName[1]),
             marks=marks
         )

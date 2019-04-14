@@ -575,7 +575,7 @@ class Unfolding(Module):
             #print
         #print
                 
-        NTOYS = 5000
+        NTOYS = 10000
         numpy.random.seed(seed=12345)
         toys = numpy.zeros((NTOYS,N))
         

@@ -1305,9 +1305,9 @@ class PlotCrossSection(Module.getClass("Program")):
         
             
         genHistsRatio = [
-            {"hist":genHistsRatioNNPDF30,"legend":"NNPDF#kern[-0.6]{ }3.0"},
-            {"hist":genHistsRatioCT10,"legend":"CT#kern[-0.6]{ }10"},
-            {"hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.6]{ }14"},
+            {"hist":genHistsRatioNNPDF30,"legend":"NNPDF#kern[-0.5]{ }3.0 NLO"},
+            {"hist":genHistsRatioCT10,"legend":"CT#kern[-0.5]{ }10 NLO"},
+            {"hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.5]{ }14 NLO"},
             
         ]
         
@@ -1335,7 +1335,7 @@ class PlotCrossSection(Module.getClass("Program")):
             "LD",resRangeRatio,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_ratio"),
             fillGen=True
-        )    
+        )  
         
 
 
