@@ -278,7 +278,7 @@ class Drawing(Module):
         cvHist.Print(output+".pdf")
         cvHist.Print(output+".png")
         
-    def plotCrossSection(self,genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,legendPos,resRange,output,fillGen=False):
+    def plotCrossSection(self,genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,legendPos,resRange,output,fillGen=False,centerY=False):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
         ROOT.TGaxis.SetMaxDigits(3)
         ROOT.gStyle.SetLineScalePS(2)
@@ -361,6 +361,8 @@ class Drawing(Module):
         axis.GetYaxis().SetTitleSize(36)
         axis.GetYaxis().SetNoExponent(not logy)
         axis.GetYaxis().SetTitleOffset(1.4)
+        if centerY:
+            axis.GetYaxis().CenterTitle(True)
         axis.Draw("AXIS")
         
         if fillGen:
@@ -479,7 +481,9 @@ class Drawing(Module):
         
         cv.cd(1)
        
-        axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Pred./Data",50,xmin,xmax,50,1-resRange,1+resRange)
+        resYTitle = "Pred./Data#kern[-0.3]{ }"
+       
+        axisRes=ROOT.TH2F("axisRes"+str(random.random()),"",50,xmin,xmax,50,1-resRange,1+resRange)
         axisRes.GetYaxis().SetNdivisions(406)
         axisRes.GetXaxis().SetTitle(xtitle)
         axisRes.GetXaxis().SetTickLength(0.017/(1-cv.GetPad(1).GetLeftMargin()-cv.GetPad(1).GetRightMargin()))
@@ -492,6 +496,7 @@ class Drawing(Module):
         axisRes.GetXaxis().SetTitleSize(36)
         axisRes.GetYaxis().SetTitleFont(43)
         axisRes.GetYaxis().SetTitleSize(36)
+        axisRes.GetYaxis().SetTitle(resYTitle)
         axisRes.GetYaxis().SetNoExponent(True)
         axisRes.GetYaxis().SetTitleOffset(1.4)
         axisRes.Draw("AXIS")

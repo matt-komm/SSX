@@ -260,14 +260,14 @@ class PlotCrossSection(Module.getClass("Program")):
                 "color":newColor(0.1,0.6,0.95),
                 "style":2,
                 "width":4,
-                "legend":"aMC@NLO#kern[-0.6]{ }4FS",#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
+                "legend":"aMC@NLO 4FS",#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
             },
             {
                 "name":"ST_t-channel_5f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_GEN_v180904",
                 "color":newColor(0.99,0.7,0.1),
                 "style":11,
                 "width":3,
-                "legend":"aMC@NLO#kern[-0.6]{ }5FS",#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
+                "legend":"aMC@NLO 5FS",#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
             }
         ]
         
@@ -459,9 +459,9 @@ class PlotCrossSection(Module.getClass("Program")):
         
         
         xtitle = self.module("Unfolding").getUnfoldingLevel().capitalize()+"-level "+self.module("Unfolding").getUnfoldingVariableName()
-        ytitleSum = "d#kern[-0.5]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
-        ytitleSumNorm = "1#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }#sigma#kern[-0.5]{ }#times#kern[-0.3]{ }d#kern[-0.5]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
-        ytitleRatio = "d#kern[-0.5]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.5]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleSum = "d#kern[-0.7]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.7]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleSumNorm = "1#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }#sigma#kern[-0.5]{ }#times#kern[-0.3]{ }d#kern[-0.7]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.7]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleRatio = "d#kern[-0.7]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.7]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
         unit = self.module("Unfolding").getUnfoldingVariableUnit()
         logy = unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt"
         if unit!="":
@@ -773,10 +773,10 @@ class PlotCrossSection(Module.getClass("Program")):
         genHistRatio = nominalResult["ratioGen"]
         
         genHistSums = [
-            {"hist":genHistSum, "legend":"POWHEG#kern[-0.6]{ }4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
+            {"hist":genHistSum, "legend":"POWHEG 4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
         ]
         genHistSumsNorm = [
-            {"hist":genHistSumNorm, "legend":"POWHEG#kern[-0.6]{ }4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
+            {"hist":genHistSumNorm, "legend":"POWHEG 4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
         ]
         
         genPredictions = self.getPredictions(channels,unfoldingName,unfoldingLevel)
@@ -1329,12 +1329,19 @@ class PlotCrossSection(Module.getClass("Program")):
         
         ymin = 0.25 if channelName=="comb" else 0.
         ymax = 0.85 if channelName=="comb" else 1.
+        
+        centerY = False
+        if unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt":
+            centerY = True
+            ytitleRatio = "   "+ytitleRatio
+        
         self.module("Drawing").plotCrossSection(
             genHistsRatio,histRatioProfiled,histRatioTotal,ymin,ymax,0,ytitleRatio,xtitle,
             self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
             "LD",resRangeRatio,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_ratio"),
-            fillGen=True
+            fillGen=True,
+            centerY=centerY
         )  
         
 
