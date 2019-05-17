@@ -13,6 +13,7 @@ import time
 import math
 import ROOT
 from optparse import OptionParser
+import colour
 
 cvscale=1.
 
@@ -181,17 +182,41 @@ ROOT.gStyle.SetLineScalePS(2)
 # ROOT.gStyle.SetHistMinimumZero(kTRUE)
 ROOT.gStyle.SetPalette(1)
 ROOT.gStyle.SetPaintTextFormat("5.1f")
-
+'''
 stops = numpy.array([0.00,0.15, 0.34, 0.45, 0.65, 0.84, 1.00])
 red   = numpy.array([0.50,0.05, 0.05, 0.4, 1.0, 1.00, 0.95])
 green = numpy.array([0.00,0.05, 0.8, 0.9, 0.8,0.20, 0.05])
 blue  = numpy.array([1.00,0.87, 1.00, 0., 0.0,0.00, 0.05])
-
 for i in range(len(red)):
     red[i]=min(red[i]*1.1+0.05,1.0)
     green[i]=min(green[i]*1.05+0.02,1.0)
     blue[i]=min(blue[i]*1.15+0.1,1.0)
+'''
 
+colorList = [
+    [0.,colour.Color(hue=0.6, saturation=0.6, luminance=0.5)],
+    [0.,colour.Color(hue=0.59, saturation=0.75, luminance=0.65)],
+    [0.,colour.Color(hue=0.57, saturation=0.9, luminance=0.96)],
+]
+
+lumiMin = min(map(lambda x:x[1].luminance,colorList))
+lumiMax = max(map(lambda x:x[1].luminance,colorList))
+
+for color in colorList:
+    color[0] = (color[1].luminance-lumiMin)/(lumiMax-lumiMin)
+
+print colorList
+
+stops = numpy.array(map(lambda x:x[0],colorList))
+red   = numpy.array(map(lambda x:x[1].red,colorList))
+green = numpy.array(map(lambda x:x[1].green,colorList))
+blue  = numpy.array(map(lambda x:x[1].blue,colorList))
+'''
+for i in range(len(red)):
+    red[i]=min(red[i]*1.1+0.05,1.0)
+    green[i]=min(green[i]*1.05+0.02,1.0)
+    blue[i]=min(blue[i]*1.15+0.1,1.0)
+'''
 start=ROOT.TColor.CreateGradientColorTable(len(stops), stops, red, green, blue, 200)
 ROOT.gStyle.SetNumberContours(200)
 

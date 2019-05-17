@@ -402,6 +402,7 @@ myminimizer = {
         file.write('    write_covariance = true;\n')
         file.write('    write_ks_ts = true;\n')
         file.write('    write_pchi2 = true;\n')
+        file.write('    write_prediction = true;\n')
         file.write('};\n')
 
         file.write('main={\n')

@@ -600,10 +600,10 @@ class PlotCrossSection(Module.getClass("Program")):
         lumi+="#kern[-0.5]{ }+#kern[-0.5]{ }"+region+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
             
         cvxmin=0.185
-        yoffset = 1.77
+        yoffset = 1.85
         if plotName[0]=="2j0t":
             cvxmin=0.21
-            yoffset = 2.05
+            yoffset = 2.12
         self.module("Drawing").plotDistribution(
             stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,yoffset,lumi,
             os.path.join(finalFolder,plotName[1]),

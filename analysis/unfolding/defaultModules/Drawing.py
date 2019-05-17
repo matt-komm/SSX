@@ -283,7 +283,7 @@ class Drawing(Module):
         ROOT.TGaxis.SetMaxDigits(3)
         ROOT.gStyle.SetLineScalePS(2)
         
-        cv = ROOT.TCanvas("cvSum"+str(random.random()),"",800,650)
+        cv = ROOT.TCanvas("cvSum"+str(random.randint(100000,1000000)),"",800,670)
         cv.Divide(1,2,0,0)
         cv.GetPad(1).SetPad(0.0, 0.0, 1.0, 1.0)
         cv.GetPad(1).SetFillStyle(4000)
@@ -360,7 +360,7 @@ class Drawing(Module):
         axis.GetYaxis().SetTitleFont(43)
         axis.GetYaxis().SetTitleSize(36)
         axis.GetYaxis().SetNoExponent(not logy)
-        axis.GetYaxis().SetTitleOffset(1.4)
+        axis.GetYaxis().SetTitleOffset(1.43)
         if centerY:
             axis.GetYaxis().CenterTitle(True)
         axis.Draw("AXIS")
@@ -481,7 +481,7 @@ class Drawing(Module):
         
         cv.cd(1)
        
-        resYTitle = "Pred./Data#kern[-0.3]{ }"
+        resYTitle = "Pred./Data#kern[-0.5]{ }"
        
         axisRes=ROOT.TH2F("axisRes"+str(random.random()),"",50,xmin,xmax,50,1-resRange,1+resRange)
         axisRes.GetYaxis().SetNdivisions(406)
@@ -498,7 +498,7 @@ class Drawing(Module):
         axisRes.GetYaxis().SetTitleSize(36)
         axisRes.GetYaxis().SetTitle(resYTitle)
         axisRes.GetYaxis().SetNoExponent(True)
-        axisRes.GetYaxis().SetTitleOffset(1.4)
+        axisRes.GetYaxis().SetTitleOffset(1.43)
         axisRes.Draw("AXIS")
         
         
@@ -606,6 +606,7 @@ class Drawing(Module):
         
         cv.Print(output+".pdf")
         cv.Print(output+".png")
+        cv.Print(output+".C")
         
         
     def plotCrossSectionPAS(self,genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,legendPos,resRange,output,fillGen=False):
@@ -941,7 +942,7 @@ class Drawing(Module):
         ROOT.gStyle.SetHatchesSpacing(1.)
         ROOT.gStyle.SetHatchesLineWidth(2)
         
-        cv = ROOT.TCanvas("cvSum"+str(random.random()),"",800,650)
+        cv = ROOT.TCanvas("cvSum"+str(random.randint(100000,1000000)),"",800,670)
         cv.Divide(1,2,0,0)
         cv.GetPad(1).SetPad(0.0, 0.0, 1.0, 1.0)
         cv.GetPad(1).SetFillStyle(4000)
@@ -1219,6 +1220,7 @@ class Drawing(Module):
         
         cv.Print(output+".pdf")
         cv.Print(output+".png")
+        cv.Print(output+".C")
         
     def plotDistributionPAS(self,stack,data,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,lumi,output,marks=[]):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
@@ -1952,7 +1954,196 @@ class Drawing(Module):
         cvResponse.Print(output+".png")
         cvResponse.Print(output+".pdf") 
         
+    def plotCovariance(self,covariances, output, channel, title="",addtitle="", xaxis="",yaxis="",zaxis="",unit="",autoscaling=True):
+        ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
+        ROOT.TGaxis.SetMaxDigits(3)
+        ROOT.gStyle.SetLineScalePS(2)
+       
+        cvxmin=0.145
+        cvxmax=0.815
+        cvymin=0.13
+        cvymax=0.88
+    
+        ROOT.gStyle.SetPaintTextFormat("3.2f")
+        cv = ROOT.TCanvas("cov"+str(random.randint(100000,1000000)),"",800,670)
+        cv.SetRightMargin(1.-cvxmax)
+        cv.SetLeftMargin(cvxmin)
+        cv.SetBottomMargin(cvymin)
+        cv.SetTopMargin(1.-cvymax)
         
+        hist = ROOT.TH2F("covhist"+str(random.randint(100000,1000000)),"",
+            covariances.shape[0],0.,covariances.shape[0]+0.,
+            covariances.shape[0],0.,covariances.shape[0]+0.
+        )
+        
+        genBinning = self.module("Unfolding").getGenBinning(channel)
+        for i in range(covariances.shape[0]):
+            for j in range(covariances.shape[0]):
+                hist.SetBinContent(i+1,j+1,covariances[i,j])
+               
+            
+            '''
+            if unfoldingName=="pt" or unfoldingName=="wpt" or unfoldingName=="lpt":
+                hist.GetXaxis().SetBinLabel(i+1,"%3.0f#minus%.0f"%(genBinning[i],genBinning[i+1]))
+                hist.GetYaxis().SetBinLabel(i+1,"%3.0f#minus%.0f"%(genBinning[i],genBinning[i+1]))
+            elif unfoldingName=="leta" or unfoldingName=="y":
+                hist.GetXaxis().SetBinLabel(i+1,"%3.0f#minus%.1f"%(genBinning[i],genBinning[i+1]))
+                hist.GetYaxis().SetBinLabel(i+1,"%3.0f#minus%.1f"%(genBinning[i],genBinning[i+1]))
+            elif unfoldingName=="cos":
+                hist.GetXaxis().SetBinLabel(i+1,"%3.0f#minus%.2f"%(genBinning[i],genBinning[i+1]))
+                hist.GetYaxis().SetBinLabel(i+1,"%3.0f#minus%.2f"%(genBinning[i],genBinning[i+1]))
+            '''
+            
+        
+            
+        order = 0
+        if autoscaling:
+            order = math.ceil(math.log10(hist.GetMaximum()))-1
+            nmaxorder = 0
+            for i in range(hist.GetNbinsX()):
+                for j in range(hist.GetNbinsX()):
+                    if math.ceil(math.log10(1e-30+math.fabs(hist.GetBinContent(i+1,j+1))))>order:
+                        nmaxorder+=1
+            if nmaxorder<6:
+                order -= 1
+            hist.Scale(10**(-order))
+        if order==0:
+            order=""
+        else:
+            order="10#lower[-0.7]{#scale[0.7]{%2.0f}}#kern[-0.5]{ }"%(order)
+        
+        hist.GetXaxis().SetTitle(xaxis)
+        hist.GetYaxis().SetTitle(yaxis)
+        if unit != "":
+            hist.GetZaxis().SetTitle(zaxis+" ("+order+""+unit+")")
+        else:
+            hist.GetZaxis().SetTitle(zaxis+" ("+order+"#kern[-0.5]{ }units)")
+        
+        
+        hist.GetXaxis().SetTitleSize(33)
+        hist.GetYaxis().SetTitleSize(33)
+        hist.GetZaxis().SetTitleSize(33)
+        
+        #hist.GetXaxis().SetTitleOffset(1.43)
+        hist.GetYaxis().SetTitleOffset(1.43)
+        
+        hist.GetXaxis().SetLabelSize(0)
+        hist.GetYaxis().SetLabelSize(0)
+        hist.GetZaxis().SetLabelSize(29)
+        
+        hist.GetXaxis().LabelsOption('v')
+        hist.GetYaxis().LabelsOption('v')
+        
+        hist.GetXaxis().SetTickLength(0.015/(1-cv.GetLeftMargin()-cv.GetRightMargin()))
+        hist.GetYaxis().SetTickLength(0.014/(1-cv.GetTopMargin()-cv.GetBottomMargin()))
+        hist.GetZaxis().SetTickLength(0.014/(1-cv.GetTopMargin()-cv.GetBottomMargin()))
+        
+        hist.GetXaxis().SetNdivisions(covariances.shape[0])
+        hist.GetYaxis().SetNdivisions(covariances.shape[0])
+        hist.GetZaxis().SetNdivisions(510)
+
+        
+            
+        ymax = 1.1*hist.GetMaximum()
+        ymin = hist.GetMinimum()
+        hist.GetZaxis().Set(50,ymin,ymax)
+        hist.GetZaxis().SetRangeUser(ymin,ymax)
+        hist.SetMarkerSize(1.9)
+        hist.Draw("colz text")
+        
+        unfoldingName = self.module("Unfolding").getUnfoldingName()
+        axisLabels = []
+        for i in range(genBinning.shape[0]):
+            pAx=ROOT.TPaveText(i,-genBinning.shape[0]*0.055,i,-genBinning.shape[0]*0.055)
+            pAx.SetFillColor(ROOT.kWhite)
+            pAx.SetBorderSize(0)
+            pAx.SetTextFont(43)
+            pAx.SetTextSize(29)
+            pAx.SetTextAlign(21)
+            if unfoldingName=="pt" or unfoldingName=="wpt" or unfoldingName=="lpt":
+                pAx.AddText("%.0f"%(genBinning[i]))
+            elif unfoldingName=="leta" or unfoldingName=="y" or unfoldingName=="cos":
+                pAx.AddText("%.1f"%(genBinning[i]))
+            pAx.Draw("Same")
+            axisLabels.append(pAx)
+            
+            pAy=ROOT.TPaveText(-genBinning.shape[0]*0.015,i,-genBinning.shape[0]*0.015,i)
+            pAy.SetFillColor(ROOT.kWhite)
+            pAy.SetBorderSize(0)
+            pAy.SetTextFont(43)
+            pAy.SetTextSize(29)
+            pAy.SetTextAlign(32)
+            if unfoldingName=="pt" or unfoldingName=="wpt" or unfoldingName=="lpt":
+                pAy.AddText("%.0f"%(genBinning[i]))
+            elif unfoldingName=="leta" or unfoldingName=="y" or unfoldingName=="cos":
+                pAy.AddText("%.1f"%(genBinning[i]))
+            pAy.Draw("Same")
+            axisLabels.append(pAy)
+        
+        pCMS=ROOT.TPaveText(cv.GetLeftMargin(),0.955,cv.GetLeftMargin(),0.955,"NDC")
+        pCMS.SetFillColor(ROOT.kWhite)
+        pCMS.SetBorderSize(0)
+        pCMS.SetTextFont(63)
+        pCMS.SetTextSize(32)
+        pCMS.SetTextAlign(11)
+        pCMS.AddText("CMS")
+        pCMS.Draw("Same")
+        
+        pPreliminary=ROOT.TPaveText(cv.GetLeftMargin()+0.095,0.955,cv.GetLeftMargin()+0.095,0.955,"NDC")
+        pPreliminary.SetFillColor(ROOT.kWhite)
+        pPreliminary.SetBorderSize(0)
+        pPreliminary.SetTextFont(53)
+        pPreliminary.SetTextSize(32)
+        pPreliminary.SetTextAlign(11)
+        pPreliminary.AddText("Supplementary")
+        pPreliminary.Draw("Same")
+        '''
+        pOrder=None
+        if autoscaling and order!=0:
+            pOrder=ROOT.TPaveText(1-cv.GetRightMargin()+0.1,0.94,1-cv.GetRightMargin()+0.1,0.94,"NDC")
+            pOrder.SetFillColor(ROOT.kWhite)
+            pOrder.SetBorderSize(0)
+            pOrder.SetTextFont(43)
+            pOrder.SetTextSize(36)
+            pOrder.SetTextAlign(31)
+            pOrder.AddText("#times10#lower[-0.7]{#scale[0.7]{%2.0f}}"%(order))
+            pOrder.Draw("Same")
+        '''
+        
+        pXV=ROOT.TPaveText(cv.GetLeftMargin(),0.9,cv.GetLeftMargin(),0.9,"NDC")
+        pXV.SetFillColor(ROOT.kWhite)
+        pXV.SetBorderSize(0)
+        pXV.SetTextFont(83)
+        pXV.SetTextSize(29)
+        pXV.SetTextAlign(11)
+        pXV.AddText("arXiv:XXXX.XXXX")
+        pXV.Draw("Same")
+        
+        pLumi=ROOT.TPaveText(1-cv.GetRightMargin()+0.0,0.955,1-cv.GetRightMargin()+0.0,0.955,"NDC")
+        pLumi.SetFillColor(ROOT.kWhite)
+        pLumi.SetBorderSize(0)
+        pLumi.SetTextFont(43)
+        pLumi.SetTextSize(32)
+        pLumi.SetTextAlign(31)
+        if title!="":
+            pLumi.AddText(title)
+        pLumi.Draw("Same")
+        
+        pLumiAdd=ROOT.TPaveText(1-cv.GetRightMargin()+0.0,0.9,1-cv.GetRightMargin()+0.0,0.9,"NDC")
+        pLumiAdd.SetFillColor(ROOT.kWhite)
+        pLumiAdd.SetBorderSize(0)
+        pLumiAdd.SetTextFont(43)
+        pLumiAdd.SetTextSize(32)
+        pLumiAdd.SetTextAlign(31)
+        if addtitle!="":
+            pLumiAdd.AddText(addtitle)
+        pLumiAdd.Draw("Same")
+        
+        cv.Update()
+        
+        cv.Print(output+".png")
+        cv.Print(output+".pdf")
+        cv.Print(output+".C")
     
     def drawHistogramMatrix(self,histMatrix, output, title="", xaxis="",yaxis="",zaxis="",autoscaling=True):
         ROOT.gStyle.SetPaintTextFormat("3.0f")
@@ -2009,7 +2200,7 @@ class Drawing(Module):
         
         pOrder=None
         if autoscaling and order!=0:
-            pOrder=ROOT.TPaveText(1-cvResponse.GetRightMargin()+0.1,0.94,1-cvResponse.GetRightMargin()+0.1,0.94,"NDC")
+            pOrder=ROOT.TPaveText(1-cvResponse.GetRightMargin()+0.06,0.94,1-cvResponse.GetRightMargin()+0.06,0.88,"NDC")
             pOrder.SetFillColor(ROOT.kWhite)
             pOrder.SetBorderSize(0)
             pOrder.SetTextFont(43)

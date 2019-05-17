@@ -175,7 +175,7 @@ ROOT.gStyle.SetLineScalePS(2)
 # ROOT.gStyle.SetPalette(Int_t ncolors = 0, Int_t* colors = 0)
 # ROOT.gStyle.SetTimeOffset(Double_t toffset)
 # ROOT.gStyle.SetHistMinimumZero(kTRUE)
-ROOT.gStyle.SetPalette(1)
+#ROOT.gStyle.SetPalette(1)
 ROOT.gStyle.SetPaintTextFormat("7.4f")
 
 ROOT.gStyle.SetLineStyleString(11,"30 15")
@@ -458,19 +458,20 @@ class PlotCrossSection(Module.getClass("Program")):
         )
         
         
-        xtitle = self.module("Unfolding").getUnfoldingLevel().capitalize()+"-level "+self.module("Unfolding").getUnfoldingVariableName()
-        ytitleSum = "d#kern[-0.7]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.7]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
-        ytitleSumNorm = "1#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }#sigma#kern[-0.5]{ }#times#kern[-0.3]{ }d#kern[-0.7]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.7]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
-        ytitleRatio = "d#kern[-0.7]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.7]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        xtitleWOUnit = self.module("Unfolding").getUnfoldingLevel().capitalize()+"-level "+self.module("Unfolding").getUnfoldingVariableName()
+        ytitleSum = "d#kern[-0.6]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleSumNorm = "1#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }#sigma#kern[-0.5]{ }#times#kern[-0.3]{ }d#kern[-0.6]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleRatio = "d#kern[-0.6]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
         unit = self.module("Unfolding").getUnfoldingVariableUnit()
         logy = unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt"
         if unit!="":
-            xtitle += " ("+unit+")"
+            xtitle = xtitleWOUnit+" ("+unit+")"
             ytitleSum += " (pb#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
             ytitleSumNorm += " (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
             ytitleRatio += " (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
         else:
             ytitleSum += " (pb)"
+            xtitle = xtitleWOUnit
         
         sysResults = []
         sysCov = []
@@ -1311,7 +1312,58 @@ class PlotCrossSection(Module.getClass("Program")):
             
         ]
         
+        covUnit = "pb#lower[-0.7]{#scale[0.7]{2}}"
+        covUnitNorm = ""
+        if unit!="":
+            covUnit += "#kern[-0.6]{ }GeV#lower[-0.7]{#scale[0.7]{-2}}"
+            covUnitNorm += "#kern[-0.6]{ }GeV#lower[-0.7]{#scale[0.7]{-2}}"
         
+        self.module("Drawing").plotCovariance(
+            covSumTotal, 
+            os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_covTotal"), 
+            channelName,
+            xaxis=xtitle,
+            yaxis=xtitle,
+            zaxis="Covariance",
+            unit=covUnit,
+            title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
+            addtitle="36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+        )
+        
+        self.module("Drawing").plotCovariance(
+            covSumTotalNorm, 
+            os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_covTotalNorm"), 
+            channelName,
+            xaxis=xtitle,
+            yaxis=xtitle,
+            zaxis="Covariance",
+            unit=covUnitNorm,
+            title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
+            addtitle="36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+        )
+        
+        self.module("Drawing").plotCovariance(
+            covRatioTotal, 
+            os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_covRatio"), 
+            channelName,
+            xaxis=xtitle,
+            yaxis=xtitle,
+            zaxis="Covariance",
+            unit=covUnitNorm,
+            title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
+            addtitle="36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+        )
+        
+        print "Sum uncertainties"
+        for i in range(histSumTotal.GetNbinsX()):
+            print histSumTotal.GetBinError(i+1),math.sqrt(covSumTotal[i,i])
+        print "Norm uncertainties"
+        for i in range(histSumTotalNorm.GetNbinsX()):
+            print histSumTotalNorm.GetBinError(i+1),math.sqrt(covSumTotalNorm[i,i])
+        print "Ratio uncertainties"
+        for i in range(histRatioTotal.GetNbinsX()):
+            print histRatioTotal.GetBinError(i+1),math.sqrt(covRatioTotal[i,i])
+            
         
         self.module("Drawing").plotCrossSection(
             genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitleSum,xtitle,
