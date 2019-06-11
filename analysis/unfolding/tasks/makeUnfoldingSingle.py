@@ -59,7 +59,7 @@ class RunUnfolding(Module.getClass("Program")):
         
 
         self.module("Drawing").drawHistogramResponseAndEfficiency(
-            responseMatrices[0]["nominal"],
+            responseMatrices[0][uncertainty],
             os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_response"), 
             xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName(),
             yaxis="reco. "+self.module("Unfolding").getUnfoldingVariableName(),
@@ -67,7 +67,7 @@ class RunUnfolding(Module.getClass("Program")):
         )
         
         self.module("Drawing").drawStabilityPurity(
-            responseMatrices[0]["nominal"],
+            responseMatrices[0][uncertainty],
             os.path.join(outputFolder,self.module("Samples").getChannelName(channels)+"_pstest"), 
             title=self.module("Samples").getPlotTitle(channels)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
             xaxis=unfoldingLevel+" level "+self.module("Unfolding").getUnfoldingVariableName()

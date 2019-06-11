@@ -25,6 +25,13 @@ syst=(
 "systematics/wjetsScaleTmpl -c qscale:Down"
 )
 
+syst=(
+"systematics/resUp"
+"systematics/resDown"
+"systematics/enUp"
+"systematics/enDown"
+)
+
 setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton"
 #setups="TopPtParton"
 

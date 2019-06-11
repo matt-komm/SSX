@@ -540,6 +540,7 @@ class PlotCrossSection(Module.getClass("Program")):
             if norm:
                 self.module("Utils").normalizeByBinWidth(histSum)
             stack.append({
+                "name":stackName,
                 "hist":histSum,
                 "title":sets[stackName]["title"]
             })
@@ -610,7 +611,22 @@ class PlotCrossSection(Module.getClass("Program")):
             marks=marks
         )
             
-                
+        rootHepData = ROOT.TFile(
+            os.path.join(finalFolder,plotName[1]+"_hepdata.root"),
+            "RECREATE"
+        )
+        
+        dataSum.SetName("data")
+        dataSum.SetDirectory(rootHepData)
+            
+        for histEntry in stack:
+            histEntry['hist'].SetName(histEntry['name'])
+            histEntry['hist'].SetDirectory(rootHepData)
+            
+        rootHepData.Write()
+        rootHepData.Close()
+            
+        
                 
             
 

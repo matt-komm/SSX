@@ -459,19 +459,21 @@ class PlotCrossSection(Module.getClass("Program")):
         
         
         xtitleWOUnit = self.module("Unfolding").getUnfoldingLevel().capitalize()+"-level "+self.module("Unfolding").getUnfoldingVariableName()
-        ytitleSum = "d#kern[-0.6]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
-        ytitleSumNorm = "1#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }#sigma#kern[-0.5]{ }#times#kern[-0.3]{ }d#kern[-0.6]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
-        ytitleRatio = "d#kern[-0.6]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleSumWOUnit = "d#kern[-0.6]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleSumNormWOUnit = "1#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }#sigma#kern[-0.5]{ }#times#kern[-0.3]{ }d#kern[-0.6]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleRatioWOUnit = "d#kern[-0.6]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
         unit = self.module("Unfolding").getUnfoldingVariableUnit()
         logy = unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt"
         if unit!="":
             xtitle = xtitleWOUnit+" ("+unit+")"
-            ytitleSum += " (pb#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
-            ytitleSumNorm += " (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
-            ytitleRatio += " (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
+            ytitleSum = ytitleSumWOUnit+" (pb#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
+            ytitleSumNorm = ytitleSumNormWOUnit+" (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
+            ytitleRatio = ytitleRatioWOUnit+" (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
         else:
-            ytitleSum += " (pb)"
+            ytitleSum = " (pb)"
             xtitle = xtitleWOUnit
+            ytitleSumNorm = ytitleSumNormWOUnit
+            ytitleRatio = ytitleRatioWOUnit
         
         sysResults = []
         sysCov = []
@@ -1324,7 +1326,7 @@ class PlotCrossSection(Module.getClass("Program")):
             channelName,
             xaxis=xtitle,
             yaxis=xtitle,
-            zaxis="Covariance",
+            zaxis="Var#lower[0.07]{#scale[1.2]{(}}"+ytitleSumWOUnit+"#lower[0.07]{#scale[1.2]{)}}",
             unit=covUnit,
             title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
             addtitle="36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
@@ -1336,7 +1338,7 @@ class PlotCrossSection(Module.getClass("Program")):
             channelName,
             xaxis=xtitle,
             yaxis=xtitle,
-            zaxis="Covariance",
+            zaxis="Var#lower[0.07]{#scale[1.2]{(}}"+ytitleSumNormWOUnit+"#lower[0.07]{#scale[1.2]{)}}",
             unit=covUnitNorm,
             title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
             addtitle="36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
@@ -1348,7 +1350,7 @@ class PlotCrossSection(Module.getClass("Program")):
             channelName,
             xaxis=xtitle,
             yaxis=xtitle,
-            zaxis="Covariance",
+            zaxis="Var#lower[0.07]{#scale[1.2]{(}}"+ytitleRatioWOUnit+"#lower[0.07]{#scale[1.2]{)}}",
             unit=covUnitNorm,
             title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
             addtitle="36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
@@ -1396,7 +1398,37 @@ class PlotCrossSection(Module.getClass("Program")):
             centerY=centerY
         )  
         
-
-
+        rootHepData = ROOT.TFile(
+            os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_hepdata.root"),
+            "RECREATE"
+        )
+        
+        covSumTotalHist = self.module("Drawing").makeCovHist(covSumTotal,genBinning)
+        covSumTotalNormHist = self.module("Drawing").makeCovHist(covSumTotalNorm,genBinning)
+        covSumRatioHist = self.module("Drawing").makeCovHist(covRatioTotal,genBinning)
+        
+        histSumProfiled.SetName("xsec_exponly")
+        histSumProfiled.SetDirectory(rootHepData)
+        histSumTotal.SetName("xsec_total")
+        histSumTotal.SetDirectory(rootHepData)
+        covSumTotalHist.SetName("xsec_cov")
+        covSumTotalHist.SetDirectory(rootHepData)
+        
+        histSumProfiledNorm.SetName("xsecnorm_exponly")
+        histSumProfiledNorm.SetDirectory(rootHepData)
+        histSumTotalNorm.SetName("xsecnorm_total")
+        histSumTotalNorm.SetDirectory(rootHepData)
+        covSumTotalNormHist.SetName("xsecnorm_cov")
+        covSumTotalNormHist.SetDirectory(rootHepData)
+        
+        histRatioProfiled.SetName("ratio_exponly")
+        histRatioProfiled.SetDirectory(rootHepData)
+        histRatioTotal.SetName("ratio_total")
+        histRatioTotal.SetDirectory(rootHepData)
+        covSumRatioHist.SetName("ratio_cov")
+        covSumRatioHist.SetDirectory(rootHepData)
+        
+        rootHepData.Write()
+        rootHepData.Close()
 
 

@@ -23,13 +23,18 @@ syst=(
 "systematics/ttbarScaleTmpl -c qscale:Down"
 "systematics/wjetsScaleTmpl -c qscale:Up"
 "systematics/wjetsScaleTmpl -c qscale:Down"
+"systematics/resUp"
+"systematics/resDown"
+"systematics/enUp"
+"systematics/enDown"
 )
+
 
 
 for setup in  TopPtParton TopYParton TopCosParton TopCosTauParton LeptonPtParton LeptonEtaParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WPtParticle
     do
     echo $setup $1
-    python driver.py -m setup/$setup -m tasks/makeUnfoldingSingle -c channels:$1 &
+    python driver.py -m setup/$setup -m tasks/makeUnfoldingSingle -c channels:$1 
     done
 wait ${!}
 for sys  in "${syst[@]}"

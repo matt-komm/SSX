@@ -194,9 +194,9 @@ for i in range(len(red)):
 '''
 
 colorList = [
-    [0.,colour.Color(hue=0.6, saturation=0.6, luminance=0.5)],
-    [0.,colour.Color(hue=0.59, saturation=0.75, luminance=0.65)],
-    [0.,colour.Color(hue=0.57, saturation=0.9, luminance=0.96)],
+    [0.,colour.Color(hue=0.6, saturation=0.6, luminance=0.47)],
+    [0.,colour.Color(hue=0.56, saturation=0.75, luminance=0.65)],
+    [0.,colour.Color(hue=0.52, saturation=0.9, luminance=0.96)],
 ]
 
 lumiMin = min(map(lambda x:x[1].luminance,colorList))

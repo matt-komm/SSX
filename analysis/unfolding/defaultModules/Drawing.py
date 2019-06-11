@@ -1784,7 +1784,7 @@ class Drawing(Module):
         
         
     def drawHistogramResponseAndEfficiency(self,histMatrix, output, title="",xaxis="",yaxis="",zaxis="transition probability (%)"):
-        ROOT.gStyle.SetPaintTextFormat("3.0f")
+        ROOT.gStyle.SetPaintTextFormat("4.1f")
         cvResponse = ROOT.TCanvas("cvResponse","",800,800)
         cvResponse.Divide(1,2,0,0)
         
@@ -1860,10 +1860,14 @@ class Drawing(Module):
         histMatrixGenSelected.SetLineColor(ROOT.kRed+1)
         hist = self.module("Utils").normalizeByTransistionProbability(histMatrix)
         
+        histMatrixGenSelected.GetXaxis().SetTickLength(0.02/(1-(1-cvxmax)-cvxmin))
         histMatrixGenSelected.GetYaxis().SetTickLength(0.03/resHeight)
-        histMatrixGenSelected.GetYaxis().Set(50,0,1.2*histMatrixGenSelected.GetMaximum())
-        histMatrixGenSelected.GetYaxis().SetRangeUser(0,1.2*histMatrixGenSelected.GetMaximum())
+        histMatrixGenSelected.GetYaxis().Set(50,0,1.5*histMatrixGenSelected.GetMaximum())
+        histMatrixGenSelected.GetYaxis().SetRangeUser(0,1.5*histMatrixGenSelected.GetMaximum())
         histMatrixGenSelected.GetYaxis().SetNdivisions(804)
+        
+        
+            
         
         hist.GetXaxis().SetTitle("")
         histMatrixGenSelected.GetXaxis().SetTitle(xaxis)
@@ -1886,6 +1890,7 @@ class Drawing(Module):
         histMatrixGenSelected.GetYaxis().SetLabelSize(33)
         hist.GetYaxis().SetLabelSize(33)
         hist.GetZaxis().SetLabelSize(33)
+        hist.GetXaxis().SetTickLength(0.02/(1-(1-cvxmax)-cvxmin))
 
         matrix = ROOT.TMatrixD(hist.GetNbinsX(),hist.GetNbinsY())
         for ibin in range(hist.GetNbinsX()):
@@ -1904,7 +1909,7 @@ class Drawing(Module):
         ymin = hist.GetMinimum()
         hist.GetZaxis().Set(50,ymin,ymax)
         hist.GetZaxis().SetRangeUser(ymin,ymax)
-        hist.SetMarkerSize(1.9)
+        hist.SetMarkerSize(1.55)
         hist.Draw("colz text")
         
         pCMS=ROOT.TPaveText(cvxmin,0.94,cvxmin,0.94,"NDC")
@@ -1940,19 +1945,47 @@ class Drawing(Module):
         pCond.SetFillColor(ROOT.kWhite)
         pCond.SetBorderSize(0)
         pCond.SetTextFont(43)
-        pCond.SetTextSize(30)
+        pCond.SetTextSize(29)
         pCond.SetTextAlign(31)
-        pCond.SetTextColor(ROOT.kWhite)
-        pCond.AddText("cond. no.: %4.2f"%(conditionNumber))
-        pCond.Draw("Same")
+        pCond.SetTextColor(ROOT.kBlack)
+        pCond.AddText("Cond. no.: %4.2f"%(conditionNumber))
+        #pCond.Draw("Same")
         
         cvResponse.cd(1)
         histMatrixGenSelected.Draw("SameHIST")
         
+        obj = []
+        for ibin in range(histMatrix.GetNbinsX()):
+            effText = ROOT.TPaveText(
+                histMatrix.GetXaxis().GetBinCenter(ibin+1),
+                histMatrixGenSelected.GetBinContent(ibin+1)+0.05*histMatrixGenSelected.GetMaximum(),
+                histMatrix.GetXaxis().GetBinCenter(ibin+1),
+                histMatrixGenSelected.GetBinContent(ibin+1)+0.05*histMatrixGenSelected.GetMaximum()
+            )
+            effText.SetFillStyle(0)
+            effText.SetTextFont(63)
+            effText.SetTextSize(24)
+            effText.SetTextAlign(21)
+            effText.AddText("%.2f"%histMatrixGenSelected.GetBinContent(ibin+1))
+            effText.Draw("Same")
+            obj.append(effText)
+        
         cvResponse.Update()
         
         cvResponse.Print(output+".png")
-        cvResponse.Print(output+".pdf") 
+        cvResponse.Print(output+".pdf")
+        
+    def makeCovHist(self,covariances,genBinning):
+        hist = ROOT.TH2F("covhist"+str(random.randint(100000,1000000)),"",
+            len(genBinning)-1,genBinning,
+            len(genBinning)-1,genBinning
+        )
+        hist.SetDirectory(0)
+        
+        for i in range(covariances.shape[0]):
+            for j in range(covariances.shape[0]):
+                hist.SetBinContent(i+1,j+1,covariances[i,j])
+        return hist 
         
     def plotCovariance(self,covariances, output, channel, title="",addtitle="", xaxis="",yaxis="",zaxis="",unit="",autoscaling=True):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
@@ -1960,7 +1993,7 @@ class Drawing(Module):
         ROOT.gStyle.SetLineScalePS(2)
        
         cvxmin=0.145
-        cvxmax=0.815
+        cvxmax=0.805
         cvymin=0.13
         cvymax=0.88
     
@@ -1998,19 +2031,19 @@ class Drawing(Module):
             
         order = 0
         if autoscaling:
-            order = math.ceil(math.log10(hist.GetMaximum()))-1
+            order = int(math.ceil(math.log10(hist.GetMaximum())))-1
             nmaxorder = 0
             for i in range(hist.GetNbinsX()):
                 for j in range(hist.GetNbinsX()):
-                    if math.ceil(math.log10(1e-30+math.fabs(hist.GetBinContent(i+1,j+1))))>order:
+                    if math.log10(1e-30+math.fabs(hist.GetBinContent(i+1,j+1)))>order:
                         nmaxorder+=1
-            if nmaxorder<6:
+            if nmaxorder<(hist.GetNbinsX()**2/2):
                 order -= 1
             hist.Scale(10**(-order))
         if order==0:
             order=""
         else:
-            order="10#lower[-0.7]{#scale[0.7]{%2.0f}}#kern[-0.5]{ }"%(order)
+            order="10#lower[-0.7]{#scale[0.7]{%i}}#kern[-0.5]{ }"%(order)
         
         hist.GetXaxis().SetTitle(xaxis)
         hist.GetYaxis().SetTitle(yaxis)
@@ -2030,9 +2063,6 @@ class Drawing(Module):
         hist.GetXaxis().SetLabelSize(0)
         hist.GetYaxis().SetLabelSize(0)
         hist.GetZaxis().SetLabelSize(29)
-        
-        hist.GetXaxis().LabelsOption('v')
-        hist.GetYaxis().LabelsOption('v')
         
         hist.GetXaxis().SetTickLength(0.015/(1-cv.GetLeftMargin()-cv.GetRightMargin()))
         hist.GetYaxis().SetTickLength(0.014/(1-cv.GetTopMargin()-cv.GetBottomMargin()))
@@ -2063,7 +2093,10 @@ class Drawing(Module):
             if unfoldingName=="pt" or unfoldingName=="wpt" or unfoldingName=="lpt":
                 pAx.AddText("%.0f"%(genBinning[i]))
             elif unfoldingName=="leta" or unfoldingName=="y" or unfoldingName=="cos":
-                pAx.AddText("%.1f"%(genBinning[i]))
+                if genBinning[i]==round(genBinning[i]):
+                    pAx.AddText("%.0f"%(genBinning[i]))
+                else:
+                    pAx.AddText("%.1f"%(genBinning[i]))
             pAx.Draw("Same")
             axisLabels.append(pAx)
             
@@ -2076,7 +2109,10 @@ class Drawing(Module):
             if unfoldingName=="pt" or unfoldingName=="wpt" or unfoldingName=="lpt":
                 pAy.AddText("%.0f"%(genBinning[i]))
             elif unfoldingName=="leta" or unfoldingName=="y" or unfoldingName=="cos":
-                pAy.AddText("%.1f"%(genBinning[i]))
+                if genBinning[i]==round(genBinning[i]):
+                    pAy.AddText("%.0f"%(genBinning[i]))
+                else:
+                    pAy.AddText("%.1f"%(genBinning[i]))
             pAy.Draw("Same")
             axisLabels.append(pAy)
         
