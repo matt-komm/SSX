@@ -1193,8 +1193,8 @@ class PlotCrossSection(Module.getClass("Program")):
         #genHistsRatioMMHT14.SetLineColor(newColor(211./255,28./255,230./255).GetNumber())
         genHistsRatioMMHT14.SetLineColor(newColor(179./255,34./255,195./255).GetNumber())
         genHistsRatioMMHT14.SetFillColor(newColor(221./255,190./255,240./255).GetNumber())
-        genHistsRatioMMHT14.SetLineStyle(3)
-        genHistsRatioMMHT14.SetLineWidth(3)
+        genHistsRatioMMHT14.SetLineStyle(2)
+        genHistsRatioMMHT14.SetLineWidth(2)
         genHistsRatioMMHT14.SetFillStyle(1001)
         
         self.applyLHEVariations(
@@ -1213,7 +1213,7 @@ class PlotCrossSection(Module.getClass("Program")):
         #genHistsRatioCT10.SetLineColor(newColor(83./255,131./255,241./255).GetNumber())
         genHistsRatioCT10.SetLineColor(newColor(38./255,92./255,217./255).GetNumber())
         genHistsRatioCT10.SetFillColor(newColor(153./255,191./255,241./255).GetNumber())
-        genHistsRatioCT10.SetLineStyle(2)
+        genHistsRatioCT10.SetLineStyle(11)
         genHistsRatioCT10.SetLineWidth(2)
         genHistsRatioCT10.SetFillStyle(1001)
         
@@ -1282,7 +1282,10 @@ class PlotCrossSection(Module.getClass("Program")):
         if unfoldingName=="lpt" or unfoldingName=="y":
             legendPos = "RU"
         elif unfoldingName=="cos" or unfoldingName=="cosTau":
-            legendPos = "LU"
+            if unfoldingLevel == "particle":
+                legendPos = "RD"
+            else:
+                legendPos = "LU"
         else:
             legendPos = "LD"
         

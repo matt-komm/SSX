@@ -524,7 +524,7 @@ class Drawing(Module):
         
         cv.cd(1)
        
-        resYTitle = "#lower[0.03]{Pred. / Data} "
+        resYTitle = "#lower[0.03]{Pred. / Data}#kern[-0.3]{ }"
        
         axisRes=ROOT.TH2F("axisRes"+str(random.random()),"",50,xmin,xmax,50,1-resRange,1+resRange)
         axisRes.GetYaxis().SetNdivisions(406)
