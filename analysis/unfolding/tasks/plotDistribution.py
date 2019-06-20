@@ -236,14 +236,14 @@ class PlotCrossSection(Module.getClass("Program")):
                 "hists":["TopBkg_pos","TopBkg_neg"],
                 "fill":newColor(0.98,0.8,0.2),
                 #"fill":newColor(0.98,0.57,0.05),
-                "title":"tt#lower[-0.87]{#kern[-0.89]{-}}/tW",
+                "title":"tt#lower[-0.87]{#kern[-0.89]{-}} / tW",
             },
             "WZjets": {
                 "hists": ["WZjets_pos","WZjets_neg"],
                 "fill":newColor(0.25,0.68,0.27),
                 #"fill":ROOT.gROOT.GetColor(ROOT.kGreen-2),
                 #"fill":newColor(0.2,0.65,0.25),
-                "title":"W/Z/#gamma#scale[0.9]{*}+#kern[-0.6]{ }jets",
+                "title":"W / Z / #gamma#scale[0.9]{*}",
             },
             "QCD": {
                 "hists": ["QCD_"+plotName[0]+"_pos","QCD_"+plotName[0]+"_neg"],
@@ -580,33 +580,39 @@ class PlotCrossSection(Module.getClass("Program")):
         if plotName[1]=="cos2j1t_CR":
             scale=0.5
         if plotName[1]=="leta2j1t_CR":
-            scale=0.2   
+            scale=0.25   
         if logy:
             ymin = 1#math.exp(math.log(ymin)-0.05*(math.log(ymax)-math.log(ymin)))
-            ymax = math.exp((scale+0.3)*(math.log(ymax)-math.log(ymin))+math.log(ymax))
+            ymax = math.exp((scale+0.35)*(math.log(ymax)-math.log(ymin))+math.log(ymax))
         else:
-            ymax = 1.3*(1+scale)*ymax
+            ymax = 1.38*(1+scale)*ymax
             ymin = 0
             
         self.module("Utils").createFolder("dists/"+channelName)
         finalFolder = self.module("Utils").getOutputFolder("dists/"+channelName)
             
-        lumi = ""
+        title = ""
         if channelName=="ele":
-            lumi +="e"
+            title +="e"
         elif channelName=="mu":
-            lumi +="#mu"
+            title +="#mu"
         elif channelName=="comb":
-            lumi += "(#mu,#kern[-0.5]{ }e)"
-        lumi+="#kern[-0.5]{ }+#kern[-0.5]{ }"+region+", 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+            title += "(#mu,#kern[-0.4]{ }e)"
+        title+="#kern[-0.4]{ }+#kern[-0.4]{ }"+region
             
-        cvxmin=0.185
-        yoffset = 1.85
+        lumi = "36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13#kern[-0.5]{ }TeV)"
+            
+        cuts = [title]
+        if cut!="":
+            cuts.append(cut)
+            
+        cvxmin=0.18
+        yoffset = 1.91
         if plotName[0]=="2j0t":
-            cvxmin=0.21
-            yoffset = 2.12
+            cvxmin=0.205
+            yoffset = 2.2
         self.module("Drawing").plotDistribution(
-            stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,yoffset,lumi,
+            stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cuts,legendPos,resRange,cvxmin,yoffset,lumi,
             os.path.join(finalFolder,plotName[1]),
             marks=marks
         )

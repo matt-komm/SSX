@@ -278,7 +278,7 @@ class Drawing(Module):
         cvHist.Print(output+".pdf")
         cvHist.Print(output+".png")
         
-    def plotCrossSection(self,genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,legendPos,resRange,output,fillGen=False,centerY=False):
+    def plotCrossSection(self,genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitle,xtitle,lumi,text,legendPos,resRange,output,fillGen=False,centerY=False):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
         ROOT.TGaxis.SetMaxDigits(3)
         ROOT.gStyle.SetLineScalePS(2)
@@ -290,10 +290,10 @@ class Drawing(Module):
         cv.GetPad(2).SetPad(0.0, 0.00, 1.0,1.0)
         cv.GetPad(2).SetFillStyle(4000)
         
-        cvxmin=0.147
+        cvxmin=0.14
         cvxmax=0.96
         cvymin=0.135
-        cvymax=0.93
+        cvymax=0.935
         resHeight=0.37
         
         rootObj =[]
@@ -349,16 +349,16 @@ class Drawing(Module):
         )
         axis.GetXaxis().SetTitle("")
         axis.GetYaxis().SetTitle(ytitle)
-        axis.GetXaxis().SetTickLength(0.015/(1-cv.GetPad(2).GetLeftMargin()-cv.GetPad(2).GetRightMargin()))
+        axis.GetXaxis().SetTickLength(0.018/(1-cv.GetPad(2).GetLeftMargin()-cv.GetPad(2).GetRightMargin()))
         axis.GetYaxis().SetTickLength(0.015/(1-cv.GetPad(2).GetTopMargin()-cv.GetPad(2).GetBottomMargin()))
         axis.GetXaxis().SetLabelFont(43)
         axis.GetXaxis().SetLabelSize(0)
         axis.GetYaxis().SetLabelFont(43)
-        axis.GetYaxis().SetLabelSize(33)
+        axis.GetYaxis().SetLabelSize(32)
         axis.GetXaxis().SetTitleFont(43)
-        axis.GetXaxis().SetTitleSize(36)
+        axis.GetXaxis().SetTitleSize(34)
         axis.GetYaxis().SetTitleFont(43)
-        axis.GetYaxis().SetTitleSize(36)
+        axis.GetYaxis().SetTitleSize(34)
         axis.GetYaxis().SetNoExponent(not logy)
         axis.GetYaxis().SetTitleOffset(1.43)
         if centerY:
@@ -424,7 +424,7 @@ class Drawing(Module):
         pCMS.SetFillColor(ROOT.kWhite)
         pCMS.SetBorderSize(0)
         pCMS.SetTextFont(63)
-        pCMS.SetTextSize(37)
+        pCMS.SetTextSize(35)
         pCMS.SetTextAlign(11)
         pCMS.AddText("CMS")
         pCMS.Draw("Same")
@@ -442,16 +442,18 @@ class Drawing(Module):
         pLumi.SetFillColor(ROOT.kWhite)
         pLumi.SetBorderSize(0)
         pLumi.SetTextFont(43)
-        pLumi.SetTextSize(37)
+        pLumi.SetTextSize(35)
         pLumi.SetTextAlign(31)
         pLumi.AddText(lumi)
         pLumi.Draw("Same")
         
         
+        
+        
         legendXL = [cvxmin+0.02,cvxmin+0.35]
-        legendXR = [cvxmax-0.34,cvxmax-0.02]
-        legendYD = [resHeight+0.03,resHeight+0.03+0.044*(1+len(genHistSums))]
-        legendYU = [cvymax-0.025,cvymax-0.025-0.044*(1+len(genHistSums))]
+        legendXR = [cvxmax-0.38,cvxmax-0.05]
+        legendYD = [resHeight+0.03,resHeight+0.03+0.046*(1+len(genHistSums))]
+        legendYU = [cvymax-0.085-0.046*(1+len(genHistSums)),cvymax-0.085]
         
         if legendPos[0]=="L":
             legendX = legendXL
@@ -464,14 +466,14 @@ class Drawing(Module):
             legendY = legendYU
             
         legend = ROOT.TLegend(legendX[0],legendY[0],legendX[1],legendY[1])    
-        
         #legend = ROOT.TLegend(0.54,resHeight+0.03,cvxmax-0.13,resHeight+0.03+0.067*2)
         legend.SetFillColor(0)
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
         legend.SetTextFont(43)
-        legend.SetTextSize(27)
-        legend.AddEntry(histSumTotal,"Data","P")
+        legend.SetTextSize(26)
+        legend.AddEntry(histSumTotal,"Data (#lower[-0.07]{#scale[0.8]{    Exp.,    Total}}#kern[-0.5]{ })","P")
+        #legend.AddEntry(histSumTotal,"Data","P")
         for genHistSum in genHistSums:
             if fillGen:
                 legend.AddEntry(genHistSum["hist"],genHistSum["legend"],"FL")
@@ -479,23 +481,64 @@ class Drawing(Module):
                 legend.AddEntry(genHistSum["hist"],genHistSum["legend"],"L")
         legend.Draw("Same")
         
+        
+        #if legendPos[0]=="L":
+        pCut=ROOT.TPaveText(legendX[0]+0.02,legendY[1]+0.053,legendX[0]+0.02,legendY[1]+0.053,"NDC")
+        pCut.SetTextAlign(13)
+        #else:
+        #    pCut=ROOT.TPaveText(cvxmax-0.025,cvymax-0.031,cvxmax-0.025,cvymax-0.031-0.058*1,"NDC")
+        #    pCut.SetTextAlign(31)
+        pCut.SetFillStyle(0)
+        pCut.SetBorderSize(0)
+        pCut.SetTextFont(43)
+        pCut.SetTextSize(28)
+        pCut.AddText(text)
+        pCut.Draw("Same")
+        
+        expV = ROOT.TLine()
+        expV.DrawLineNDC(legendX[0]+0.177,legendY[1]-0.007,legendX[0]+0.177,legendY[1]-0.031)
+        expV.Draw("Same")
+        
+        expH1 = ROOT.TLine()
+        expH1.DrawLineNDC(legendX[0]+0.171,legendY[1]-0.007,legendX[0]+0.183,legendY[1]-0.007)
+        expH1.Draw("Same")
+        
+        expH2 = ROOT.TLine()
+        expH2.DrawLineNDC(legendX[0]+0.171,legendY[1]-0.031,legendX[0]+0.183,legendY[1]-0.031)
+        expH2.Draw("Same")
+        
+        expM = ROOT.TMarker(legendX[0]+0.177,legendY[1]-0.0195,20)
+        expM.SetMarkerSize(0.6)
+        expM.SetNDC(True)
+        expM.Draw("Same")
+        
+        totV = ROOT.TLine()
+        totV.DrawLineNDC(legendX[0]+0.262,legendY[1]+0.001,legendX[0]+0.262,legendY[1]-0.038)
+        totV.Draw("Same")
+        
+        totM = ROOT.TMarker(legendX[0]+0.262,legendY[1]-0.0195,20)
+        totM.SetMarkerSize(0.6)
+        totM.SetNDC(True)
+        totM.Draw("Same")
+        
+        
         cv.cd(1)
        
-        resYTitle = "Pred./Data#kern[-0.5]{ }"
+        resYTitle = "#lower[0.03]{Pred. / Data} "
        
         axisRes=ROOT.TH2F("axisRes"+str(random.random()),"",50,xmin,xmax,50,1-resRange,1+resRange)
         axisRes.GetYaxis().SetNdivisions(406)
         axisRes.GetXaxis().SetTitle(xtitle)
-        axisRes.GetXaxis().SetTickLength(0.017/(1-cv.GetPad(1).GetLeftMargin()-cv.GetPad(1).GetRightMargin()))
+        axisRes.GetXaxis().SetTickLength(0.019/(1-cv.GetPad(1).GetLeftMargin()-cv.GetPad(1).GetRightMargin()))
         axisRes.GetYaxis().SetTickLength(0.015/(1-cv.GetPad(1).GetTopMargin()-cv.GetPad(1).GetBottomMargin()))
         axisRes.GetXaxis().SetLabelFont(43)
-        axisRes.GetXaxis().SetLabelSize(33)
+        axisRes.GetXaxis().SetLabelSize(32)
         axisRes.GetYaxis().SetLabelFont(43)
-        axisRes.GetYaxis().SetLabelSize(33)
+        axisRes.GetYaxis().SetLabelSize(32)
         axisRes.GetXaxis().SetTitleFont(43)
-        axisRes.GetXaxis().SetTitleSize(36)
+        axisRes.GetXaxis().SetTitleSize(34)
         axisRes.GetYaxis().SetTitleFont(43)
-        axisRes.GetYaxis().SetTitleSize(36)
+        axisRes.GetYaxis().SetTitleSize(34)
         axisRes.GetYaxis().SetTitle(resYTitle)
         axisRes.GetYaxis().SetNoExponent(True)
         axisRes.GetYaxis().SetTitleOffset(1.43)
@@ -621,7 +664,7 @@ class Drawing(Module):
         cv.GetPad(2).SetPad(0.0, 0.00, 1.0,1.0)
         cv.GetPad(2).SetFillStyle(4000)
         
-        cvxmin=0.145
+        cvxmin=0.135
         cvxmax=0.96
         cvymin=0.13
         cvymax=0.93
@@ -950,8 +993,8 @@ class Drawing(Module):
         cv.GetPad(2).SetFillStyle(4000)
         
         cvxmax=0.96
-        cvymin=0.135
-        cvymax=0.93
+        cvymin=0.13
+        cvymax=0.935
         resHeight=0.32
         
         rootObj =[]
@@ -1007,16 +1050,16 @@ class Drawing(Module):
         )
         axis.GetXaxis().SetTitle("")
         axis.GetYaxis().SetTitle(ytitle)
-        axis.GetXaxis().SetTickLength(0.015/(1-cv.GetPad(2).GetLeftMargin()-cv.GetPad(2).GetRightMargin()))
+        axis.GetXaxis().SetTickLength(0.019/(1-cv.GetPad(2).GetLeftMargin()-cv.GetPad(2).GetRightMargin()))
         axis.GetYaxis().SetTickLength(0.015/(1-cv.GetPad(2).GetTopMargin()-cv.GetPad(2).GetBottomMargin()))
         axis.GetXaxis().SetLabelFont(43)
         axis.GetXaxis().SetLabelSize(0)
         axis.GetYaxis().SetLabelFont(43)
-        axis.GetYaxis().SetLabelSize(33)
+        axis.GetYaxis().SetLabelSize(32)
         axis.GetXaxis().SetTitleFont(43)
-        axis.GetXaxis().SetTitleSize(36)
+        axis.GetXaxis().SetTitleSize(34)
         axis.GetYaxis().SetTitleFont(43)
-        axis.GetYaxis().SetTitleSize(36)
+        axis.GetYaxis().SetTitleSize(34)
         axis.GetYaxis().SetNoExponent(not logy)
         axis.GetYaxis().SetTitleOffset(yoffset)
         axis.Draw("AXIS")
@@ -1046,43 +1089,55 @@ class Drawing(Module):
         pCMS.SetFillColor(ROOT.kWhite)
         pCMS.SetBorderSize(0)
         pCMS.SetTextFont(63)
-        pCMS.SetTextSize(37)
+        pCMS.SetTextSize(35)
         pCMS.SetTextAlign(11)
         pCMS.AddText("CMS")
         pCMS.Draw("Same")
         
+        if type(cut)==type(str()):
+            Ncut = 1
+        elif type(cut)==type(list()):
+            Ncut = len(cut)
+        
         if legendPos=="R":
-            pCut=ROOT.TPaveText(cvxmin+0.025,cvymax-0.07,cvxmin+0.025,cvymax-0.07,"NDC")
+            pCut=ROOT.TPaveText(cvxmin+0.025,cvymax-0.031,cvxmin+0.025,cvymax-0.031-0.058*Ncut,"NDC")
             pCut.SetTextAlign(11)
         else:
-            pCut=ROOT.TPaveText(cvxmax-0.025,cvymax-0.07,cvxmax-0.025,cvymax-0.07,"NDC")
+            pCut=ROOT.TPaveText(cvxmax-0.025,cvymax-0.031,cvxmax-0.025,cvymax-0.031-0.058*Ncut,"NDC")
             pCut.SetTextAlign(31)
-        pCut.SetFillColor(ROOT.kWhite)
+        pCut.SetFillStyle(0)
         pCut.SetBorderSize(0)
         pCut.SetTextFont(43)
-        pCut.SetTextSize(30)
-        pCut.AddText(cut)
+        pCut.SetTextSize(29)
+        if type(cut)==type(str()):
+            pCut.AddText(cut)
+            #pCut.GetListOfLines().Last().SetTextFont(63)
+        elif type(cut)==type(list()) and len(cut)>0:
+            pCut.AddText(cut[0])
+            #pCut.GetListOfLines().Last().SetTextFont(63)
+            for cutText in cut[1:]:
+                pCut.AddText(cutText)
         pCut.Draw("Same")
         
         pLumi=ROOT.TPaveText(cvxmax,0.95,cvxmax,0.95,"NDC")
         pLumi.SetFillColor(ROOT.kWhite)
         pLumi.SetBorderSize(0)
         pLumi.SetTextFont(43)
-        pLumi.SetTextSize(37)
+        pLumi.SetTextSize(35)
         pLumi.SetTextAlign(31)
         pLumi.AddText(lumi)
         pLumi.Draw("Same")
         
        
         if legendPos=="R":
-            legend = ROOT.TLegend(cvxmax-0.27,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.058*(len(stack)+2))    
+            legend = ROOT.TLegend(cvxmax-0.22,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.058*(len(stack)+2))    
         else:
-            legend = ROOT.TLegend(cvxmin+0.03,cvymax-0.02,cvxmin+0.26,cvymax-0.01-0.058*(len(stack)+2))    
+            legend = ROOT.TLegend(cvxmin+0.02,cvymax-0.02,cvxmin+0.26,cvymax-0.01-0.058*(len(stack)+2))    
         legend.SetFillColor(0)
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
         legend.SetTextFont(43)
-        legend.SetTextSize(30)
+        legend.SetTextSize(29)
         legend.AddEntry(data,"Data","P")
         for s in reversed(stack):
             legend.AddEntry(s["hist"],s["title"],"F")
@@ -1091,19 +1146,19 @@ class Drawing(Module):
         
         cv.cd(1)
         
-        axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Data#kern[-0.75]{ }/Fit",50,xmin,xmax,50,1-resRange,1+resRange)
+        axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Data / Fit#kern[-1.7]{ }",50,xmin,xmax,50,1-resRange,1+resRange)
         axisRes.GetYaxis().SetNdivisions(406)
         axisRes.GetXaxis().SetTitle(xtitle)
         axisRes.GetXaxis().SetTickLength(0.017/(1-cv.GetPad(1).GetLeftMargin()-cv.GetPad(1).GetRightMargin()))
         axisRes.GetYaxis().SetTickLength(0.015/(1-cv.GetPad(1).GetTopMargin()-cv.GetPad(1).GetBottomMargin()))
         axisRes.GetXaxis().SetLabelFont(43)
-        axisRes.GetXaxis().SetLabelSize(33)
+        axisRes.GetXaxis().SetLabelSize(32)
         axisRes.GetYaxis().SetLabelFont(43)
-        axisRes.GetYaxis().SetLabelSize(33)
+        axisRes.GetYaxis().SetLabelSize(32)
         axisRes.GetXaxis().SetTitleFont(43)
-        axisRes.GetXaxis().SetTitleSize(36)
+        axisRes.GetXaxis().SetTitleSize(34)
         axisRes.GetYaxis().SetTitleFont(43)
-        axisRes.GetYaxis().SetTitleSize(36)
+        axisRes.GetYaxis().SetTitleSize(34)
         axisRes.GetYaxis().SetNoExponent(True)
         axisRes.GetYaxis().SetTitleOffset(yoffset)
         axisRes.Draw("AXIS")

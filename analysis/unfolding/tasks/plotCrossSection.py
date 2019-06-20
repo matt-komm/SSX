@@ -458,19 +458,19 @@ class PlotCrossSection(Module.getClass("Program")):
         )
         
         
-        xtitleWOUnit = self.module("Unfolding").getUnfoldingLevel().capitalize()+"-level "+self.module("Unfolding").getUnfoldingVariableName()
+        xtitleWOUnit = self.module("Unfolding").getUnfoldingLevel().capitalize()+"-level "+self.module("Unfolding").getUnfoldingSymbol()
         ytitleSumWOUnit = "d#kern[-0.6]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
         ytitleSumNormWOUnit = "1#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }#sigma#kern[-0.5]{ }#times#kern[-0.3]{ }d#kern[-0.6]{ }#sigma#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
-        ytitleRatioWOUnit = "d#kern[-0.6]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+#bar{t}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
+        ytitleRatioWOUnit = "d#kern[-0.6]{ }(#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t}}#kern[-0.5]{ }/#sigma#lower[0.3]{#scale[0.8]{#kern[-0.5]{ }t+t#lower[-0.87]{#kern[-1.0]{-}}}}#kern[-0.5]{ })#kern[-0.5]{ }#lower[0.2]{#scale[1.3]{/}}#kern[-0.8]{ }d#kern[-0.6]{ }"+self.module("Unfolding").getUnfoldingSymbol()+""
         unit = self.module("Unfolding").getUnfoldingVariableUnit()
         logy = unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt"
         if unit!="":
             xtitle = xtitleWOUnit+" ("+unit+")"
-            ytitleSum = ytitleSumWOUnit+" (pb#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
-            ytitleSumNorm = ytitleSumNormWOUnit+" (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
-            ytitleRatio = ytitleRatioWOUnit+" (1#kern[-0.5]{ }/#kern[-0.5]{ }"+unit+")"
+            ytitleSum = ytitleSumWOUnit+" (pb#kern[-0.2]{ }/#kern[-0.5]{ }"+unit+")"
+            ytitleSumNorm = ytitleSumNormWOUnit+" (1#kern[-0.2]{ }/#kern[-0.5]{ }"+unit+")"
+            ytitleRatio = ytitleRatioWOUnit+" (1#kern[-0.2]{ }/#kern[-0.5]{ }"+unit+")"
         else:
-            ytitleSum = " (pb)"
+            ytitleSum = ytitleSumWOUnit+" (pb)"
             xtitle = xtitleWOUnit
             ytitleSumNorm = ytitleSumNormWOUnit
             ytitleRatio = ytitleRatioWOUnit
@@ -813,7 +813,7 @@ class PlotCrossSection(Module.getClass("Program")):
             "ttbarUE":"\\ttbar UE tune",
             "wjetsScaleME":"\\wjets ME scale"
         }
-            
+        '''
         if (unfoldingName=="cos" or unfoldingName=="cosTau") and unfoldingLevel=="parton":
             asymmetryGen = self.module("Asymmetry").calculateAsymmetry(genHistSumNorm)
             asymmetryStat = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal)
@@ -868,26 +868,7 @@ class PlotCrossSection(Module.getClass("Program")):
                     100.*asySystIncl[0],100.*asySystIncl[1],
                     100.*math.sqrt(maxSystAsym2))
                 )
-                '''
-                asyUp = self.module("Asymmetry").fitDistribution(
-                    sysResults[isys][0]["Up"]["hist"],
-                    sysResults[isys][0]["Up"]["cov"],ignoreCorr=True
-                )
-                asyDown = self.module("Asymmetry").fitDistribution(
-                    sysResults[isys][0]["Down"]["hist"],
-                    sysResults[isys][0]["Down"]["cov"],ignoreCorr=True
-                )
-                maxSystAsym = max(
-                    math.fabs(asyUp[0]-asymmetryStat[0]),
-                    math.fabs(asyDown[0]-asymmetryStat[0])
-                )
                 
-                
-                print "%20s, %5.3f,%5.3f, d=%5.3f"%(sysDictNames[sys],asyUp[0]-asymmetryStat[0],asyDown[0]-asymmetryStat[0],maxSystAsym)
-                
-                asymUnc2+=maxSystAsym**2
-                #break
-                '''
             self._logger.info("Gen asymmetry:                   %5.3f"%(asymmetryGen))
             self._logger.info("Meas. asymmetry (stat):          %5.2f+-%5.2f"%(100.*asymmetryStat[0],100.*asymmetryStat[1]))
             self._logger.info("Meas. asymmetry (stat, no corr): %5.2f+-%5.2f"%(100.*asymmetryStatNoCorr[0],100.*asymmetryStatNoCorr[1]))
@@ -898,7 +879,7 @@ class PlotCrossSection(Module.getClass("Program")):
             
             self._logger.info("Exp. unc: +-%5.2f"%(100.*math.sqrt(max((asymmetryProfiled[1]/asymmetryProfiled[0])**2-(asymmetryStat[1]/asymmetryStat[0])**2,0)*asymmetryTotal[0])))
             self._logger.info("Tot summed unc: +-%5.2f"%(100.*math.sqrt(asymUnc2)))
-        
+        '''
         self.module("Utils").normalizeByBinWidth(histSumProfiledNorm)
         self.module("Utils").normalizeByBinWidth(histSumTotalNorm)
         self.module("Utils").normalizeByBinWidth(genHistSumNorm)
@@ -1188,10 +1169,8 @@ class PlotCrossSection(Module.getClass("Program")):
         
         print "NNPDF",
         genHistsRatioNNPDF30 = genHistRatio.Clone(genHistRatio.GetName()+"nnpdf")
-        genHistsRatioNNPDF30.SetLineColor(newColor(83./255,131./255,241./255).GetNumber())
-        genHistsRatioNNPDF30.SetFillColor(newColor(153./255,191./255,241./255).GetNumber())
-        
-        genHistsRatioNNPDF30.SetLineColor(newColor(1.,0.76,0.32).GetNumber())
+        #genHistsRatioNNPDF30.SetLineColor(newColor(1.,0.76,0.32).GetNumber())
+        genHistsRatioNNPDF30.SetLineColor(newColor(243./255,168./255,27./255).GetNumber())
         genHistsRatioNNPDF30.SetFillColor(newColor(1.,0.96,0.62).GetNumber())
         
         genHistsRatioNNPDF30.SetLineStyle(1)
@@ -1211,10 +1190,11 @@ class PlotCrossSection(Module.getClass("Program")):
         
         print "MMHT",
         genHistsRatioMMHT14 = genHistRatio.Clone(genHistRatio.GetName()+"mh")
-        genHistsRatioMMHT14.SetLineColor(newColor(211./255,28./255,230./255).GetNumber())
+        #genHistsRatioMMHT14.SetLineColor(newColor(211./255,28./255,230./255).GetNumber())
+        genHistsRatioMMHT14.SetLineColor(newColor(179./255,34./255,195./255).GetNumber())
         genHistsRatioMMHT14.SetFillColor(newColor(221./255,190./255,240./255).GetNumber())
-        genHistsRatioMMHT14.SetLineStyle(1)
-        genHistsRatioMMHT14.SetLineWidth(2)
+        genHistsRatioMMHT14.SetLineStyle(3)
+        genHistsRatioMMHT14.SetLineWidth(3)
         genHistsRatioMMHT14.SetFillStyle(1001)
         
         self.applyLHEVariations(
@@ -1230,9 +1210,10 @@ class PlotCrossSection(Module.getClass("Program")):
         
         print "CT10",
         genHistsRatioCT10 = genHistRatio.Clone(genHistRatio.GetName()+"ct")
-        genHistsRatioCT10.SetLineColor(newColor(83./255,131./255,241./255).GetNumber())
+        #genHistsRatioCT10.SetLineColor(newColor(83./255,131./255,241./255).GetNumber())
+        genHistsRatioCT10.SetLineColor(newColor(38./255,92./255,217./255).GetNumber())
         genHistsRatioCT10.SetFillColor(newColor(153./255,191./255,241./255).GetNumber())
-        genHistsRatioCT10.SetLineStyle(1)
+        genHistsRatioCT10.SetLineStyle(2)
         genHistsRatioCT10.SetLineWidth(2)
         genHistsRatioCT10.SetFillStyle(1001)
         
@@ -1301,16 +1282,16 @@ class PlotCrossSection(Module.getClass("Program")):
         if unfoldingName=="lpt" or unfoldingName=="y":
             legendPos = "RU"
         elif unfoldingName=="cos" or unfoldingName=="cosTau":
-            legendPos = "RD"
+            legendPos = "LU"
         else:
             legendPos = "LD"
         
         
             
         genHistsRatio = [
-            {"hist":genHistsRatioNNPDF30,"legend":"NNPDF#kern[-0.5]{ }3.0 NLO"},
-            {"hist":genHistsRatioCT10,"legend":"CT#kern[-0.5]{ }10 NLO"},
-            {"hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.5]{ }14 NLO"},
+            {"hist":genHistsRatioNNPDF30,"legend":"NNPDF#kern[-0.2]{ }3.0 NLO"},
+            {"hist":genHistsRatioCT10,"legend":"CT#kern[-0.4]{ }10 NLO"},
+            {"hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.4]{ }14 NLO"},
             
         ]
         
@@ -1328,8 +1309,8 @@ class PlotCrossSection(Module.getClass("Program")):
             yaxis=xtitle,
             zaxis="Var#lower[0.07]{#scale[1.2]{(}}"+ytitleSumWOUnit+"#lower[0.07]{#scale[1.2]{)}}",
             unit=covUnit,
-            title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
-            addtitle="36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+            title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.4]{ }+#kern[-0.4]{ }jets",
+            addtitle="36#kern[-0.4]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13#kern[-0.4]{ }TeV)"
         )
         
         self.module("Drawing").plotCovariance(
@@ -1340,8 +1321,8 @@ class PlotCrossSection(Module.getClass("Program")):
             yaxis=xtitle,
             zaxis="Var#lower[0.07]{#scale[1.2]{(}}"+ytitleSumNormWOUnit+"#lower[0.07]{#scale[1.2]{)}}",
             unit=covUnitNorm,
-            title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
-            addtitle="36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+            title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.4]{ }+#kern[-0.4]{ }jets",
+            addtitle="36#kern[-0.4]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13#kern[-0.4]{ }TeV)"
         )
         
         self.module("Drawing").plotCovariance(
@@ -1352,8 +1333,8 @@ class PlotCrossSection(Module.getClass("Program")):
             yaxis=xtitle,
             zaxis="Var#lower[0.07]{#scale[1.2]{(}}"+ytitleRatioWOUnit+"#lower[0.07]{#scale[1.2]{)}}",
             unit=covUnitNorm,
-            title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets",
-            addtitle="36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)"
+            title=self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.4]{ }+#kern[-0.4]{ }jets",
+            addtitle="36#kern[-0.4]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13#kern[-0.4]{ }TeV)"
         )
         
         print "Sum uncertainties"
@@ -1369,19 +1350,21 @@ class PlotCrossSection(Module.getClass("Program")):
         
         self.module("Drawing").plotCrossSection(
             genHistSums,histSumProfiled,histSumTotal,ymin,ymax,logy,ytitleSum,xtitle,
-            self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
+            "36#kern[-0.4]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13#kern[-0.4]{ }TeV)",
+            self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.4]{ }+#kern[-0.4]{ }jets",
             legendPos,resRange,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sum")
         )  
         
         self.module("Drawing").plotCrossSection(
             genHistSumsNorm,histSumProfiledNorm,histSumTotalNorm,yminNorm,ymaxNorm,logy,ytitleSumNorm,xtitle,
-            self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
+            "36#kern[-0.4]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13#kern[-0.4]{ }TeV)",
+            self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.4]{ }+#kern[-0.4]{ }jets",
             legendPos,resRangeNorm,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sumnorm")
         ) 
         
-        ymin = 0.25 if channelName=="comb" else 0.
+        ymin = 0.15 if channelName=="comb" else 0.
         ymax = 0.85 if channelName=="comb" else 1.
         
         centerY = False
@@ -1391,7 +1374,8 @@ class PlotCrossSection(Module.getClass("Program")):
         
         self.module("Drawing").plotCrossSection(
             genHistsRatio,histRatioProfiled,histRatioTotal,ymin,ymax,0,ytitleRatio,xtitle,
-            self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.5]{ }+#kern[-0.5]{ }jets, 36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13TeV)",
+            "36#kern[-0.4]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13#kern[-0.4]{ }TeV)",
+            self.module("Samples").getChannelTitle(channels,0)+"#kern[-0.4]{ }+#kern[-0.4]{ }jets",
             "LD",resRangeRatio,
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_ratio"),
             fillGen=True,
