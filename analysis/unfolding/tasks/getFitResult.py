@@ -502,8 +502,8 @@ class PlotCrossSection(Module.getClass("Program")):
         for channel in channels:
             hist = histogramsPerComponentAndUncertainty[channel]["data"]
             hist.Rebin(16)
-            print "  &  \\multicolumn{2}{c}{%.0f}"%self.roundToSig(hist.GetBinContent(2),math.sqrt(reducedHistsSum[channel].GetBinError(2)**2+numpy.std(toysSum[channel][1])**2))[0],
-            print "  &  \\multicolumn{2}{c}{%.0f}"%self.roundToSig(hist.GetBinContent(1),math.sqrt(reducedHistsSum[channel].GetBinError(1)**2+numpy.std(toysSum[channel][0])**2))[0],
+            print "  &  \\multicolumn{2}{c}{%.0f}"%round(hist.GetBinContent(2)),
+            print "  &  \\multicolumn{2}{c}{%.0f}"%round(hist.GetBinContent(1)),
         print "\\\\"
         #print "\\hline"
         '''

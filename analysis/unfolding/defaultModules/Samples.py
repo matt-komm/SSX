@@ -43,19 +43,19 @@ class Samples(Module):
         elif charge == 1:
             chargeTitle = "t#kern[-0.65]{ }"
         if len(channels)==1 and channels[0]=="mu":
-            return chargeTitle+", #mu#kern[-0.65]{ }"
+            return chargeTitle+", #mu#lower[-0.7]{#scale[0.7]{#pm}}#kern[-0.65]{ }"
         elif len(channels)==1 and channels[0]=="ele":
-            return chargeTitle+", e#kern[-0.65]{ }"
+            return chargeTitle+", e#lower[-0.7]{#scale[0.7]{#pm}}#kern[-0.65]{ }"
         elif "mu" in channels and "ele" in channels:
-            return chargeTitle+", #mu#kern[-0.2]{ }/#kern[-0.5]{ }e#kern[-0.65]{ }"
+            return chargeTitle+", #mu#lower[-0.7]{#scale[0.7]{#pm}}#kern[-0.2]{ }/#kern[-0.5]{ }e#lower[-0.7]{#scale[0.7]{#pm}}#kern[-0.65]{ }"
         
     def getChannelTitle(self,channels,charge=None):
         if len(channels)==1 and channels[0]=="mu":
-            return "#mu"
+            return "#mu#lower[-0.7]{#scale[0.7]{#pm}}"
         elif len(channels)==1 and channels[0]=="ele":
-            return "e"
+            return "e#lower[-0.7]{#scale[0.7]{#pm}}"
         elif "mu" in channels and "ele" in channels:
-            return "#mu#kern[-0.2]{ }/#kern[-0.5]{ }e"
+            return "#mu#lower[-0.7]{#scale[0.7]{#pm}}#kern[-0.2]{ }/#kern[-0.5]{ }e#lower[-0.7]{#scale[0.7]{#pm}}"
             
     def getChargeTitle(self,charge=None):
         if charge == -1:

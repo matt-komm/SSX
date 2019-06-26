@@ -452,8 +452,8 @@ class Drawing(Module):
         
         legendXL = [cvxmin+0.02,cvxmin+0.35]
         legendXR = [cvxmax-0.38,cvxmax-0.05]
-        legendYD = [resHeight+0.03,resHeight+0.03+0.046*(1+len(genHistSums))]
-        legendYU = [cvymax-0.085-0.046*(1+len(genHistSums)),cvymax-0.085]
+        legendYD = [resHeight+0.03,resHeight+0.03+0.048*(1+len(genHistSums))]
+        legendYU = [cvymax-0.085-0.048*(1+len(genHistSums)),cvymax-0.085]
         
         if legendPos[0]=="L":
             legendX = legendXL
@@ -471,8 +471,8 @@ class Drawing(Module):
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
         legend.SetTextFont(43)
-        legend.SetTextSize(26)
-        legend.AddEntry(histSumTotal,"Data (#lower[-0.07]{#scale[0.8]{    Exp.,    Total}}#kern[-0.5]{ })","P")
+        legend.SetTextSize(27)
+        legend.AddEntry(histSumTotal,"Data (#lower[-0.03]{#scale[0.87]{   #kern[-0.7]{ }exp,   #kern[-0.7]{ }total}}#kern[-0.5]{ })","P")
         #legend.AddEntry(histSumTotal,"Data","P")
         for genHistSum in genHistSums:
             if fillGen:
@@ -483,7 +483,7 @@ class Drawing(Module):
         
         
         #if legendPos[0]=="L":
-        pCut=ROOT.TPaveText(legendX[0]+0.02,legendY[1]+0.053,legendX[0]+0.02,legendY[1]+0.053,"NDC")
+        pCut=ROOT.TPaveText(legendX[0]+0.02,legendY[1]+0.051,legendX[0]+0.02,legendY[1]+0.051,"NDC")
         pCut.SetTextAlign(13)
         #else:
         #    pCut=ROOT.TPaveText(cvxmax-0.025,cvymax-0.031,cvxmax-0.025,cvymax-0.031-0.058*1,"NDC")
@@ -491,33 +491,33 @@ class Drawing(Module):
         pCut.SetFillStyle(0)
         pCut.SetBorderSize(0)
         pCut.SetTextFont(43)
-        pCut.SetTextSize(28)
+        pCut.SetTextSize(27)
         pCut.AddText(text)
         pCut.Draw("Same")
         
         expV = ROOT.TLine()
-        expV.DrawLineNDC(legendX[0]+0.177,legendY[1]-0.007,legendX[0]+0.177,legendY[1]-0.031)
+        expV.DrawLineNDC(legendX[0]+0.18,legendY[1]-0.007,legendX[0]+0.18,legendY[1]-0.035)
         expV.Draw("Same")
         
         expH1 = ROOT.TLine()
-        expH1.DrawLineNDC(legendX[0]+0.171,legendY[1]-0.007,legendX[0]+0.183,legendY[1]-0.007)
+        expH1.DrawLineNDC(legendX[0]+0.173,legendY[1]-0.007,legendX[0]+0.187,legendY[1]-0.007)
         expH1.Draw("Same")
         
         expH2 = ROOT.TLine()
-        expH2.DrawLineNDC(legendX[0]+0.171,legendY[1]-0.031,legendX[0]+0.183,legendY[1]-0.031)
+        expH2.DrawLineNDC(legendX[0]+0.173,legendY[1]-0.035,legendX[0]+0.187,legendY[1]-0.035)
         expH2.Draw("Same")
         
-        expM = ROOT.TMarker(legendX[0]+0.177,legendY[1]-0.0195,20)
-        expM.SetMarkerSize(0.6)
+        expM = ROOT.TMarker(legendX[0]+0.18,legendY[1]-0.021,20)
+        expM.SetMarkerSize(0.75)
         expM.SetNDC(True)
         expM.Draw("Same")
         
         totV = ROOT.TLine()
-        totV.DrawLineNDC(legendX[0]+0.262,legendY[1]+0.001,legendX[0]+0.262,legendY[1]-0.038)
+        totV.DrawLineNDC(legendX[0]+0.262,legendY[1]+0.001,legendX[0]+0.262,legendY[1]-0.041)
         totV.Draw("Same")
         
-        totM = ROOT.TMarker(legendX[0]+0.262,legendY[1]-0.0195,20)
-        totM.SetMarkerSize(0.6)
+        totM = ROOT.TMarker(legendX[0]+0.262,legendY[1]-0.021,20)
+        totM.SetMarkerSize(0.75)
         totM.SetNDC(True)
         totM.Draw("Same")
         
@@ -1100,10 +1100,10 @@ class Drawing(Module):
             Ncut = len(cut)
         
         if legendPos=="R":
-            pCut=ROOT.TPaveText(cvxmin+0.025,cvymax-0.031,cvxmin+0.025,cvymax-0.031-0.058*Ncut,"NDC")
+            pCut=ROOT.TPaveText(cvxmin+0.025,cvymax-0.031,cvxmin+0.025,cvymax-0.031-0.051*Ncut,"NDC")
             pCut.SetTextAlign(11)
         else:
-            pCut=ROOT.TPaveText(cvxmax-0.025,cvymax-0.031,cvxmax-0.025,cvymax-0.031-0.058*Ncut,"NDC")
+            pCut=ROOT.TPaveText(cvxmax-0.025,cvymax-0.031,cvxmax-0.025,cvymax-0.031-0.051*Ncut,"NDC")
             pCut.SetTextAlign(31)
         pCut.SetFillStyle(0)
         pCut.SetBorderSize(0)
@@ -1130,17 +1130,19 @@ class Drawing(Module):
         
        
         if legendPos=="R":
-            legend = ROOT.TLegend(cvxmax-0.22,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.058*(len(stack)+2))    
+            legend = ROOT.TLegend(cvxmax-0.22,cvymax-0.02,cvxmax-0.01,cvymax-0.01-0.061*(len(stack)+2))    
         else:
-            legend = ROOT.TLegend(cvxmin+0.02,cvymax-0.02,cvxmin+0.26,cvymax-0.01-0.058*(len(stack)+2))    
+            legend = ROOT.TLegend(cvxmin+0.02,cvymax-0.02,cvxmin+0.26,cvymax-0.01-0.061*(len(stack)+2))    
         legend.SetFillColor(0)
         legend.SetFillStyle(0)
         legend.SetBorderSize(0)
         legend.SetTextFont(43)
         legend.SetTextSize(29)
-        legend.AddEntry(data,"Data","P")
+        legend.AddEntry(data,"Data","PE")
         for s in reversed(stack):
             legend.AddEntry(s["hist"],s["title"],"F")
+            if s['add']!="":
+                legend.AddEntry("",s["add"],"")
         
         
         
@@ -1202,19 +1204,19 @@ class Drawing(Module):
                 lineMin = ROOT.TLine(xminL,1+resRange*0.42,xminL,1+resRange*0.70)
                 rootObj.append(lineMin)
                 lineMin.SetLineWidth(2)
-                lineMin.SetLineColor(ROOT.kGray)
+                lineMin.SetLineColor(ROOT.kGray+1)
                 lineMin.Draw("SameL")
             if xmaxL<xmax:
                 lineMax = ROOT.TLine(xmaxL,1+resRange*0.42,xmaxL,1+resRange*0.70)
                 rootObj.append(lineMax)
                 lineMax.SetLineWidth(2)
-                lineMax.SetLineColor(ROOT.kGray)
+                lineMax.SetLineColor(ROOT.kGray+1)
                 lineMax.Draw("SameL")
             
             lineH = ROOT.TLine(max(xminL,xmin),1+resRange*0.56,min(xmaxL,xmax),1+resRange*0.56)
             rootObj.append(lineH)
             lineH.SetLineWidth(2)
-            lineH.SetLineColor(ROOT.kGray)
+            lineH.SetLineColor(ROOT.kGray+1)
             lineH.Draw("SameL")
             
             xmean = (max(xminL,xmin)+min(xmaxL,xmax))*0.5
@@ -1242,7 +1244,7 @@ class Drawing(Module):
             pText.SetFillColor(ROOT.kWhite)
             pText.SetTextSize(25)
             pText.SetTextAlign(22)
-            pText.SetTextColor(ROOT.kGray)
+            pText.SetTextColor(ROOT.kGray+1)
             pText.AddText(mark["title"])
             pText.Draw("Same")
                 

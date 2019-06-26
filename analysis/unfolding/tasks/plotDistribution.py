@@ -231,12 +231,14 @@ class PlotCrossSection(Module.getClass("Program")):
                 "fill":newColor(0.98,0.1,0.1),
                 #"fill":newColor(1,0.02,0.02),
                 "title":"#it{t} channel",
+                "add":"",
             },
             "TopBkg": {
                 "hists":["TopBkg_pos","TopBkg_neg"],
                 "fill":newColor(0.98,0.8,0.2),
                 #"fill":newColor(0.98,0.57,0.05),
                 "title":"tt#lower[-0.87]{#kern[-0.89]{-}} / tW",
+                "add":"",
             },
             "WZjets": {
                 "hists": ["WZjets_pos","WZjets_neg"],
@@ -244,11 +246,13 @@ class PlotCrossSection(Module.getClass("Program")):
                 #"fill":ROOT.gROOT.GetColor(ROOT.kGreen-2),
                 #"fill":newColor(0.2,0.65,0.25),
                 "title":"W / Z / #gamma#scale[0.9]{*}",
+                "add":"#lower[-0.06]{+ jets}"
             },
             "QCD": {
                 "hists": ["QCD_"+plotName[0]+"_pos","QCD_"+plotName[0]+"_neg"],
                 "fill":newColor(0.8,0.8,0.8),
                 "title":"Multijet",
+                "add":"",
             },
         }
         for s in sets.keys():
@@ -542,7 +546,8 @@ class PlotCrossSection(Module.getClass("Program")):
             stack.append({
                 "name":stackName,
                 "hist":histSum,
-                "title":sets[stackName]["title"]
+                "title":sets[stackName]["title"],
+                "add":sets[stackName]["add"],
             })
         totalMCSum = stack[0]["hist"].Clone(stack[0]["hist"].GetName()+"mcsum")
         for i in range(1,len(stack)):
@@ -578,7 +583,7 @@ class PlotCrossSection(Module.getClass("Program")):
                    
         scale = 0
         if plotName[1]=="cos2j1t_CR":
-            scale=0.5
+            scale=0.52
         if plotName[1]=="leta2j1t_CR":
             scale=0.25   
         if logy:
@@ -593,14 +598,14 @@ class PlotCrossSection(Module.getClass("Program")):
             
         title = ""
         if channelName=="ele":
-            title +="e"
+            title +="e#lower[-0.7]{#scale[0.7]{#pm}}"
         elif channelName=="mu":
-            title +="#mu"
+            title +="#mu#lower[-0.7]{#scale[0.7]{#pm}}"
         elif channelName=="comb":
-            title += "(#mu,#kern[-0.4]{ }e)"
+            title += "(#mu#lower[-0.7]{#scale[0.7]{#pm}},#kern[-0.4]{ }e#lower[-0.7]{#scale[0.7]{#pm}})"
         title+="#kern[-0.4]{ }+#kern[-0.4]{ }"+region
             
-        lumi = "36#kern[-0.5]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13#kern[-0.5]{ }TeV)"
+        lumi = "35.9#kern[-0.2]{ }fb#lower[-0.7]{#scale[0.7]{-1}} (13#kern[-0.3]{ }TeV)"
             
         cuts = [title]
         if cut!="":
