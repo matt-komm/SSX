@@ -276,6 +276,7 @@ class PlotCrossSection(Module.getClass("Program")):
         cut = ""
         region = ""
         resRange = 0.4
+        resOpt = None
         marks = []
         for histSetup in self.module("Plots").getHistSetups("ele"): #only interested in xaxis title
             if histSetup["obsname"]==plotName[0] and histSetup["name"]==plotName[1]:
@@ -288,6 +289,8 @@ class PlotCrossSection(Module.getClass("Program")):
                 region = histSetup["region"]
                 resRange = histSetup["resRange"]
                 marks = histSetup["marks"]
+                if histSetup.has_key('resOpt'):
+                    resOpt = histSetup['resOpt']
         
         systematicsProfiled = [] if self.getOption("profiled")==None else self.getOption("profiled").split(",")
         systematicsExtern = [] if self.getOption("extern")==None else self.getOption("extern").split(",")
@@ -619,7 +622,8 @@ class PlotCrossSection(Module.getClass("Program")):
         self.module("Drawing").plotDistribution(
             stack,dataSum,ymin,ymax,logy,ytitle,xtitle,cuts,legendPos,resRange,cvxmin,yoffset,lumi,
             os.path.join(finalFolder,plotName[1]),
-            marks=marks
+            marks=marks,
+            resOpt=resOpt
         )
             
         rootHepData = ROOT.TFile(

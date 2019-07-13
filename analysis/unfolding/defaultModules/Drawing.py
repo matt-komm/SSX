@@ -978,7 +978,7 @@ class Drawing(Module):
 
         
         
-    def plotDistribution(self,stack,data,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,yoffset,lumi,output,marks=[]):
+    def plotDistribution(self,stack,data,ymin,ymax,logy,ytitle,xtitle,cut,legendPos,resRange,cvxmin,yoffset,lumi,output,marks=[],resOpt=None):
         ROOT.gStyle.SetPaperSize(8.0*1.35,7.0*1.35)
         ROOT.TGaxis.SetMaxDigits(3)
         ROOT.gStyle.SetLineScalePS(2)
@@ -1148,8 +1148,8 @@ class Drawing(Module):
         
         cv.cd(1)
         
-        axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Data / Fit#kern[-1.7]{ }",50,xmin,xmax,50,1-resRange,1+resRange)
-        axisRes.GetYaxis().SetNdivisions(406)
+        axisRes=ROOT.TH2F("axisRes"+str(random.random()),";;Data / Fit#kern[-1.7]{ }",50,xmin,xmax,50,1-resRange[0],1+resRange[1])
+        axisRes.GetYaxis().SetNdivisions(406 if not resOpt else resOpt)
         axisRes.GetXaxis().SetTitle(xtitle)
         axisRes.GetXaxis().SetTickLength(0.017/(1-cv.GetPad(1).GetLeftMargin()-cv.GetPad(1).GetRightMargin()))
         axisRes.GetYaxis().SetTickLength(0.015/(1-cv.GetPad(1).GetTopMargin()-cv.GetPad(1).GetBottomMargin()))
@@ -1176,15 +1176,16 @@ class Drawing(Module):
             if m>0:
                 dataRes.SetBinContent(ibin+1,d/m)
                 dataRes.SetBinError(ibin+1,e/m)
-                h = min(mcSum.GetBinError(ibin+1)/m,resRange-0.001)
-                box = ROOT.TBox(c-0.5*w,1-h,c+0.5*w,1+h)
+                hDown = min(mcSum.GetBinError(ibin+1)/m,resRange[0]-0.001)
+                hUp = min(mcSum.GetBinError(ibin+1)/m,resRange[1]-0.001)
+                box = ROOT.TBox(c-0.5*w,1-hDown,c+0.5*w,1+hUp)
                 box.SetFillStyle(3345)
                 box.SetLineColor(ROOT.kGray+1)
                 box.SetFillColor(ROOT.kGray)
                 box.SetLineWidth(int(2))
                 rootObj.append(box)
                 box.Draw("SameF")
-                box2 = ROOT.TBox(c-0.5*w,1-h,c+0.5*w,1+h)
+                box2 = ROOT.TBox(c-0.5*w,1-hDown,c+0.5*w,1+hUp)
                 box2.SetFillStyle(0)
                 box2.SetLineColor(ROOT.kGray+1)
                 box2.SetFillColor(ROOT.kGray)
@@ -1201,19 +1202,19 @@ class Drawing(Module):
             xmaxL = mark["xmax"]
             
             if xminL>xmin:
-                lineMin = ROOT.TLine(xminL,1+resRange*0.42,xminL,1+resRange*0.70)
+                lineMin = ROOT.TLine(xminL,1+resRange[1]*0.42,xminL,1+resRange[1]*0.70)
                 rootObj.append(lineMin)
                 lineMin.SetLineWidth(2)
                 lineMin.SetLineColor(ROOT.kGray+1)
                 lineMin.Draw("SameL")
             if xmaxL<xmax:
-                lineMax = ROOT.TLine(xmaxL,1+resRange*0.42,xmaxL,1+resRange*0.70)
+                lineMax = ROOT.TLine(xmaxL,1+resRange[1]*0.42,xmaxL,1+resRange[1]*0.70)
                 rootObj.append(lineMax)
                 lineMax.SetLineWidth(2)
                 lineMax.SetLineColor(ROOT.kGray+1)
                 lineMax.Draw("SameL")
             
-            lineH = ROOT.TLine(max(xminL,xmin),1+resRange*0.56,min(xmaxL,xmax),1+resRange*0.56)
+            lineH = ROOT.TLine(max(xminL,xmin),1+resRange[1]*0.56,min(xmaxL,xmax),1+resRange[1]*0.56)
             rootObj.append(lineH)
             lineH.SetLineWidth(2)
             lineH.SetLineColor(ROOT.kGray+1)
@@ -1236,7 +1237,7 @@ class Drawing(Module):
             boxH.SetFillColor(markColor.GetNumber())
             boxH.Draw("SameF")
             '''
-            pText = ROOT.TPaveText(xmean-0.097*width,1+resRange*0.58,xmean+0.097*width,1+resRange*0.54)
+            pText = ROOT.TPaveText(xmean-0.097*width,1+resRange[1]*0.58,xmean+0.097*width,1+resRange[1]*0.54)
             rootObj.append(pText)
             pText.SetTextFont(63)
             pText.SetLineWidth(0)
@@ -1269,7 +1270,7 @@ class Drawing(Module):
         ROOT.gPad.RedrawAxis()
         
 
-        hidePave=ROOT.TPaveText(cvxmin-0.065,resHeight-0.028,cvxmin-0.005,resHeight+0.028,"NDC")
+        hidePave=ROOT.TPaveText(cvxmin-0.08,resHeight-0.026,cvxmin-0.005,resHeight+0.026,"NDC")
         hidePave.SetFillColor(ROOT.kWhite)
         hidePave.SetFillStyle(1001)
         hidePave.Draw("Same")

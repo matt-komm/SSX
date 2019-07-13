@@ -14,10 +14,10 @@ class TopCosParton(Module.getClass("Unfolding")):
         return "cos"
         
     def getUnfoldingVariableName(self):
-        return "cos#kern[0.1]{#theta}#scale[0.7]{#lower[0.28]{pol}}#kern[-3.7]{ }*  "
+        return "cos#kern[-0.2]{ }#theta#scale[0.7]{#lower[0.28]{pol}}#kern[-3.7]{ }*  "
         
     def getUnfoldingSymbol(self):
-        return "cos#kern[0.1]{#theta}#scale[0.7]{#lower[0.28]{pol}}#kern[-3.7]{ }*  "
+        return "cos#kern[-0.2]{ }#theta#scale[0.7]{#lower[0.28]{pol}}#kern[-3.7]{ }*  "
         
     def getUnfoldingVariableUnit(self):
         return ""

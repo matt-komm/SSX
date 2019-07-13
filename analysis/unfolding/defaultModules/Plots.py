@@ -36,7 +36,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.08,0.11],
                 "marks":[{"xmin":-1,"xmax":50.,"title":"fit region"}]
             },
             {
@@ -51,9 +51,9 @@ class Plots(Module):
                 "legendPos":"L",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} < 0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} < 0",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.08,0.11],
                 "marks":[{"xmin":-2,"xmax":2,"title":"fit region"}]
             },
             {
@@ -61,7 +61,7 @@ class Plots(Module):
                 "name":"bdttch2j1t",
                 "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":self.module("ThetaModel").getBDTtchan(channel),
-                "xtitle":"BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} discriminant",
+                "xtitle":"BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} discriminant",
                 "ytitle":"Events / 0.1#kern[-0.2]{ }units",
                 "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+mtwSelection,
                 "binning":numpy.linspace(-1,1,num=21),
@@ -70,7 +70,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.08,0.11],
                 "marks":[{"xmin":0,"xmax":2.,"title":"fit region"}]
             },
             {
@@ -87,7 +87,7 @@ class Plots(Module):
                 "logy":False,
                 "cut":"",
                 "region":"3j2b",
-                "resRange":0.2,
+                "resRange":[0.08,0.11],
                 "marks":[{"xmin":-1,"xmax":201.,"title":"fit region"}]
             },
             {
@@ -104,7 +104,8 @@ class Plots(Module):
                 "logy":False,
                 "cut":"",
                 "region":"2j0b",
-                "resRange":0.1,
+                "resRange":[0.07,0.09],
+                "resOpt":405,
                 "marks":[]
             },
             
@@ -120,9 +121,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":True,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} > 0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} > 0.7",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -137,9 +138,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} > 0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} > 0.7",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -147,16 +148,16 @@ class Plots(Module):
                 "name":"cos2j1t",
                 "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"SingleTop_1__cosTheta_tPLz",
-                "xtitle":"cos#kern[0.1]{#theta}#scale[0.7]{#lower[0.28]{pol}}#kern[-3.7]{ }*  ",
+                "xtitle":"cos#kern[-0.2]{ }#theta#scale[0.7]{#lower[0.28]{pol}}#kern[-3.7]{ }*  ",
                 "ytitle":"#LT#kern[-0.5]{ }#lower[0.03]{Events}#kern[-0.5]{ }#GT",
                 "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+srSelection,
                 "binning":numpy.array([-1.0,-0.6,-0.3,0.0,0.3,0.6,1.0]),
                 "legendPos":"L",
                 "normalize":True,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} > 0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} > 0.7",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -171,9 +172,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":True,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} > 0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} > 0.7",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -188,9 +189,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} > 0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} > 0.7",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -205,9 +206,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":True,
                 "logy":True,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} > 0.7",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} > 0.7",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             
@@ -228,9 +229,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} < 0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} < 0",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -245,9 +246,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} < 0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} < 0",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -255,16 +256,16 @@ class Plots(Module):
                 "name":"cos2j1t_CR",
                 "comp":["tChannel_pos","tChannel_neg","TopBkg_pos","TopBkg_neg","WZjets_pos","WZjets_neg","QCD_2j1t_pos","QCD_2j1t_neg"],
                 "var":"SingleTop_1__cosTheta_tPLz",
-                "xtitle":"cos#kern[0.1]{#theta}#scale[0.7]{#lower[0.28]{pol}}#kern[-3.7]{ }*  ",
+                "xtitle":"cos#kern[-0.2]{ }#theta#scale[0.7]{#lower[0.28]{pol}}#kern[-3.7]{ }*  ",
                 "ytitle":"Events / 0.08#kern[-0.2]{ }units",
                 "selection":self.module("Samples").getNjets(2)+"*"+self.module("Samples").getNbjets(1)+"*"+crSelection,
                 "binning":numpy.linspace(-1,1,num=26),
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} < 0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} < 0",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -279,9 +280,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} < 0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} < 0",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -296,9 +297,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} < 0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} < 0",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             },
             {
@@ -313,9 +314,9 @@ class Plots(Module):
                 "legendPos":"R",
                 "normalize":False,
                 "logy":False,
-                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t} ch}} < 0",
+                "cut":"m#lower[0.3]{#scale[0.7]{T}}(W) > 50#kern[-0.2]{ }GeV, BDT#lower[0.3]{#scale[0.7]{#it{t}-ch}} < 0",
                 "region":"2j1b",
-                "resRange":0.2,
+                "resRange":[0.17,0.2],
                 "marks":[]
             }
         ]
