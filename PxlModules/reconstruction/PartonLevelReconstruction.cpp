@@ -493,23 +493,24 @@ class PartonLevelReconstruction:
                                 }
                             }
                             
-                            
                             if (bFromTop.size()==0)
                             {
-                                throw std::runtime_error("No b from top found");
+                                logger.log(pxl::LOG_LEVEL_ERROR,"No b from top found @event: "+std::to_string(event->getUserRecord("Event number").toUInt64()));
                             }
                             else if (bFromTop.size()>1)
                             {
-                                throw std::runtime_error("Multiple b's from top found"); 
+                                logger.log(pxl::LOG_LEVEL_ERROR,"Multiple b's from top found @event: "+std::to_string(event->getUserRecord("Event number").toUInt64()));
                             }
-                            bquark = bFromTop[0];
+                            else
+                            {
+                                bquark = bFromTop[0];
 
-                            pxl::Particle* bquarkClone = (pxl::Particle*)bquark->clone();
-                            bquarkClone->setName("bQuark");
-                            bquarkClone->setUserRecord("pdg",bquark->getPdgNumber());
-                            outputEV->insertObject(bquarkClone);
-                            topClone->linkDaughter(bquarkClone);
-                            
+                                pxl::Particle* bquarkClone = (pxl::Particle*)bquark->clone();
+                                bquarkClone->setName("bQuark");
+                                bquarkClone->setUserRecord("pdg",bquark->getPdgNumber());
+                                outputEV->insertObject(bquarkClone);
+                                topClone->linkDaughter(bquarkClone);
+                            }
                             
                             for (pxl::Particle* p: bNotTop)
                             {

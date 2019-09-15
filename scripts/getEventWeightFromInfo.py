@@ -75,9 +75,15 @@ for folder in sorted(rootFiles.keys()): #this loop will not go over data
         pxlioIds = []
         rootIds = []
         for f in rootFiles[folder]:
-            rootIds.append(int(f.rsplit("_",1)[1].split(".",1)[0]))
+            i = int(f.rsplit("_",1)[1].split(".",1)[0])
+            if i in rootIds:
+                print "Double counting root file: ",f
+            rootIds.append(i)
         for f in pxlioFiles[folder]:
-            pxlioIds.append(int(f.rsplit("_",1)[1].split(".",1)[0]))
+            i = int(f.rsplit("_",1)[1].split(".",1)[0])
+            if i in pxlioIds:
+                print "Double counting pxlio file: ",f
+            pxlioIds.append(i)
         missingPxlio = set(rootIds)
         missingPxlio -= set(pxlioIds)
         print "\tmissing pxlio: ",missingPxlio

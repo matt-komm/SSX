@@ -1005,22 +1005,86 @@ const std::unordered_map<std::string,WeightInfoContainer> EventWeight::_eventWei
             70.688826 // xsec for process 'ST_t-channel_5f_leptonDecays'
         )
     },
-    /* these are also fully available - see above
-    {"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-herwigpp",
+    
+    {"ST_t-channel_antitop_4f_CRTune_erdON_13TeV-powhegV2-madspin-pythia8",
         new SimpleWeightInfo(
-            //xtotal=3990259.0 eff=3990259.0 - 0.0 = 3990259.0
-            3990259.0, //xsec from weight =  1.0
+            //xtotal=3971999.0 eff=3971999.0 - 0.0 = 3971999.0
+            3971999.0, //xsec from weight =  1.0
             80.95 // xsec for process 'ST_t-channel_antitop_4f'
         )
     },
-    {"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-herwigpp",
+    {"ST_t-channel_antitop_4f_GluonMoveCRTune_13TeV-powhegV2-madspin-pythia8",
         new SimpleWeightInfo(
-            //xtotal=5887322.0 eff=5887322.0 - 0.0 = 5887322.0
-            5887322.0, //xsec from weight =  1.0
+            //xtotal=3958536.0 eff=3958536.0 - 0.0 = 3958536.0
+            3958536.0, //xsec from weight =  1.0
+            80.95 // xsec for process 'ST_t-channel_antitop_4f'
+        )
+    },
+    {"ST_t-channel_antitop_4f_GluonMoveCRTune_erdON_13TeV-powhegV2-madspin-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=3934164.0 eff=3934164.0 - 0.0 = 3934164.0
+            3934164.0, //xsec from weight =  1.0
+            80.95 // xsec for process 'ST_t-channel_antitop_4f'
+        )
+    },
+    {"ST_t-channel_antitop_4f_QCDbasedCRTune_erdON_13TeV-powhegV2-madspin-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=3959800.0 eff=3959800.0 - 0.0 = 3959800.0
+            3959800.0, //xsec from weight =  1.0
+            80.95 // xsec for process 'ST_t-channel_antitop_4f'
+        )
+    },
+    {"ST_t-channel_top_4f_CRTune_erdON_13TeV-powhegV2-madspin-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=5935400.0 eff=5935400.0 - 0.0 = 5935400.0
+            5935400.0, //xsec from weight =  1.0
             136.02 // xsec for process 'ST_t-channel_top_4f'
         )
     },
-    */
+    {"ST_t-channel_top_4f_GluonMoveCRTune_13TeV-powhegV2-madspin-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=5931424.0 eff=5931424.0 - 0.0 = 5931424.0
+            5931424.0, //xsec from weight =  1.0
+            136.02 // xsec for process 'ST_t-channel_top_4f'
+        )
+    },
+    {"ST_t-channel_top_4f_GluonMoveCRTune_erdON_13TeV-powhegV2-madspin-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=5821890.0 eff=5821890.0 - 0.0 = 5821890.0
+            5821890.0, //xsec from weight =  1.0
+            136.02 // xsec for process 'ST_t-channel_top_4f'
+        )
+    },
+    {"ST_t-channel_top_4f_QCDbasedCRTune_erdON_13TeV-powhegV2-madspin-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=5952488.0 eff=5952488.0 - 0.0 = 5952488.0
+            5952488.0, //xsec from weight =  1.0
+            136.02 // xsec for process 'ST_t-channel_top_4f'
+        )
+    },
+    
+    
+    {"TT_TuneCUETP8M2T4_GluonMoveCRTune_13TeV-powheg-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=58571835.0 eff=58571835.0 - 0.0 = 58571835.0
+            58571835.0, //xsec from weight =  1.0
+            831.76 // xsec for process 'TT'
+        )
+    },
+    {"TT_TuneCUETP8M2T4_GluonMoveCRTune_erdON_13TeV-powheg-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=58126324.0 eff=58126324.0 - 0.0 = 58126324.0
+            58126324.0, //xsec from weight =  1.0
+            831.76 // xsec for process 'TT'
+        )
+    },
+    {"TT_TuneCUETP8M2T4_QCDbasedCRTune_erdON_13TeV-powheg-pythia8",
+        new SimpleWeightInfo(
+            //xtotal=59276644.0 eff=59276644.0 - 0.0 = 59276644.0
+            59276644.0, //xsec from weight =  1.0
+            831.76 // xsec for process 'TT'
+        )
+    }
 };
 
 
