@@ -20,6 +20,12 @@ PTR->TightLepton->Pt
 PTR->TightLepton->Eta
 PTR->cosTheta_tPLz
 PTR->best_cosTheta_tPLz
+PTR->upFrag
+PTR->centralFrag
+PTR->downFrag
+PTR->PetersonFrag
+PTR->semilepbrUp
+PTR->semilepbrDown
 Parton[A-Za-z0-9_\-]*->Lepton->Pt
 Parton[A-Za-z0-9_\-]*->Lepton->Eta
 Parton[A-Za-z0-9_\-]*->Lepton->Charge

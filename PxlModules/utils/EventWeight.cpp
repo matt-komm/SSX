@@ -1084,7 +1084,30 @@ const std::unordered_map<std::string,WeightInfoContainer> EventWeight::_eventWei
             59276644.0, //xsec from weight =  1.0
             831.76 // xsec for process 'TT'
         )
+    },
+    
+    {"ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1_withBFrag",
+        new SimpleWeightInfo(
+            //xtotal=63388936.0 eff=63388936.0 - 0.0 = 63388936.0
+            63388936.0, //xsec from weight =  1.0
+            136.02 // xsec for process 'ST_t-channel_top_4f'
+        )
+    },
+    {"ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1_withBFrag",
+        new SimpleWeightInfo(
+            //xtotal=36067838.0 eff=36067838.0 - 0.0 = 36067838.0
+            36067838.0, //xsec from weight =  1.0
+            80.95 // xsec for process 'ST_t-channel_antitop_4f'
+        )
+    },
+    {"TT_TuneCUETP8M2T4_13TeV-powheg-pythia8_withBFrag",
+        new SimpleWeightInfo(
+            //xtotal=71689625.0 eff=71689625.0 - 0.0 = 71689625.0
+            71689625.0, //xsec from weight =  1.0
+            831.76 // xsec for process 'TT'
+        )
     }
+
 };
 
 

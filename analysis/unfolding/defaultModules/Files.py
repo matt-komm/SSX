@@ -26,24 +26,27 @@ class Files(Module):
         rootFiles = []
         nFriends = 0
     
-        basedirSignalMC = "/nfs/user/mkomm/SSX13/signalMC/"+channel+self.module("Files").getVersion()
-        matchSignalMC = re.compile("^signalMC[A-Za-z0-9_\-]*_fit[0-9]+.root$")
-        
-        for f in os.listdir(basedirSignalMC):
-            if matchSignalMC.match(f) and f.find("veto")<0 and f.find("train")<0 and f.find("test")<0:
-                l = []
-                l.append(os.path.join(basedirSignalMC,f))
-                if os.path.exists(os.path.join(basedirSignalMC,f+".friend")):
-                    l.append(os.path.join(basedirSignalMC,f+".friend"))
-                    rootFiles.append(l)
-                    nFriends+=1
-                else:
-                    if requireFriends:
-                        self._logger.error("friend of file '"+os.path.join(basedirSignalMC,f)+"' missing! -> skip")
-                    else:
+        for basedirSignalMC in [
+            "/nfs/user/mkomm/SSX13/signalMC/"+channel+self.module("Files").getVersion(),
+            "/nfs/user/mkomm/SSX13/signalMC/"+channel+self.module("Files").getVersion()+"color"
+        ]:
+            matchSignalMC = re.compile("^signalMC[A-Za-z0-9_\-]*_fit[0-9]+.root$")
+            
+            for f in os.listdir(basedirSignalMC):
+                if matchSignalMC.match(f) and f.find("veto")<0 and f.find("train")<0 and f.find("test")<0:
+                    l = []
+                    l.append(os.path.join(basedirSignalMC,f))
+                    if os.path.exists(os.path.join(basedirSignalMC,f+".friend")):
+                        l.append(os.path.join(basedirSignalMC,f+".friend"))
                         rootFiles.append(l)
-                        
-        self._logger.debug("found signal files "+str(len(rootFiles))+"/"+str(nFriends)+" in "+basedirSignalMC)
+                        nFriends+=1
+                    else:
+                        if requireFriends:
+                            self._logger.error("friend of file '"+os.path.join(basedirSignalMC,f)+"' missing! -> skip")
+                        else:
+                            rootFiles.append(l)
+                            
+            self._logger.debug("found signal files "+str(len(rootFiles))+"/"+str(nFriends)+" in "+basedirSignalMC)
         return rootFiles
         
     def getMCSignalGen(self,channel):
@@ -65,24 +68,27 @@ class Files(Module):
         rootFiles = []
         nFriends = 0
 
-        basedirBackgroundMC = "/nfs/user/mkomm/SSX13/backgroundMC/"+channel+self.module("Files").getVersion()
-        matchBackgroundMC = re.compile("^backgroundMC[A-Za-z0-9_\-]*_fit[0-9]+.root$")
-        
-        for f in os.listdir(basedirBackgroundMC):
-            if matchBackgroundMC.match(f) and f.find("veto")<0 and f.find("train")<0 and f.find("test")<0:
-                l = []
-                l.append(os.path.join(basedirBackgroundMC,f))
-                if os.path.exists(os.path.join(basedirBackgroundMC,f+".friend")):
-                    l.append(os.path.join(basedirBackgroundMC,f+".friend"))
-                    rootFiles.append(l)
-                    nFriends+=1
-                else:
-                    if requireFriends:
-                        self._logger.error("friend of file '"+os.path.join(basedirBackgroundMC,f)+"' missing! -> skip")
-                    else:
+        for basedirBackgroundMC in [
+            "/nfs/user/mkomm/SSX13/backgroundMC/"+channel+self.module("Files").getVersion(),
+            "/nfs/user/mkomm/SSX13/backgroundMC/"+channel+self.module("Files").getVersion()+"color"
+        ]:
+            matchBackgroundMC = re.compile("^backgroundMC[A-Za-z0-9_\-]*_fit[0-9]+.root$")
+            
+            for f in os.listdir(basedirBackgroundMC):
+                if matchBackgroundMC.match(f) and f.find("veto")<0 and f.find("train")<0 and f.find("test")<0:
+                    l = []
+                    l.append(os.path.join(basedirBackgroundMC,f))
+                    if os.path.exists(os.path.join(basedirBackgroundMC,f+".friend")):
+                        l.append(os.path.join(basedirBackgroundMC,f+".friend"))
                         rootFiles.append(l)
-                       
-        self._logger.debug("found background files "+str(len(rootFiles))+"/"+str(nFriends)+" in "+basedirBackgroundMC)
+                        nFriends+=1
+                    else:
+                        if requireFriends:
+                            self._logger.error("friend of file '"+os.path.join(basedirBackgroundMC,f)+"' missing! -> skip")
+                        else:
+                            rootFiles.append(l)
+                           
+            self._logger.debug("found background files "+str(len(rootFiles))+"/"+str(nFriends)+" in "+basedirBackgroundMC)
         return rootFiles
 
 

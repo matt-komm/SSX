@@ -54,4 +54,11 @@ install(
     LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
 )
 
+add_library(BFragWeight MODULE BFragWeight.cpp)
+target_link_libraries(BFragWeight ${PXL_LIBRARIES} ${ROOT_LIBRARIES})
+install(
+    TARGETS BFragWeight
+    LIBRARY DESTINATION ${PXL_PLUGIN_INSTALL_PATH}
+)
+
 

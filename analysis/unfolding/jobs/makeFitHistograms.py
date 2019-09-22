@@ -64,23 +64,23 @@ setupBins = {
 
 
 for channel in ["mu","ele"]:
-        #'''
+        '''
         #nominal/inclusive
         config.inputParams.append([
             "-m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
         ])
-        #'''
+        
         #for 2j0t wjets
         config.inputParams.append([
             "-m setup/Wjets -m tasks/makeFitHistograms -c channel:"+channel+" -c bin:-1"
         ])
-        #'''
+        
         for unfoldingSetup in sorted(setupBins.keys()):
             for ibin in range(setupBins[unfoldingSetup][channel]):
                 config.inputParams.append([
                     "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c bin:"+str(ibin)
                 ])
-        #'''
+        
         for systModule in [
             "systematics/twDown",
             "systematics/twUp",
@@ -155,6 +155,16 @@ for channel in ["mu","ele"]:
             #"systematics/wjetsScaleTmpl -c qscale:UN",
             "systematics/wjetsScaleTmpl -c qscale:Up",
             "systematics/wjetsScaleTmpl -c qscale:Down",
+        ]:
+        '''
+        for systModule in [
+            "systematics/tchanGluonMove",
+            "systematics/tchanErdOn",
+            "systematics/tchanGluonMoveErdOn",
+            
+            "systematics/ttbarGluonMove",
+            "systematics/ttbarErdOn",
+            "systematics/ttbarGluonMoveErdOn",
         ]:
             #'''
             #sys/inclusive
