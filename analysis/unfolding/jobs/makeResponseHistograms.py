@@ -77,7 +77,7 @@ for channel in ["mu","ele"]:
             config.inputParams.append([
                 "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -c channel:"+channel+" -c charge:"+str(charge)
             ])
-            
+            '''
             for systModule in [
                 "systematics/twDown",
                 "systematics/twUp",
@@ -153,7 +153,21 @@ for channel in ["mu","ele"]:
                 "systematics/wjetsScaleTmpl -c qscale:Up",
                 "systematics/wjetsScaleTmpl -c qscale:Down",
             ]:
-        
+            '''
+            for systModule in [
+                "systematics/tchanGluonMove",
+                "systematics/tchanErdOn",
+                "systematics/tchanGluonMoveErdOn",
+                
+                "systematics/ttbarGluonMove",
+                "systematics/ttbarErdOn",
+                "systematics/ttbarGluonMoveErdOn",
+                
+                "systematics/bfracCentral",
+                "systematics/bfracUp",
+                "systematics/bfracDown",
+                "systematics/bfracPeterson",
+            ]:
                 #sys
                 config.inputParams.append([
                     "-m tasks/makeResponseHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c charge:"+str(charge)

@@ -33,6 +33,12 @@ PTR->LightJet->Pt
 PTR->LightJet->Eta
 PTR->LightJetBest->Pt
 PTR->LightJetBest->Eta
+PTR->upFrag
+PTR->centralFrag
+PTR->downFrag
+PTR->PetersonFrag
+PTR->semilepbrUp
+PTR->semilepbrDown
 Parton[A-Za-z0-9_\-]*->Lepton->ALL
 Parton[A-Za-z0-9_\-]*->Neutrino->ALL
 Parton[A-Za-z0-9_\-]*->Top->ALL

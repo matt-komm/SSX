@@ -165,6 +165,11 @@ for channel in ["mu","ele"]:
             "systematics/ttbarGluonMove",
             "systematics/ttbarErdOn",
             "systematics/ttbarGluonMoveErdOn",
+            
+            "systematics/bfracCentral",
+            "systematics/bfracUp",
+            "systematics/bfracDown",
+            "systematics/bfracPeterson",
         ]:
             #'''
             #sys/inclusive
