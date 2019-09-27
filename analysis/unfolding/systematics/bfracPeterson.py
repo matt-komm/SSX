@@ -214,7 +214,7 @@ class SamplesbfracPeterson(Module.getClass("Samples")):
 
 class UtilsbfracPeterson(Module.getClass("Utils")):
     def __init__(self,options=[]):
-        UtilsbfracPetersonModule.baseClass.__init__(self,options)
+        UtilsbfracPeterson.baseClass.__init__(self,options)
         self._logger = logging.getLogger(__file__)
         self._logger.setLevel(logging.DEBUG)
         

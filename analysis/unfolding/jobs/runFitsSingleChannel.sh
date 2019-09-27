@@ -26,10 +26,16 @@ syst=(
 )
 
 syst=(
-"systematics/resUp"
-"systematics/resDown"
-"systematics/enUp"
-"systematics/enDown"
+"systematics/bfracCentral"
+"systematics/bfracUp"
+"systematics/bfracDown"
+"systematics/bfracPeterson"
+"systematics/tchanGluonMove"
+"systematics/tchanGluonMoveErdOn"
+"systematics/tchanErdOn"
+"systematics/ttbarGluonMove"
+"systematics/ttbarGluonMoveErdOn"
+"systematics/ttbarErdOn"
 )
 
 setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton"

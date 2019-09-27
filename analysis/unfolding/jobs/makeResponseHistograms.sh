@@ -8,6 +8,7 @@
 #SBATCH --array=1-858
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null
+#SBATCH --exclude=mb-har050
 #SBATCH --job-name=responseHists
 
 #==================================================================================

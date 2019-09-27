@@ -30,6 +30,18 @@ syst=(
 )
 
 
+syst=(
+"systematics/bfracCentral"
+"systematics/bfracUp"
+"systematics/bfracDown"
+"systematics/bfracPeterson"
+"systematics/tchanGluonMove"
+"systematics/tchanGluonMoveErdOn"
+"systematics/tchanErdOn"
+"systematics/ttbarGluonMove"
+"systematics/ttbarGluonMoveErdOn"
+"systematics/ttbarErdOn"
+)
 
 for setup in  TopPtParton TopYParton TopCosParton TopCosTauParton LeptonPtParton LeptonEtaParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WPtParticle
     do
