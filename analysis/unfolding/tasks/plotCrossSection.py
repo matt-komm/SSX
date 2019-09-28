@@ -514,6 +514,87 @@ class PlotCrossSection(Module.getClass("Program")):
                     results[-1]["Down"].SetBinContent(ibin+1,dneg)
                     results[1]["Down"].SetBinContent(ibin+1,dpos)
                     
+            elif sys.find("tchanColor")>=0:
+                for ccvar in ["tchanGluonMove","tchanErdOn","tchanGluonMoveErdOn"]:
+                    sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+ccvar)
+                    rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
+                    result = self.getResult(rootFile)
+                    if not results[-1].has_key("Down"):
+                        results[-1]["Down"] = result["unfolded_neg"].Clone(result["unfolded_neg"].GetName()+"tchanColorDown")
+                        results[-1]["Down"].SetDirectory(0)
+                        
+                        results[1]["Down"] = result["unfolded_pos"].Clone(result["unfolded_pos"].GetName()+"tchanColorDown")
+                        results[1]["Down"].SetDirectory(0)
+                        
+                        results[-1]["Up"] = result["unfolded_neg"].Clone(result["unfolded_neg"].GetName()+"tchanColorUp")
+                        results[-1]["Up"].SetDirectory(0)
+                        
+                        results[1]["Up"] = result["unfolded_pos"].Clone(result["unfolded_pos"].GetName()+"tchanColorUp")
+                        results[1]["Up"].SetDirectory(0)
+                        
+                        covDict["Up"] = result["covarianceUnfolded"].Clone(result["covarianceUnfolded"].GetName()+"tchanColorUp")
+                        covDict["Up"].SetDirectory(0)
+                        covDict["Down"] = result["covarianceUnfolded"].Clone(result["covarianceUnfolded"].GetName()+"tchanColorDown")
+                        covDict["Down"].SetDirectory(0)
+                        
+                    for ibin in range(results[-1]["Down"].GetNbinsX()):
+                        results[-1]["Up"].SetBinContent(
+                            ibin+1,
+                            max(result["unfolded_neg"].GetBinContent(ibin+1),results[-1]["Up"].GetBinContent(ibin+1))
+                        )
+                        results[-1]["Down"].SetBinContent(
+                            ibin+1,
+                            min(result["unfolded_neg"].GetBinContent(ibin+1),results[-1]["Down"].GetBinContent(ibin+1))
+                        )
+                        results[1]["Up"].SetBinContent(
+                            ibin+1,
+                            max(result["unfolded_pos"].GetBinContent(ibin+1),results[1]["Up"].GetBinContent(ibin+1))
+                        )
+                        results[1]["Down"].SetBinContent(
+                            ibin+1,
+                            min(result["unfolded_pos"].GetBinContent(ibin+1),results[1]["Down"].GetBinContent(ibin+1))
+                        )
+                        
+            elif sys.find("ttbarColor")>=0:
+                for ccvar in ["ttbarGluonMove","ttbarErdOn","ttbarGluonMoveErdOn"]:
+                    sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+ccvar)
+                    rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
+                    result = self.getResult(rootFile)
+                    if not results[-1].has_key("Down"):
+                        results[-1]["Down"] = result["unfolded_neg"].Clone(result["unfolded_neg"].GetName()+"ttbarColorDown")
+                        results[-1]["Down"].SetDirectory(0)
+                        
+                        results[1]["Down"] = result["unfolded_pos"].Clone(result["unfolded_pos"].GetName()+"ttbarColorDown")
+                        results[1]["Down"].SetDirectory(0)
+                        
+                        results[-1]["Up"] = result["unfolded_neg"].Clone(result["unfolded_neg"].GetName()+"ttbarColorUp")
+                        results[-1]["Up"].SetDirectory(0)
+                        
+                        results[1]["Up"] = result["unfolded_pos"].Clone(result["unfolded_pos"].GetName()+"ttbarColorUp")
+                        results[1]["Up"].SetDirectory(0)
+                        
+                        covDict["Up"] = result["covarianceUnfolded"].Clone(result["covarianceUnfolded"].GetName()+"ttbarColorUp")
+                        covDict["Up"].SetDirectory(0)
+                        covDict["Down"] = result["covarianceUnfolded"].Clone(result["covarianceUnfolded"].GetName()+"ttbarColorDown")
+                        covDict["Down"].SetDirectory(0)
+                        
+                    for ibin in range(results[-1]["Down"].GetNbinsX()):
+                        results[-1]["Up"].SetBinContent(
+                            ibin+1,
+                            max(result["unfolded_neg"].GetBinContent(ibin+1),results[-1]["Up"].GetBinContent(ibin+1))
+                        )
+                        results[-1]["Down"].SetBinContent(
+                            ibin+1,
+                            min(result["unfolded_neg"].GetBinContent(ibin+1),results[-1]["Down"].GetBinContent(ibin+1))
+                        )
+                        results[1]["Up"].SetBinContent(
+                            ibin+1,
+                            max(result["unfolded_pos"].GetBinContent(ibin+1),results[1]["Up"].GetBinContent(ibin+1))
+                        )
+                        results[1]["Down"].SetBinContent(
+                            ibin+1,
+                            min(result["unfolded_pos"].GetBinContent(ibin+1),results[1]["Down"].GetBinContent(ibin+1))
+                        )
             else:
                 for v in ["Up","Down"]:
                     sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+v)
@@ -816,7 +897,10 @@ class PlotCrossSection(Module.getClass("Program")):
             "ttbarScaleISRPS":"\\ttbar ISR PS scale",
             "ttbarScaleME":"\\ttbar ME scale",
             "ttbarUE":"\\ttbar UE tune",
-            "wjetsScaleME":"\\wjets ME scale"
+            "wjetsScaleME":"\\wjets ME scale",
+            "tchanColor":"$t$-ch. color reconnection",
+            "ttbarColor":"\\ttbar color reconnection",
+            "bfrac":"b fragmentation",
         }
         '''
         if (unfoldingName=="cos" or unfoldingName=="cosTau") and unfoldingLevel=="parton":
@@ -1003,7 +1087,7 @@ class PlotCrossSection(Module.getClass("Program")):
             statRatioErr = histRatioNominal.GetBinError(ibin+1)
             profRatioErr = histRatioProfiled.GetBinError(ibin+1)
             if profErr>statErr:
-                tabSysRatio+= "& $\\pm%6.3f$"%(math.sqrt(profRatioErr**2-statRatioErr**2))
+                tabSysRatio+= "& $\\pm%6.3f$"%(math.sqrt(max(1e-3,profRatioErr**2-statRatioErr**2)))
             else:
                 tabSysRatio+= "&    %6s   "%("-")
             totalSystRatio2[ibin]+=profRatioErr**2

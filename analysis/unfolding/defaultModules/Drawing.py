@@ -506,21 +506,21 @@ class Drawing(Module):
         expH2 = ROOT.TLine()
         expH2.DrawLineNDC(legendX[0]+0.173,legendY[1]-0.035,legendX[0]+0.187,legendY[1]-0.035)
         expH2.Draw("Same")
-        
+        '''
         expM = ROOT.TMarker(legendX[0]+0.18,legendY[1]-0.021,20)
         expM.SetMarkerSize(0.75)
         expM.SetNDC(True)
         expM.Draw("Same")
-        
+        '''
         totV = ROOT.TLine()
         totV.DrawLineNDC(legendX[0]+0.262,legendY[1]+0.001,legendX[0]+0.262,legendY[1]-0.041)
         totV.Draw("Same")
-        
+        '''
         totM = ROOT.TMarker(legendX[0]+0.262,legendY[1]-0.021,20)
         totM.SetMarkerSize(0.75)
         totM.SetNDC(True)
         totM.Draw("Same")
-        
+        '''
         
         cv.cd(1)
        
@@ -611,8 +611,11 @@ class Drawing(Module):
         else:
             for genHistSumRes in reversed(genHistSumsRes):
                 genHistSumRes.Draw("HISTSame")
-                
-        histSumTotalRes.Draw("PLSame")
+          
+        histSumTotalRes.SetMarkerStyle(0)
+        histSumTotalRes.SetMarkerSize(0)      
+        histSumTotalRes.Draw("ESame")
+        
         for ibin in range(histSumTotal.GetNbinsX()):
             c = histSumTotalRes.GetBinCenter(ibin+1)
             w = (xmax-xmin)*0.008
