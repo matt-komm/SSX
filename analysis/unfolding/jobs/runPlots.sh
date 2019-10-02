@@ -1,4 +1,4 @@
-syst="ttbarUE,pdf,topMass,tchanHdampPS,tchanScaleME,tchanScalePS,ttbarScaleME,ttbarHdampPS,ttbarPt,ttbarScaleFSRPS,ttbarScaleISRPS,wjetsScaleME,bfrac,tchanColor,ttbarColor"
+syst="ttbarUE,pdf,topMass,tchanHdampPS,tchanScaleME,tchanScalePS,ttbarScaleME,ttbarHdampPS,ttbarPt,ttbarScaleFSRPS,ttbarScaleISRPS,wjetsScaleME,bfrac,tchanColor,ttbarColor,lumi"
 
 for channels in ele mu ele,mu
     do
