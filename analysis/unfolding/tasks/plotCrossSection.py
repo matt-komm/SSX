@@ -6,6 +6,7 @@ import random
 import math
 import sys
 import os
+import json
 import datetime
 import re
 from optparse import OptionParser
@@ -260,6 +261,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 "color":newColor(0.1,0.6,0.95),
                 "style":2,
                 "width":4,
+                'key':'amcatnlo4f',
                 "legend":"aMC@NLO 4FS",#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
             },
             {
@@ -267,6 +269,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 "color":newColor(0.99,0.7,0.1),
                 "style":11,
                 "width":3,
+                'key':'amcatnlo5f',
                 "legend":"aMC@NLO 5FS",#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"
             }
         ]
@@ -340,7 +343,7 @@ class PlotCrossSection(Module.getClass("Program")):
                 self.module("Unfolding").applyEfficiencyCorrection1D(histPosComb)
                 self.module("Unfolding").applyEfficiencyCorrection1D(histNegComb)
                 result.append({
-                    0:histIncComb,1:histPosComb,-1:histNegComb,"legend":prediction["legend"]
+                    0:histIncComb,1:histPosComb,-1:histNegComb,"legend":prediction["legend"],'key':prediction["key"]
                 })
                 
         return result
@@ -497,6 +500,7 @@ class PlotCrossSection(Module.getClass("Program")):
             nominalResult["unfolded_neg"],
             nominalResult["covarianceUnfolded"]
         )
+        
         
         
         xtitleWOUnit = self.module("Unfolding").getUnfoldingLevel().capitalize()+"-level "+self.module("Unfolding").getUnfoldingVariableName()
@@ -700,32 +704,32 @@ class PlotCrossSection(Module.getClass("Program")):
                             ibin+1,
                             min(result["unfolded_pos"].GetBinContent(ibin+1),results[1]["Down"].GetBinContent(ibin+1))
                         )
-                        
-            elif sys.find("lumi")>=0:
-                lumiScale = 0.025
-            
-                results[-1]['Up']=nominalResult["unfolded_neg"].Clone(nominalResult["unfolded_neg"].GetName()+"lumiUp")
-                results[-1]['Up'].SetDirectory(0)
-                results[-1]['Up'].Scale(1.+lumiScale)
+                '''
+                elif sys.find("lumi")>=0:
+                    lumiScale = 0.025
                 
-                results[-1]['Down']=nominalResult["unfolded_neg"].Clone(nominalResult["unfolded_neg"].GetName()+"lumiDown")
-                results[-1]['Down'].SetDirectory(0)
-                results[-1]['Down'].Scale(1.-lumiScale)
-                
-                results[1]['Up']=nominalResult["unfolded_pos"].Clone(nominalResult["unfolded_pos"].GetName()+"lumiUp")
-                results[1]['Up'].SetDirectory(0)
-                results[1]['Up'].Scale(1.+lumiScale)
-                
-                results[1]['Down']=nominalResult["unfolded_pos"].Clone(nominalResult["unfolded_pos"].GetName()+"lumiDown")
-                results[1]['Down'].SetDirectory(0)
-                results[1]['Down'].Scale(1.-lumiScale)
-                
-                covDict["Up"]=nominalResult["covarianceUnfolded"].Clone(nominalResult["covarianceUnfolded"].GetName()+"lumiUp")
-                covDict["Up"].SetDirectory(0)
-                
-                covDict["Down"]=nominalResult["covarianceUnfolded"].Clone(nominalResult["covarianceUnfolded"].GetName()+"lumiDown")
-                covDict["Down"].SetDirectory(0)
-                
+                    results[-1]['Up']=nominalResult["unfolded_neg"].Clone(nominalResult["unfolded_neg"].GetName()+"lumiUp")
+                    results[-1]['Up'].SetDirectory(0)
+                    results[-1]['Up'].Scale(1.+lumiScale)
+                    
+                    results[-1]['Down']=nominalResult["unfolded_neg"].Clone(nominalResult["unfolded_neg"].GetName()+"lumiDown")
+                    results[-1]['Down'].SetDirectory(0)
+                    results[-1]['Down'].Scale(1.-lumiScale)
+                    
+                    results[1]['Up']=nominalResult["unfolded_pos"].Clone(nominalResult["unfolded_pos"].GetName()+"lumiUp")
+                    results[1]['Up'].SetDirectory(0)
+                    results[1]['Up'].Scale(1.+lumiScale)
+                    
+                    results[1]['Down']=nominalResult["unfolded_pos"].Clone(nominalResult["unfolded_pos"].GetName()+"lumiDown")
+                    results[1]['Down'].SetDirectory(0)
+                    results[1]['Down'].Scale(1.-lumiScale)
+                    
+                    covDict["Up"]=nominalResult["covarianceUnfolded"].Clone(nominalResult["covarianceUnfolded"].GetName()+"lumiUp")
+                    covDict["Up"].SetDirectory(0)
+                    
+                    covDict["Down"]=nominalResult["covarianceUnfolded"].Clone(nominalResult["covarianceUnfolded"].GetName()+"lumiDown")
+                    covDict["Down"].SetDirectory(0)
+                '''
             else:
                 for v in ["Up","Down"]:
                     sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+v)
@@ -883,6 +887,14 @@ class PlotCrossSection(Module.getClass("Program")):
         )
         
         
+        for ibin in range(len(genBinning)-1):
+            for jbin in range(len(genBinning)-1):
+                covSumTotal[ibin][jbin]+=(0.025*histSumTotal.GetBinContent(ibin+1))*(0.025*histSumTotal.GetBinContent(jbin+1))
+            histSumTotal.SetBinError(
+                ibin+1,
+                math.sqrt(histSumTotal.GetBinError(ibin+1)**2+(0.025*histSumTotal.GetBinContent(ibin+1))**2)
+            )
+        
         covSumNominalCorrelation = self.module("Utils").calculateCorrelationsNumpy(covSumNominal)
         self.module("Drawing").drawHistogramMatrix(
             covSumNominalCorrelation,
@@ -962,16 +974,16 @@ class PlotCrossSection(Module.getClass("Program")):
         
         for ibin in range(histSumProfiledNorm.GetNbinsX()):
             if math.fabs(histSumProfiled.GetBinError(ibin+1)-math.sqrt(covSumProfiled[ibin][ibin]))/histSumProfiled.GetBinError(ibin+1)>0.0001:
-                self._logger.critical("Covariance matrix and histogram error do not agree!")
+                self._logger.critical("Covariance matrix and histogram error do not agree! "+str(histSumProfiled.GetBinError(ibin+1))+" vs. "+str(math.sqrt(covSumProfiled[ibin][ibin])))
                 sys.exit(1)
             if math.fabs(histSumTotal.GetBinError(ibin+1)-math.sqrt(covSumTotal[ibin][ibin]))/histSumTotal.GetBinError(ibin+1)>0.0001:
-                self._logger.critical("Covariance matrix and histogram error do not agree!")
+                self._logger.critical("Covariance matrix and histogram error do not agree! "+str(histSumTotal.GetBinError(ibin+1))+" vs. "+str(math.sqrt(covSumTotal[ibin][ibin])))
                 sys.exit(1)
             if math.fabs(histSumProfiledNorm.GetBinError(ibin+1)-math.sqrt(covSumProfiledNorm[ibin][ibin]))/histSumProfiledNorm.GetBinError(ibin+1)>0.0001:
-                self._logger.critical("Covariance matrix and histogram error do not agree!")
+                self._logger.critical("Covariance matrix and histogram error do not agree! "+str(histSumProfiledNorm.GetBinError(ibin+1))+" vs. "+str(math.sqrt(covSumProfiledNorm[ibin][ibin])))
                 sys.exit(1)
             if math.fabs(histSumTotalNorm.GetBinError(ibin+1)-math.sqrt(covSumTotalNorm[ibin][ibin]))/histSumTotalNorm.GetBinError(ibin+1)>0.0001:
-                self._logger.critical("Covariance matrix and histogram error do not agree!")
+                self._logger.critical("Covariance matrix and histogram error do not agree! "+str(histSumTotalNorm.GetBinError(ibin+1))+" vs. "+str(math.sqrt(covSumTotalNorm[ibin][ibin])))
                 sys.exit(1)
         
         
@@ -1009,10 +1021,10 @@ class PlotCrossSection(Module.getClass("Program")):
         genHistRatio = nominalResult["ratioGen"]
         
         genHistSums = [
-            {"hist":genHistSum, "legend":"POWHEG 4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
+            {"name":"powheg4fs","hist":genHistSum, "legend":"POWHEG 4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
         ]
         genHistSumsNorm = [
-            {"hist":genHistSumNorm, "legend":"POWHEG 4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
+            {"name":"powheg4fs","hist":genHistSumNorm, "legend":"POWHEG 4FS"},#kern[-0.5]{ }+#kern[-0.5]{ }Pythia#kern[-0.6]{ }8"}
         ]
         
         genPredictions = self.getPredictions(channels,unfoldingName,unfoldingLevel)
@@ -1021,13 +1033,13 @@ class PlotCrossSection(Module.getClass("Program")):
             genPrediction = pred[0].Clone(pred[0].GetName()+str(random.random()))
             self.module("Utils").normalizeByCrossSection(genPrediction)
             genHistSums.append({
-                "hist":genPrediction,"legend":pred["legend"]
+                "name":pred["key"],"hist":genPrediction,"legend":pred["legend"]
             })
             genPredictionNorm = pred[0].Clone(pred[0].GetName()+"norm")
             genPredictionNorm.Scale(1./genPredictionNorm.Integral())
             self.module("Utils").normalizeByBinWidth(genPredictionNorm)
             genHistSumsNorm.append({
-                "hist":genPredictionNorm,"legend":pred["legend"]
+                "name":pred["key"],"hist":genPredictionNorm,"legend":pred["legend"]
             })
             
             
@@ -1126,7 +1138,7 @@ class PlotCrossSection(Module.getClass("Program")):
         self.module("Utils").normalizeCovByBinWidth(genBinning,covSumProfiledNorm)
         self.module("Utils").normalizeCovByBinWidth(genBinning,covSumTotalNorm)
         
-        
+        sysSummaryDict = {"sum":{},"norm":{},"ratio":{},"binning":list(genBinning),"unit":unit}
                 
         tabSys=""#\\hline\n"
         tabSysNorm=""#\\hline\n"
@@ -1182,8 +1194,13 @@ class PlotCrossSection(Module.getClass("Program")):
             else:
                 tabSysNorm+= ("& $%5.3f}$"%(histSumTotalNorm.GetBinContent(ibin+1)))
                 
-                
             tabSysRatio+= ("& $%6.3f$"%(histRatioTotal.GetBinContent(ibin+1)))
+            
+        sysSummaryDict['sum']['central'] = [histSumTotal.GetBinContent(ibin+1) for ibin in range(len(genBinning)-1)]
+        sysSummaryDict['norm']['central'] = [histSumTotalNorm.GetBinContent(ibin+1) for ibin in range(len(genBinning)-1)]
+        sysSummaryDict['ratio']['central'] = [histRatioTotal.GetBinContent(ibin+1) for ibin in range(len(genBinning)-1)]
+            
+            
                 
         tabSys+= "\\\\\n"
         tabSysNorm+= "\\\\\n"
@@ -1230,9 +1247,17 @@ class PlotCrossSection(Module.getClass("Program")):
             else:
                 tabSysRatio+= "&    %6s   "%("-")
                 
-            totalSystSum2[ibin]+=(histSumProfiled.GetBinError(ibin+1))**2
-            totalSystSumNorm2[ibin]+=(histSumProfiledNorm.GetBinError(ibin+1))**2
-            totalSystRatio2[ibin]+=(histRatioProfiled.GetBinError(ibin+1))**2
+            totalSystSum2[ibin]+=(histSumProfiled.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1))**2
+            totalSystSumNorm2[ibin]+=(histSumProfiledNorm.GetBinError(ibin+1)/histSumTotalNorm.GetBinContent(ibin+1))**2
+            totalSystRatio2[ibin]+=(histRatioProfiled.GetBinError(ibin+1)/histRatioTotal.GetBinContent(ibin+1))**2
+        
+        sysSummaryDict['sum']['stat'] = [histSumNominal.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
+        sysSummaryDict['norm']['stat'] = [histSumNominalNorm.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
+        sysSummaryDict['ratio']['stat'] = [histRatioNominal.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
+        
+        sysSummaryDict['sum']['prof'] = [histSumProfiled.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
+        sysSummaryDict['norm']['prof'] = [histSumProfiledNorm.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
+        sysSummaryDict['ratio']['prof'] = [histRatioProfiled.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
         
             
         tabSys+= "\\\\\n"
@@ -1260,46 +1285,68 @@ class PlotCrossSection(Module.getClass("Program")):
             self.module("Utils").normalizeByBinWidth(sysHistUpNorm)
             self.module("Utils").normalizeByBinWidth(sysHistDownNorm)
             
-            
+            sysSummaryDict['sum'][sys] = []
+            sysSummaryDict['norm'][sys] = []
+            sysSummaryDict['ratio'][sys] = []
+                
             for ibin in range(len(genBinning)-1):
                 relUp = math.fabs(
                     sysHistUp.GetBinContent(ibin+1)-\
                     histSumNominal.GetBinContent(ibin+1)
-                )/histSumNominal.GetBinContent(ibin+1)
+                )/histSumTotal.GetBinContent(ibin+1)
                 relDown = math.fabs(
                     sysHistDown.GetBinContent(ibin+1)-\
                     histSumNominal.GetBinContent(ibin+1)
-                )/histSumNominal.GetBinContent(ibin+1)
-                totalSystSum2[ibin] += (max(relUp,relDown)*histSumNominal.GetBinContent(ibin+1))**2
+                )/histSumTotal.GetBinContent(ibin+1)
+                totalSystSum2[ibin] += (max(relUp,relDown))**2#*histSumNominal.GetBinContent(ibin+1))**2
                 tabSys+= "& $\\pm%6.1f$\\%%"%(100.*max(relUp,relDown))
                 
                 relUpNorm = math.fabs(
                     sysHistUpNorm.GetBinContent(ibin+1)-\
                     histSumNominalNorm.GetBinContent(ibin+1)
-                )/histSumNominalNorm.GetBinContent(ibin+1)
+                )/histSumTotalNorm.GetBinContent(ibin+1)
                 relDownNorm = math.fabs(
                     sysHistDownNorm.GetBinContent(ibin+1)-\
                     histSumNominalNorm.GetBinContent(ibin+1)
-                )/histSumNominalNorm.GetBinContent(ibin+1)
-                totalSystSumNorm2[ibin] += (max(relUpNorm,relDownNorm)*histSumNominalNorm.GetBinContent(ibin+1))**2
+                )/histSumTotalNorm.GetBinContent(ibin+1)
+                totalSystSumNorm2[ibin] += (max(relUpNorm,relDownNorm))**2#*histSumNominalNorm.GetBinContent(ibin+1))**2
                 tabSysNorm+= "& $\\pm%6.1f$\\%%"%(100.*max(relUpNorm,relDownNorm))
                 
                 
                 relUpRatio = math.fabs(
                     sysResults[isys][0]["Up"]["ratio"].GetBinContent(ibin+1)-\
                     histRatioNominal.GetBinContent(ibin+1)
-                )/histRatioNominal.GetBinContent(ibin+1)
+                )/histRatioTotal.GetBinContent(ibin+1)
                 relDownRatio = math.fabs(
                     sysResults[isys][0]["Down"]["ratio"].GetBinContent(ibin+1)-\
                     histRatioNominal.GetBinContent(ibin+1)
-                )/histRatioNominal.GetBinContent(ibin+1)
+                )/histRatioTotal.GetBinContent(ibin+1)
                 
-                totalSystRatio2[ibin]+=(max(relUpRatio,relDownRatio)*histRatioNominal.GetBinContent(ibin+1))**2
+                totalSystRatio2[ibin]+=(max(relUpRatio,relDownRatio))**2#*histRatioNominal.GetBinContent(ibin+1))**2
                 tabSysRatio+= "& $\\pm%6.1f\\%%$"%(100.*max(relUpRatio,relDownRatio))
+                
+                sysSummaryDict['sum'][sys].append(max(relUp,relDown)*histSumTotal.GetBinContent(ibin+1))
+                sysSummaryDict['norm'][sys].append(max(relUpNorm,relDownNorm)*histSumTotalNorm.GetBinContent(ibin+1))
+                sysSummaryDict['ratio'][sys].append(max(relUpRatio,relDownRatio)*histRatioTotal.GetBinContent(ibin+1))
             
             tabSys+= "\\\\\n"
             tabSysNorm+= "\\\\\n"
             tabSysRatio+= "\\\\\n"
+            
+            
+        sysSummaryDict['sum']['lumi'] = []
+        sysSummaryDict['norm']['lumi'] = []
+        sysSummaryDict['ratio']['lumi'] = []
+        
+        tabSys+= "%25s "%("Luminosity")
+        for ibin in range(len(genBinning)-1):
+            sysSummaryDict['sum']['lumi'].append(0.025*histSumTotal.GetBinContent(ibin+1))
+            sysSummaryDict['norm']['lumi'].append(0.)
+            sysSummaryDict['ratio']['lumi'].append(0.)
+            
+            totalSystSum2[ibin] += 0.025**2
+            tabSys+= "& $\\pm%6.1f$\\%%"%(2.5)
+        tabSys+= "\\\\\n"
         
         tabSys+= "\\hline\n"
         tabSys+= "%25s "%("Total")
@@ -1315,10 +1362,14 @@ class PlotCrossSection(Module.getClass("Program")):
             
             self._logger.info("Total sum/norm/ratio rel. deviation bin%i: %7.2f%% / %7.2f%% / %7.2f%%"%(
                 ibin+1,
-                100.*math.sqrt(totalSystSum2[ibin])/(histSumTotal.GetBinError(ibin+1))-100.,
-                100.*math.sqrt(totalSystSumNorm2[ibin])/(histSumTotalNorm.GetBinError(ibin+1))-100.,
-                100.*math.sqrt(totalSystRatio2[ibin])/histRatioTotal.GetBinError(ibin+1)-100.
+                100.*math.sqrt(totalSystSum2[ibin])*histSumTotal.GetBinContent(ibin+1)/(histSumTotal.GetBinError(ibin+1))-100.,
+                100.*math.sqrt(totalSystSumNorm2[ibin])*histSumTotalNorm.GetBinContent(ibin+1)/(histSumTotalNorm.GetBinError(ibin+1))-100.,
+                100.*math.sqrt(totalSystRatio2[ibin])*histRatioTotal.GetBinContent(ibin+1)/histRatioTotal.GetBinError(ibin+1)-100.
             ))
+            
+        sysSummaryDict['sum']['total'] = [histSumTotal.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
+        sysSummaryDict['norm']['total'] = [histSumTotalNorm.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
+        sysSummaryDict['ratio']['total'] = [histRatioTotal.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
             
         tabSys+= "\\\\\n"
         tabSys+="\\hline\n"
@@ -1562,9 +1613,9 @@ class PlotCrossSection(Module.getClass("Program")):
         
             
         genHistsRatio = [
-            {"hist":genHistsRatioNNPDF30,"legend":"NNPDF#kern[-0.2]{ }3.0 NLO"},
-            {"hist":genHistsRatioCT10,"legend":"CT#kern[-0.4]{ }10 NLO"},
-            {"hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.4]{ }14 NLO"},
+            {"name":"nnpdf","hist":genHistsRatioNNPDF30,"legend":"NNPDF#kern[-0.2]{ }3.0 NLO"},
+            {"name":"ct","hist":genHistsRatioCT10,"legend":"CT#kern[-0.4]{ }10 NLO"},
+            {"name":"mmht","hist":genHistsRatioMMHT14,"legend":"MMHT#kern[-0.4]{ }14 NLO"},
             
         ]
         
@@ -1656,17 +1707,44 @@ class PlotCrossSection(Module.getClass("Program")):
         )  
         
         print '-'*10,"sum",'-'*30
+        sysSummaryDict['sum']['gen'] = {}
         for genHistSum in genHistSums:
             chi2,chi2noCorr = self.calculateChi2(histSumTotal,genHistSum["hist"],covSumTotal,isNorm=False)
             print "%30s: %6.2f (no corr: %.2f)"%(genHistSum["legend"],chi2,chi2noCorr)
+            
+            sysSummaryDict['sum']['gen'][genHistSum["name"]] = {
+                'pred':[genHistSum["hist"].GetBinContent(ibin+1) for ibin in range(len(genBinning)-1)],
+                'chi2':chi2,
+                'chi2noCorr':chi2noCorr
+            }
+                       
+                       
         print '-'*10,"norm",'-'*30
+        sysSummaryDict['norm']['gen'] = {}
         for genHistSumNorm in genHistSumsNorm:
             chi2,chi2noCorr = self.calculateChi2(histSumTotalNorm,genHistSumNorm["hist"],covSumTotalNorm,isNorm=True)
             print "%30s: %6.2f (no corr: %.2f)"%(genHistSumNorm["legend"],chi2,chi2noCorr)
+            
+            sysSummaryDict['norm']['gen'][genHistSumNorm["name"]] = {
+                'pred':[genHistSumNorm["hist"].GetBinContent(ibin+1) for ibin in range(len(genBinning)-1)],
+                'chi2':chi2,
+                'chi2noCorr':chi2noCorr
+            }
+            
         print '-'*10,"ratio",'-'*30
+        sysSummaryDict['ratio']['gen'] = {}
         for genHistRatio in genHistsRatio:
             chi2,chi2noCorr = self.calculateChi2(histRatioTotal,genHistRatio["hist"],covRatioTotal,isNorm=False)
             print "%30s: %6.3f (no corr: %.3f)"%(genHistRatio["legend"],chi2,chi2noCorr)
+        
+            sysSummaryDict['ratio']['gen'][genHistRatio["name"]] = {
+                'pred':[genHistRatio["hist"].GetBinContent(ibin+1) for ibin in range(len(genBinning)-1)],
+                'chi2':chi2,
+                'chi2noCorr':chi2noCorr
+            }
+        
+        with open(os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sysSummary.json"),'w') as fsysSummary:
+            json.dump(sysSummaryDict, fsysSummary, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=4, sort_keys=True)
         
         rootHepData = ROOT.TFile(
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_hepdata.root"),

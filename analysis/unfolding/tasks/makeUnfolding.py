@@ -19,6 +19,7 @@ class RunUnfolding(Module.getClass("Program")):
         channels = self.getOption("channels").split(",")
         systematics = [] if self.getOption("systematics")==None else self.getOption("systematics").split(",")
         self._logger.info("Systematics: "+str(systematics))
+        fitOutput = self.getOption("fitOutput") if (self.getOption("fitOutput")!=None) else "profiled"
         channelName = self.module("Samples").getChannelName(channels)
         #inc,pt,y,cos
         unfoldingName = self.module("Unfolding").getUnfoldingName()
@@ -29,8 +30,8 @@ class RunUnfolding(Module.getClass("Program")):
         unfoldingLevel = self.module("Unfolding").getUnfoldingLevel()
         
         
-        self.module("Utils").createFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/profiled")
-        outputFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/profiled")
+        self.module("Utils").createFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+fitOutput)
+        outputFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+fitOutput)
 
         
         #for profiled syst use nominal hist atm - later take envelop of all profiled response matrices
@@ -54,8 +55,8 @@ class RunUnfolding(Module.getClass("Program")):
         
         
         fitOutput = os.path.join(
-            self.module("Utils").getOutputFolder("fit/profiled"),
-            self.module("ThetaModel").getFitFileName(channels,fitName,"profiled")
+            self.module("Utils").getOutputFolder("fit/"+fitOutput),
+            self.module("ThetaModel").getFitFileName(channels,fitName,fitOutput)
         )
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         

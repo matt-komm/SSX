@@ -18,6 +18,7 @@ class FitHistograms(Module.getClass("Program")):
         #mu,ele,comb
         channels = self.getOption("channels").split(",")
         channelName = self.module("Samples").getChannelName(channels)
+        output = self.getOption("output") if (self.getOption("output")!=None) else "profiled"
         self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
         histogramsPerChannelAndUncertainty = {}
@@ -153,10 +154,10 @@ class FitHistograms(Module.getClass("Program")):
                 
                                     
         
-        self.module("Utils").createFolder("fit/profiled")
+        self.module("Utils").createFolder("fit/"+output)
         fitOutput = os.path.join(
-            self.module("Utils").getOutputFolder("fit/profiled"),
-            self.module("ThetaModel").getFitFileName(channels,unfoldingName,postfix="profiled")
+            self.module("Utils").getOutputFolder("fit/"+output),
+            self.module("ThetaModel").getFitFileName(channels,unfoldingName,postfix=output)
         )
         
         fitResultsSucess = []
@@ -272,12 +273,12 @@ class FitHistograms(Module.getClass("Program")):
 
         if channelName==self.module("Samples").getChannelName(["ele","mu"]):
             fitOutputEle = os.path.join(
-                self.module("Utils").getOutputFolder("fit/profiled"),
-                self.module("ThetaModel").getFitFileName(["ele"],unfoldingName,"profiled")
+                self.module("Utils").getOutputFolder("fit/"+output),
+                self.module("ThetaModel").getFitFileName(["ele"],unfoldingName,output)
             )
             fitOutputMu = os.path.join(
-                self.module("Utils").getOutputFolder("fit/profiled"),
-                self.module("ThetaModel").getFitFileName(["mu"],unfoldingName,"profiled")
+                self.module("Utils").getOutputFolder("fit/"+output),
+                self.module("ThetaModel").getFitFileName(["mu"],unfoldingName,output)
             )
             if os.path.exists(fitOutputEle+".json") and os.path.exists(fitOutputMu+".json"):
                 fitResultEle = self.module("ThetaFit").loadFitResult(fitOutputEle+".json")
