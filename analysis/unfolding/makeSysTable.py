@@ -33,15 +33,16 @@ systematics = [
     #['\\ttbar \pt rew.',['ttbarPt']],
     #['\\wjets ME scale',['wjetsScaleME']],
     ['Color reconnection', ['tchanColor','ttbarColor']],
-    ['\\PQb fragmentation model',['bfrac']],
-    ['Others (\\wjets ME scale, \\ttbar \\pt rew., \\ttbar ME scale)',['wjetsScaleME','ttbarPt','ttbarScaleME']],
+    ['Fragmentation model',['bfrac']],
+    #['Others (\\wjets ME scale, \\ttbar \\pt rew., \\ttbar ME scale)',['wjetsScaleME','ttbarPt','ttbarScaleME']],
+    ['Others',['wjetsScaleME','ttbarPt','ttbarScaleME']],
     ['Luminosity',['lumi']],
     #['Total',['total']]
 ]
 
 # u'', u'central', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'gen'
 
-fParton = open("result/final/comb/pt_parton_comb_sysSummary.json")
+fParton = open("result/final/comb/y_parton_comb_sysSummary.json")
 data = json.load(fParton)
 
 binning = data['binning']
@@ -57,23 +58,23 @@ def formatExp(value):
 
 print "\\hline"
 if unit!="":
-    print "\\multicolumn{2}{@{}l}{Bin range (\\GeV)}"
+    print "\\multicolumn{2}{@{}l}{Interval (\\GeV)}"
 else:
-    print "\\multicolumn{2}{@{}l}{Bin range}"
+    print "\\multicolumn{2}{@{}l}{Interval}"
 for ibin in range(nbins):
     
-    print "& \\multicolumn{2}{l@{}}{%.0f--%.0f}"%(binning[ibin],binning[ibin+1])
+    print "& \\multicolumn{2}{l@{}}{[%.1f; %.1f]}"%(binning[ibin],binning[ibin+1])
 print "\\\\"
 print "\\hline"
 
 for iobs,obs in enumerate([
-    ['sum','Abs (pb/\\GeV)' if unit!="" else 'Sum (pb)'],
+    ['sum','Abs (pb/\\GeV)' if unit!="" else 'Abs (pb)'],
     ['norm','Norm (1/\\GeV)' if unit!="" else 'Norm'],
     ['ratio','Ratio']
 ]):
     if iobs==0:
-        print "\\multirow[t]{3}{0.2\\textwidth}{Central values}"
-    print "& "+obs[1],
+        print "\\multicolumn{2}{@{}l}{Central values} \\\\"
+    print "\\multicolumn{2}{r}{"+obs[1]+"}",
     for ibin in range(nbins):
         print " "*4,
         
@@ -99,7 +100,7 @@ for systematic in systematics:
             if systematic[0]=='Luminosity':
                 print systematic[0]
             else:
-                print "\\multirow[t]{3}{0.2\\textwidth}{"+systematic[0]+"}"
+                print "\\multirow[t]{3}{0.16\\textwidth}{"+systematic[0]+"}"
         print "& "+obs[1],
         for ibin in range(nbins):
             print " "*4,
@@ -133,7 +134,7 @@ for iobs,obs in enumerate([
     ['ratio','Ratio']
 ]):
     if iobs==0:
-        print "\\multirow[t]{3}{0.2\\textwidth}{Total}"
+        print "\\multirow[t]{3}{0.16\\textwidth}{Total}"
     print "& "+obs[1],
     for ibin in range(nbins):
         print " "*4,
