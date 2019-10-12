@@ -1200,7 +1200,8 @@ class PlotCrossSection(Module.getClass("Program")):
         sysSummaryDict['norm']['central'] = [histSumTotalNorm.GetBinContent(ibin+1) for ibin in range(len(genBinning)-1)]
         sysSummaryDict['ratio']['central'] = [histRatioTotal.GetBinContent(ibin+1) for ibin in range(len(genBinning)-1)]
             
-            
+        
+        
                 
         tabSys+= "\\\\\n"
         tabSysNorm+= "\\\\\n"
@@ -1216,7 +1217,57 @@ class PlotCrossSection(Module.getClass("Program")):
         tabSys+= "\\\\\n"
         tabSysNorm+= "\\\\\n"
         tabSysRatio+= "\\\\\n"
+        '''
+        totalSystSum2 = numpy.zeros(len(genBinning)-1)
+        totalSystSumNorm2 = numpy.zeros(len(genBinning)-1)
+        totalSystRatio2 = numpy.zeros(len(genBinning)-1)
+
+        for ibin in range(len(genBinning)-1):
+            #totalSystSum2[ibin]+=(histSumProfiled.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1))**2
+            #totalSystSumNorm2[ibin]+=(histSumProfiledNorm.GetBinError(ibin+1)/histSumTotalNorm.GetBinContent(ibin+1))**2
+            #totalSystRatio2[ibin]+=(histRatioProfiled.GetBinError(ibin+1)/histRatioTotal.GetBinContent(ibin+1))**2
+            
+            for isys,sys in enumerate(sorted(systematics)):
+                relUp = math.fabs(
+                    sysHistUp.GetBinContent(ibin+1)-\
+                    histSumNominal.GetBinContent(ibin+1)
+                )
+                relDown = math.fabs(
+                    sysHistDown.GetBinContent(ibin+1)-\
+                    histSumNominal.GetBinContent(ibin+1)
+                )
+                totalSystSum2[ibin] += (max(relUp,relDown))**2
+                
+                relUpNorm = math.fabs(
+                    sysHistUpNorm.GetBinContent(ibin+1)-\
+                    histSumNominalNorm.GetBinContent(ibin+1)
+                )
+                relDownNorm = math.fabs(
+                    sysHistDownNorm.GetBinContent(ibin+1)-\
+                    histSumNominalNorm.GetBinContent(ibin+1)
+                )
+                totalSystSumNorm2[ibin] += (max(relUpNorm,relDownNorm))**2
+                
+                
+                relUpRatio = math.fabs(
+                    sysResults[isys][0]["Up"]["ratio"].GetBinContent(ibin+1)-\
+                    histRatioNominal.GetBinContent(ibin+1)
+                )
+                relDownRatio = math.fabs(
+                    sysResults[isys][0]["Down"]["ratio"].GetBinContent(ibin+1)-\
+                    histRatioNominal.GetBinContent(ibin+1)
+                )
+                
+                totalSystRatio2[ibin]+=(max(relUpRatio,relDownRatio))**2
         
+            totalSystSum2[ibin] += 0.025**2
+            
+            
+        scalesSum = [math.sqrt(histSumTotal.GetBinError(ibin+1)**2-histSumProfiled.GetBinError(ibin+1)**2)/math.sqrt(totalSystSum2[ibin]) for ibin in range(len(genBinning)-1)]
+        scalesNorm = [math.sqrt(histSumTotalNorm.GetBinError(ibin+1)**2-histSumProfiledNorm.GetBinError(ibin+1)**2)/math.sqrt(totalSystSumNorm2[ibin]) for ibin in range(len(genBinning)-1)]
+        scalesRatio = [math.sqrt(histRatioTotal.GetBinError(ibin+1)**2-histRatioProfiled.GetBinError(ibin+1)**2)/math.sqrt(totalSystRatio2[ibin]) for ibin in range(len(genBinning)-1)]
+        '''
+            
         totalSystSum2 = numpy.zeros(len(genBinning)-1)
         totalSystSumNorm2 = numpy.zeros(len(genBinning)-1)
         totalSystRatio2 = numpy.zeros(len(genBinning)-1)
@@ -1247,9 +1298,11 @@ class PlotCrossSection(Module.getClass("Program")):
             else:
                 tabSysRatio+= "&    %6s   "%("-")
                 
+                
             totalSystSum2[ibin]+=(histSumProfiled.GetBinError(ibin+1)/histSumTotal.GetBinContent(ibin+1))**2
             totalSystSumNorm2[ibin]+=(histSumProfiledNorm.GetBinError(ibin+1)/histSumTotalNorm.GetBinContent(ibin+1))**2
             totalSystRatio2[ibin]+=(histRatioProfiled.GetBinError(ibin+1)/histRatioTotal.GetBinContent(ibin+1))**2
+            
         
         sysSummaryDict['sum']['stat'] = [histSumNominal.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
         sysSummaryDict['norm']['stat'] = [histSumNominalNorm.GetBinError(ibin+1) for ibin in range(len(genBinning)-1)]
@@ -1276,6 +1329,7 @@ class PlotCrossSection(Module.getClass("Program")):
             sysHistUpNorm = sysHistUp.Clone(sysHistUp.GetName()+"norm")
             sysHistDownNorm = sysHistDown.Clone(sysHistDown.GetName()+"norm")
             
+            
             self.module("Utils").normalizeByCrossSection(sysHistUp)
             self.module("Utils").normalizeByCrossSection(sysHistDown)
 
@@ -1284,6 +1338,8 @@ class PlotCrossSection(Module.getClass("Program")):
                 
             self.module("Utils").normalizeByBinWidth(sysHistUpNorm)
             self.module("Utils").normalizeByBinWidth(sysHistDownNorm)
+            
+            
             
             sysSummaryDict['sum'][sys] = []
             sysSummaryDict['norm'][sys] = []

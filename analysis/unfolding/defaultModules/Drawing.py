@@ -2109,9 +2109,9 @@ class Drawing(Module):
         hist.GetXaxis().SetTitle(xaxis)
         hist.GetYaxis().SetTitle(yaxis)
         if unit != "":
-            hist.GetZaxis().SetTitle(zaxis+" ("+order+""+unit+")")
+            hist.GetZaxis().SetTitle(zaxis+" ("+order+""+unit+")#kern[-4]{ }")
         else:
-            hist.GetZaxis().SetTitle(zaxis+" ("+order+"#kern[-0.5]{ }units)")
+            hist.GetZaxis().SetTitle(zaxis+" ("+order+"#kern[-0.5]{ }units)#kern[-4]{ }")
         
         
         hist.GetXaxis().SetTitleSize(33)
@@ -2206,7 +2206,7 @@ class Drawing(Module):
             pOrder.AddText("#times10#lower[-0.7]{#scale[0.7]{%2.0f}}"%(order))
             pOrder.Draw("Same")
         '''
-        
+        '''
         pXV=ROOT.TPaveText(cv.GetLeftMargin(),0.9,cv.GetLeftMargin(),0.9,"NDC")
         pXV.SetFillColor(ROOT.kWhite)
         pXV.SetBorderSize(0)
@@ -2215,13 +2215,13 @@ class Drawing(Module):
         pXV.SetTextAlign(11)
         pXV.AddText("arXiv:XXXX.XXXX")
         pXV.Draw("Same")
-        
-        pLumi=ROOT.TPaveText(1-cv.GetRightMargin()+0.0,0.955,1-cv.GetRightMargin()+0.0,0.955,"NDC")
+        '''
+        pLumi=ROOT.TPaveText(cv.GetLeftMargin(),0.9,cv.GetLeftMargin(),0.9,"NDC")
         pLumi.SetFillColor(ROOT.kWhite)
         pLumi.SetBorderSize(0)
         pLumi.SetTextFont(43)
         pLumi.SetTextSize(32)
-        pLumi.SetTextAlign(31)
+        pLumi.SetTextAlign(11)
         if title!="":
             pLumi.AddText(title)
         pLumi.Draw("Same")
