@@ -305,7 +305,7 @@ class PlotCrossSection(Module.getClass("Program")):
             
             if len(channels)==1:  
                 result.append({
-                    0:histsInc[0],1:histsPos[0],-1:histsNeg[0],"legend":prediction["legend"]
+                    0:histsInc[0],1:histsPos[0],-1:histsNeg[0],"legend":prediction["legend"],'key':prediction["key"]
                 })
             else:
                 combGenBinning = self.module("Unfolding").getGenBinning("comb")
@@ -1062,8 +1062,14 @@ class PlotCrossSection(Module.getClass("Program")):
             "bfrac":"b fragmentation",
             "lumi":"Luminosity"
         }
-        '''
+        
+        self.module("Utils").createFolder("final/"+channelName)
+        finalFolder = self.module("Utils").getOutputFolder("final/"+channelName)
+        
         if (unfoldingName=="cos" or unfoldingName=="cosTau") and unfoldingLevel=="parton":
+            asymSysSummaryDict = {}
+        
+        
             asymmetryGen = self.module("Asymmetry").calculateAsymmetry(genHistSumNorm)
             asymmetryStat = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal)
             asymmetryStatNoCorr = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal,ignoreCorr=True)
@@ -1071,6 +1077,14 @@ class PlotCrossSection(Module.getClass("Program")):
             asymmetryProfiledNoCorr = self.module("Asymmetry").fitDistribution(histSumProfiled,covSumProfiled,ignoreCorr=True)
             asymmetryTotal = self.module("Asymmetry").fitDistribution(histSumTotal,covSumTotal)
             asymmetryTotalNoCorr = self.module("Asymmetry").fitDistribution(histSumTotal,covSumTotal,ignoreCorr=True)
+            
+            
+            asymSysSummaryDict['gen'] = asymmetryGen
+            asymSysSummaryDict['prof'] = asymmetryProfiled[1]
+            asymSysSummaryDict['total'] = asymmetryTotal[1]
+            asymSysSummaryDict['central'] = asymmetryTotal[0]
+            
+            
             
             asymUnc2 = (asymmetryProfiled[1])**2
             for isys,sys in enumerate(sorted(systematics)):
@@ -1106,12 +1120,14 @@ class PlotCrossSection(Module.getClass("Program")):
                     histSumAsymSystIncl,
                     covSumAsymSystIncl
                 )
-                maxSystAsymExcl2=max((asymmetryTotal[1])**2-(asySystExcl[1]/asySystExcl[0]*asymmetryTotal[0])**2,0)
-                maxSystAsymIncl2=max((asySystIncl[1]/asySystIncl[0]*asymmetryProfiled[0])**2-(asymmetryProfiled[1])**2,0)
+                maxSystAsymExcl2=max((asymmetryTotal[1])**2-(asySystExcl[1])**2,0)
+                maxSystAsymIncl2=max((asySystIncl[1])**2-(asymmetryProfiled[1])**2,0)
                 maxSystAsym2 = max(maxSystAsymExcl2,maxSystAsymIncl2)
                 asymUnc2+=maxSystAsym2
                 
-                self._logger.info("Meas. syst (%30s): %5.2f+-%5.2f/%5.2f+-%5.2f, d=%5.2f"%(
+                asymSysSummaryDict[sys] = math.sqrt(maxSystAsym2)
+                
+                self._logger.info("Meas. syst (%30s): %5.2f+-%5.2f/%5.2f+-%5.2f, max=%5.2f"%(
                     sysDictNames[sys],
                     100.*asySystExcl[0],100.*asySystExcl[1],
                     100.*asySystIncl[0],100.*asySystIncl[1],
@@ -1127,8 +1143,15 @@ class PlotCrossSection(Module.getClass("Program")):
             self._logger.info("Meas. asymmetry (tot, no corr):  %5.2f+-%5.2f"%(100.*asymmetryTotalNoCorr[0],100.*asymmetryTotalNoCorr[1]))
             
             self._logger.info("Exp. unc: +-%5.2f"%(100.*math.sqrt(max((asymmetryProfiled[1]/asymmetryProfiled[0])**2-(asymmetryStat[1]/asymmetryStat[0])**2,0)*asymmetryTotal[0])))
-            self._logger.info("Tot summed unc: +-%5.2f"%(100.*math.sqrt(asymUnc2)))
-        '''
+            self._logger.info("Tot summed unc: +-%5.2f, summed/tot-1: +%5.2f%%"%(
+                100.*math.sqrt(asymUnc2),
+                100.*math.sqrt(asymUnc2)/asymmetryTotal[1]-100.
+            ))
+            
+            with open(os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_asymSysSummary.json"),'w') as fasymSysSummary:
+                json.dump(asymSysSummaryDict, fasymSysSummary, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=4, sort_keys=True)
+        
+        
         self.module("Utils").normalizeByBinWidth(histSumNominalNorm)
         self.module("Utils").normalizeByBinWidth(histSumProfiledNorm)
         self.module("Utils").normalizeByBinWidth(histSumTotalNorm)
@@ -1434,8 +1457,7 @@ class PlotCrossSection(Module.getClass("Program")):
         tabSysRatio+= "\\\\\n"
         tabSysRatio+="\\hline\n"
         
-        self.module("Utils").createFolder("final/"+channelName)
-        finalFolder = self.module("Utils").getOutputFolder("final/"+channelName)
+        
 
         
         fTabSys = open(os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sum.tex"),"w")
