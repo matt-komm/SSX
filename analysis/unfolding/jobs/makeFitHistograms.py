@@ -156,7 +156,8 @@ for channel in ["mu","ele"]:
             "systematics/wjetsScaleTmpl -c qscale:Up",
             "systematics/wjetsScaleTmpl -c qscale:Down",
         ]:
-        '''
+        
+        
         for systModule in [
             "systematics/tchanGluonMove",
             "systematics/tchanErdOn",
@@ -171,24 +172,52 @@ for channel in ["mu","ele"]:
             "systematics/bfracDown",
             "systematics/bfracPeterson",
         ]:
-            #'''
+        
+        '''
+        for systModule in [
+            "systematics/pdfBkgDown",
+            "systematics/pdfBkgUp",
+            "systematics/pdftchDown",
+            "systematics/pdftchUp",
+        ]:
+            
             #sys/inclusive
             config.inputParams.append([
                 "-m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
             ])
-            #'''
+            
             #for 2j0t wjets
             config.inputParams.append([
                 "-m setup/Wjets -m tasks/makeFitHistograms -m "+systModule+" -c channel:"+channel+" -c bin:-1"
             ])
-            #'''
+            
             #sys/binned per obs
             for unfoldingSetup in sorted(setupBins.keys()):
                 for ibin in range(setupBins[unfoldingSetup][channel]):
                     config.inputParams.append([
                         "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -m "+systModule+" -c channel:"+channel+" -c bin:"+str(ibin)
                     ])
-            #'''
+        
+        '''
+        for lheWeight in range(2001,2106):
+            #sys/inclusive
+            
+            config.inputParams.append([
+                "-m tasks/makeFitHistograms -m systematics/lheWeightFit -c channel:"+channel+" -c bin:-1 -c lheWeight:"+str(lheWeight)
+            ])
+            
+            #for 2j0t wjets
+            config.inputParams.append([
+                "-m setup/Wjets -m tasks/makeFitHistograms -m systematics/lheWeightFit -c channel:"+channel+" -c bin:-1 -c lheWeight:"+str(lheWeight)
+            ])
+            
+            #sys/binned per obs
+            for unfoldingSetup in sorted(setupBins.keys()):
+                for ibin in range(setupBins[unfoldingSetup][channel]):
+                    config.inputParams.append([
+                        "-m tasks/makeFitHistograms -m "+unfoldingSetup+" -m systematics/lheWeightFit -c channel:"+channel+" -c bin:"+str(ibin)+" -c lheWeight:"+str(lheWeight)
+                    ])
+        '''
             
 config.payload = \
 """

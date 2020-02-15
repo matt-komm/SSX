@@ -27,10 +27,6 @@ syst=(
 "systematics/resDown"
 "systematics/enUp"
 "systematics/enDown"
-)
-
-
-syst=(
 "systematics/bfracCentral"
 "systematics/bfracUp"
 "systematics/bfracDown"

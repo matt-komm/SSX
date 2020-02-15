@@ -18,6 +18,7 @@ class FitHistograms(Module.getClass("Program")):
         #mu,ele,comb
         channels = self.getOption("channels").split(",")
         channelName = self.module("Samples").getChannelName(channels)
+        outname = self.getOption("output") if self.getOption("output") else "profiled"
         self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
         histogramsPerChannelAndUncertainty = {}
@@ -142,9 +143,9 @@ class FitHistograms(Module.getClass("Program")):
                         for sysName in uncertaintyList:
                             if not parametersDict.has_key(sysName):
                                 if sysName.find("eleEff")>=0 or sysName.find("muEff")>=0 or sysName.find("eleMultiIso")>=0 or sysName.find("eleMultiVeto")>=0 or sysName.find("muMulti")>=0 or sysName.find("ltag")>=0:
-                                    parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1,r=[-2.5,2.5])
+                                    parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1,r=[-2.5,2.5],name=sysName)
                                 else:
-                                    parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1)
+                                    parametersDict[sysName]=self.module("ThetaModel").makeGaus(0.,1,name=sysName)
                             fitSetup[obsName]["components"][channel+"_"+componentName]["shape"].append({
                                 "parameter":sysName,
                                 "up":histogramsPerChannelAndUncertainty[channel][sysName][binName][0][obserableName][componentName],
@@ -153,10 +154,10 @@ class FitHistograms(Module.getClass("Program")):
                 
                                     
         
-        self.module("Utils").createFolder("fit/profiled")
+        self.module("Utils").createFolder("fit/"+outname)
         fitOutput = os.path.join(
-            self.module("Utils").getOutputFolder("fit/profiled"),
-            self.module("ThetaModel").getFitFileName(channels,unfoldingName,postfix="profiled")
+            self.module("Utils").getOutputFolder("fit/"+outname),
+            self.module("ThetaModel").getFitFileName(channels,unfoldingName,postfix=outname)
         )
         
         fitResultsSucess = []
@@ -272,12 +273,12 @@ class FitHistograms(Module.getClass("Program")):
 
         if channelName==self.module("Samples").getChannelName(["ele","mu"]):
             fitOutputEle = os.path.join(
-                self.module("Utils").getOutputFolder("fit/profiled"),
-                self.module("ThetaModel").getFitFileName(["ele"],unfoldingName,"profiled")
+                self.module("Utils").getOutputFolder("fit/"+outname),
+                self.module("ThetaModel").getFitFileName(["ele"],unfoldingName,outname)
             )
             fitOutputMu = os.path.join(
-                self.module("Utils").getOutputFolder("fit/profiled"),
-                self.module("ThetaModel").getFitFileName(["mu"],unfoldingName,"profiled")
+                self.module("Utils").getOutputFolder("fit/"+outname),
+                self.module("ThetaModel").getFitFileName(["mu"],unfoldingName,outname)
             )
             if os.path.exists(fitOutputEle+".json") and os.path.exists(fitOutputMu+".json"):
                 fitResultEle = self.module("ThetaFit").loadFitResult(fitOutputEle+".json")

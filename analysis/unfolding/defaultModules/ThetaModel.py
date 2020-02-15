@@ -22,7 +22,7 @@ class ThetaModel(Module):
         return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2))}}
         #return {"type":"log_normal","config":{"mu": "%4.3f"%(mu), "sigma":"%4.3f"%(math.sqrt(sigma2)), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
        
-    def makeGaus(self,mean,unc,r=[-10,10]):
+    def makeGaus(self,mean,unc,r=[-10,10],name=None):
         return {"type":"gauss","config":{"mean": "%4.3f"%(mean), "width":"%4.3f"%(unc), "range":"("+str(1.*r[0])+","+str(1.*r[1])+")"}}
         
     def getMeanAndUncertainty(self,dist):
@@ -85,6 +85,25 @@ class ThetaModel(Module):
                 return observableName+"__"+fitComponentName+"__"+unfoldingName+str(unfoldingBin)+"__"+uncertainty
             else:
                 return observableName+"__"+fitComponentName+"__"+unfoldingName+str(unfoldingBin)
+                    
+    def canUseNominalHistogram(self,channel,observableName,fitComponentName,unfoldingName,unfoldingBin=-1,uncertainty=None,smooth=False):
+        if fitComponentName in ["data"]:
+            histFile = self.module("ThetaModel").getHistogramFile(channel,unfoldingName,unfoldingBin,uncertainty="nominal",smooth=smooth)
+            rootFile = ROOT.TFile(histFile)
+            if not rootFile:
+                return None
+            if fitComponentName=="data":
+                histName = self.module("ThetaModel").getHistogramName(observableName,fitComponentName,unfoldingName,unfoldingBin,uncertainty=None)
+            else:
+                histName = self.module("ThetaModel").getHistogramName(observableName,fitComponentName,unfoldingName,unfoldingBin,uncertainty="nominal")
+            histNameSys = self.module("ThetaModel").getHistogramName(observableName,fitComponentName,unfoldingName,unfoldingBin,uncertainty)
+            hist = rootFile.Get(histName)
+            if not hist:
+                return None
+            histSys = hist.Clone(histNameSys)
+            histSys.SetDirectory(0)
+            return histSys
+        return None
                                 
     def getHistsFromFiles(self,channel,unfoldingName,unfoldingBin=-1,uncertainty=None,smooth=False):
         fileName = self.module("ThetaModel").getHistogramFile(channel,unfoldingName,unfoldingBin,uncertainty,smooth=smooth)

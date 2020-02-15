@@ -153,7 +153,7 @@ for channel in ["mu","ele"]:
                 "systematics/wjetsScaleTmpl -c qscale:Up",
                 "systematics/wjetsScaleTmpl -c qscale:Down",
             ]:
-            '''
+            
             for systModule in [
                 "systematics/tchanGluonMove",
                 "systematics/tchanErdOn",
@@ -167,6 +167,13 @@ for channel in ["mu","ele"]:
                 "systematics/bfracUp",
                 "systematics/bfracDown",
                 "systematics/bfracPeterson",
+            ]:
+            '''
+            for systModule in [
+                "systematics/pdfBkgDown",
+                "systematics/pdfBkgUp",
+                "systematics/pdftchDown",
+                "systematics/pdftchUp",
             ]:
                 #sys
                 config.inputParams.append([

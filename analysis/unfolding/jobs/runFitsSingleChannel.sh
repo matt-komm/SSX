@@ -23,9 +23,6 @@ syst=(
 "systematics/ttbarScaleTmpl -c qscale:Down"
 "systematics/wjetsScaleTmpl -c qscale:Up"
 "systematics/wjetsScaleTmpl -c qscale:Down"
-)
-
-syst=(
 "systematics/bfracCentral"
 "systematics/bfracUp"
 "systematics/bfracDown"

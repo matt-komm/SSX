@@ -34,8 +34,7 @@ class FitHistograms(Module.getClass("Program")):
         if os.path.exists(histFilePath):
             self._logger.info("Output file '"+histFilePath+"' already exists! -> skip")
             sys.exit(0)
-        
-        
+            
         eventSelection = self.module("Samples").getEventSelection(channel)
         
         observablesDict = self.module("ThetaModel").getObservablesDict(channel)
@@ -58,29 +57,37 @@ class FitHistograms(Module.getClass("Program")):
             for fitComponentName in fitComponentsDict.keys():
                 componentWeight = fitComponentsDict[fitComponentName]["weight"]
             
-                fitHist = ROOT.TH1F(
-                    self.module("ThetaModel").getHistogramName(observableName,fitComponentName,unfoldingName,unfoldingBin,uncertainty=self.module("Utils").getUncertaintyName()),
-                    ";"+fitVariable+";",
-                    fitBins,
-                    fitRange[0],
-                    fitRange[1]
+                fitHist = self.module("ThetaModel").canUseNominalHistogram(
+                    channel,observableName,fitComponentName,unfoldingName,unfoldingBin,uncertainty=self.module("Utils").getUncertaintyName(),smooth=False
                 )
-                fitHist.SetDirectory(0)
-                fitHist.Sumw2()
-                histograms[fitHist.GetName()]=fitHist
-                
-                #self._logger.debug(observableName+", "+fitComponentName+": weight="+fitWeight+"*"+componentWeight+"*"+binSelection)
-                
-                for setName in fitComponentsDict[fitComponentName]["sets"]:
-                    self.module("Samples").getSetHist1D(
-                        fitHist,
-                        setName,
-                        channel,
-                        fitVariable,
-                        fitWeight+"*"+componentWeight+"*"+binSelection,
-                        True,
+                if fitHist==None:
+                    fitHist = ROOT.TH1F(
+                        self.module("ThetaModel").getHistogramName(observableName,fitComponentName,unfoldingName,unfoldingBin,uncertainty=self.module("Utils").getUncertaintyName()),
+                        ";"+fitVariable+";",
+                        fitBins,
+                        fitRange[0],
+                        fitRange[1]
                     )
-                self._logger.info("produced hist: "+fitHist.GetName()+", entries="+str(int(fitHist.GetEntries()))+", events="+str(round(fitHist.Integral(),1)))
+                    fitHist.SetDirectory(0)
+                    fitHist.Sumw2()
+                    histograms[fitHist.GetName()]=fitHist
+                    
+                    #self._logger.debug(observableName+", "+fitComponentName+": weight="+fitWeight+"*"+componentWeight+"*"+binSelection)
+                    
+                    for setName in fitComponentsDict[fitComponentName]["sets"]:
+                        self.module("Samples").getSetHist1D(
+                            fitHist,
+                            setName,
+                            channel,
+                            fitVariable,
+                            fitWeight+"*"+componentWeight+"*"+binSelection,
+                            True,
+                        )
+                    self._logger.info("produced hist: "+fitHist.GetName()+", entries="+str(int(fitHist.GetEntries()))+", events="+str(round(fitHist.Integral(),1)))
+                else:
+                    histograms[fitHist.GetName()]=fitHist
+                    self._logger.info("use default hist: "+fitHist.GetName()+", entries="+str(int(fitHist.GetEntries()))+", events="+str(round(fitHist.Integral(),1)))
+                    
                 if fitHist.GetEntries()>0:
                     avgWeight = math.fabs(fitHist.Integral()/fitHist.GetEntries())
                     for ibin in range(fitHist.GetNbinsX()):
@@ -92,27 +99,34 @@ class FitHistograms(Module.getClass("Program")):
                         fitHist.SetBinContent(ibin+1,0.01)
                         fitHist.SetBinError(ibin+1,0.1)
                         
-            dataHist = ROOT.TH1F(
-                self.module("ThetaModel").getHistogramName(observableName,"data",unfoldingName,unfoldingBin),
-                ";"+fitVariable+";",
-                fitBins,
-                fitRange[0],
-                fitRange[1]
+            dataHist = self.module("ThetaModel").canUseNominalHistogram(
+                channel,observableName,"data",unfoldingName,unfoldingBin
             )
-            dataHist.SetDirectory(0)
-            dataHist.Sumw2()
-            histograms[dataHist.GetName()]=dataHist
-            
-            self.module("Samples").getSetHist1D(
-                dataHist,
-                "data",
-                channel,
-                fitVariable,
-                fitWeight+"*"+binSelection,
-                True,
-            )
-            self._logger.info("produced hist: "+dataHist.GetName()+", entries="+str(int(dataHist.GetEntries()))+", events="+str(round(dataHist.Integral(),1)))
-        
+            if dataHist==None:
+                dataHist = ROOT.TH1F(
+                    self.module("ThetaModel").getHistogramName(observableName,"data",unfoldingName,unfoldingBin),
+                    ";"+fitVariable+";",
+                    fitBins,
+                    fitRange[0],
+                    fitRange[1]
+                )
+                dataHist.SetDirectory(0)
+                dataHist.Sumw2()
+                histograms[dataHist.GetName()]=dataHist
+                
+                self.module("Samples").getSetHist1D(
+                    dataHist,
+                    "data",
+                    channel,
+                    fitVariable,
+                    fitWeight+"*"+binSelection,
+                    True,
+                )
+                self._logger.info("produced hist: "+dataHist.GetName()+", entries="+str(int(dataHist.GetEntries()))+", events="+str(round(dataHist.Integral(),1)))
+            else:
+                histograms[dataHist.GetName()]=dataHist
+                self._logger.info("use default hist: "+dataHist.GetName()+", entries="+str(int(dataHist.GetEntries()))+", events="+str(round(dataHist.Integral(),1)))
+                
         outputFolder = self.module("ThetaModel").getHistogramPath(
             channel,
             unfoldingName,
