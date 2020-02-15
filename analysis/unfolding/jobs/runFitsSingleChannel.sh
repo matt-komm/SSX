@@ -60,26 +60,35 @@ syst=(
 "systematics/eleEffDown"
 )
 
+syst=(
+"systematics/pdftchDown"
+"systematics/pdftchUp"
+"systematics/pdfBkgDown"
+"systematics/pdfBkgUp"
+)
+
 setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton"
 #setups="TopPtParton"
 
 
 
-python driver.py -m tasks/makeFitSingle -c channels:$1
-python driver.py -m setup/Wjets -m tasks/makeFitSingle -c channels:$1
-for setup in $setups
-    do
-    python driver.py -m tasks/makeFitSingle -m setup/$setup -c channels:$1
-    done
-#just smooth all systematics
+#python driver.py -m tasks/makeFitSingle -c channels:$1
+#python driver.py -m setup/Wjets -m tasks/makeFitSingle -c channels:$1
+#for setup in $setups
+#    do
+#    python driver.py -m tasks/makeFitSingle -m setup/$setup -c channels:$1
+#    done
+
+
 for sys  in "${syst[@]}"
     do
     python driver.py -m tasks/makeFitSingle -m $sys -c channels:$1
     python driver.py -m setup/Wjets -m tasks/makeFitSingle -m $sys -c channels:$1
     for setup in $setups
         do
-        python driver.py -m tasks/makeFitSingle -m $sys -m setup/$setup -c channels:$1
+        python driver.py -m tasks/makeFitSingle -m $sys -m setup/$setup -c channels:$1 &
         done
+    wait ${!}
     done
 
     

@@ -24,7 +24,9 @@ sysDictNames = {
 systematics = [
     ['Experimental',['prof']],
     ['Top quark mass',['topMass']],
-    ['PDF+$\\alpS$',['pdf']],
+    #['PDF+$\\alpS$',['pdf']],
+    ['PDF+$\\alpS$ tch',['pdftch']],
+    ['PDF+$\\alpS$ bkg',['pdfBkg']],
     ['$t$ channel ME scale',['tchanScaleME']],
     ['$t$ channel parton shower',['tchanHdampPS','tchanScalePS']],
     #['\\ttbar ME scale',['ttbarScaleME']],
@@ -37,12 +39,11 @@ systematics = [
     #['Others (\\wjets ME scale, \\ttbar \\pt rew., \\ttbar ME scale)',['wjetsScaleME','ttbarPt','ttbarScaleME']],
     ['Others',['wjetsScaleME','ttbarPt','ttbarScaleME']],
     ['Luminosity',['lumi']],
-    #['Total',['total']]
 ]
 
 # u'', u'central', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'gen'
 
-fParton = open("result/final/comb/y_parton_comb_sysSummary.json")
+fParton = open("result/final/comb/pt_parton_comb_sysSummary.json")
 data = json.load(fParton)
 
 binning = data['binning']
