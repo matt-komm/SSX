@@ -16,7 +16,7 @@ class SamplesLHEWeight(Module.getClass("Samples")):
         
     def getGenWeight(self):
         #note: -1e32 is approximately the lowest float32 value => was nan/inf in LHE
-        return "genweight*"+str(self.module("Samples").getLumi())+"*mcweight*(lheweight_1001>-1e+30)*(lheweight_"+self.getOption("lheWeight")+">-1e+30)*(lheweight_"+self.getOption("lheWeight")+"/lheweight_1001)"
+        return "genweight*"+str(self.module("Samples").getLumi())+"*mcweight*(lheweight_1001>-1e+30)*(lheweight_"+self.getOption("lheWeight")+"/lheweight_1001)"
 
 
 class UtilsLHEWeight(Module.getClass("Utils")):

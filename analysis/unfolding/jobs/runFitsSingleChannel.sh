@@ -35,26 +35,60 @@ syst=(
 "systematics/ttbarErdOn"
 )
 
+syst=(
+"systematics/resUp"
+"systematics/resDown"
+"systematics/enUp"
+"systematics/enDown"
+"systematics/puUp"
+"systematics/puDown"
+"systematics/uncUp"
+"systematics/uncDown"
+"systematics/btagUp"
+"systematics/btagDown"
+"systematics/ltagUp"
+"systematics/ltagDown"
+"systematics/eleMutliIsoUp"
+"systematics/eleMutliIsoDown"
+"systematics/eleMutliVetoUp"
+"systematics/eleMutliVetoDown"
+"systematics/muMutliIsoUp"
+"systematics/muMutliIsoDown"
+"systematics/muEffUp"
+"systematics/muEffDown"
+"systematics/eleEffUp"
+"systematics/eleEffDown"
+)
+
+syst=(
+"systematics/pdftchDown"
+"systematics/pdftchUp"
+"systematics/pdfBkgDown"
+"systematics/pdfBkgUp"
+)
+
 setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton"
 #setups="TopPtParton"
 
 
 
-python driver.py -m tasks/makeFitSingle -c channels:$1
-python driver.py -m setup/Wjets -m tasks/makeFitSingle -c channels:$1
-for setup in $setups
-    do
-    python driver.py -m tasks/makeFitSingle -m setup/$setup -c channels:$1
-    done
-#just smooth all systematics
+#python driver.py -m tasks/makeFitSingle -c channels:$1
+#python driver.py -m setup/Wjets -m tasks/makeFitSingle -c channels:$1
+#for setup in $setups
+#    do
+#    python driver.py -m tasks/makeFitSingle -m setup/$setup -c channels:$1
+#    done
+
+
 for sys  in "${syst[@]}"
     do
     python driver.py -m tasks/makeFitSingle -m $sys -c channels:$1
     python driver.py -m setup/Wjets -m tasks/makeFitSingle -m $sys -c channels:$1
     for setup in $setups
         do
-        python driver.py -m tasks/makeFitSingle -m $sys -m setup/$setup -c channels:$1
+        python driver.py -m tasks/makeFitSingle -m $sys -m setup/$setup -c channels:$1 &
         done
+    wait ${!}
     done
 
     

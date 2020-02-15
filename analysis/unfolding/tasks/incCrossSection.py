@@ -236,8 +236,6 @@ class IncCrossSection(Module.getClass("Program")):
         for h in [
             ["covarianceReco"],
             ["covarianceUnfolded"],
-            ["nominalGen_"+self.module("Samples").getChargeName(0)],
-            ["unfolded_"+self.module("Samples").getChargeName(0)],
             ["ratioUnfolded"],
             ["ratioGen"],
         ]:            
@@ -350,10 +348,10 @@ class IncCrossSection(Module.getClass("Program")):
         
         print "profiled",incMeanProfiled,ratioMeanProfiled
         
-        f.write("%20s & %7.1f & %7.2f \\\\\n"%("",incMeanProfiled,ratioMeanProfiled))
+        f.write("%20s & %7.1f & %7.3f \\\\\n"%("",incMeanProfiled,ratioMeanProfiled))
 
-        f.write("%20s & $\\pm%5.1f$\\%% & $\\pm%5.1f$\\%% \\\\\n"%("Stat.-only",incStdStat/incMeanStat*100.,ratioStdStat/ratioMeanStat*100.))
-        f.write("%20s & $\\pm%5.1f$\\%% & $\\pm%5.1f$\\%% \\\\\n"%("Stat.+Exp.",incStdProfiled/incMeanProfiled*100.,ratioStdProfiled/ratioMeanProfiled*100.))
+        f.write("%20s & $\\pm% 5.1f$\\%% & $\\pm% 5.3f$ \\\\\n"%("Stat.-only",incStdStat/incMeanStat*100.,ratioStdStat))
+        f.write("%20s & $\\pm% 5.1f$\\%% & $\\pm% 5.3f$ \\\\\n"%("Stat.+Exp.",incStdProfiled/incMeanProfiled*100.,ratioStdProfiled))
         
         
         '''
@@ -366,8 +364,23 @@ class IncCrossSection(Module.getClass("Program")):
         print "-----------"
         '''
         nameDict = {
-            "unc":"Unclustered energy","tw":"tW/\\ttbar ratio","res":"JER","pu":"Pileup","muMulti":"Muon multijet isolation range","muEff":"Muon efficiency","ltag":"Mistagging efficency","en":"Jet energy scale","eleMultiVeto":"Electron multijet $\\gamma$ veto","eleMultiIso":"Electron multijet isolation range","eleEff":"Electron efficiency","dy":"W/Z+jet ratio","btag":"B-tagging",
-            "ttbarUE": "\\ttbar UE tune","pdf":"PDF","topMass":"Top quark mass","tchanHdampPS":"$h_\\mathrm{damp}$ \\tchannel","tchanScaleME":"Q scale \\tchannel","tchanScalePS":"PS scale \\tchannel","ttbarScaleME":"Q scale \\ttbar","ttbarHdampPS":"$h_\\mathrm{damp}$ \\ttbar","ttbarPt":"\\ttbar \\pt reweighting","ttbarScaleFSRPS":"FSR scale \\ttbar","ttbarScaleISRPS":"ISR scale \\ttbar","wjetsScaleME":"Q scale \\wjets"
+            "pdf":"PDF",
+            "pdfFull":"PDF",
+            "tchanHdampPS":"$t$-ch. $h_\\mathrm{damp}$",
+            "tchanScaleME":"$t$-ch. ME scale",
+            "tchanScalePS":"$t$-ch. PS scale",
+            "topMass":"Top mass",
+            "ttbarHdampPS":"\\ttbar $h_\\mathrm{damp}$",
+            "ttbarPt":"\\ttbar \\pt rew.",
+            "ttbarScaleFSRPS":"\\ttbar FSR PS scale",
+            "ttbarScaleISRPS":"\\ttbar ISR PS scale",
+            "ttbarScaleME":"\\ttbar ME scale",
+            "ttbarUE":"\\ttbar UE tune",
+            "wjetsScaleME":"\\wjets ME scale",
+            "tchanColor":"$t$-ch. color reconnection",
+            "ttbarColor":"\\ttbar color reconnection",
+            "bfrac":"b fragmentation",
+            "lumi":"Luminosity"
         }
         
         sysResults = []
@@ -380,51 +393,166 @@ class IncCrossSection(Module.getClass("Program")):
             
             sysRatio = 0
             sysInc = 0
-            for v in ["Up","Down"]:
-                sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+v)
+            
+            
+            if sys.find("tchanColor")>=0:
+                for ccvar in ["tchanGluonMove","tchanErdOn","tchanGluonMoveErdOn"]:
+                    sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+ccvar)
+                    rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
+                    result = self.getResult(rootFile)
+                    fitResultSys = self.getFitResult(channels,"inc",ccvar)
+                    results[-1][ccvar]=result["nominalGen_neg"].Integral()/self.module("Samples").getLumi()
+                    results[1][ccvar]=result["nominalGen_pos"].Integral()/self.module("Samples").getLumi()
+                    
+                    
+                    if unfoldingLevel=="parton":
+                        #disregard lepton selection
+                        results[1][ccvar] = nominalXsecPos 
+                        results[-1][ccvar] = nominalXsecNeg
+                        
+                    
+                    meansSys = [
+                        results[1][ccvar]*fitResultSys["parameters"]["tChannel_pos_binInc"]["mean_fit"],
+                        results[-1][ccvar]*fitResultSys["parameters"]["tChannel_neg_binInc"]["mean_fit"]
+                    ]
+                    covarianceSys = [
+                        [
+                            results[1][ccvar]*results[1][ccvar]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_pos_binInc"],
+                            results[1][ccvar]*results[-1][ccvar]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                        ],[
+                            results[1][ccvar]*results[-1][ccvar]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                            results[-1][ccvar]*results[-1][ccvar]*fitResultSys["covariances"]["values"]["tChannel_neg_binInc"]["tChannel_neg_binInc"]
+                        ]
+                    ]
+                    correlationSys = covarianceSys[0][1]/math.sqrt(covarianceSys[0][0]*covarianceSys[1][1])
+                    incMeanSys,incStdSys = self.calculate(lambda x: x[0]+x[1],meansSys,covarianceProfiled)
+                    ratioMeanSys,ratioStdSys = self.calculate(lambda x: x[0]/x[1],meansSys,covarianceSys)
+                    
+                    print ccvar,incMeanSys,ratioMeanSys
+                    
+                    sysInc = max(sysInc,math.fabs(incMeanSys-incMeanProfiled))
+                    sysRatio = max(sysRatio,math.fabs(ratioMeanSys-ratioMeanProfiled))
+            elif sys.find("ttbarColor")>=0:
+                for ccvar in ["ttbarGluonMove","ttbarErdOn","ttbarGluonMoveErdOn"]:
+                    sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+ccvar)
+                    rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
+                    result = self.getResult(rootFile)
+                    fitResultSys = self.getFitResult(channels,"inc",ccvar)
+                    results[-1][ccvar]=result["nominalGen_neg"].Integral()/self.module("Samples").getLumi()
+                    results[1][ccvar]=result["nominalGen_pos"].Integral()/self.module("Samples").getLumi()
+                    
+                    
+                    if unfoldingLevel=="parton":
+                        #disregard lepton selection
+                        results[1][ccvar] = nominalXsecPos 
+                        results[-1][ccvar] = nominalXsecNeg
+                        
+                    
+                    meansSys = [
+                        results[1][ccvar]*fitResultSys["parameters"]["tChannel_pos_binInc"]["mean_fit"],
+                        results[-1][ccvar]*fitResultSys["parameters"]["tChannel_neg_binInc"]["mean_fit"]
+                    ]
+                    covarianceSys = [
+                        [
+                            results[1][ccvar]*results[1][ccvar]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_pos_binInc"],
+                            results[1][ccvar]*results[-1][ccvar]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                        ],[
+                            results[1][ccvar]*results[-1][ccvar]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                            results[-1][ccvar]*results[-1][ccvar]*fitResultSys["covariances"]["values"]["tChannel_neg_binInc"]["tChannel_neg_binInc"]
+                        ]
+                    ]
+                    correlationSys = covarianceSys[0][1]/math.sqrt(covarianceSys[0][0]*covarianceSys[1][1])
+                    incMeanSys,incStdSys = self.calculate(lambda x: x[0]+x[1],meansSys,covarianceProfiled)
+                    ratioMeanSys,ratioStdSys = self.calculate(lambda x: x[0]/x[1],meansSys,covarianceSys)
+                    
+                    print ccvar,incMeanSys,ratioMeanSys
+                    
+                    sysInc = max(sysInc,math.fabs(incMeanSys-incMeanProfiled))
+                    sysRatio = max(sysRatio,math.fabs(ratioMeanSys-ratioMeanProfiled))
+                    
+            elif sys.find("topMass")>=0:
+                sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+"Up")
                 rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
                 result = self.getResult(rootFile)
-                fitResultSys = self.getFitResult(channels,"inc",sys+v)
-                results[-1][v]=result["nominalGen_neg"].Integral()/self.module("Samples").getLumi()
-                results[1][v]=result["nominalGen_pos"].Integral()/self.module("Samples").getLumi()
+                fitResultSys = self.getFitResult(channels,"inc",sys+"Up")
+                results[-1]['Up']=result["nominalGen_neg"].Integral()/self.module("Samples").getLumi()
+                results[1]['Up']=result["nominalGen_pos"].Integral()/self.module("Samples").getLumi()
                 
                 
                 if unfoldingLevel=="parton":
                     #disregard lepton selection
-                    results[1][v] = nominalXsecPos 
-                    results[-1][v] = nominalXsecNeg
+                    results[1]['Up'] = nominalXsecPos 
+                    results[-1]['Up'] = nominalXsecNeg
                     
                 
                 meansSys = [
-                    results[1][v]*fitResultSys["parameters"]["tChannel_pos_binInc"]["mean_fit"],
-                    results[-1][v]*fitResultSys["parameters"]["tChannel_neg_binInc"]["mean_fit"]
+                    results[1]['Up']*fitResultSys["parameters"]["tChannel_pos_binInc"]["mean_fit"],
+                    results[-1]['Up']*fitResultSys["parameters"]["tChannel_neg_binInc"]["mean_fit"]
                 ]
                 covarianceSys = [
                     [
-                        results[1][v]*results[1][v]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_pos_binInc"],
-                        results[1][v]*results[-1][v]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                        results[1]['Up']*results[1]['Up']*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_pos_binInc"],
+                        results[1]['Up']*results[-1]['Up']*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
                     ],[
-                        results[1][v]*results[-1][v]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
-                        results[-1][v]*results[-1][v]*fitResultSys["covariances"]["values"]["tChannel_neg_binInc"]["tChannel_neg_binInc"]
+                        results[1]['Up']*results[-1]['Up']*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                        results[-1]['Up']*results[-1]['Up']*fitResultSys["covariances"]["values"]["tChannel_neg_binInc"]["tChannel_neg_binInc"]
                     ]
                 ]
                 correlationSys = covarianceSys[0][1]/math.sqrt(covarianceSys[0][0]*covarianceSys[1][1])
                 incMeanSys,incStdSys = self.calculate(lambda x: x[0]+x[1],meansSys,covarianceProfiled)
                 ratioMeanSys,ratioStdSys = self.calculate(lambda x: x[0]/x[1],meansSys,covarianceSys)
                 
-                print sys+v,incMeanSys,ratioMeanSys
+                print sys+'Up',incMeanSys,ratioMeanSys
                 
                 sysInc = max(sysInc,math.fabs(incMeanSys-incMeanProfiled))
                 sysRatio = max(sysRatio,math.fabs(ratioMeanSys-ratioMeanProfiled))
                 
-                
+            else:
+                for v in ["Up","Down"]:
+                    sysFolder = self.module("Utils").getOutputFolder("unfolding/"+unfoldingName+"/"+unfoldingLevel+"/"+sys+v)
+                    rootFile = ROOT.TFile(os.path.join(sysFolder,channelName+"_result.root"))
+                    result = self.getResult(rootFile)
+                    fitResultSys = self.getFitResult(channels,"inc",sys+v)
+                    results[-1][v]=result["nominalGen_neg"].Integral()/self.module("Samples").getLumi()
+                    results[1][v]=result["nominalGen_pos"].Integral()/self.module("Samples").getLumi()
+                    
+                    
+                    if unfoldingLevel=="parton":
+                        #disregard lepton selection
+                        results[1][v] = nominalXsecPos 
+                        results[-1][v] = nominalXsecNeg
+                        
+                    
+                    meansSys = [
+                        results[1][v]*fitResultSys["parameters"]["tChannel_pos_binInc"]["mean_fit"],
+                        results[-1][v]*fitResultSys["parameters"]["tChannel_neg_binInc"]["mean_fit"]
+                    ]
+                    covarianceSys = [
+                        [
+                            results[1][v]*results[1][v]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_pos_binInc"],
+                            results[1][v]*results[-1][v]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                        ],[
+                            results[1][v]*results[-1][v]*fitResultSys["covariances"]["values"]["tChannel_pos_binInc"]["tChannel_neg_binInc"],
+                            results[-1][v]*results[-1][v]*fitResultSys["covariances"]["values"]["tChannel_neg_binInc"]["tChannel_neg_binInc"]
+                        ]
+                    ]
+                    correlationSys = covarianceSys[0][1]/math.sqrt(covarianceSys[0][0]*covarianceSys[1][1])
+                    incMeanSys,incStdSys = self.calculate(lambda x: x[0]+x[1],meansSys,covarianceProfiled)
+                    ratioMeanSys,ratioStdSys = self.calculate(lambda x: x[0]/x[1],meansSys,covarianceSys)
+                    
+                    print sys+v,incMeanSys,ratioMeanSys
+                    
+                    sysInc = max(sysInc,math.fabs(incMeanSys-incMeanProfiled))
+                    sysRatio = max(sysRatio,math.fabs(ratioMeanSys-ratioMeanProfiled))
+                    
+                    
             totalInc+=sysInc**2
             totalRatio+=sysRatio**2
                 
-            f.write("%20s & $\\pm%5.1f$\\%% & $\\pm%5.1f$\\%% \\\\\n"%(nameDict[sys],sysInc/incMeanProfiled*100.,sysRatio/ratioMeanProfiled*100.))
+            f.write("%20s & $\\pm %5.1f$\\%% & $\\pm %5.3f$ \\\\\n"%(nameDict[sys],sysInc/incMeanProfiled*100.,sysRatio))
             
             #fitResultProfiled = self.getFitResult(channels,"inc","profiled")
         
-        f.write("%20s & $\\pm%5.1f$\\%% & $\\pm%5.1f$\\%% \\\\\n"%("Total",math.sqrt(totalInc)/incMeanProfiled*100.,math.sqrt(totalRatio)/ratioMeanProfiled*100.))
+        f.write("%20s & $\\pm%5.1f$\\%% & $\\pm%5.3f$ \\\\\n"%("Total",math.sqrt(totalInc)/incMeanProfiled*100.,math.sqrt(totalRatio)))
         f.close()
 

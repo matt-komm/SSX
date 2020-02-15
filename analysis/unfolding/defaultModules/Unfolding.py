@@ -620,6 +620,16 @@ class Unfolding(Module):
                         diced_pos += (down_pos-nominal_pos)*math.fabs(nuciances[isys])
                         diced_neg += (down_neg-nominal_neg)*math.fabs(nuciances[isys])
                     '''
+                    '''
+                    max_pos = max(math.fabs(up_pos-nominal_pos),math.fabs(down_pos-nominal_pos))
+                    max_neg = max(math.fabs(up_neg-nominal_neg),math.fabs(down_neg-nominal_neg))
+                    
+                    up_pos = math.copysign(max_pos,up_pos-nominal_pos)+nominal_pos
+                    down_pos = math.copysign(max_pos,down_pos-nominal_pos)+nominal_pos
+                    
+                    up_neg = math.copysign(max_neg,up_neg-nominal_neg)+nominal_neg
+                    down_neg = math.copysign(max_neg,down_neg-nominal_neg)+nominal_neg
+                    '''
                     diced_pos += self.module("Utils").morphValueDiff(
                         nominal_pos,up_pos,down_pos,nuciances[isys]
                     )
@@ -633,6 +643,7 @@ class Unfolding(Module):
                 
             for i in range(N):
                 toys[itoy][i]=fct(i,diced_result_pos,diced_result_neg)
+                
                 
         histResult = hist1.Clone("summedHists"+hist1.GetName()+hist2.GetName()+str(random.random()))
         histResult.Scale(0)
