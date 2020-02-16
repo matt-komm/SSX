@@ -6,6 +6,7 @@ import copy
 import math
 import os
 import sys
+import re
 from ModelClasses import *
 
 class FitHistograms(Module.getClass("Program")):
@@ -19,6 +20,7 @@ class FitHistograms(Module.getClass("Program")):
         channels = self.getOption("channels").split(",")
         channelName = self.module("Samples").getChannelName(channels)
         output = self.getOption("output") if (self.getOption("output")!=None) else "profiled"
+        freezeParams = map(lambda x: re.compile(x.replace("*","[A-Za-z0-9_\-]*")), self.getOption("freeze").split(',')) if (self.getOption("freeze")!=None) else []
         self._logger.info("make fit for: "+str(channels))
         # channel,sysName,binList,[up,down]
         histogramsPerChannelAndUncertainty = {}
@@ -37,6 +39,20 @@ class FitHistograms(Module.getClass("Program")):
                 
         #self._logger.info("profile systematics: "+str(uncertaintyList))
         
+        freezeParamValues = {}
+        if len(freezeParams)>0:
+            fitOutputProfiled = os.path.join(
+                self.module("Utils").getOutputFolder("fit/profiled"),
+                self.module("ThetaModel").getFitFileName(channels,unfoldingName,"profiled")
+            )
+            fitResultProfiled = self.module("ThetaFit").loadFitResult(fitOutputProfiled+".json")
+            
+            for freezeParam in freezeParams:
+                for fitParameter in fitResultProfiled['parameters'].keys():
+                    if freezeParam.match(fitParameter):
+                        self._logger.info("Freezing parameter: "+fitParameter+" to "+str(fitResultProfiled['parameters'][fitParameter]['mean_fit']))
+                        freezeParamValues[fitParameter] = fitResultProfiled['parameters'][fitParameter]['mean_fit']
+                        
         
         #maps channel bins to global bins for combinations
         if unfoldingName!="inc":
@@ -127,7 +143,7 @@ class FitHistograms(Module.getClass("Program")):
                                 #make extra parameter per bin for signal
                                 fitSetup[obsName]["components"][channel+"_"+componentName]["yield"].append(uncertaintyParameter+"_"+binName)
                                 if not parametersDict.has_key(uncertaintyParameter+"_"+binName):
-                                    parametersDict[uncertaintyParameter+"_"+binName]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])
+                                    parametersDict[uncertaintyParameter+"_"+binName]=copy.deepcopy(uncertainyParameterDict[uncertaintyParameter])                                    
                             elif uncertaintyParameter.find("QCD")>=0:
                                 #make extra parameter per channel for QCD but not per bin
                                 fitSetup[obsName]["components"][channel+"_"+componentName]["yield"].append(uncertaintyParameter+"_"+binName+"_"+channel)
@@ -152,8 +168,20 @@ class FitHistograms(Module.getClass("Program")):
                                 "down":histogramsPerChannelAndUncertainty[channel][sysName][binName][1][obserableName][componentName]
                             })
                 
-                                    
-        
+        for parameter in parametersDict.keys():
+            eps = 1e-3
+            if freezeParamValues.has_key(parameter):
+                prevP = str(parametersDict[parameter])+"\n"
+                parametersDict[parameter] = self.module("ThetaModel").makeGaus(
+                    freezeParamValues[parameter],
+                    eps,
+                    r=[freezeParamValues[parameter]-3*eps,freezeParamValues[parameter]+3*eps],
+                    name=parameter
+                )
+                prevP +="\t -> "+str(parametersDict[parameter])
+                self._logger.info("Replacing parameter:\n\t"+prevP)
+                              
+        #sys.exit(1)
 
         self.module("Utils").createFolder("fit/"+output)
         fitOutput = os.path.join(
