@@ -29,7 +29,7 @@ systematicsProfiled = [
     ['Multijet normalisation',['QCD*Excl']],
     ['Multijet shape',['eleMultiIsoExcl','eleMultiVetoExcl','muMultiExcl']],
     ['Jet energy scale/resolution',['enExcl','resExcl']],
-    ['b-tagging/mistagging eff.',['btagExcl','ltagExcl']],
+    ['\\PQb-tagging/mistagging eff.',['btagExcl','ltagExcl']],
     #['Mistagging efficiencies',[]],
     ['Lepton efficiencies',['eleEffExcl','muEffExcl']],
     ['Others',['puExcl','uncExcl',]],
@@ -49,7 +49,6 @@ systematics = [
     ['Fragmentation model',['bfrac']],
     #['Others (\\wjets ME scale, \\ttbar \\pt rew., \\ttbar ME scale)',['wjetsScaleME','ttbarPt','ttbarScaleME']],
     #['Others',['wjetsScaleME','ttbarPt','ttbarScaleME']],
-    ['Luminosity',['lumi']],
 ]
 
 ptSym = "\\rd p_\\textrm{T}"
@@ -70,22 +69,27 @@ def formatExp(value):
     else:
         return value/10**n,n
 
-print "\\hline"
-if unit!="":
-    print "\\multicolumn{2}{@{}l}{Interval (\\GeV)}"
-else:
-    print "\\multicolumn{2}{@{}l}{Interval}"
-for ibin in range(nbins):
-    
-    print "& \\multicolumn{2}{l@{}}{[%.1f; %.1f]}"%(binning[ibin],binning[ibin+1])
-print "\\\\"
+
 #print "\\hline"
 
 for iobs,obs in enumerate([
-    ['sum','\\multicolumn{2}{@{}l}{$\\rd\\sigma_{\\PQt\\text{+}\\PAQt}/'+ptSym+'$ (pb/\\GeV)}' if unit!="" else 'Abs (pb)'],
-    #['norm','Norm (1/\\GeV)' if unit!="" else 'Norm'],
-    #['ratio','Ratio']
+    ['sum','\\multicolumn{2}{@{}l}{$\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+ptSym+'}$'+(' (pb/\\GeV)}' if unit!="" else ' (pb)}')],
+    ['norm','\\multicolumn{2}{@{}l}{$\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{\\sigma_{\\PQt\\text{+}\\PAQt}\\,'+ptSym+'}$'+(' (1/\\GeV)}' if unit!="" else "}")],
+    ['ratio','\\multicolumn{2}{@{}l}{$\\dfrac{\\rd\\sigma_{\\PQt}}{'+ptSym+'}/\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+ptSym+'}$}'],
 ]):
+    print
+    print
+
+    print "\\hline"
+    if unit!="":
+        print "\\multicolumn{2}{@{}l}{Interval (\\GeV)}"
+    else:
+        print "\\multicolumn{2}{@{}l}{Interval}"
+    for ibin in range(nbins):
+        
+        print "& \\multicolumn{2}{l@{}}{[%.1f; %.1f]}"%(binning[ibin],binning[ibin+1])
+    print "\\\\"
+
     print obs[1],
     for ibin in range(nbins):
         print " "*4,
@@ -130,14 +134,12 @@ for iobs,obs in enumerate([
 
     for isyst,systematic in enumerate(systematics):
         if isyst==0:
-            print "\\multirow{"+str(len(systematics))+"}{*}{\\rotatebox[origin=c]{90}{Externalised uncertainties}}"
-        if systematic[0]=='Luminosity' and iobs>0:
-            continue
-        if iobs==0:
-            if systematic[0]=='Luminosity':
-                print "& %30s"%(systematic[0]),
+            if iobs==0:
+                print "\\multirow{"+str(len(systematics)+1)+"}{*}{\\rotatebox[origin=c]{90}{Externalised uncertainties}}"
             else:
-                print "& %30s"%(systematic[0]),
+                print "\\multirow{"+str(len(systematics))+"}{*}{\\rotatebox[origin=c]{90}{Externalised uncertainties}}"
+
+        print "& %30s"%(systematic[0]),
         for ibin in range(nbins):
             print " "*4,
 
@@ -146,6 +148,30 @@ for iobs,obs in enumerate([
             sysValue = 0.
             
             for subsystematic in systematic[1]:
+                sysValue += data[obs[0]][subsystematic][ibin]**2
+                
+            sysValue = math.sqrt(sysValue)
+            
+            if sysValue/centralValue<0.001:
+                print "& %14s"%("${<}$0&1\\%"),
+            else:
+                print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*sysValue/centralValue)).replace(".","&")),
+                
+        if isyst==(len(systematics)-1):
+            print "\\\\[\\cmsTabSkip]"
+        else:
+            print "\\\\"
+            
+    if iobs==0:
+        print "& %30s"%('Luminosity'),
+        for ibin in range(nbins):
+            print " "*4,
+
+            centralValue = data[obs[0]]['central'][ibin]
+            
+            sysValue = 0.
+            
+            for subsystematic in ['lumi']:
                 sysValue += data[obs[0]][subsystematic][ibin]**2
                 
             sysValue = math.sqrt(sysValue)
