@@ -30,7 +30,6 @@ systematicsProfiled = [
     ['Multijet shape',['eleMultiIsoExcl','eleMultiVetoExcl','muMultiExcl']],
     ['Jet energy scale/resolution',['enExcl','resExcl']],
     ['\\PQb-tagging/mistagging eff.',['btagExcl','ltagExcl']],
-    #['Mistagging efficiencies',[]],
     ['Lepton efficiencies',['eleEffExcl','muEffExcl']],
     ['Others',['puExcl','uncExcl',]],
 ]
@@ -55,7 +54,7 @@ ptSym = "\\rd p_\\textrm{T}"
 
 # u'', u'central', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'gen'
 
-fParton = open("result/final/comb/pt_parton_comb_sysSummary.json")
+fParton = open("result/final/comb/cos_parton_comb_sysSummary.json")
 data = json.load(fParton)
 
 binning = data['binning']
@@ -74,8 +73,8 @@ def formatExp(value):
 
 for iobs,obs in enumerate([
     ['sum','\\multicolumn{2}{@{}l}{$\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+ptSym+'}$'+(' (pb/\\GeV)}' if unit!="" else ' (pb)}')],
-    ['norm','\\multicolumn{2}{@{}l}{$\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{\\sigma_{\\PQt\\text{+}\\PAQt}\\,'+ptSym+'}$'+(' (1/\\GeV)}' if unit!="" else "}")],
-    ['ratio','\\multicolumn{2}{@{}l}{$\\dfrac{\\rd\\sigma_{\\PQt}}{'+ptSym+'}/\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+ptSym+'}$}'],
+    ['norm','\\multicolumn{2}{@{}l}{$\\dfrac{1}{\\sigma_{\\PQt\\text{+}\\PAQt}}\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+ptSym+'}$'+(' (1/\\GeV)}' if unit!="" else "}")],
+    ['ratio','\\multicolumn{2}{@{}l}{$\\left.\\dfrac{\\rd\\sigma_{\\PQt}}{'+ptSym+'}\\middle /\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+ptSym+'}$}\\right.'],
 ]):
     print
     print

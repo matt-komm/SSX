@@ -567,14 +567,14 @@ class PlotCrossSection(Module.getClass("Program")):
                     upos = result["unfolded_pos"].GetBinContent(ibin+1)
                     
                     #increase unc from 0.5 -> 1. GeV
-                    uneg = cneg+2.*(uneg-cneg)
-                    upos = cpos+2.*(upos-cpos)
+                    #uneg = cneg+2.*(uneg-cneg)
+                    #upos = cpos+2.*(upos-cpos)
                     
                     results[-1]["Up"].SetBinContent(ibin+1,uneg)
                     results[1]["Up"].SetBinContent(ibin+1,upos)
                     
-                    dneg = cneg-1.*(uneg-cneg)
-                    dpos = cpos-1.*(upos-cpos)
+                    dneg = cneg-0.5*(uneg-cneg)
+                    dpos = cpos-0.5*(upos-cpos)
                     
                     results[-1]["Down"].SetBinContent(ibin+1,dneg)
                     results[1]["Down"].SetBinContent(ibin+1,dpos)
@@ -788,53 +788,19 @@ class PlotCrossSection(Module.getClass("Program")):
 
         
         for isys,sys in enumerate(sorted(systematics)):
-            if sys.find("topMass")>=0:
+            for v in ["Up","Down"]:
                 histSystSum,covSystSum = self.module("Unfolding").calculateSum(
-                    sysResults[isys][1]["Up"],
-                    sysResults[isys][-1]["Up"],
-                    sysCov[isys]["Up"]
+                    sysResults[isys][1][v],
+                    sysResults[isys][-1][v],
+                    sysCov[isys][v]
                 )
                 histSystRatio,covSystRatio = self.module("Unfolding").calculateRatio(
-                    sysResults[isys][1]["Up"],
-                    sysResults[isys][-1]["Up"],
-                    sysCov[isys]["Up"]
+                    sysResults[isys][1][v],
+                    sysResults[isys][-1][v],
+                    sysCov[isys][v]
                 )
-                sysResults[isys][0]["Up"] = {"hist":histSystSum,"cov":covSystSum,"ratio":histSystRatio,"ratioCov":covSystRatio}
-        
-                histSystSumDown = histSystSum.Clone(histSystSum.GetName()+"sumDown")
-                histSystSumDown.SetDirectory(0)
-                
-                histSystRatioDown = histSystRatio.Clone(histSystRatio.GetName()+"ratioDown")
-                histSystRatioDown.SetDirectory(0)
-                
-                for ibin in range(histSumNominal.GetNbinsX()):
-                    csum = histSumNominal.GetBinContent(ibin+1)
-                    usum = histSystSum.GetBinContent(ibin+1)
-                    dsum = csum-0.5*(usum-csum)
-                    histSystSumDown.SetBinContent(ibin+1,dsum)
-                    
-                    cratio = histRatioNominal.GetBinContent(ibin+1)
-                    uratio = histSystRatio.GetBinContent(ibin+1)
-                    dratio = cratio-0.5*(uratio-cratio)
-                    histSystRatioDown.SetBinContent(ibin+1,dratio)
-                    
-                
-                sysResults[isys][0]["Down"] = {"hist":histSystSumDown,"cov":numpy.copy(covSystSum),"ratio":histSystRatioDown,"ratioCov":numpy.copy(covSystRatio)}
-                
-            else:
-                for v in ["Up","Down"]:
-                    histSystSum,covSystSum = self.module("Unfolding").calculateSum(
-                        sysResults[isys][1][v],
-                        sysResults[isys][-1][v],
-                        sysCov[isys][v]
-                    )
-                    histSystRatio,covSystRatio = self.module("Unfolding").calculateRatio(
-                        sysResults[isys][1][v],
-                        sysResults[isys][-1][v],
-                        sysCov[isys][v]
-                    )
-                    sysResults[isys][0][v] = {"hist":histSystSum,"cov":covSystSum,"ratio":histSystRatio,"ratioCov":covSystRatio}
-                
+                sysResults[isys][0][v] = {"hist":histSystSum,"cov":covSystSum,"ratio":histSystRatio,"ratioCov":covSystRatio}
+            
             nominalResultSum = nominalResult["nominalGen_pos"].Clone(nominalResult["nominalGen_pos"].GetName()+sys+str(random.random()))
             nominalResultSum.Add(nominalResult["nominalGen_neg"])
             self.module("Drawing").plotEnvelopeHistogram(
@@ -1138,8 +1104,8 @@ class PlotCrossSection(Module.getClass("Program")):
         
         
             asymmetryGen = self.module("Asymmetry").calculateAsymmetry(genHistSumNorm)
-            asymmetryStat = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal)
-            asymmetryStatNoCorr = self.module("Asymmetry").fitDistribution(histSumNominal,covSumNominal,ignoreCorr=True)
+            asymmetryStat = self.module("Asymmetry").fitDistribution(histSumAllExcl,covSumAllExcl)
+            asymmetryStatNoCorr = self.module("Asymmetry").fitDistribution(histSumAllExcl,covSumAllExcl,ignoreCorr=True)
             asymmetryProfiled = self.module("Asymmetry").fitDistribution(histSumProfiled,covSumProfiled)
             asymmetryProfiledNoCorr = self.module("Asymmetry").fitDistribution(histSumProfiled,covSumProfiled,ignoreCorr=True)
             asymmetryTotal = self.module("Asymmetry").fitDistribution(histSumTotal,covSumTotal)
@@ -1166,31 +1132,16 @@ class PlotCrossSection(Module.getClass("Program")):
                     histSumProfiledSyst,
                     covSumProfiledSyst,
                 )
-                if asySystInc[1]>asymmetryStat[1]:
-                    self._logger.info("Meas. syst (%30s): %5.2f+-%5.2f, only: +-%5.2f"%(
-                        profSystName,
-                        100.*asySystInc[0],100.*asySystInc[1],
-                        100.*math.sqrt(asySystInc[1]**2-asymmetryStat[1]**2)
-                    ))
-                    asymUncProf2+=asySystInc[1]**2-asymmetryStat[1]**2
-                else:
-                    '''
-                    self._logger.info("Meas. syst (%30s): %5.2f+-%5.2f, only: -"%(
-                        profSystName,
-                        100.*asySystInc[0],100.*asySystInc[1],
-                    ))
-                    '''
-                    self._logger.info("Meas. syst (%30s): %5.2f+-%5.2f, shift: +-%5.2f"%(
-                        profSystName,
-                        100.*asySystInc[0],100.*asySystInc[1],
-                        100.*math.fabs(asySystInc[0]-asymmetryStat[0])
-                    ))
-                    asymUncProf2+=math.fabs(asySystInc[0]-asymmetryStat[0])**2
-                    
-            self._logger.info("Meas. syst (%30s): +-%5.2f, only: +-%5.2f, fit: +-%5.2f"%(
+                asymUncProf2 += max(0,asymmetryProfiled[1]**2-(asySystInc[1]/asySystInc[0]*asymmetryProfiled[0])**2)
+                self._logger.info("Meas. syst (%30s): %5.2f+-%5.2f, only: +-%5.2f"%(
+                    profSystName,
+                    100.*asySystInc[0],100.*asySystInc[1],
+                    100.*math.sqrt(max(0,asymmetryProfiled[1]**2-(asySystInc[1]/asySystInc[0]*asymmetryProfiled[0])**2))
+                ))
+                      
+            self._logger.info("Meas. syst (%30s): +-%5.2f, fit: +-%5.2f"%(
                 "Prof sum",
                 100.*math.sqrt(asymUncProf2+asymmetryStat[1]**2),
-                100.*math.sqrt(asymUncProf2),
                 100.*asymmetryProfiled[1]
             ))
             
@@ -1341,9 +1292,9 @@ class PlotCrossSection(Module.getClass("Program")):
                 profNormErr = histSumProfiledNorm.GetBinError(ibin+1)
                 profRatioErr = histRatioProfiled.GetBinError(ibin+1)
                 
-                systSumErr = histSumProfiledSystDict[profSystName]['hist'].GetBinError(ibin+1)#/histSumProfiledSystDict[profSystName]['hist'].GetBinContent(ibin+1)*profSum
-                systNormErr = histSumNormProfiledSystDict[profSystName]['hist'].GetBinError(ibin+1)#/histSumNormProfiledSystDict[profSystName]['hist'].GetBinContent(ibin+1)*profNorm
-                systRatioErr = histRatioProfiledSystDict[profSystName]['hist'].GetBinError(ibin+1)#/histRatioProfiledSystDict[profSystName]['hist'].GetBinContent(ibin+1)*profRatio
+                systSumErr = histSumProfiledSystDict[profSystName]['hist'].GetBinError(ibin+1)/histSumProfiledSystDict[profSystName]['hist'].GetBinContent(ibin+1)*profSum
+                systNormErr = histSumNormProfiledSystDict[profSystName]['hist'].GetBinError(ibin+1)/histSumNormProfiledSystDict[profSystName]['hist'].GetBinContent(ibin+1)*profNorm
+                systRatioErr = histRatioProfiledSystDict[profSystName]['hist'].GetBinError(ibin+1)/histRatioProfiledSystDict[profSystName]['hist'].GetBinContent(ibin+1)*profRatio
                 
                 profSystSum2[ibin]+=max(0,profSumErr**2-systSumErr**2)
                 profSystSumNorm2[ibin]+=max(0,profNormErr**2-systNormErr**2)
@@ -1782,8 +1733,8 @@ class PlotCrossSection(Module.getClass("Program")):
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sumnorm")
         ) 
         
-        ymin = 0.15 if channelName=="comb" else 0.
-        ymax = 0.85 if channelName=="comb" else 1.
+        ymin = 0.05 if channelName=="comb" else 0.
+        ymax = 0.95 if channelName=="comb" else 1.
         
         centerY = False
         if unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt":
