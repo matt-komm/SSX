@@ -1,6 +1,6 @@
 systProfiled="en,res,unc"
 systExternalized="topMass"
-syst="$systProfiled,$systExternalized"
+syst=$systExternalized
 
 for channel in ele mu
     do

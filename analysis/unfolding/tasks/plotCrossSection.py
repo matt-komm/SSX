@@ -567,8 +567,8 @@ class PlotCrossSection(Module.getClass("Program")):
                     upos = result["unfolded_pos"].GetBinContent(ibin+1)
                     
                     #increase unc from 0.5 -> 1. GeV
-                    #uneg = cneg+2.*(uneg-cneg)
-                    #upos = cpos+2.*(upos-cpos)
+                    uneg = cneg+2.*(uneg-cneg)
+                    upos = cpos+2.*(upos-cpos)
                     
                     results[-1]["Up"].SetBinContent(ibin+1,uneg)
                     results[1]["Up"].SetBinContent(ibin+1,upos)

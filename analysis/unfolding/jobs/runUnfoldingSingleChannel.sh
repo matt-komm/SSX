@@ -67,6 +67,12 @@ syst=(
 "systematics/pdfBkgUp"
 )
 
+syst=(
+"systematics/topMassUp"
+)
+
+#TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WPtParticle
+
 #for setup in  TopPtParton TopYParton TopCosParton TopCosTauParton LeptonPtParton LeptonEtaParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WPtParticle
 #    do
 #    echo $setup $1
@@ -75,7 +81,7 @@ syst=(
 #wait ${!}
 for sys  in "${syst[@]}"
     do
-    for setup in TopPtParton TopYParton TopCosParton TopCosTauParton LeptonPtParton LeptonEtaParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WPtParticle
+    for setup in TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton TopPtParticle TopYParticle TopCosParticle LeptonPtParticle LeptonEtaParticle WPtParticle
         do
         echo $setup $1
         python driver.py -m setup/$setup -m tasks/makeUnfoldingSingle -m $sys -c channels:$1 &

@@ -175,7 +175,7 @@ class FitHistograms(Module.getClass("Program")):
                 parametersDict[parameter] = self.module("ThetaModel").makeGaus(
                     freezeParamValues[parameter],
                     eps,
-                    r=[freezeParamValues[parameter]-3*eps,freezeParamValues[parameter]+3*eps],
+                    r=[freezeParamValues[parameter]-5*eps,freezeParamValues[parameter]+5*eps],
                     name=parameter
                 )
                 prevP +="\t -> "+str(parametersDict[parameter])
@@ -194,7 +194,7 @@ class FitHistograms(Module.getClass("Program")):
         isuccess = -1
         while (len(fitResultsSucess)<4 and isuccess<20):
             success = False
-            retry = 20
+            retry = 40
             itry = 0
             isuccess+=1
             while (not success and itry<retry):

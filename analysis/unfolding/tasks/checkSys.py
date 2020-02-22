@@ -276,7 +276,7 @@ class CheckSys(Module.getClass("Program")):
                     rootObj.append(envelop)
                     
                     for uncertainty in uncertainties:
-                        sumPerCharge[uncertainty][compName].Draw("HISTSame")
+                        sumPerCharge[uncertainty][compName].Draw("HISTESame")
                 
                 for i in range(6):
                     cv.cd(i+1)

@@ -60,6 +60,10 @@ class RunUnfolding(Module.getClass("Program")):
         )
         fitResult = self.module("ThetaFit").loadFitResult(fitOutput+".json")
         
+        self._logger.info("Loading fit result: "+fitOutput)
+        for k in sorted(fitResult['parameters'].keys()):
+            print k,fitResult['parameters'][k]['mean_fit'],fitResult['parameters'][k]['unc_fit']
+        
         responseMatricesMorphed = self.module("Response").morphResponses(
             responseMatrices,
             systematics,
