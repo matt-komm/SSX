@@ -51,16 +51,10 @@ systematics = [
     #['Others',['wjetsScaleME','ttbarPt','ttbarScaleME']],
 ]
 
-ptSym = "\\rd p_\\textrm{T}"
 
-# u'', u'central', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'gen'
 
-fParton = open("result/final/comb/pt_parton_comb_sysSummary.json")
-data = json.load(fParton)
 
-binning = data['binning']
-nbins = len(binning)-1
-unit = data['unit']
+
 
 def formatExp(value):
     n = int(math.floor(math.log10(value)))
@@ -70,166 +64,189 @@ def formatExp(value):
         return value/10**n,n
 
 
-#print "\\hline"
 
-varName="top quark \\pt"
+
 levelName = "parton"
 
-headers= [
-    "The measured differential absolute cross section in intervals of the "+varName+" at the "+levelName+" level. A breakdown of the systematic uncertainties is given as well. Minor uncertainties (lepton efficiencies, pileup, and unclustered energy) have been grouped into the ``Others'' category.",
-    "The measured differential normalised coss section in intervals of "+varName+" at the "+levelName+" level. A breakdown of the systematic uncertainties is given as well. Minor uncertainties (lepton efficiencies, pileup, and unclustered energy) have been grouped into the ``Others'' category.",
-    "The measured differential charge ratio in intervals of the "+varName+" at the "+levelName+" level. A breakdown of the systematic uncertainties is given as well. Minor uncertainties (lepton efficiencies, pileup, and unclustered energy) have been grouped into the ``Others'' category.",
-]
+for var in [
+    ["result/final/comb/pt_"+levelName+"_comb_sysSummary.json","\\rd p_\\textrm{T}","top quark \\pt"],
+    ["result/final/comb/y_"+levelName+"_comb_sysSummary.json","\\rd \\abs{y}","top quark rapidity"],
+    ["result/final/comb/lpt_"+levelName+"_comb_sysSummary.json","\\rd p_\\textrm{T}","charged lepton \\pt"],
+    ["result/final/comb/leta_"+levelName+"_comb_sysSummary.json","\\rd \\abs{y}","charged lepton rapidity"],
+    ["result/final/comb/wpt_"+levelName+"_comb_sysSummary.json","\\rd p_\\textrm{T}","W boson \\pt"],
+    ["result/final/comb/cos_"+levelName+"_comb_sysSummary.json","\\rd \\cospol","polarisation angle"],
+]:
+    symbol = var[1]#"\\rd p_\\textrm{T}"
+    varName= var[2]#"top quark \\pt"
+    
+    
+    headers= {
+        'sum':"The measured differential absolute cross section in intervals of the "+varName+" at the "+levelName+" level. A breakdown of the systematic uncertainties is given as well. Minor uncertainties (lepton efficiencies, pileup, and unclustered energy) have been grouped into the ``Others'' category.",
+        'norm':"The measured differential normalised coss section in intervals of "+varName+" at the "+levelName+" level. A breakdown of the systematic uncertainties is given as well. Minor uncertainties (lepton efficiencies, pileup, and unclustered energy) have been grouped into the ``Others'' category.",
+        'ratio':"The measured differential charge ratio in intervals of the "+varName+" at the "+levelName+" level. A breakdown of the systematic uncertainties is given as well. Minor uncertainties (lepton efficiencies, pileup, and unclustered energy) have been grouped into the ``Others'' category.",
+    }
 
-for iobs,obs in enumerate([
-    ['sum','\\multicolumn{2}{@{}l}{$\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+ptSym+'}$'+(' (pb/\\GeV)}' if unit!="" else ' (pb)}')],
-    ['norm','\\multicolumn{2}{@{}l}{$\\dfrac{1}{\\sigma_{\\PQt\\text{+}\\PAQt}}\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+ptSym+'}$'+(' (1/\\GeV)}' if unit!="" else "}")],
-    ['ratio','\\multicolumn{2}{@{}l}{$\\left.\\dfrac{\\rd\\sigma_{\\PQt}}{'+ptSym+'}\\middle /\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+ptSym+'}\\right.$}'],
-]):
-    print
-    print
-    print "\\begin{table*}[h!]"
-    print "\\centering"
-    print "\\topcaption{"+headers[iobs]+"}"
-    print "\\begin{tabular}{@{}l r",
-    print " r@{.}l"*nbins,
-    print "@{}}"
+    
+    fParton = open(var[0])
+    data = json.load(fParton)
 
-    print "\\hline"
-    if unit!="":
-        print "\\multicolumn{2}{@{}l}{"+varName.capitalize()+" interval (\\GeV)}"
-    else:
-        print "\\multicolumn{2}{@{}l}{Interval}"
-    for ibin in range(nbins):
-        
-        print "& \\multicolumn{2}{l@{}}{[%.1f; %.1f]}"%(binning[ibin],binning[ibin+1])
-    print "\\\\"
+    binning = data['binning']
+    nbins = len(binning)-1
+    unit = data['unit']
 
-    print obs[1],
-    for ibin in range(nbins):
-        print " "*4,
-        
-        val,exp = formatExp(data[obs[0]]['central'][ibin])
-        if exp==0:
-            print ("& \\multicolumn{2}{c@{}}{%.1f}"%(val)),
+    for iobs,obs in enumerate([
+        ['sum','\\multicolumn{2}{@{}l}{$\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+symbol+'}$'+(' (pb/\\GeV)}' if unit!="" else ' (pb)}')],
+        #['norm','\\multicolumn{2}{@{}l}{$\\dfrac{1}{\\sigma_{\\PQt\\text{+}\\PAQt}}\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+symbol+'}$'+(' (1/\\GeV)}' if unit!="" else "}")],
+        #['ratio','\\multicolumn{2}{@{}l}{$\\left.\\dfrac{\\rd\\sigma_{\\PQt}}{'+symbol+'}\\middle /\\dfrac{\\rd\\sigma_{\\PQt\\text{+}\\PAQt}}{'+symbol+'}\\right.$}'],
+    ]):
+        print
+        print
+        print "\\begin{table*}[h!]"
+        print "\\centering"
+        print "\\topcaption{"+headers[obs[0]]+"}"
+        print "\\begin{tabular}{@{}l r",
+        print " r@{.}l"*nbins,
+        print "@{}}"
+
+        print "\\hline"
+        if unit!="":
+            print "\\multicolumn{2}{@{}l}{"+varName.capitalize()+" interval (\\GeV)}"
         else:
-            print ("& \\multicolumn{2}{c@{}}{%.1f$\\times 10^{%i}$}"%(val,exp)),
-        #print "& %.1f"%(100.*dataParticle['sum']['total'][ibin]/dataParticle['sum']['central'][ibin]),
-    print "\\\\"
-    
-    print "\\hline"
-    
-    for isyst,systematic in enumerate(systematicsProfiled):
-        if isyst==0:
-            nbr = len(reduce(lambda x,y: x+"<br>"+y,map(lambda x: x[0],systematicsProfiled)).split("<br>"))
-            print "\\multirow{"+str(nbr)+"}{*}{\\rotatebox[origin=c]{90}{Profiled uncertainties}}"
-        
-        print "& %30s"%(systematic[0].split("<br>")[0]),
-        nbr = len(systematic[0].split("<br>"))
+            print "\\multicolumn{2}{@{}l}{"+varName.capitalize()+" interval}"
+        for ibin in range(nbins):
+            if unit=="":
+                print "& \\multicolumn{2}{c@{}}{[%.1f; %.1f]}"%(binning[ibin],binning[ibin+1])
+            else:
+                print "& \\multicolumn{2}{c@{}}{[%.0f; %.0f]}"%(binning[ibin],binning[ibin+1])
+        print "\\\\"
+
+        print obs[1],
         for ibin in range(nbins):
             print " "*4,
+            
+            val,exp = formatExp(data[obs[0]]['central'][ibin])
+            if obs[0]=="ratio":
+                print ("& \\multicolumn{2}{c@{}}{%.2f}"%(val*10**exp)),
+            elif exp==0:
+                print ("& \\multicolumn{2}{c@{}}{%.1f}"%(val)),
+            else:
+                print ("& \\multicolumn{2}{c@{}}{%.1f$\\times 10^{%i}$}"%(val,exp)),
+            #print "& %.1f"%(100.*dataParticle['sum']['total'][ibin]/dataParticle['sum']['central'][ibin]),
+        print "\\\\"
+        
+        print "\\hline"
+        
+        for isyst,systematic in enumerate(systematicsProfiled):
+            if isyst==0:
+                nbr = len(reduce(lambda x,y: x+"<br>"+y,map(lambda x: x[0],systematicsProfiled)).split("<br>"))
+                print "\\multirow{"+str(nbr)+"}{*}{\\rotatebox[origin=c]{90}{Profiled uncertainties}}"
+            
+            print "& %30s"%(systematic[0].split("<br>")[0]),
+            nbr = len(systematic[0].split("<br>"))
+            for ibin in range(nbins):
+                print " "*4,
 
-            centralValue = data[obs[0]]['central'][ibin]
-            
-            sysValue = 0.
-            
-            for subsystematic in systematic[1]:
-                sysValue += data[obs[0]][subsystematic][ibin]**2
+                centralValue = data[obs[0]]['central'][ibin]
                 
-            sysValue = math.sqrt(sysValue)
-            
-            if sysValue/centralValue<0.001:
-                print "& %14s"%("${<}$0&1\\%"),
-            else:
-                print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*sysValue/centralValue)).replace(".","&")),
-        for ibr in range(1,nbr):
-            print "\\\\"
-            print "& %s"%(systematic[0].split("<br>")[ibr])
+                sysValue = 0.
                 
-        if isyst==(len(systematicsProfiled)-1):
-            print "\\\\"
-        else:
-            if nbr>1:
-                print "\\\\"#[\\cmsTabSkip]"
-            else:
+                for subsystematic in systematic[1]:
+                    sysValue += data[obs[0]][subsystematic][ibin]**2
+                    
+                sysValue = math.sqrt(sysValue)
+                
+                if sysValue/centralValue<0.001:
+                    print "& %14s"%("${<}$0&1\\%"),
+                else:
+                    print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*sysValue/centralValue)).replace(".","&")),
+            for ibr in range(1,nbr):
                 print "\\\\"
-       
-    print "\\\\[\\cmsTabSkip]"
-    
-    for isyst,systematic in enumerate(systematics):
-        if isyst==0:
-            nbr = len(reduce(lambda x,y: x+"<br>"+y,map(lambda x: x[0],systematics)).split("<br>"))
-            print "\\multirow{"+str(nbr)+"}{*}{\\rotatebox[origin=c]{90}{Theoretical uncertainties}}"
-
-        print "& %30s"%(systematic[0].split("<br>")[0]),
-        nbr = len(systematic[0].split("<br>"))
-        for ibin in range(nbins):
-            print " "*4,
-
-            centralValue = data[obs[0]]['central'][ibin]
-            
-            sysValue = 0.
-            
-            for subsystematic in systematic[1]:
-                sysValue += data[obs[0]][subsystematic][ibin]**2
-                
-            sysValue = math.sqrt(sysValue)
-            
-            if sysValue/centralValue<0.001:
-                print "& %14s"%("${<}$0&1\\%"),
-            else:
-                print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*sysValue/centralValue)).replace(".","&")),
-        for ibr in range(1,nbr):
-            print "\\\\"
-            print "& %s"%(systematic[0].split("<br>")[ibr])
-                
-        if isyst==(len(systematics)-1):
-            print "\\\\"
-        else:
-            if nbr>1:
-                print "\\\\"#[\\cmsTabSkip]"
-            else:
+                print "& %s"%(systematic[0].split("<br>")[ibr])
+                    
+            if isyst==(len(systematicsProfiled)-1):
                 print "\\\\"
-    
-    print "\\\\[\\cmsTabSkip]"
-            
-            
-    if iobs==0:
-        print "\\multicolumn{2}{@{}l}{Luminosity}",
+            else:
+                if nbr>1:
+                    print "\\\\[\\cmsTabSkip]"
+                else:
+                    print "\\\\[\\cmsTabSkip]"
+           
+        print "\\hline"
+        
+        for isyst,systematic in enumerate(systematics):
+            if isyst==0:
+                nbr = len(reduce(lambda x,y: x+"<br>"+y,map(lambda x: x[0],systematics)).split("<br>"))
+                print "\\multirow{"+str(nbr)+"}{*}{\\rotatebox[origin=c]{90}{Theoretical uncertainties}}"
+
+            print "& %30s"%(systematic[0].split("<br>")[0]),
+            nbr = len(systematic[0].split("<br>"))
+            for ibin in range(nbins):
+                print " "*4,
+
+                centralValue = data[obs[0]]['central'][ibin]
+                
+                sysValue = 0.
+                
+                for subsystematic in systematic[1]:
+                    sysValue += data[obs[0]][subsystematic][ibin]**2
+                    
+                sysValue = math.sqrt(sysValue)
+                
+                if sysValue/centralValue<0.001:
+                    print "& %14s"%("${<}$0&1\\%"),
+                else:
+                    print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*sysValue/centralValue)).replace(".","&")),
+            for ibr in range(1,nbr):
+                print "\\\\"
+                print "& %s"%(systematic[0].split("<br>")[ibr])
+                    
+            if isyst==(len(systematics)-1):
+                print "\\\\"
+            else:
+                if nbr>1:
+                    print "\\\\[\\cmsTabSkip]"
+                else:
+                    print "\\\\[\\cmsTabSkip]"
+        
+        print "\\hline"
+                
+                
+        if iobs==0:
+            print "\\multicolumn{2}{@{}l}{Luminosity}",
+            for ibin in range(nbins):
+                print " "*4,
+
+                centralValue = data[obs[0]]['central'][ibin]
+                
+                sysValue = data[obs[0]]['lumi'][ibin]**2
+                    
+                sysValue = math.sqrt(sysValue)
+                
+                if sysValue/centralValue<0.001:
+                    print "& %14s"%("${<}$0&1\\%"),
+                else:
+                    print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*sysValue/centralValue)).replace(".","&")),
+                    
+            print "\\\\[\\cmsTabSkip]"
+
+        
+
+        print "\\multicolumn{2}{@{}l}{Profiled uncertainties only}",
         for ibin in range(nbins):
             print " "*4,
-
-            centralValue = data[obs[0]]['central'][ibin]
-            
-            sysValue = data[obs[0]]['lumi'][ibin]**2
-                
-            sysValue = math.sqrt(sysValue)
-            
-            if sysValue/centralValue<0.001:
-                print "& %14s"%("${<}$0&1\\%"),
-            else:
-                print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*sysValue/centralValue)).replace(".","&")),
-                
+            print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*data[obs[0]]['prof'][ibin]/data[obs[0]]['central'][ibin])).replace(".","&")),
+        print "\\\\"
+        
+        print "\\multicolumn{2}{@{}l}{(statistical+experimental)}",
         print "\\\\[\\cmsTabSkip]"
+        
+        print "\\multicolumn{2}{@{}l}{Total uncertainties}",
+        for ibin in range(nbins):
+            print " "*4,
+            print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*data[obs[0]]['total'][ibin]/data[obs[0]]['central'][ibin])).replace(".","&")),
+        print "\\\\"
 
-    
-
-    print "\\multicolumn{2}{@{}l}{Statistical and experimental}",
-    for ibin in range(nbins):
-        print " "*4,
-        print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*data[obs[0]]['prof'][ibin]/data[obs[0]]['central'][ibin])).replace(".","&")),
-    print "\\\\"
-    
-    print "\\multicolumn{2}{@{}l}{uncertainties (profiled)}",
-    print "\\\\[\\cmsTabSkip]"
-    
-    print "\\multicolumn{2}{@{}l}{Total uncertainties}",
-    for ibin in range(nbins):
-        print " "*4,
-        print "& %14s"%(("${\\pm}$%.1f\\%%"%(100.*data[obs[0]]['total'][ibin]/data[obs[0]]['central'][ibin])).replace(".","&")),
-    print "\\\\"
-
-    print "\\hline"
-    print "\\end{tabular}"
-    print "\\end{table*}"
-     
+        print "\\hline"
+        print "\\end{tabular}"
+        print "\\end{table*}"
+         
