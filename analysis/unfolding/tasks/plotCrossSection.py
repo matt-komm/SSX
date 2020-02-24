@@ -1733,8 +1733,8 @@ class PlotCrossSection(Module.getClass("Program")):
             os.path.join(finalFolder,unfoldingName+"_"+unfoldingLevel+"_"+channelName+"_sumnorm")
         ) 
         
-        ymin = 0.05 if channelName=="comb" else 0.
-        ymax = 0.95 if channelName=="comb" else 1.
+        ymin = 0.15 if channelName=="comb" else 0.
+        ymax = 0.85 if channelName=="comb" else 1.
         
         centerY = False
         if unfoldingName=="pt" or unfoldingName=="lpt" or unfoldingName=="wpt":
