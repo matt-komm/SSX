@@ -1113,6 +1113,7 @@ class PlotCrossSection(Module.getClass("Program")):
             
             
             asymSysSummaryDict['gen'] = asymmetryGen
+            asymSysSummaryDict['stat'] = asymmetryStat[1]/asymmetryStat[0]*asymmetryProfiled[0]
             asymSysSummaryDict['prof'] = asymmetryProfiled[1]
             asymSysSummaryDict['total'] = asymmetryTotal[1]
             asymSysSummaryDict['central'] = asymmetryTotal[0]
@@ -1132,12 +1133,16 @@ class PlotCrossSection(Module.getClass("Program")):
                     histSumProfiledSyst,
                     covSumProfiledSyst,
                 )
-                asymUncProf2 += max(0,asymmetryProfiled[1]**2-(asySystInc[1]/asySystInc[0]*asymmetryProfiled[0])**2)
+                unc2 = max(0,asymmetryProfiled[1]**2-(asySystInc[1]/asySystInc[0]*asymmetryProfiled[0])**2)
+                
+                asymUncProf2 += unc2
                 self._logger.info("Meas. syst (%30s): %5.2f+-%5.2f, only: +-%5.2f"%(
                     profSystName,
                     100.*asySystInc[0],100.*asySystInc[1],
-                    100.*math.sqrt(max(0,asymmetryProfiled[1]**2-(asySystInc[1]/asySystInc[0]*asymmetryProfiled[0])**2))
+                    100.*math.sqrt(unc2)
                 ))
+                
+                asymSysSummaryDict[profSystName] = math.sqrt(unc2)
                       
             self._logger.info("Meas. syst (%30s): +-%5.2f, fit: +-%5.2f"%(
                 "Prof sum",

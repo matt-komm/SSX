@@ -1,26 +1,6 @@
 import json
 import math
 import numpy
-
-sysDictNames = {
-            "stat":"Statistical",
-            "pdf":"PDF",
-            "tchanHdampPS":"$t$-ch. $h_\\mathrm{damp}$",
-            "tchanScaleME":"$t$-ch. ME scale",
-            "tchanScalePS":"$t$-ch. PS scale",
-            "topMass":"Top mass",
-            "ttbarHdampPS":"\\ttbar $h_\\mathrm{damp}$",
-            "ttbarPt":"\\ttbar \\pt rew.",
-            "ttbarScaleFSRPS":"\\ttbar FSR PS scale",
-            "ttbarScaleISRPS":"\\ttbar ISR PS scale",
-            "ttbarScaleME":"\\ttbar ME scale",
-            "ttbarUE":"\\ttbar UE tune",
-            "wjetsScaleME":"\\wjets ME scale",
-            "tchanColor":"$t$-ch. color reconnection",
-            "ttbarColor":"\\ttbar color reconnection",
-            "bfrac":"b fragmentation",
-            "lumi":"Luminosity"
-        }
         
 systematicsProfiled = [
     ['Statistical',['stat']],
@@ -121,17 +101,23 @@ for var in [
         print "\\\\"
 
         print obs[1],
+        
+        maxExp = max(map(lambda x:math.log10(x),data[obs[0]]['central']))
+        minExp = min(map(lambda x:math.log10(x),data[obs[0]]['central']))
+        
+            
+        
         for ibin in range(nbins):
             print " "*4,
-            
-            val,exp = formatExp(data[obs[0]]['central'][ibin])
-            if obs[0]=="ratio":
-                print ("& \\multicolumn{2}{c@{}}{%.2f}"%(val*10**exp)),
-            elif exp==0:
-                print ("& \\multicolumn{2}{c@{}}{%.1f}"%(val)),
+            value = data[obs[0]]['central'][ibin]
+            val,exp = formatExp(value)
+            if obs[0]=="ratio" or (maxExp<math.log10(1.06) and minExp>=math.log10(0.106)):
+                print ("& \\multicolumn{2}{c@{}}{%.2f}"%(value)),
+            elif (minExp>=math.log10(1.06)):
+                print ("& \\multicolumn{2}{c@{}}{%.1f}"%(value)),
             else:
                 print ("& \\multicolumn{2}{c@{}}{%.1f$\\times 10^{%i}$}"%(val,exp)),
-            #print "& %.1f"%(100.*dataParticle['sum']['total'][ibin]/dataParticle['sum']['central'][ibin]),
+
         print "\\\\"
         
         print "\\hline"

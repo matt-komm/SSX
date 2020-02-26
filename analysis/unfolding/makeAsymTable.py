@@ -2,25 +2,29 @@ import json
 import math
 import numpy
 
-
+systematicsProfiled = [
+    ['Statistical',['stat']],
+    ['\\ttbar normalisation',['TopBkg*Excl']],
+    ['\\wzjets normalisation',['WZjets*Excl','dyExcl','twExcl']],
+    ['Multijet normalisation',['QCD*Excl']],
+    ['Multijet shape',['eleMultiIsoExcl','eleMultiVetoExcl','muMultiExcl']],
+    ['Jet energy scale/resolution',['enExcl','resExcl']],
+    ['\\PQb-tagging/mistagging eff.',['btagExcl','ltagExcl']],
+    ['Others',['puExcl','uncExcl','eleEffExcl','muEffExcl']],
+]
 
 systematics = [
-    ['Experimental',['prof']],
     ['Top quark mass',['topMass']],
     ['PDF+$\\alpS$',['pdf']],
-    ['$t$ channel ME scale',['tchanScaleME']],
+    ['$t$ channel renorm./fact. scales',['tchanScaleME']],
     ['$t$ channel parton shower',['tchanHdampPS','tchanScalePS']],
-    ['\\ttbar ME scale',['ttbarScaleME']],
+    ['\\ttbar renorm./fact. scales',['ttbarScaleME']],
     ['\\ttbar parton shower',['ttbarScaleISRPS','ttbarScaleFSRPS','ttbarHdampPS']],
     ['\\ttbar underlying event tune',['ttbarUE']],
-    ['\\ttbar \pt rew.',['ttbarPt']],
-    ['\\wjets ME scale',['wjetsScaleME']],
+    ['\\ttbar \\pt reweighting',['ttbarPt']],
+    ['\\wjets renorm./fact. scales',['wjetsScaleME']],
     ['Color reconnection', ['tchanColor','ttbarColor']],
     ['Fragmentation model',['bfrac']],
-    #['Others (\\wjets ME scale, \\ttbar \\pt rew., \\ttbar ME scale)',['wjetsScaleME','ttbarPt','ttbarScaleME']],
-    #['Others',['wjetsScaleME','ttbarPt','ttbarScaleME']],
-    #['Luminosity',['lumi']],
-    ['Total',['total']]
 ]
 
 # u'', u'central', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'', u'gen'
@@ -44,16 +48,16 @@ def formatExp(value):
 
 print "\\hline"
 
-print "%30s"%"Central values",
+print "%40s"%"Central values",
 for data in [dataMu,dataEle,dataComb]:
     print "& %15s"%(("%5.3f"%(data['central'])).replace(".","&")),
 
 print "\\\\"
 
-for systematic in systematics:
+for systematic in systematicsProfiled:
 
 
-    print "%30s"%systematic[0],
+    print "%40s"%systematic[0],
     
     for data in [dataMu,dataEle,dataComb]:
         sysValue = 0.
@@ -69,5 +73,37 @@ for systematic in systematics:
             print "& %15s"%(("${\\pm}$%.3f"%(sysValue)).replace(".","&")),
             
     print "\\\\"
+
+for systematic in systematics:
+
+
+    print "%40s"%systematic[0],
+    
+    for data in [dataMu,dataEle,dataComb]:
+        sysValue = 0.
         
+        for subsystematic in systematic[1]:
+            sysValue += data[subsystematic]**2
+            
+        sysValue = math.sqrt(sysValue)
+        
+        if sysValue<0.001:
+            print "& %15s"%("${<}$0&001"),
+        else:
+            print "& %15s"%(("${\\pm}$%.3f"%(sysValue)).replace(".","&")),
+            
+    print "\\\\"
+    
+        
+print "%40s"%"Statistical and experimental uncertainties",
+for data in [dataMu,dataEle,dataComb]:
+    print "& %15s"%(("%5.3f"%(data['prof'])).replace(".","&")),
+
+print "\\\\"
+
+print "%40s"%"Total uncertainties",
+for data in [dataMu,dataEle,dataComb]:
+    print "& %15s"%(("%5.3f"%(data['total'])).replace(".","&")),
+
+print "\\\\"
 
