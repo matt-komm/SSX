@@ -41,11 +41,11 @@ class SmoothHistograms(Module.getClass("Program")):
             e2 = hist.GetBinError(start+ibin+1+0)
             e3 = hist.GetBinError(start+ibin+1+1)
             
-            arr[ibin]=(w*c1/e1+(1-2*w)*c2/e2+w*c3/e3)/(w/e1+(1-2*w)/e2+w/e3)
-            err[ibin]=math.sqrt((w*e1)**2+((1-2*w)*e2)**2+(w*e3)**2)
-            
-            #arr[ibin]=(w*0.5*c1+(1-w)*c2+w*0.5*c3)
+            #arr[ibin]=(w*c1/e1+(1-2*w)*c2/e2+w*c3/e3)/(w/e1+(1-2*w)/e2+w/e3)
             #err[ibin]=math.sqrt((w*e1)**2+((1-2*w)*e2)**2+(w*e3)**2)
+            
+            arr[ibin]=(w*0.5*c1+(1-w)*c2+w*0.5*c3)
+            err[ibin]=math.sqrt((w*e1)**2+((1-2*w)*e2)**2+(w*e3)**2)
             
         arr[0]=(1-w)*hist.GetBinContent(start+1)+w*hist.GetBinContent(start+2)
         err[0]=max([hist.GetBinError(start+1),hist.GetBinError(start+2)])
@@ -69,7 +69,7 @@ class SmoothHistograms(Module.getClass("Program")):
             hist.SetBinContent(start+ibin+1,arr[ibin])
             hist.SetBinError(start+ibin+1,err[ibin])
             
-    def smooth(self,hist,region,w=0.05,i=3,scale=1):
+    def smooth(self,hist,region,w=0.05,i=20,scale=1):
         #0..3 //mtsmoothAvgPerRangew
         #4..11 //BDT ttw
         #12..15 //BDT tch
@@ -224,10 +224,6 @@ class SmoothHistograms(Module.getClass("Program")):
                             cDown = histDown.GetBinContent(ibin)
                             eDown = histDown.GetBinError(ibin)
                             
-                            if sysName=="topMass":
-                                cDown = cNom-(cUp-cNom)
-                                eDown = eUp
-                            
                             #interpolate from 1 GeV to 0.5 GeV uncertainty
                             if sysName=="topMass":
                                 cUp = cUp*0.5+cNom*0.5 
@@ -298,48 +294,10 @@ class SmoothHistograms(Module.getClass("Program")):
                         histRelUpSmooth = histRelUp.Clone(histRelUp.GetName()+str(random.random()))
                         histRelDownSmooth = histRelDown.Clone(histRelDown.GetName()+str(random.random()))
                         
-                        
                         #if compName.find('tChannel')<0:
-                        if sysName=="topMass":
-                            self.smooth(histRelUpSmooth,region=obsName,scale=1)
-                            self.smooth(histRelDownSmooth,region=obsName,scale=1)
+                        #self.smooth(histRelUpSmooth,region=obsName,scale=1)
+                        #self.smooth(histRelDownSmooth,region=obsName,scale=1)
                         
-                        
-                            for ibin in range(histNominal.GetNbinsX()/2):
-                                cPosUp = histRelUpSmooth.GetBinContent(2*histRelUpSmooth.GetNbinsX()-ibin)
-                                cNegUp = histRelUpSmooth.GetBinContent(ibin+1)
-                                
-                                cPosDown = histRelDownSmooth.GetBinContent(2*histRelDownSmooth.GetNbinsX()-ibin)
-                                cNegDown = histRelDownSmooth.GetBinContent(ibin+1)
-                                
-                                mix = 0.25
-                                
-                                cPosUpNew = cPosUp*(1-mix)+cNegUp*mix
-                                cNegUpNew = cPosUp*mix+cNegUp*(1-mix)
-                                
-                                cPosDownNew = cPosDown*(1-mix)+cNegDown*mix
-                                cNegDownNew = cPosDown*mix+cNegDown*(1-mix)
-
-                                histRelUpSmooth.SetBinContent(2*histRelUpSmooth.GetNbinsX()-ibin,cPosUpNew)
-                                histRelUpSmooth.SetBinContent(ibin+1,cNegUpNew)
-                                
-                                histRelDownSmooth.SetBinContent(2*histRelDownSmooth.GetNbinsX()-ibin,cPosDownNew)
-                                histRelDownSmooth.SetBinContent(ibin+1,cNegDownNew)
-                            
-                            '''
-                            #interplotate to 0.5GeV
-                            for ibin in range(histNominal.GetNbinsX()+2):
-                                histRelUpSmooth.SetBinContent(ibin, 1.+0.5*(histRelUpSmooth.GetBinContent(ibin)-1.))
-                                histRelDownSmooth.SetBinContent(ibin, 1.+0.5*(histRelDownSmooth.GetBinContent(ibin)-1.))
-                            '''
-                            #self.smooth(histRelUpSmooth,region=obsName,scale=1)
-                            #self.smooth(histRelDownSmooth,region=obsName,scale=1)
-                            '''
-                            #extrapolate to 1GeV again
-                            for ibin in range(histNominal.GetNbinsX()+2):
-                                histRelUpSmooth.SetBinContent(ibin, 1.+2.*(histRelUpSmooth.GetBinContent(ibin)-1.))
-                                histRelDownSmooth.SetBinContent(ibin, 1.+2.*(histRelDownSmooth.GetBinContent(ibin)-1.))
-                            '''
                         for ibin in range(histNominal.GetNbinsX()):
                             cNom = histNominal.GetBinContent(ibin+1)
                             
@@ -437,3 +395,4 @@ class SmoothHistograms(Module.getClass("Program")):
                         rootFileOutput.Close()
                         self._logger.info("Write: "+outputFile)
             
+

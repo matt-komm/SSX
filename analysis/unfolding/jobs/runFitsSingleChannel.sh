@@ -69,7 +69,6 @@ syst=(
 
 syst=(
 "systematics/topMassUp -c smoothing:1"
-"systematics/topMassDown -c smoothing:1"
 )
 
 setups="TopPtParton TopYParton TopCosParton LeptonPtParton LeptonEtaParton WPtParton"
