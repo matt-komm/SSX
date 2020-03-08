@@ -2237,6 +2237,9 @@ class Drawing(Module):
         pLumiAdd.Draw("Same")
         
         cv.Update()
+        palette = hist.GetListOfFunctions().FindObject("palette")
+        palette.SetX1NDC(palette.GetX1NDC()+0.01)
+        palette.SetX2NDC(palette.GetX2NDC()+0.01)
         
         cv.Print(output+".png")
         cv.Print(output+".pdf")

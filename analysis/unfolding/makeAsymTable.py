@@ -9,7 +9,7 @@ systematicsProfiled = [
     ['Multijet normalisation',['QCD*Excl']],
     ['Multijet shape',['eleMultiIsoExcl','eleMultiVetoExcl','muMultiExcl']],
     ['Jet energy scale/resolution',['enExcl','resExcl']],
-    ['\\PQb-tagging/mistagging eff.',['btagExcl','ltagExcl']],
+    ['\\PQb tagging efficiencies/misidentification',['btagExcl','ltagExcl']],
     ['Others',['puExcl','uncExcl','eleEffExcl','muEffExcl']],
 ]
 

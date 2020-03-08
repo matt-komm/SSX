@@ -9,7 +9,7 @@ systematicsProfiled = [
     ['Multijet<br>normalisation',['QCD*Excl']],
     ['Multijet shape',['eleMultiIsoExcl','eleMultiVetoExcl','muMultiExcl']],
     ['Jet energy scale<br>and resolution',['enExcl','resExcl']],
-    ['\\PQb-tagging/mistagging<br>efficiencies',['btagExcl','ltagExcl']],
+    ['\\PQb tagging efficiencies<br> and misidentification',['btagExcl','ltagExcl']],
     #['Lepton efficiencies',['eleEffExcl','muEffExcl']],
     ['Others',['puExcl','uncExcl','eleEffExcl','muEffExcl']],
 ]
@@ -17,13 +17,13 @@ systematicsProfiled = [
 systematics = [
     ['Top quark mass',['topMass']],
     ['PDF+$\\alpS$',['pdf']],
-    ['$t$ channel renorm.<br>and fact. scales',['tchanScaleME']],
+    ['$t$ channel renormalisation<br>and factorisation scales',['tchanScaleME']],
     ['$t$ channel parton<br>shower',['tchanHdampPS','tchanScalePS']],
-    ['\\ttbar renorm. and<br>fact. scales',['ttbarScaleME']],
+    ['\\ttbar renormalisation<br>and factorisation scales',['ttbarScaleME']],
     ['\\ttbar parton shower',['ttbarScaleISRPS','ttbarScaleFSRPS','ttbarHdampPS']],
     ['\\ttbar underlying<br>event tune',['ttbarUE']],
     ['\\ttbar \\pt reweighting',['ttbarPt']],
-    ['\\wjets renorm.<br>and fact. scales',['wjetsScaleME']],
+    ['\\wjets renormalisation<br>and factorisation scales',['wjetsScaleME']],
     ['Color reconnection', ['tchanColor','ttbarColor']],
     ['Fragmentation model',['bfrac']],
     #['Luminosity',['lumi']]
@@ -46,7 +46,7 @@ def formatExp(value):
 
 
 
-levelName = "parton"
+levelName = "particle"
 
 for var in [
     ["result/final/comb/pt_"+levelName+"_comb_sysSummary.json","\\rd p_\\textrm{T}","top quark \\pt"],
@@ -111,10 +111,11 @@ for var in [
             print " "*4,
             value = data[obs[0]]['central'][ibin]
             val,exp = formatExp(value)
-            if obs[0]=="ratio" or (maxExp<math.log10(1.06) and minExp>=math.log10(0.106)):
-                print ("& \\multicolumn{2}{c@{}}{%.2f}"%(value)),
-            elif (minExp>=math.log10(1.06)):
-                print ("& \\multicolumn{2}{c@{}}{%.1f}"%(value)),
+            if minExp>=math.log10(0.106):
+                if value<1.02:
+                    print ("& \\multicolumn{2}{c@{}}{%.2f}"%(value)),
+                else:
+                    print ("& \\multicolumn{2}{c@{}}{%.1f}"%(value)),
             else:
                 print ("& \\multicolumn{2}{c@{}}{%.1f$\\times 10^{%i}$}"%(val,exp)),
 
@@ -197,7 +198,7 @@ for var in [
         print "\\hline"
                 
                 
-        if iobs==0:
+        if obs[0]=="sum":
             print "\\multicolumn{2}{@{}l}{Luminosity}",
             for ibin in range(nbins):
                 print " "*4,
