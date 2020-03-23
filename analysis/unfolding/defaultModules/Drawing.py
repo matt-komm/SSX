@@ -588,6 +588,12 @@ class Drawing(Module):
                     w = w-w*0.25-width*0.015
                     c = genHistSumRes.GetBinContent(ibin+1)
                     e = genHistSumRes.GetBinError(ibin+1)
+                    
+                    if (c+e)>(1+resRange):
+                        continue
+                    if (c-e)<(1-resRange):
+                        continue
+                    
                     box = ROOT.TBox(x-0.5*w,c-e,x+0.5*w,c+e)
                     rootObj.append(box)
                     box.SetLineColor(genHistSumRes.GetFillColor())
