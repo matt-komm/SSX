@@ -4,7 +4,7 @@ import numpy
         
 systematicsProfiled = [
     ['Statistical',['stat']],
-    ['\\ttbar normalisation',['TopBkg*Excl']],
+    ['\\ttbar/\\tW normalisation',['TopBkg*Excl']],
     ['\\wzjets<br>normalisation',['WZjets*Excl','dyExcl','twExcl']],
     ['Multijet<br>normalisation',['QCD*Excl']],
     ['Multijet shape',['eleMultiIsoExcl','eleMultiVetoExcl','muMultiExcl']],
@@ -46,7 +46,7 @@ def formatExp(value):
 
 
 
-levelName = "particle"
+levelName = "parton"
 
 for var in [
     ["result/final/comb/pt_"+levelName+"_comb_sysSummary.json","\\rd p_\\textrm{T}","top quark \\pt"],

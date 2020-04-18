@@ -6,7 +6,7 @@ import ROOT
 
 systematicsProfiled = [
     ['Statistical',['stat']],
-    ['$\\textrm{t}\\bar{\\textrm{t}}$ normalisation',['TopBkg*Excl']],
+    ['$\\textrm{t}\\bar{\\textrm{t}}$/tW normalisation',['TopBkg*Excl']],
     ['W/Z/$\\gamma^{\\star}$+jets normalisation',['WZjets*Excl','dyExcl','twExcl']],
     ['Multijet normalisation',['QCD*Excl']],
     ['Multijet shape',['eleMultiIsoExcl','eleMultiVetoExcl','muMultiExcl']],
@@ -330,7 +330,7 @@ yamlDataFile.write("independent_variables: []\n")
 asymVal = [0.403,0.446,0.440]
 asymUnc = [
     ['Statistical',[0.029,0.038,0.024]],
-    ['$\\textrm{t}\\bar{\\textrm{t}}$ normalisation',[0.010,0.007,0.007]],
+    ['$\\textrm{t}\\bar{\\textrm{t}}$/tW normalisation',[0.010,0.007,0.007]],
     ['W/Z/$\\gamma^{\\star}$+jets normalisation',[0.012,0.011,0.012]],
     ['Multijet normalisation',[0.0001,0.0002,0.003]],
     ['Multijet shape',[0.0001,0.003,0.0003]],
